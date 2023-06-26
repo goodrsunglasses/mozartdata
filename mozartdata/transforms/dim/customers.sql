@@ -15,3 +15,4 @@ SELECT
 FROM
   netsuite.customer ns
 FULL JOIN shopify.customer sh on sh.customer.email = ns.customer.email
+--- test test
