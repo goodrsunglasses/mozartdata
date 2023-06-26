@@ -2,7 +2,7 @@ SELECT
   netsuite.customer.id AS ns_customer_id,
   netsuite.customer.entityid AS ns_cusotmer_id,
   netsuite.customer.altname AS ns_altname,
-  netsuite.customer.defaultbillingaddress AS ns_defaultbillingaddressid, --- shipping address id
+  netsuite.customer.defaultbillingaddress AS ns_defaultbillingaddressid, --- billing address id
   --- member since - do not know what this refers to ... this was just Josha's example, let's delete it from the required field list
   netsuite.customer.category AS ns_category,
   netsuite.customer.isperson AS ns_cust_type,
