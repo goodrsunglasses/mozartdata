@@ -12,7 +12,7 @@ cust = customer
 
 SELECT
   ns_cust.id AS ns_cust_id,
-  ns_cust.entityid AS ns_cust_id,
+  ns_cust.entityid AS ns_entity_id,
   ns_cust.altname AS ns_altname,
   ns_cust.defaultbillingaddress AS ns_defaultbillingaddressid, --- billing address id
   --- member since - do not know what this refers to ... this was just Josha's example, let's delete it from the required field list
