@@ -1,6 +1,13 @@
 /*
 purpose:
-this transform creates the customer dimension by combining data from netsuite and shopify
+this transform creates the customer dimension by combining data from netsuite and shopify.
+
+joins: ns and shop on email
+
+aliases: 
+ns = netsuite
+shop = shopify
+cust = customer
 */
 
 SELECT
