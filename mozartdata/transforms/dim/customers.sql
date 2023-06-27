@@ -15,8 +15,8 @@ SELECT
   ns_cust.lastmodifieddate AS ns_cust_last_modified_date,
   ns_cust.email AS ns_cust_email,
   --- ns customer lead status - what does this mean? .... there is a field in NS front end that was labeled "lead status" (closed, etc)
-  shop_cust.id as sh_cust_id, --- joined on email
-  shop_cust.email as sh_cust_email
+  shop_cust.id as shop_cust_id, --- joined on email
+  shop_cust.email as shop_cust_email
 FROM
   netsuite.customer ns_cust
 FULL JOIN shopify.customer shop_cust on shop_cust.email = ns_cust.email
