@@ -1,3 +1,8 @@
+/*
+purpose:
+this transform creates the customer dimension by combining data from netsuite and shopify
+*/
+
 SELECT
   ns_cust.id AS ns_cust_id,
   ns_cust.entityid AS ns_cust_id,
