@@ -1,3 +1,15 @@
+/* 
+--- CTE to create amount field
+with cte_revenue as 
+  SELECT 
+    transactionline.transaction id
+    tranasaction.id
+  FROM netsuite.transaction transaction
+  left outer join netsuite.transactionline transactionline on transaction.id = transactionline.id
+
+*/
+  
+
 SELECT 
   transaction.tranid as NS_transaction_ID,
   transaction.recordtype as ns_transaction_type,
@@ -7,7 +19,9 @@ SELECT
   -- shopifyid
   -- shopifycustid
   -- shopifytranid
-  channel.name as ns_channel
+  channel.name as ns_channel,
+
   
 FROM netsuite.transaction transaction
 left outer join netsuite.customrecord_cseg7 channel on transaction.cseg7=channel.id
+left outer join netsuite.transactionline transactionline on transaction.tranid = transactionline.transaction
