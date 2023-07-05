@@ -5,7 +5,7 @@ SELECT
   transaction.entity AS ns_cust_id,
   transaction.id AS NS_ID,
   transaction.trandate AS ns_transaction_date,
-  transactionline.rate,
+  transactionline.rate as ns_rate,
   transaction.custbody4,
   -- shopifyid
   -- shopifycustid
