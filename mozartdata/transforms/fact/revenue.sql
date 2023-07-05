@@ -4,7 +4,7 @@ SELECT
   customers.ns_altname,
   transactions.ns_transaction_type,
   customers.ns_altname,
-  --- ns_transaction date
+  transactions.ns_trandate,
   transactions.ns_channel,
   ---ns_margin
   ---ns_revenue_date
