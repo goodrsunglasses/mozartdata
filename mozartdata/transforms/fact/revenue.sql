@@ -8,7 +8,7 @@ SELECT
   transactions.ns_channel,
   ---ns_margin
   ---ns_revenue_date
-  transactions.rate
+  transactions.ns_rate
   
 FROM dim.transactions transactions
 left outer join dim.customers customers on customers.ns_cust_id = transactions.ns_cust_id
