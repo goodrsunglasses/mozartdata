@@ -24,4 +24,5 @@ SELECT
 
 FROM netsuite.transaction transaction
 left outer join netsuite.customrecord_cseg7 channel on transaction.cseg7=channel.id
+left outer join netsuite.transactionline transactionline on transaction.id = transactionline.transaction
 left outer join netsuite.salesordered salesordered on salesordered.transaction = transaction.id
