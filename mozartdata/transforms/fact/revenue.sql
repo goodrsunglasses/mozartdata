@@ -3,7 +3,6 @@ SELECT
   transactions.ns_cust_id,
   customers.ns_altname,
   transactions.ns_transaction_type,
-  customers.ns_altname,
   transactions.ns_trandate,
   transactions.ns_channel,
   ---ns_margin
