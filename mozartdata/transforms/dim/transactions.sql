@@ -16,6 +16,7 @@ SELECT
   transaction.entity as ns_cust_id,
   transaction.id as NS_ID,
   transaction.trandate as ns_transaction_date,
+  salesordered.amount,
   -- shopifyid
   -- shopifycustid
   -- shopifytranid
@@ -24,3 +25,4 @@ SELECT
 FROM netsuite.transaction transaction
 left outer join netsuite.customrecord_cseg7 channel on transaction.cseg7=channel.id
 left outer join netsuite.transactionline transactionline on transaction.tranid = transactionline.transaction
+left outer join netsuite.salesordered salesordered on salesordered.transaction = transaction.id
