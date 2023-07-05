@@ -1,5 +1,6 @@
 SELECT
   transaction.tranid AS NS_transaction_ID,
+  transaction.trandate as ns_trandate,
   transaction.recordtype AS ns_transaction_type,
   transaction.entity AS ns_cust_id,
   transaction.id AS NS_ID,
