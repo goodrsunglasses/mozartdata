@@ -1,11 +1,23 @@
+/*
+purpose:
+this transform creates the transactionline dimension by combining data from netsuite and shopify.
+
+joins: 
+
+aliases: 
+ns = netsuite
+shop = shopify
+tran = transaction
+*/
+
 SELECT
-  transaction,
-  item,
-  items.displayname,
+  transaction as ns_transaction,
+  item as ns_itemid,
+  items.displayname as ns_item_displayname,
   --- sku number? for easier filtering later
-  averagecost,
-  quantity,
-  rate,
+  averagecost as ns_item_avg_cost,
+  quantity as ns_quantity,
+  rate as ns_ns_rate,
   tran.ns_trandate,
   tran.ns_channel
   
