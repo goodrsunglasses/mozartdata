@@ -1,3 +1,13 @@
+purpose:
+One row per transaction.
+This transform creates the transactions dimension by combining data from netsuite and shopify.
+
+aliases: 
+ns = netsuite
+shop = shopify
+cust = customer
+*/
+
 SELECT
   transaction.tranid AS NS_transaction_ID,
   transaction.trandate as ns_trandate,
