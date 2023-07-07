@@ -1,6 +1,7 @@
 /*
 purpose:
-this transform creates the transactionline dimension by combining data from netsuite and shopify.
+One row per sku per transaction.
+This transform creates the transactionline dimension by combining data from netsuite and shopify.
 
 joins: 
 
