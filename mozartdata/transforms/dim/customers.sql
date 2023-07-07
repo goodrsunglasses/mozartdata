@@ -1,6 +1,7 @@
 /*
 purpose:
-this transform creates the customer dimension by combining data from netsuite and shopify.
+One row per customer.
+This transform creates the customer dimension by combining data from netsuite and shopify.
 
 joins: ns and shop on email
 
