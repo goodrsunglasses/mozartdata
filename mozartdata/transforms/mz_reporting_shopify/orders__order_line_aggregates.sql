@@ -4,7 +4,7 @@ WITH renamed AS (
   SELECT
     _fivetran_synced AS _fivetran_synced,
     fulfillable_quantity AS fulfillable_quantity,
-    fulfillment_service AS fulfillment_service,
+    ---fulfillment_service AS fulfillment_service, --- gd commented out because it was breaking the transform.
     fulfillment_status AS fulfillment_status,
     gift_card AS is_gift_card,
     grams AS grams,
