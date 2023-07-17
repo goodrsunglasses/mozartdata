@@ -6,7 +6,7 @@
 -- ns = netsuite
 -- shop = shopify
 -- cust = customer
-*/
+
 
 SELECT
   transaction.tranid AS NS_transaction_ID,
