@@ -31,7 +31,7 @@ WITH renamed AS (
     email AS email,
     financial_status AS financial_status,
     fulfillment_status AS fulfillment_status,
-    processing_method AS processing_method,
+   --- processing_method AS processing_method,
     referring_site AS referring_site,
     billing_address_address_1 AS billing_address_address_1,
     billing_address_address_2 AS billing_address_address_2,
