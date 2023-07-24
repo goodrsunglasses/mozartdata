@@ -6,7 +6,10 @@
 -- ns = netsuite
 -- shop = shopify
 -- cust = customer
-
+-- with revenue as (
+-- select * from netsuite.transactionline where transaction = 13356008
+  
+-- )
 
 SELECT
   transaction.tranid AS NS_transaction_ID,
@@ -15,7 +18,6 @@ SELECT
   transaction.entity AS ns_cust_id,
   transaction.id AS NS_ID,
   transactionline.rate as ns_rate, --- will need to be fixed when really build this out - not including giftcards and all discounts
-  transaction.custbody4,
   -- shopifyid
   -- shopifycustid
   -- shopifytranid
