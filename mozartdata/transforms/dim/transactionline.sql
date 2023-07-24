@@ -12,6 +12,7 @@ tran = transaction
 */
 
 SELECT
+  
   transaction as ns_transaction,
   item as ns_itemid,
   items.displayname as ns_item_displayname,
@@ -25,5 +26,5 @@ SELECT
 FROM
 netsuite.transactionline tranline
 
-  LEFT JOIN netsuite.item items on tranline.item = items.id
-  LEFT JOIN dim.transactions tran on tran.ns_id = tranline.transaction
+  LEFT outer JOIN netsuite.item items on tranline.item = items.id
+  LEFT outer JOIN dim.transactions tran on tran.ns_id = tranline.transaction
