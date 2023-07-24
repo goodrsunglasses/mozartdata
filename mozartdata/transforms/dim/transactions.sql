@@ -14,7 +14,6 @@ SELECT
   transaction.recordtype AS ns_transaction_type,
   transaction.entity AS ns_cust_id,
   transaction.id AS NS_ID,
-  transaction.trandate AS ns_transaction_date,
   transactionline.rate as ns_rate, --- will need to be fixed when really build this out - not including giftcards and all discounts
   transaction.custbody4,
   -- shopifyid
