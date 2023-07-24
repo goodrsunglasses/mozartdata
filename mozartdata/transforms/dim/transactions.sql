@@ -29,7 +29,7 @@ FROM
   LEFT OUTER JOIN netsuite.transactionline transactionline ON transaction.id = transactionline.transaction
 WHERE
   revenue>0 
-  and transactionline.accountinglinetype is null
-  and ns_transaction_id is not null
+  and transactionline.accountinglinetype is null --did this because it needs to be not a gift card since theyre > 0 
+  and ns_transaction_id is not null -- Filtering out all the seemingly null transactions we have
   and ns_transaction_type in ('salesorder','cashsale','invoice')
 order by ns_transaction_id desc
