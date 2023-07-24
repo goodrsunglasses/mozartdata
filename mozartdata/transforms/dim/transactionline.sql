@@ -10,21 +10,22 @@ ns = netsuite
 shop = shopify
 tran = transaction
 */
-
 SELECT
+  tran.ns_transaction_type,
+  tranline.transaction AS ns_transactionid,
+  tran.ns_cust_id,
+  tran.ns_channel,
   
-  transaction as ns_transaction,
-  item as ns_itemid,
-  items.displayname as ns_item_displayname,
+  item AS ns_itemid,
+  items.displayname AS ns_item_displayname,
   --- sku number? for easier filtering later
-  averagecost as ns_item_avg_cost,
-  quantity as ns_quantity,
-  rate as ns_ns_rate,
-  tran.ns_trandate,
-  tran.ns_channel
-  
+  averagecost AS ns_item_avg_cost,
+  quantity AS ns_quantity,
+  rate AS ns_ns_rate,
+  tran.ns_trandate
 FROM
-netsuite.transactionline tranline
-
-  LEFT outer JOIN netsuite.item items on tranline.item = items.id
-  LEFT outer JOIN dim.transactions tran on tran.ns_id = tranline.transaction
+  netsuite.transactionline tranline
+  LEFT OUTER JOIN netsuite.item items ON tranline.item = items.id
+  LEFT OUTER JOIN dim.transactions tran ON tran.ns_id = tranline.transaction
+LIMIT
+  600;
