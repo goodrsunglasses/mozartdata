@@ -16,11 +16,15 @@ SELECT
   tran.ns_cust_id,
   tran.ns_channel,
   tran.ns_trandate,
+  item.displayname,
+  item.id,
   tranline.rate
-  
+
   
 FROM
   dim.transactions tran
   left outer join netsuite.transactionline tranline on tranline.transaction = tran.ns_id
+  left outer join netsuite.item item on item.id = tranline.item
+where tran.idd = 13356008
 LIMIT
   600;
