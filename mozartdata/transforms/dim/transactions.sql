@@ -29,6 +29,7 @@ FROM
   LEFT OUTER JOIN netsuite.transactionline transactionline ON transaction.id = transactionline.transaction
 WHERE
   revenue>0 
+  and transactionline.accountinglinetype is null
   and ns_transaction_id is not null
   and ns_transaction_type in ('salesorder','cashsale','invoice')
 order by ns_transaction_id desc
