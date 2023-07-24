@@ -25,6 +25,6 @@ FROM
   dim.transactions tran
   left outer join netsuite.transactionline tranline on tranline.transaction = tran.ns_id
   left outer join netsuite.item item on item.id = tranline.item
-where tran.idd = 13356008
+where tran.id = 13356008
 LIMIT
   600;
