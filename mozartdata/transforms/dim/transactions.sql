@@ -30,7 +30,8 @@ WHERE
   transactionline.linesequencenumber = 0 --as per joshas recc, use the 0th line for the netamount that ends up being the total
   -- and transactionline.accountinglinetype is null --leave it commented out until INV issue is resolved
   AND ns_transaction_id is not null -- Filtering out all the seemingly null transactions we have
-  AND ns_transaction_type IN ('salesorder', 'cashsale', 'invoice')
+  -- AND ns_transaction_type IN ('salesorder', 'cashsale', 'invoice') --optional filter
+
 ORDER BY
   ns_transaction_id desc
 -- )
