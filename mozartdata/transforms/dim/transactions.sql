@@ -18,14 +18,17 @@ SELECT
   transaction.entity AS ns_cust_id,
   transaction.id AS NS_ID,
   transactionline.netamount AS revenue,
-  -- shopifyid
-  -- shopifycustid
-  -- shopifytranid
-  channel.name AS ns_channel
+  shopord.id as shopify_id,
+  shopord.name as shopify_tran_id,
+  channel.name AS ns_channel,
+  transtatus.fullname as ns_transaction_status
+  
 FROM
   netsuite.transaction transaction
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON transaction.cseg7 = channel.id
   LEFT OUTER JOIN netsuite.transactionline transactionline ON transaction.id = transactionline.transaction
+  left outer join shopify."ORDER" shopord on shopord.name = transaction.custbody_goodr_shopify_order
+  left outer join netsuite.transactionstatus transtatus on (transaction.status = transtatus.id and transaction.type = transtatus.trantype)
 WHERE
   transactionline.linesequencenumber = 0 --as per joshas recc, use the 0th line for the netamount that ends up being the total
   -- and transactionline.accountinglinetype is null --leave it commented out until INV issue is resolved
