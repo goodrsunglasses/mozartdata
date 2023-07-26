@@ -5,17 +5,20 @@
 -- ns = netsuite
 -- shop = shopify
 -- cust = customer
-with prodsales as (
-select
-  transaction, 
-  netamount, --After discount?
-  rate --Before discount?
-  from 
-  netsuite.transactionline where transaction = 13356008
-)
--- select 
---   count(NS_transaction_ID) as countran
---   from(
+WITH
+  prodsales AS (
+    SELECT
+      transaction,
+      SUM(netamount), --After discount?
+      SUM(rate) --Before discount?
+    FROM
+      netsuite.transactionline
+    WHERE
+      itemtype = 'invtpart'
+  )
+  -- select 
+  --   count(NS_transaction_ID) as countran
+  --   from(
 SELECT
   transaction.tranid AS NS_transaction_ID,
   transaction.trandate AS ns_trandate,
@@ -27,8 +30,8 @@ SELECT
   shopord.name AS shopify_tran_id,
   channel.name AS ns_channel,
   transtatus.fullname AS ns_transaction_status,
-  billaddress.state as ns_billing_state,
-  shipaddress.state as ns_shipping_state
+  billaddress.state AS ns_billing_state,
+  shipaddress.state AS ns_shipping_state
 FROM
   netsuite.transaction transaction
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON transaction.cseg7 = channel.id
@@ -38,8 +41,8 @@ FROM
     transaction.status = transtatus.id
     AND transaction.type = transtatus.trantype
   )
-  left outer join netsuite.transactionBillingAddress billaddress on billaddress.nkey = transaction.billingaddress
-  left outer join netsuite.transactionShippingAddress shipaddress on shipaddress.nkey = transaction.shippingaddress
+  LEFT OUTER JOIN netsuite.transactionBillingAddress billaddress ON billaddress.nkey = transaction.billingaddress
+  LEFT OUTER JOIN netsuite.transactionShippingAddress shipaddress ON shipaddress.nkey = transaction.shippingaddress
 WHERE
   transactionline.linesequencenumber = 0 --as per joshas recc, use the 0th line for the netamount that ends up being the total
   -- and transactionline.accountinglinetype is null --leave it commented out until INV issue is resolved
