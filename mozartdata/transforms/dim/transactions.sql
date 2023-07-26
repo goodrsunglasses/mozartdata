@@ -15,6 +15,14 @@ WITH
       netsuite.transactionline
     WHERE
       itemtype = 'invtpart'
+  ), shipsales AS (
+    SELECT
+      transaction,
+      rate --Before discount?
+    FROM
+      netsuite.transactionline
+    WHERE
+      itemtype = 'ShipItem'
   )
   -- select 
   --   count(NS_transaction_ID) as countran
