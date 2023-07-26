@@ -14,7 +14,7 @@ WITH
     FROM
       netsuite.transactionline
     WHERE
-      itemtype = 'invtpart'
+      itemtype = 'InvtPart'
   ), shipsales AS (
     SELECT
       transaction,
