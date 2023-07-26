@@ -5,9 +5,14 @@
 -- ns = netsuite
 -- shop = shopify
 -- cust = customer
--- with revenue as (
--- select * from netsuite.transactionline where transaction = 13356008
--- )
+with prodsales as (
+select
+  transaction, 
+  netamount, --After discount?
+  rate --Before discount?
+  from 
+  netsuite.transactionline where transaction = 13356008
+)
 -- select 
 --   count(NS_transaction_ID) as countran
 --   from(
