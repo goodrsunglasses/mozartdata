@@ -113,4 +113,4 @@ lagged AS (
   FROM
     lagged
   WHERE
-    weeks_ago <=4
+    weeks_ago <=5
