@@ -64,7 +64,7 @@ dates as (
 FROM 
   date_map
 WHERE 
-  datediff(day, the_date, (SELECT MAX(processed_timestamp) from mz_reporting_shopify.orders) :: date) BETWEEN 0 AND 30
+  datediff(day, the_date, (SELECT MAX(processed_timestamp) from mz_reporting_shopify.orders) :: date) BETWEEN 0 AND 29
 ),
 
 -- Step 4. Join the filtered dates with the orders table to get the total sales for each date, as well as the week number and day of the week.
