@@ -9,7 +9,7 @@ WITH
   prodsales AS (
     SELECT
       transaction,
-      -1*(SUM(netamount)) AS discsale --After discount?
+      -1 * (SUM(netamount)) AS discsale --After discount?
       -- SUM(rate) --Before discount?
     FROM
       netsuite.transactionline
@@ -36,19 +36,20 @@ SELECT
   transaction.recordtype AS ns_transaction_type,
   transaction.entity AS ns_cust_id,
   transaction.id AS NS_ID,
-  transactionline.netamount AS revenue,
   shopord.id AS shopify_id,
   shopord.name AS shopify_tran_id,
   channel.name AS ns_channel,
   transtatus.fullname AS ns_transaction_status,
   billaddress.state AS ns_billing_state,
   shipaddress.state AS ns_shipping_state,
-  discsale as product_sales,
-  shiprate as shipping_income
+  discsale AS product_sales,
+  shiprate AS shipping_income,
+  transaction.estgrossprofit AS gross_profit,
+  transaction.estgrossprofitpercent AS profit_percent
 FROM
   netsuite.transaction transaction
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON transaction.cseg7 = channel.id
-  LEFT OUTER JOIN netsuite.transactionline transactionline ON transaction.id = transactionline.transaction
+  -- LEFT OUTER JOIN netsuite.transactionline transactionline ON transaction.id = transactionline.transaction
   LEFT OUTER JOIN shopify."ORDER" shopord ON shopord.name = transaction.custbody_goodr_shopify_order
   LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
     transaction.status = transtatus.id
@@ -59,12 +60,15 @@ FROM
   LEFT OUTER JOIN prodsales ON prodsales.transaction = transaction.id
   LEFT OUTER JOIN shipsales ON shipsales.transaction = transaction.id
 WHERE
-  transactionline.linesequencenumber = 0 --as per joshas recc, use the 0th line for the netamount that ends up being the total
+  -- transactionline.linesequencenumber = 0 --as per joshas recc, use the 0th line for the netamount that ends up being the total
   -- and transactionline.accountinglinetype is null --leave it commented out until INV issue is resolved
-  AND ns_transaction_id IS NOT NULL -- Filtering out all the seemingly null transactions we have
-  AND ns_transaction_type IN ('salesorder', 'cashsale', 'invoice','purchaseorder') --optional filter
-
-
+  ns_transaction_id IS NOT NULL -- Filtering out all the seemingly null transactions we have
+  AND ns_transaction_type IN (
+    'salesorder',
+    'cashsale',
+    'invoice',
+    'purchaseorder'
+  ) --optional filter
 ORDER BY
-  ns_transaction_id asc
+  ns_transaction_id desc
   -- )
