@@ -64,7 +64,7 @@ dates as (
 FROM 
   date_map
 WHERE 
-  datediff(day, the_date, (SELECT MAX(processed_timestamp) from mz_reporting_shopify.orders) :: date) BETWEEN 0 AND 29
+  datediff(day, the_date, (SELECT MAX(processed_timestamp) from mz_reporting_shopify.orders) :: date) BETWEEN 0 AND 89
 ),
 
 -- Step 4. Join the filtered dates with the orders table to get the total sales for each date, as well as the week number and day of the week.
@@ -73,6 +73,7 @@ filtered AS (
   SELECT d.the_date, 
         CEIL((((SELECT MAX(processed_timestamp) FROM mz_reporting_shopify.orders) :: date) - d.the_date + 1)/7) AS weeks_ago,
         MOD((((SELECT MAX(processed_timestamp) FROM mz_reporting_shopify.orders) :: date) - d.the_date), 7) AS day_in_week,
+        date_part('day', the_date) AS day_in_month,
         so.* 
   FROM 
     dates AS d
@@ -87,20 +88,24 @@ aggregated AS (
   SELECT the_date,
         weeks_ago,
         day_in_week,
-        coalesce(sum(total_line_items_price), 0) AS day_total
+        coalesce(sum(total_line_items_price), 0) AS day_total,
+        day_in_month
   FROM
     filtered
   GROUP BY 
     the_date,
     weeks_ago,
-    day_in_week
+    day_in_week,
+    day_in_month
 ),
 
 -- Step 6. Calculate the total sales from the same day of the week one week ago for each day in the past week for week-over-week comparisons.
 
 lagged AS (
   SELECT *,
-    LAG(day_total, 1, 0) OVER(PARTITION BY day_in_week ORDER BY weeks_ago DESC) AS last_week
+    LAG(day_total, 1, 0) OVER(PARTITION BY day_in_week ORDER BY weeks_ago DESC) AS last_week,
+    LAG(day_total, 1, 0) OVER(PARTITION BY day_in_month ORDER BY weeks_ago DESC) AS last_month
+
   FROM
     aggregated
   ORDER BY
@@ -113,4 +118,5 @@ lagged AS (
   FROM
     lagged
   WHERE
-    weeks_ago <=5
+    weeks_ago <=12
+order by the_date DESC
