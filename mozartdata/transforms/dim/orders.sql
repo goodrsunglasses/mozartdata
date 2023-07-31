@@ -33,6 +33,7 @@ SELECT DISTINCT
   tran.recordtype AS type,
   -- tran.custbody_goodr_total_order_quantity,
   tran.custbody_goodr_po_number AS po_number,
+  tran.shippingaddress,
   tran.startDate,
   tran.enddate,
   product_sales,
