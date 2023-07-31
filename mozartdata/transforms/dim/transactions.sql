@@ -39,7 +39,7 @@ SELECT
   channel.name AS ns_channel,
   transtatus.fullname AS ns_transaction_status,
   billaddress.state AS ns_billing_state,
-  shipaddress.state AS ns_shipping_state,
+  shipaddress.state AS ns_shipping_state
   -- discsale AS product_sales,
   -- shiprate AS shipping_income,
   -- transaction.estgrossprofit AS gross_profit,
