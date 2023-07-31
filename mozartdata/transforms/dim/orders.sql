@@ -35,3 +35,4 @@ SELECT
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN ns_salesrev ON ns_salesrev.transaction = tran.id
+where tran.recordtype in ('salesorder', 'cashsale','invoice','cashrefund','itemfulfillment')
