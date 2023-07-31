@@ -5,31 +5,29 @@
 -- ns = netsuite
 -- shop = shopify
 -- cust = customer
-WITH
-  prodsales AS (
-    SELECT
-      transaction,
-      -1 * (SUM(netamount)) AS discsale --After discount?
-      -- SUM(rate) --Before discount?
-    FROM
-      netsuite.transactionline
-    WHERE
-      itemtype = 'InvtPart'
-    GROUP BY
-      transaction
-  ),
-  shipsales AS (
-    SELECT
-      transaction,
-      rate AS shiprate --Before discount?
-    FROM
-      netsuite.transactionline
-    WHERE
-      itemtype = 'ShipItem'
-  )
-  -- select 
-  --   count(NS_transaction_ID) as countran
-  --   from(
+-- WITH
+--   prodsales AS (
+--     SELECT
+--       transaction,
+--       -1 * (SUM(netamount)) AS discsale --After discount?
+--       -- SUM(rate) --Before discount?
+--     FROM
+--       netsuite.transactionline
+--     WHERE
+--       itemtype = 'InvtPart'
+--     GROUP BY
+--       transaction
+--   ),
+--   shipsales AS (
+--     SELECT
+--       transaction,
+--       rate AS shiprate --Before discount?
+--     FROM
+--       netsuite.transactionline
+--     WHERE
+--       itemtype = 'ShipItem'
+--   )
+
 SELECT
   transaction.tranid AS NS_transaction_ID,
   transaction.trandate AS ns_trandate,
@@ -60,8 +58,6 @@ FROM
   LEFT OUTER JOIN prodsales ON prodsales.transaction = transaction.id
   LEFT OUTER JOIN shipsales ON shipsales.transaction = transaction.id
 WHERE
-  -- transactionline.linesequencenumber = 0 --as per joshas recc, use the 0th line for the netamount that ends up being the total
-  -- and transactionline.accountinglinetype is null --leave it commented out until INV issue is resolved
   ns_transaction_id IS NOT NULL -- Filtering out all the seemingly null transactions we have
   AND ns_transaction_type NOT IN (
     'binworksheet',
@@ -71,4 +67,3 @@ WHERE
   ) --filter out uneeded transaction types
 ORDER BY
   ns_transaction_id desc
-  -- )
