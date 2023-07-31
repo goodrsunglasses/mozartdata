@@ -31,6 +31,7 @@ SELECT
   tran.tranid AS ns_tran_id,
   channel.name AS channel,
   tran.recordtype as type,
+  tran.custbody_goodr_po_number as po_number,
   tran.startDate,
   tran.enddate,
   product_sales,
