@@ -1,11 +1,11 @@
 WITH
   ns_salesrev AS (
-    -- SELECT
-    --   transaction,
-    --   MAX(product_sales) AS product_sales,
-    --   MAX(ship_rate) AS ship_rate
-    -- FROM
-    --   (
+    SELECT
+      transaction,
+      MAX(product_sales) AS product_sales,
+      MAX(ship_rate) AS ship_rate
+    FROM
+      (
     SELECT
       transaction,
       CASE
@@ -22,9 +22,9 @@ WITH
       transaction,
       itemtype
   )
-  --   GROUP BY
-  --     transaction
-  -- )
+    GROUP BY
+      transaction
+  )
 SELECT
   tran.id as ns_id,
   tran.tranid as ns_tran_id,
