@@ -64,4 +64,3 @@ FROM
   FULL JOIN shopify.customer shop_cust ON shop_cust.email = ns_cust.email
   LEFT OUTER JOIN netsuite.transaction ns_tran ON ns_tran.entity = ns_cust.id
   LEFT OUTER JOIN netsuite.customerCategory ns_cust_category ON ns_cust.category = ns_cust_category.id
-limit 1000;
