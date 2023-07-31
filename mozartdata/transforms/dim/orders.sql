@@ -25,13 +25,14 @@ WITH
     GROUP BY
       transaction
   )
-SELECT
+SELECT DISTINCT
   tran.id AS ns_id,
   transtatus.fullname AS tran_status,
   tran.tranid AS ns_tran_id,
   channel.name AS channel,
-  tran.recordtype as type,
-  tran.custbody_goodr_po_number as po_number,
+  tran.recordtype AS type,
+  -- tran.custbody_goodr_total_order_quantity,
+  tran.custbody_goodr_po_number AS po_number,
   tran.startDate,
   tran.enddate,
   product_sales,
@@ -40,12 +41,12 @@ SELECT
   tran.estgrossprofitpercent AS profit_percent
 FROM
   netsuite.transaction tran
-  LEFT OUTER JOIN ns_salesrev ON ns_salesrev.transaction = tran.id
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
   LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
     tran.status = transtatus.id
     AND tran.type = transtatus.trantype
   )
+  left outer join ns_salesrev on ns_salesrev.transaction=tran.id
 WHERE
   tran.recordtype IN (
     'salesorder',
