@@ -26,7 +26,7 @@ WITH
   --     transaction
   -- )
 SELECT
-  tran.id,
+  tran.id as ns_id,
   tran.tranid as ns_tran_id,
   product_sales,
   ship_rate,
