@@ -6,28 +6,31 @@ WITH
       MAX(ship_rate) AS ship_rate
     FROM
       (
-    SELECT
-      transaction,
-      CASE
-        WHEN itemtype = 'InvtPart' THEN -1 * (SUM(netamount))
-        ELSE NULL
-      END AS product_sales,
-      CASE
-        WHEN itemtype = 'ShipItem' THEN MAX(rate)
-        ELSE NULL
-      END AS ship_rate
-    FROM
-      netsuite.transactionline
-    GROUP BY
-      transaction,
-      itemtype
-  )
+        SELECT
+          transaction,
+          CASE
+            WHEN itemtype = 'InvtPart' THEN -1 * (SUM(netamount))
+            ELSE NULL
+          END AS product_sales,
+          CASE
+            WHEN itemtype = 'ShipItem' THEN MAX(rate)
+            ELSE NULL
+          END AS ship_rate
+        FROM
+          netsuite.transactionline
+        GROUP BY
+          transaction,
+          itemtype
+      )
     GROUP BY
       transaction
   )
 SELECT
-  tran.id as ns_id,
-  tran.tranid as ns_tran_id,
+  tran.id AS ns_id,
+  transtatus.fullname AS tran_status,
+  tran.tranid AS ns_tran_id,
+  channel.name AS channel,
+  tran.recordtype as type,
   product_sales,
   ship_rate,
   tran.estgrossprofit AS gross_profit,
@@ -35,4 +38,16 @@ SELECT
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN ns_salesrev ON ns_salesrev.transaction = tran.id
-where tran.recordtype in ('salesorder', 'cashsale','invoice','cashrefund','itemfulfillment')
+  LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
+  LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
+    tran.status = transtatus.id
+    AND tran.type = transtatus.trantype
+  )
+WHERE
+  tran.recordtype IN (
+    'salesorder',
+    'cashsale',
+    'invoice',
+    'cashrefund',
+    'itemfulfillment'
+  )
