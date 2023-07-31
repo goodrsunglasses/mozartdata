@@ -31,6 +31,8 @@ SELECT
   tran.tranid AS ns_tran_id,
   channel.name AS channel,
   tran.recordtype as type,
+  tran.startDate,
+  tran.enddate,
   product_sales,
   ship_rate,
   tran.estgrossprofit AS gross_profit,
