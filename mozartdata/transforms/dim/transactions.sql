@@ -40,10 +40,10 @@ SELECT
   transtatus.fullname AS ns_transaction_status,
   billaddress.state AS ns_billing_state,
   shipaddress.state AS ns_shipping_state,
-  discsale AS product_sales,
-  shiprate AS shipping_income,
-  transaction.estgrossprofit AS gross_profit,
-  transaction.estgrossprofitpercent AS profit_percent
+  -- discsale AS product_sales,
+  -- shiprate AS shipping_income,
+  -- transaction.estgrossprofit AS gross_profit,
+  -- transaction.estgrossprofitpercent AS profit_percent
 FROM
   netsuite.transaction transaction
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON transaction.cseg7 = channel.id
@@ -55,8 +55,8 @@ FROM
   )
   LEFT OUTER JOIN netsuite.transactionBillingAddress billaddress ON billaddress.nkey = transaction.billingaddress
   LEFT OUTER JOIN netsuite.transactionShippingAddress shipaddress ON shipaddress.nkey = transaction.shippingaddress
-  LEFT OUTER JOIN prodsales ON prodsales.transaction = transaction.id
-  LEFT OUTER JOIN shipsales ON shipsales.transaction = transaction.id
+  -- LEFT OUTER JOIN prodsales ON prodsales.transaction = transaction.id
+  -- LEFT OUTER JOIN shipsales ON shipsales.transaction = transaction.id
 WHERE
   ns_transaction_id IS NOT NULL -- Filtering out all the seemingly null transactions we have
   AND ns_transaction_type NOT IN (
