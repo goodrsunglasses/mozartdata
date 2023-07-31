@@ -28,7 +28,7 @@ SELECT DISTINCT
       ns_cust.id
     ORDER BY
       ns_tran.trandate asc
-  ) NS_Cust_first_order_date --These 4 next window functions are simply finding the first/last dates and order IDS in an ordered list of a given customer id's orders, sorted by transaction date ascending,
+  ) NS_Cust_first_order_date, --These 4 next window functions are simply finding the first/last dates and order IDS in an ordered list of a given customer id's orders, sorted by transaction date ascending
   first_value (ns_tran.id) OVER (
     PARTITION BY
       ns_cust.id
@@ -51,8 +51,8 @@ SELECT DISTINCT
     PARTITION BY
       ns_cust.id
   ) AS ns_order_count,
-  ns_cust.companyname --NS company name if applicable,
-  ns_cust_category.name ns_cust_channel--NS customer channel they are a part of (sellgoodr,goodr.com,CS,EMP...),
+  ns_cust.companyname, --NS company name if applicable,
+  ns_cust_category.name ns_cust_channel,--NS customer channel they are a part of (sellgoodr,goodr.com,CS,EMP...),
   CASE
     WHEN ns_cust_type = 'T' THEN 'Individual'
     ELSE 'Company'
