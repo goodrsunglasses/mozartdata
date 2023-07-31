@@ -47,11 +47,15 @@ SELECT DISTINCT
       ns_cust.id
     ORDER BY
       ns_tran.trandate asc
-  ) NS_Cust_most_recent_order_date
+  ) NS_Cust_most_recent_order_date,
+  count(ns_tran.trandate) OVer (
+  Partition by ns_cust.id
+  ) as ns_order_count,
+  ns_cust.companyname,
+  ns_tran.cseg7
+  
   --- channel
 FROM
   netsuite.customer ns_cust
   FULL JOIN shopify.customer shop_cust ON shop_cust.email = ns_cust.email
   LEFT OUTER JOIN netsuite.transaction ns_tran ON ns_tran.entity = ns_cust.id
-WHERE
-  ns_cust_category IS NOT NULL
