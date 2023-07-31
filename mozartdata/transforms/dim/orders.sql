@@ -27,6 +27,7 @@ WITH
   -- )
 SELECT
   tran.id,
+  trand.tranid as ns_tran_id,
   product_sales,
   ship_rate,
   tran.estgrossprofit AS gross_profit,
