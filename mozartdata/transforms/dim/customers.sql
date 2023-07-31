@@ -15,7 +15,7 @@ SELECT DISTINCT
   ns_cust.entityid AS ns_entity_id, --Netsuite customer realtext ID
   ns_cust.altname AS ns_altname, --Netsuite customer Full Name
   ns_cust.defaultbillingaddress AS ns_defaultbillingaddressid, --- billing address id
-  ns_cust.category AS ns_cust_category, --Customer sales channel
+  ns_cust.category AS ns_cust_channel, --Customer sales channel
   ns_cust.isperson AS ns_cust_type, --Boolean to determine if customer is Company or Individual
   ns_cust.entitystatus AS ns_entitystatus, --Netsuite customer Status (WON open, Closed...)
   ns_cust.lastmodifieddate AS ns_cust_last_modified_date, --Netsuite customer last modified date, not sure what this is specfically supposed to be yet
