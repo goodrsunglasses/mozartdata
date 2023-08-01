@@ -47,12 +47,11 @@ SELECT
   -1 * tranline.quantity quantity,
   tranline.itemtype,
   tranline.rate,
-  -1*tranline.netamount as netamount
+  -1 * tranline.netamount AS netamount
 FROM
   dim.transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.ns_id
   LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
   LEFT OUTER JOIN item_cust_fields ON item.id = item_cust_fields.id
-WHERE
-  tranline.transaction = 1049845
-  AND tranline.item
+ORDER BY
+  ns_transaction_id desc
