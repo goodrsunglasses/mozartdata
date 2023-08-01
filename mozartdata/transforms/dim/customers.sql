@@ -52,7 +52,7 @@ SELECT DISTINCT
       ns_cust.id
   ) AS ns_order_count,
   ns_cust.companyname, --NS company name if applicable,
-  ns_cust_category.name ns_cust_channel, --NS customer channel they are a part of (sellgoodr,goodr.com,CS,EMP...),
+  ns_cust_category.name ns_cust_channel_name, --NS customer channel they are a part of (sellgoodr,goodr.com,CS,EMP...),
   CASE
     WHEN ns_cust_type = 'T' THEN 'Individual'
     ELSE 'Company'
