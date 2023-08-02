@@ -1,58 +1,69 @@
 WITH
-  ns_salesrev AS (
+  ns_salesorder AS (
     SELECT
-      transaction,
+      order_num,
       MAX(product_sales) AS product_sales,
       MAX(ship_rate) AS ship_rate
     FROM
       (
         SELECT
-          transaction,
+          tran.custbody_goodr_shopify_order order_num,
           CASE
-            WHEN itemtype = 'InvtPart' THEN -1 * (SUM(netamount))
+            WHEN tranline.itemtype = 'InvtPart' THEN -1 * (SUM(netamount))
             ELSE NULL
           END AS product_sales,
           CASE
-            WHEN itemtype = 'ShipItem' THEN MAX(rate)
+            WHEN tranline.itemtype = 'ShipItem' THEN MAX(rate)
             ELSE NULL
           END AS ship_rate
         FROM
-          netsuite.transactionline
+          netsuite.transactionline tranline
+          LEFT OUTER JOIN netsuite.transaction tran ON tran.id = tranline.transaction
+        WHERE
+          tran.recordtype = 'salesorder'
         GROUP BY
-          transaction,
-          itemtype
+          itemtype,
+          order_num
       )
-    GROUP BY
-      transaction
+   GROUP BY order_num
+  ),
+  ns_cashsale AS (
+    SELECT
+      order_num,
+      MAX(product_sales) AS product_sales,
+      MAX(ship_rate) AS ship_rate
+    FROM
+      (
+        SELECT
+          tran.custbody_goodr_shopify_order order_num,
+          
+        FROM
+          netsuite.transactionline tranline
+          LEFT OUTER JOIN netsuite.transaction tran ON tran.id = tranline.transaction
+        WHERE
+          tran.recordtype = 'cashsale'
+        GROUP BY
+          itemtype,
+          order_num
+      )
+   GROUP BY order_num
   )
-SELECT DISTINCT
-  tran.id AS ns_id,
-  transtatus.fullname AS tran_status,
-  tran.tranid AS ns_tran_id,
-  channel.name AS channel,
-  tran.recordtype AS type,
-  -- tran.custbody_goodr_total_order_quantity,
-  tran.custbody_goodr_po_number AS po_number,
-  tran.shippingaddress,
-  tran.startDate,
-  tran.enddate,
+
+
+
+  
+SELECT distinct
+  tran.custbody_goodr_shopify_order order_num,
+  channel.name,
   product_sales,
+  tran.recordtype,
   ship_rate,
   tran.estgrossprofit AS gross_profit,
   tran.estgrossprofitpercent AS profit_percent
 FROM
   netsuite.transaction tran
+  LEFT OUTER JOIN ns_salesrev ON ns_salesrev.order_num = tran.custbody_goodr_shopify_order
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
-  LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
-    tran.status = transtatus.id
-    AND tran.type = transtatus.trantype
-  )
-  left outer join ns_salesrev on ns_salesrev.transaction=tran.id
+  
 WHERE
-  tran.recordtype IN (
-    'salesorder',
-    'cashsale',
-    'invoice',
-    'cashrefund',
-    'itemfulfillment'
-  )
+  order_num = 'G1348972'
