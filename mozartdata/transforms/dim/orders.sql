@@ -1,7 +1,6 @@
 WITH
   ns_salesorder AS (
     SELECT DISTINCT
-      nestsales.id,
       channel.name,
       order_num,
       MAX(product_rate) OVER (
