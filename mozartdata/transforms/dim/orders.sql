@@ -1,8 +1,8 @@
 WITH
   ns_salesorder AS (
     SELECT DISTINCT
-      channel.name,
       order_num,
+      channel.name AS channel,
       MAX(product_rate) OVER (
         PARTITION BY
           order_num
@@ -24,10 +24,10 @@ WITH
       tran.totalcostestimate,
       tran.startDate,
       tran.enddate,
-      tran.entity,
+      tran.entity as customer_id,
       tran.trandate,
-      tran.shippingaddress,
-      location.name
+      tran.shippingaddress as shippingaddress_id,
+      location.name as location
     FROM
       (
         SELECT
