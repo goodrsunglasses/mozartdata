@@ -15,3 +15,5 @@ FROM
 WHERE
   date_tran >= '2022-01-01 00:00:00'
   AND location LIKE '%HQ DC%'
+group by date_tran ,channel
+order by date_tran asc
