@@ -8,12 +8,15 @@ aliases:
 SELECT
   date_tran,
   channel,
-  count(DISTINCT(order_id)) as orders_count_quantity,
-  sum(distinct(quantity_items)) as units_sum_quantity
+  COUNT(DISTINCT (order_id)) AS orders_count_quantity,
+  SUM(DISTINCT (quantity_items)) AS units_sum_quantity
 FROM
   dim.orders
 WHERE
   date_tran >= '2022-01-01 00:00:00'
   AND location LIKE '%HQ DC%'
-group by date_tran ,channel
-order by date_tran asc
+GROUP BY
+  date_tran,
+  channel
+ORDER BY
+  date_tran asc
