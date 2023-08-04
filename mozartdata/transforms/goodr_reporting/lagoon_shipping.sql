@@ -5,13 +5,13 @@ row: one row per day per channel
 aliases:
 
 */
-
 SELECT
-  trandate,
+  date_tran,
   channel,
-  count(DISTINCT(order_num)) as orders_count_quantity,
-  sum(distinct(total_quantity)) as units_sum_quantity
-FROM dim.orders
-WHERE 
-  trandate >= '2022-01-01 00:00:00' and 
-  location like 'HQ DC%'
+  count(DISTINCT(order_id)) as orders_count_quantity,
+  sum(distinct(quantity_items)) as units_sum_quantity
+FROM
+  dim.orders
+WHERE
+  date_tran >= '2022-01-01 00:00:00'
+  AND location LIKE '%HQ DC%'
