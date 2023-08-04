@@ -6,10 +6,10 @@ aliases:
 
 */
 
-ns_tran_idSELECT
+SELECT
   trandate,
   channel,
-  count(DISTINCT(ns_tran_id)),
+  count(DISTINCT(order_num)),
   sum(distinct(total_quantity))
 FROM dim.orders
 WHERE 
