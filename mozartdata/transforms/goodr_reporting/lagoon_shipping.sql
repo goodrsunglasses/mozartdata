@@ -9,8 +9,8 @@ aliases:
 SELECT
   trandate,
   channel,
-  count(DISTINCT(order_num)),
-  sum(distinct(total_quantity))
+  count(DISTINCT(order_num)) as orders_count_quantity,
+  sum(distinct(total_quantity)) as units_sum_quantity
 FROM dim.orders
 WHERE 
   trandate >= '2022-01-01 00:00:00' and 
