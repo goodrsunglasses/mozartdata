@@ -88,7 +88,7 @@ WITH
   ns_cashsale AS (
     SELECT
       tran.custbody_goodr_shopify_order order_num,
-      tran.tranid as ns_cs_id
+      tran.tranid as ns_cs_id,
     FROM
       netsuite.transaction tran
     WHERE
