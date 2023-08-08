@@ -18,19 +18,25 @@ WITH
       happened_at,
       message
     FROM
-      shopify.fulfillment_event
+      shopify.fulfillment_event fulfill_event
+      LEFT OUTER JOIN shopify."ORDER" shop_order ON shop_order.id = fulfill_event.order_id
   ),
   ns_order AS (
     SELECT
       order_id,
-      date_tran
+      channel,
+      date_tran,
+      location
     FROM
       dim.orders
   )
-SELECT
+SELECT DISTINCT
   order_id,
+  channel,
+  location,
   date_tran AS click,
   createdate AS ship,
+  datediff (HOUR, click, ship) / 24.0 AS click_to_ship,
   MAX(estimated_delivery_at) OVER (
     PARTITION BY
       order_id
@@ -39,3 +45,5 @@ FROM
   ns_order
   LEFT OUTER JOIN ss_shipments ON ss_shipments.order_num = ns_order.order_id
   LEFT OUTER JOIN shop_fulfill ON shop_fulfill.order_num = ns_order.order_id
+WHERE
+  order_id = 'G1085630'
