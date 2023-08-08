@@ -34,8 +34,8 @@ SELECT DISTINCT
   order_id,
   channel,
   location,
-  date_tran AS click,
-  createdate AS ship,
+  date_tran AS click, --using this as click its also date_created from Shopeify, so when the order is created
+  createdate AS ship, --using the shipment create date from SS as ship
   datediff (HOUR, click, ship) / 24.0 AS click_to_ship,
   MAX(estimated_delivery_at) OVER (
     PARTITION BY
