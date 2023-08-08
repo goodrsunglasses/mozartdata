@@ -69,7 +69,7 @@ WITH
   ns_cashrefund AS (
     SELECT
       tran.custbody_goodr_shopify_order order_num,
-      tran.tranid as ns_rf_id
+      tran.tranid AS ns_rf_id
     FROM
       netsuite.transaction tran
     WHERE
@@ -78,42 +78,44 @@ WITH
   ns_itemfulfillment AS (
     SELECT
       tran.custbody_goodr_shopify_order order_num,
-      tran.tranid as ns_if_id
+      tran.tranid AS ns_if_id
     FROM
       netsuite.transaction tran
     WHERE
       tran.recordtype = 'itemfulfillment'
-  )
-  ,
+  ),
   ns_cashsale AS (
     SELECT
       tran.custbody_goodr_shopify_order order_num,
-      tran.tranid as ns_cs_id
+      tran.tranid AS ns_cs_id
     FROM
       netsuite.transaction tran
     WHERE
       tran.recordtype = 'cashsale'
   )
 SELECT
-  ns_salesorder.order_num as order_id,
+  ns_salesorder.order_num AS order_id,
   channel,
-  products_rate as rate_items,
-  products_amount as amount_items,
-  ship_rate as rate_ship,
-  total_quantity as quantity_items,
-  gross_profit as profit_gross,
-  profit_percent as profit_percent,
-  totalcostestimate as cost_estimate,
-  startDate as date_ship_window_start,
-  enddate as date_ship_window_end,
-  customer_id as cust_id,
-  trandate as date_tran, 
-  shippingaddress_id as address_ship_id,
+  products_rate AS rate_items,
+  products_amount AS amount_items,
+  ship_rate AS rate_ship,
+  total_quantity AS quantity_items,
+  gross_profit AS profit_gross,
+  profit_percent AS profit_percent,
+  totalcostestimate AS cost_estimate,
+  startDate AS date_ship_window_start,
+  enddate AS date_ship_window_end,
+  customer_id AS cust_id,
+  trandate AS date_tran,
+  shippingaddress_id AS address_ship_id,
   location,
+  CASE
+    WHEN channel IN ('Specialty') THEN 'B2B'
+    WHEN channel IN ('Goodr,com') THEN 'D2C'
+  END AS b2b_d2c,
   ns_rf_id,
   ns_if_id,
   ns_cs_id
-  
 FROM
   ns_salesorder
   LEFT OUTER JOIN ns_cashrefund ON ns_cashrefund.order_num = ns_salesorder.order_num
