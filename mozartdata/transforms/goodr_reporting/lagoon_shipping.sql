@@ -6,17 +6,19 @@ aliases:
 
 */
 SELECT
-  date_tran,
-  channel,
-  COUNT(DISTINCT (order_id)) AS orders_count_quantity,
-  SUM(DISTINCT (quantity_items)) AS units_sum_quantity
+  date_trunc('month',fulfill.click) as month,
+  avg(fulfill.click_to_ship) avg_click_to_ship,
+  fulfill.channel,
+  COUNT(DISTINCT (fulfill.order_id)) AS orders_count_quantity,
+  SUM((quantity_items)) AS units_sum_quantity
 FROM
-  dim.orders
+fact.fulfillment_event fulfill
+  left outer join dim.orders orders on orders.order_id = fulfill.order_id
 WHERE
-  date_tran >= '2022-01-01 00:00:00'
-  AND location LIKE '%HQ DC%'
+  fulfill.location LIKE '%HQ DC%'
+  and fulfill.channel in ('Goodr.com','Specialty')
 GROUP BY
-  date_tran,
-  channel
+  day,
+  fulfill.channel
 ORDER BY
-  date_tran asc
+  day asc
