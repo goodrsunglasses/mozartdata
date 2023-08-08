@@ -12,15 +12,18 @@ WITH
       LEFT OUTER JOIN netsuite.CUSTOMLIST896 stage ON stage.id = item.custitem6
   )
 SELECT
-  item.id,
-  fullname,
+  item.id as ns_item_id,
   item.displayname,
-  item.externalid,
+  item.externalid as sku,
   item_cust_fields.class,
   family,
-  stage
+  stage,
+  item.custitem5 as collection,
+  item.custitem18 as lens_sku,
+  item.upccode,
+  item.totalquantityonhand,
+  item.averagecost,
+  item.cost
 FROM
   netsuite.item item
   LEFT OUTER JOIN item_cust_fields ON item.id = item_cust_fields.id
--- WHERE
---   item.id = 23
