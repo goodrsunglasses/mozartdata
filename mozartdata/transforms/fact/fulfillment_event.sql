@@ -29,19 +29,13 @@ WITH
   )
 SELECT
   order_id,
-  date_tran as click,
-   MAX(estimated_delivery_at) OVER (
-        PARTITION BY
-          order_num
-      ) AS total_quantity,
-
-  FROM
-  ns_order 
-  left outer join ss_shipments on ss_shipments.order_num = ns_order.order_id
-  left outer join shop_fulfill on shop_fulfill.order_num = ns_order.order_id
-WHERE
-  happened_at > '2022-01-01T00:00:00Z'
-  AND order_num = 'G1017329'
-ORDER BY
-  name,
-  happened_at asc
+  date_tran AS click,
+  createdate AS ship,
+  MAX(estimated_delivery_at) OVER (
+    PARTITION BY
+      order_id
+  ) AS est_delivery
+FROM
+  ns_order
+  LEFT OUTER JOIN ss_shipments ON ss_shipments.order_num = ns_order.order_id
+  LEFT OUTER JOIN shop_fulfill ON shop_fulfill.order_num = ns_order.order_id
