@@ -1,14 +1,47 @@
+WITH
+  ss_shipments AS (
+    SELECT
+      ordernumber AS order_num,
+      createdate
+    FROM
+      shipstation_portable.shipstation_shipments_8589936627 shipments
+  ),
+  shop_fulfill AS (
+    SELECT
+      shop_order.name AS order_num,
+      status,
+      province,
+      city,
+      zip,
+      country,
+      estimated_delivery_at,
+      happened_at,
+      message
+    FROM
+      shopify.fulfillment_event
+  ),
+  ns_order AS (
+    SELECT
+      order_id,
+      date_tran
+    FROM
+      dim.orders
+  )
 SELECT
-  shop_order.name as order_num,
-  status,
-  province,
-  city,
-  zip,
-  country,
-  estimated_delivery_at,
-  happened_at,
-  message
-FROM
-  shopify.fulfillment_event fulfill_event
-  LEFT OUTER JOIN shopify."ORDER" shop_order ON shop_order.id = fulfill_event.order_id
-order by name,happened_at asc
+  order_id,
+  date_tran as click,
+   MAX(estimated_delivery_at) OVER (
+        PARTITION BY
+          order_num
+      ) AS total_quantity,
+
+  FROM
+  ns_order 
+  left outer join ss_shipments on ss_shipments.order_num = ns_order.order_id
+  left outer join shop_fulfill on shop_fulfill.order_num = ns_order.order_id
+WHERE
+  happened_at > '2022-01-01T00:00:00Z'
+  AND order_num = 'G1017329'
+ORDER BY
+  name,
+  happened_at asc
