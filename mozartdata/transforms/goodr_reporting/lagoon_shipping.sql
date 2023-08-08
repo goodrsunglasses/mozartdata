@@ -18,7 +18,7 @@ WHERE
   fulfill.location LIKE '%HQ DC%'
   and fulfill.channel in ('Goodr.com','Specialty')
 GROUP BY
-  day,
+  month,
   fulfill.channel
 ORDER BY
-  day asc
+  month asc
