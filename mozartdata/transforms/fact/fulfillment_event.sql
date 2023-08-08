@@ -45,3 +45,4 @@ FROM
   ns_order
   LEFT OUTER JOIN ss_shipments ON ss_shipments.order_num = ns_order.order_id
   LEFT OUTER JOIN shop_fulfill ON shop_fulfill.order_num = ns_order.order_id
+where click > '2022-01-01T00:00:00Z' --filtered to ignore alot of early weird data from NS/Shopify
