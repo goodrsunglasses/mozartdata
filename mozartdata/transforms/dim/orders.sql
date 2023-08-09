@@ -111,7 +111,7 @@ SELECT
   location,
   CASE
     WHEN channel IN ('Specialty') THEN 'B2B'
-    WHEN channel IN ('Goodr,com') THEN 'D2C'
+    WHEN channel IN ('Goodr.com') THEN 'D2C'
   END AS b2b_d2c,
   ns_rf_id,
   ns_if_id,
