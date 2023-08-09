@@ -1,4 +1,4 @@
-/*The purpose of this query is to fulfill Will's request to get all goodr.com and specialty data coming out of the HQDC location from only 2022..
+/*The purpose of this query is to fulfill Will's request to get all goodr.com and specialty data coming out of the HQDC location from only 2022.
 
 row: one row per month per channel
 
