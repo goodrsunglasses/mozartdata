@@ -1,6 +1,6 @@
-/*The purpose of this table is to count units and orders by channel everyday from 2022 - today.
+/*The purpose of thsi query is to fulfill Will's request to get all goodr.com and specialty data coming out of the HQDC location from only 2022..
 
-row: one row per day per channel
+row: one row per month per channel
 
 aliases:
 
