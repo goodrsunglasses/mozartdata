@@ -17,8 +17,9 @@ fact.fulfillment_event fulfill
 WHERE
   fulfill.location LIKE '%HQ DC%'
   and fulfill.channel in ('Goodr.com','Specialty')
+   and click BETWEEN '2022-01-01T00:00:00Z' and '2022-12-31T23:59:59Z'
 GROUP BY
   month,
   fulfill.channel
 ORDER BY
-  month asc
+  month desc
