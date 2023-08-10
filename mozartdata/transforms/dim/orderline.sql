@@ -1,15 +1,10 @@
 /*
 purpose:
-One row per sku per transaction.
-This transform creates the transactionline dimension by combining data from netsuite and shopify.
+Variable amount rows per line item in a given order
 
-joins: 
 
-aliases: 
-ns = netsuite
-shop = shopify
-tran = transaction
 */
+--salesorder line item cte
 WITH
   salesorder_line AS (
     SELECT
