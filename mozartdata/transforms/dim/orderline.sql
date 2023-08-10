@@ -20,12 +20,14 @@ WITH
       CASE --case when to just fill in some nulls for better readability
         WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
         WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
+        WHEN tranline.itemtype = 'TaxGroup' THEN 'Tax Group'
         WHEN tranline.itemtype = 'Discount' THEN 'Discount'
         ELSE product.displayname
       END AS display_name,
       CASE --case when to just fill in some nulls for better readability
         WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
         WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
+        WHEN tranline.itemtype = 'TaxGroup' THEN 'Tax Group'
         ELSE product.sku
       END AS external_id,
       -1 * tranline.netamount AS netamount, --netamount of item, multiplied by -1 because by default they count as deductions
@@ -48,5 +50,6 @@ WITH
 SELECT
   *
 FROM
-salesorder_line
-order by order_num asc
+  salesorder_line
+ORDER BY
+  order_num asc
