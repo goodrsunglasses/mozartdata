@@ -21,20 +21,22 @@ WITH
         WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
         WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
         WHEN tranline.itemtype = 'Discount' THEN 'Discount'
-        ELSE item.displayname
+        ELSE product.displayname
       END AS display_name,
       CASE --case when to just fill in some nulls for better readability
         WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
         WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
-        ELSE item.externalid
-      END AS external_id
+        ELSE product.sku
+      END AS external_id,
+      tranline.netamount
     FROM
       netsuite.transaction tran
       LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
       LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
-  left outer join dim.product product ns_item_id
+      LEFT OUTER JOIN dim.product product ON product.ns_item_id = tranline.item
     WHERE
       tran.recordtype = 'salesorder'
+      AND tranline.linesequencenumber != 0
   )
 SELECT
   tran.NS_transaction_ID, --netsuite transaction id
