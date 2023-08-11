@@ -35,6 +35,7 @@ WITH
     SELECT DISTINCT
       order_num,
       channel.name AS channel,
+      transtatus.fullname AS tran_status,
       MAX(product_rate) OVER (
         PARTITION BY
           order_num
@@ -66,6 +67,10 @@ WITH
       LEFT OUTER JOIN netsuite.transaction tran ON tran.id = nestsales.id
       LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
       LEFT OUTER JOIN netsuite.location location ON location.id = nestsales.location
+      LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
+        tran.status = transtatus.id
+        AND tran.type = transtatus.trantype
+      )
   ),
   ns_cashrefund AS (
     SELECT
@@ -97,6 +102,7 @@ WITH
 SELECT
   ns_salesorder.order_num AS order_id,
   channel,
+  tran_status,
   products_rate AS rate_items,
   products_amount AS amount_items,
   ship_rate AS rate_ship,
