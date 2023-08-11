@@ -51,6 +51,7 @@ WITH
         PARTITION BY
           order_num
       ) AS total_quantity,
+      tran.actualshipdate,
       tran.estgrossprofit AS gross_profit,
       tran.estgrossprofitpercent AS profit_percent,
       tran.totalcostestimate,
@@ -103,10 +104,9 @@ SELECT
   gross_profit AS profit_gross,
   profit_percent AS profit_percent,
   totalcostestimate AS cost_estimate,
-  startDate AS date_ship_window_start,
-  enddate AS date_ship_window_end,
   customer_id AS cust_id,
   trandate AS date_tran,
+  actualshipdate,
   shippingaddress_id AS address_ship_id,
   location,
   CASE
