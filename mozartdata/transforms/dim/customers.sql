@@ -56,7 +56,8 @@ SELECT DISTINCT
   CASE
     WHEN ns_cust_type = 'T' THEN 'Individual'
     ELSE 'Company'
-  END AS ns_cust_category_name --Simple case when to display if the customer is a company or an individual using isperson
+  END AS ns_cust_category_name, --Simple case when to display if the customer is a company or an individual using isperson
+  case when ns_cust_id in (12489,479,465,476,8147,73200,3363588,8169,3633497,3682848,467,466,2510,478,475,4484902,4533439) then true else false end as is_key_account -- case when to determine if its in the list of key account customers, for later reporting and filtering
 FROM
   netsuite.customer ns_cust
   FULL JOIN shopify.customer shop_cust ON shop_cust.email = ns_cust.email
