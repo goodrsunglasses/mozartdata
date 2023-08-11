@@ -26,6 +26,7 @@ WITH
       order_id,
       channel,
       date_tran,
+      actualShipDate,
       location
     FROM
       dim.orders
@@ -35,7 +36,7 @@ SELECT DISTINCT
   channel,
   location,
   date_tran AS click, --using this as click its also date_created from Shopeify, so when the order is created
-  createdate AS ship, --using the shipment create date from SS as ship
+  coalesce(actualShipDate,createdate) AS ship, --using coalesce to grab the first non null value, meaning that it will grab the shipstation ship date just in case it doesn't exist in NS for whatever reason
   datediff (HOUR, click, ship) / 24.0 AS click_to_ship,
   MAX(estimated_delivery_at) OVER (
     PARTITION BY
