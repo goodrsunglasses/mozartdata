@@ -38,6 +38,7 @@ SELECT DISTINCT
   date_tran AS click, --using this as click its also date_created from Shopeify, so when the order is created
   coalesce(actualShipDate,createdate) AS ship, --using coalesce to grab the first non null value, meaning that it will grab the shipstation ship date just in case it doesn't exist in NS for whatever reason
   datediff (HOUR, click, ship) / 24.0 AS click_to_ship,
+  case when actualShipDate is null then 'ShipDate Miss' end as shipDate_Flag,
   MAX(estimated_delivery_at) OVER (
     PARTITION BY
       order_id
