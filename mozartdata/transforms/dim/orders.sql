@@ -116,8 +116,8 @@ SELECT
   shippingaddress_id AS address_ship_id,
   location,
   CASE
-    WHEN channel IN ('Specialty') THEN 'B2B'
-    WHEN channel IN ('Goodr.com') THEN 'D2C'
+    WHEN channel IN ('Specialty','Key Account','Global') THEN 'B2B'
+    WHEN channel IN ('Goodr.com','Amazon','Cabana') THEN 'D2C'
   END AS b2b_d2c,
   ns_rf_id,
   ns_if_id,
