@@ -61,12 +61,11 @@ WITH
       tran.entity AS customer_id,
       tran.trandate,
       tran.shippingaddress AS shippingaddress_id,
-      location.name AS location
+      location.name AS location_id
     FROM
       nestsales
       LEFT OUTER JOIN netsuite.transaction tran ON tran.id = nestsales.id
       LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
-      LEFT OUTER JOIN netsuite.location location ON location.id = nestsales.location
       LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
         tran.status = transtatus.id
         AND tran.type = transtatus.trantype
@@ -114,7 +113,7 @@ SELECT
   trandate AS date_tran,
   actualshipdate,
   shippingaddress_id AS address_ship_id,
-  location,
+  location_id,
   CASE
     WHEN channel IN ('Specialty','Key Account','Global') THEN 'B2B'
     WHEN channel IN ('Goodr.com','Amazon','Cabana') THEN 'D2C'
