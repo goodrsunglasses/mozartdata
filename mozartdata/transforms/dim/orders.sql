@@ -61,7 +61,7 @@ WITH
       tran.entity AS customer_id,
       tran.trandate,
       tran.shippingaddress AS shippingaddress_id,
-      location.name AS location_id
+      location AS location_id
     FROM
       nestsales
       LEFT OUTER JOIN netsuite.transaction tran ON tran.id = nestsales.id
