@@ -1,9 +1,8 @@
 SELECT
-  id,
-  CASE
-  when id = 1 then 'HQ DC - goodr.com' 
-  when id = 3 then 'Cabana'
-  end as actual_name
-  
+*
 FROM
-  netsuite.location
+  (
+  Values
+  (1,'HQ DC',7,'HQ DC Sellgoodr'),
+  (1,'HQ DC',1,'HQ DC goodr.com')) 
+  as my_table(ns_id, ns_name, channel_id, reporting_name)
