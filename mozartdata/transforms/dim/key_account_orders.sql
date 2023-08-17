@@ -34,6 +34,7 @@ WITH
   ns_salesorder AS (
     SELECT DISTINCT
       order_num,
+      custbody_goodr_po_number AS po_number,
       channel.name AS channel,
       transtatus.fullname AS tran_status,
       MAX(product_rate) OVER (
@@ -52,12 +53,13 @@ WITH
         PARTITION BY
           order_num
       ) AS total_quantity,
+  tran.custbody_goodr_shipby_date as shipby_date,
       tran.actualshipdate,
+      tran.startdate,
+      tran.enddate,
       tran.estgrossprofit AS gross_profit,
       tran.estgrossprofitpercent AS profit_percent,
       tran.totalcostestimate,
-      tran.startDate,
-      tran.enddate,
       tran.entity AS customer_id,
       tran.trandate,
       tran.shippingaddress AS shippingaddress_id,
@@ -70,17 +72,19 @@ WITH
         tran.status = transtatus.id
         AND tran.type = transtatus.trantype
       )
-  where tran_status not like '%Closed%' 
-  and location_id is not null
+    WHERE
+      tran_status NOT LIKE '%Closed%'
+      AND location_id IS NOT NULL
+      AND channel = 'Key Account'
   ),
-  ns_cashrefund AS (
+  ns_quote AS (
     SELECT
       tran.custbody_goodr_shopify_order order_num,
-      tran.tranid AS ns_rf_id
+      tran.tranid AS ns_qt_id
     FROM
       netsuite.transaction tran
     WHERE
-      tran.recordtype = 'cashrefund'
+      tran.recordtype = 'estimate'
   ),
   ns_itemfulfillment AS (
     SELECT
@@ -91,18 +95,18 @@ WITH
     WHERE
       tran.recordtype = 'itemfulfillment'
   ),
-  ns_cashsale AS (
+  ns_invoice AS (
     SELECT
       tran.custbody_goodr_shopify_order order_num,
-      tran.tranid AS ns_cs_id
+      tran.tranid AS ns_inv_id
     FROM
       netsuite.transaction tran
     WHERE
-      tran.recordtype = 'cashsale'
+      tran.recordtype = 'invoice'
   )
 SELECT
   ns_salesorder.order_num AS order_id,
-  channel,
+  po_number,
   tran_status,
   products_rate AS rate_items,
   products_amount AS amount_items,
@@ -113,18 +117,18 @@ SELECT
   totalcostestimate AS cost_estimate,
   customer_id AS cust_id,
   trandate AS date_tran,
+  shipby_date,
   actualshipdate,
+  ns_salesorder.startdate,
+  ns_salesorder.enddate,
   shippingaddress_id AS address_ship_id,
   location_id,
-  CASE
-    WHEN channel IN ('Specialty','Key Account','Global') THEN 'B2B'
-    WHEN channel IN ('Goodr.com','Amazon','Cabana') THEN 'D2C'
-  END AS b2b_d2c,
-  ns_rf_id,
+  ns_qt_id,
   ns_if_id,
-  ns_cs_id
+  ns_inv_id
+
 FROM
   ns_salesorder
-  LEFT OUTER JOIN ns_cashrefund ON ns_cashrefund.order_num = ns_salesorder.order_num
+  LEFT OUTER JOIN ns_quote ON ns_quote.order_num = ns_salesorder.order_num
   LEFT OUTER JOIN ns_itemfulfillment ON ns_itemfulfillment.order_num = ns_salesorder.order_num
-  LEFT OUTER JOIN ns_cashsale ON ns_cashsale.order_num = ns_salesorder.order_num
+  LEFT OUTER JOIN ns_invoice ON ns_invoice.order_num = ns_salesorder.order_num
