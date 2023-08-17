@@ -10,15 +10,19 @@ ns = netsuite
 shop = shopify
 cust = customer
 */
-WITH zendesk_users as (
-  select 
+WITH
+  zendesk_users AS (
+   SELECT distinct
+  email,
   requester_id,
-  via_source_from_address,
-  name,
-  email 
-  from zendesk.ticket ticket left outer join zendesk.user user on user.id = ticket.requester_id
-)
-
+  COUNT(ticket.id) OVER (
+    PARTITION BY
+      email
+  ) AS ticket_count
+FROM
+  zendesk.ticket ticket
+  LEFT OUTER JOIN zendesk.user USER ON USER.id = ticket.requester_id
+  )
 SELECT DISTINCT
   ns_cust.id AS ns_cust_id, --Netsuite customer ID
   ns_cust.entityid AS ns_entity_id, --Netsuite customer realtext ID
@@ -32,6 +36,8 @@ SELECT DISTINCT
   shop_cust.id AS shop_cust_id, --- joined on email
   shop_cust.email AS shop_cust_email, -- Shopify customer email, there just in case there are people who made shopify accounts but didn't order
   ns_cust.defaultshippingaddress, --shipping address id
+  requester_id as zendesk_cust_id,
+  ticket_count,
   first_value (ns_tran.trandate) OVER (
     PARTITION BY
       ns_cust.id
@@ -66,10 +72,31 @@ SELECT DISTINCT
     WHEN ns_cust_type = 'T' THEN 'Individual'
     ELSE 'Company'
   END AS ns_cust_category_name, --Simple case when to display if the customer is a company or an individual using isperson
-  case when ns_cust_id in (12489,479,465,476,8147,73200,3363588,8169,3633497,3682848,467,466,2510,478,475,4484902,4533439) then true else false end as is_key_account -- case when to determine if its in the list of key account customers, for later reporting and filtering
+  CASE
+    WHEN ns_cust_id IN (
+      12489,
+      479,
+      465,
+      476,
+      8147,
+      73200,
+      3363588,
+      8169,
+      3633497,
+      3682848,
+      467,
+      466,
+      2510,
+      478,
+      475,
+      4484902,
+      4533439
+    ) THEN TRUE
+    ELSE FALSE
+  END AS is_key_account -- case when to determine if its in the list of key account customers, for later reporting and filtering
 FROM
   netsuite.customer ns_cust
   FULL JOIN shopify.customer shop_cust ON shop_cust.email = ns_cust.email
   LEFT OUTER JOIN netsuite.transaction ns_tran ON ns_tran.entity = ns_cust.id
   LEFT OUTER JOIN netsuite.customerCategory ns_cust_category ON ns_cust.category = ns_cust_category.id
-left outer join zendesk.ticket ticket on ticket.
+  LEFT OUTER JOIN zendesk_users ON zendesk_users.email = ns_cust.email
