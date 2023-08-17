@@ -10,6 +10,15 @@ ns = netsuite
 shop = shopify
 cust = customer
 */
+WITH zendesk_users as (
+  select 
+  requester_id,
+  via_source_from_address,
+  name,
+  email 
+  from zendesk.ticket ticket left outer join zendesk.user user on user.id = ticket.requester_id
+)
+
 SELECT DISTINCT
   ns_cust.id AS ns_cust_id, --Netsuite customer ID
   ns_cust.entityid AS ns_entity_id, --Netsuite customer realtext ID
@@ -63,3 +72,4 @@ FROM
   FULL JOIN shopify.customer shop_cust ON shop_cust.email = ns_cust.email
   LEFT OUTER JOIN netsuite.transaction ns_tran ON ns_tran.entity = ns_cust.id
   LEFT OUTER JOIN netsuite.customerCategory ns_cust_category ON ns_cust.category = ns_cust_category.id
+left outer join zendesk.ticket ticket on ticket.
