@@ -70,7 +70,8 @@ WITH
         tran.status = transtatus.id
         AND tran.type = transtatus.trantype
       )
-  where tran_status not like '%Closed%'
+  where tran_status not like '%Closed%' 
+  and location_id is not null
   ),
   ns_cashrefund AS (
     SELECT
