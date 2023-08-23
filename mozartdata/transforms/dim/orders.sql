@@ -112,8 +112,8 @@ SELECT
   profit_percent AS profit_percent,
   totalcostestimate AS cost_estimate,
   customer_id AS cust_id,
-  trandate AS date_tran,
-  actualshipdate,
+  trandate AS timestamp_tran,
+  actualshipdate as timestamp_ship,
   shippingaddress_id AS address_ship_id,
   location_id,
   CASE
