@@ -12,18 +12,19 @@ cust = customer
 */
 WITH
   zendesk_users AS (
-   SELECT distinct
-  email,
-  requester_id,
-  COUNT(ticket.id) OVER (
-    PARTITION BY
-      email
-  ) AS ticket_count
-FROM
-  zendesk.ticket ticket
-  LEFT OUTER JOIN zendesk.user USER ON USER.id = ticket.requester_id
+    SELECT DISTINCT
+      email,
+      requester_id,
+      COUNT(ticket.id) OVER (
+        PARTITION BY
+          email
+      ) AS ticket_count
+    FROM
+      zendesk.ticket ticket
+      LEFT OUTER JOIN zendesk.user USER ON USER.id = ticket.requester_id
   )
 SELECT DISTINCT
+  MD5(ns_cust.email) AS goodr_customer_id,
   ns_cust.id AS ns_cust_id, --Netsuite customer ID
   ns_cust.entityid AS ns_entity_id, --Netsuite customer realtext ID
   ns_cust.altname AS ns_altname, --Netsuite customer Full Name
@@ -36,27 +37,27 @@ SELECT DISTINCT
   shop_cust.id AS shop_cust_id, --- joined on email
   shop_cust.email AS shop_cust_email, -- Shopify customer email, there just in case there are people who made shopify accounts but didn't order
   ns_cust.defaultshippingaddress, --shipping address id
-  requester_id as zendesk_cust_id,
+  requester_id AS zendesk_cust_id,
   ticket_count,
-  first_value (ns_tran.trandate) OVER (
+  FIRST_VALUE(ns_tran.trandate) OVER (
     PARTITION BY
       ns_cust.id
     ORDER BY
       ns_tran.trandate asc
   ) NS_Cust_first_order_date, --These 4 next window functions are simply finding the first/last dates and order IDS in an ordered list of a given customer id's orders, sorted by transaction date ascending
-  first_value (ns_tran.id) OVER (
+  FIRST_VALUE(ns_tran.id) OVER (
     PARTITION BY
       ns_cust.id
     ORDER BY
       ns_tran.trandate asc
   ) NS_Cust_first_order_id,
-  last_value (ns_tran.id) OVER (
+  LAST_VALUE(ns_tran.id) OVER (
     PARTITION BY
       ns_cust.id
     ORDER BY
       ns_tran.trandate asc
   ) NS_Cust_most_recent_order_id,
-  last_value (ns_tran.trandate) OVER (
+  LAST_VALUE(ns_tran.trandate) OVER (
     PARTITION BY
       ns_cust.id
     ORDER BY
