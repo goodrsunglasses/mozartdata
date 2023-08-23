@@ -115,7 +115,7 @@ WITH
       tran.recordtype = 'cashsale'
   )
 SELECT
-  ns_salesorder.order_num AS order_id,
+  ns_salesorder.order_num AS order_id_ns,
   channel,
   tran_status,
   products_rate AS rate_items,
@@ -125,10 +125,10 @@ SELECT
   gross_profit AS profit_gross,
   profit_percent AS profit_percent,
   totalcostestimate AS cost_estimate,
-  customer_id AS cust_id,
+  customer_id AS cust_id_ns,
   trandate AS timestamp_tran,
   actualshipdate,
-  shippingaddress_id AS address_ship_id,
+  shippingaddress_id AS address_ship_id_ns,
   location_id,
   CASE
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
