@@ -38,7 +38,6 @@ SELECT DISTINCT
   cust_shop.id AS cust_id_shop, --- joined on email
   requester_id AS cust_id_zendesk,
   cust_ns.altname AS name_full, --Netsuite customer Full Name
-  cust_ns.isperson AS cust_type_ns, --Boolean to determine if customer is Company or Individual
   cust_ns.lastmodifieddate AS last_modified_date, --Netsuite customer last modified date, not sure what this is specfically supposed to be yet
   cust_ns.email AS email_ns, --Netsuite customer email, used to join to shopify
   cust_shop.email AS email_shop, -- Shopify customer email, there just in case there are people who made shopify accounts but didn't order
