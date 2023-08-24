@@ -96,9 +96,10 @@ WITH
         tran.status = transtatus.id
         AND tran.type = transtatus.trantype
       )
-    WHERE  
+    WHERE
       tran_status NOT LIKE '%Closed%' --filtering out voided orders
       AND location_id IS NOT NULL
+      AND trandate >= '2022-01-01T00:00:00Z'
   ),
   --CTE that grabs the perspective related cash refund to the greater order
   cashrefund_ns AS (
@@ -143,7 +144,7 @@ SELECT
   totalcostestimate AS cost_estimate,
   customer_id AS cust_id_ns,
   trandate AS timestamp_tran,
-  actualshipdate as timestamp_ship,
+  actualshipdate AS timestamp_ship,
   shippingaddress_id AS address_ship_id_ns,
   location_id,
   CASE
