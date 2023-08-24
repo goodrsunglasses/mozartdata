@@ -146,9 +146,9 @@ SELECT
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
     WHEN channel IN ('Goodr.com', 'Amazon', 'Cabana') THEN 'D2C'
   END AS b2b_d2c,
-  ns_rf_id, 
+  cr_id_ns, 
   ns_if_id, --- netsuite item fulfillment id
-  cr_id_ns --- netsuite cash sale id
+  ns_cs_id --- netsuite cash sale id
 FROM
   ns_salesorder
   LEFT OUTER JOIN ns_cashrefund ON ns_cashrefund.order_num = ns_salesorder.order_num
