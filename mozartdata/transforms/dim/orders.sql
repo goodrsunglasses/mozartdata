@@ -1,3 +1,15 @@
+/*
+purpose:
+One row per sales order.
+This transform creates an order dimension that combines shopify, netsuite and RF Smart information together to give a full picture of the order.
+
+joins: ns transactions 
+
+aliases: 
+ns = netsuite
+shop = shopify
+cust = customer
+*/
 WITH
   --CTE that calculates the respective product rates, total product amounts, total quantity and shipping rate based on the line item type. Additionally for joining purposes it grabs the transaction id, Goodr Order Number and the location id.
   ns_transactionline AS (
@@ -88,7 +100,7 @@ WITH
   ns_cashrefund AS (
     SELECT
       tran.custbody_goodr_shopify_order order_num,
-      tran.tranid AS ns_rf_id
+      tran.tranid AS cr_id_ns
     FROM
       netsuite.transaction tran
     WHERE
@@ -134,9 +146,9 @@ SELECT
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
     WHEN channel IN ('Goodr.com', 'Amazon', 'Cabana') THEN 'D2C'
   END AS b2b_d2c,
-  ns_rf_id,
-  ns_if_id,
-  ns_cs_id
+  ns_rf_id, 
+  ns_if_id, --- netsuite item fulfillment id
+  cr_id_ns --- netsuite cash sale id
 FROM
   ns_salesorder
   LEFT OUTER JOIN ns_cashrefund ON ns_cashrefund.order_num = ns_salesorder.order_num
