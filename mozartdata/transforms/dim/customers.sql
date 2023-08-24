@@ -74,7 +74,7 @@ SELECT DISTINCT
   cust_ns.companyname as company_name, --NS company name if applicable,
   cust_category_ns.name channel, --NS customer channel they are a part of (sellgoodr,goodr.com,CS,EMP...),
   CASE
-    WHEN cust_type_ns = 'T' THEN 'Individual'
+    WHEN cust_ns.isperson = 'T' THEN 'Individual'
     ELSE 'Company'
   END AS is_person, --case when to display if the customer is a company or an individual using isperson
   CASE
