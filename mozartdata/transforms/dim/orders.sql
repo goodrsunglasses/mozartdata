@@ -99,7 +99,7 @@ WITH
     WHERE
       tran_status NOT LIKE '%Closed%' --filtering out voided orders
       AND location_id IS NOT NULL
-      AND trandate >= '2022-01-01T00:00:00Z'
+      AND trandate >= '2022-01-01T00:00:00Z' --filtering out all orders pre 2022
   ),
   --CTE that grabs the perspective related cash refund to the greater order
   cashrefund_ns AS (
