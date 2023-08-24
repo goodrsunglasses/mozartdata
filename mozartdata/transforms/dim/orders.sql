@@ -127,7 +127,7 @@ SELECT
   totalcostestimate AS cost_estimate,
   customer_id AS cust_id_ns,
   trandate AS timestamp_tran,
-  actualshipdate,
+  actualshipdate as timestamp_ship,
   shippingaddress_id AS address_ship_id_ns,
   location_id,
   CASE
