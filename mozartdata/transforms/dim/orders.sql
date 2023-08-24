@@ -110,7 +110,7 @@ WITH
   ns_itemfulfillment AS (
     SELECT
       tran.custbody_goodr_shopify_order order_num,
-      tran.tranid AS ns_if_id
+      tran.tranid AS if_id_ns
     FROM
       netsuite.transaction tran
     WHERE
@@ -120,7 +120,7 @@ WITH
   ns_cashsale AS (
     SELECT
       tran.custbody_goodr_shopify_order order_num,
-      tran.tranid AS ns_cs_id
+      tran.tranid AS cs_id_ns
     FROM
       netsuite.transaction tran
     WHERE
@@ -146,9 +146,9 @@ SELECT
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
     WHEN channel IN ('Goodr.com', 'Amazon', 'Cabana') THEN 'D2C'
   END AS b2b_d2c,
-  cr_id_ns, 
-  ns_if_id, --- netsuite item fulfillment id
-  ns_cs_id --- netsuite cash sale id
+  cr_id_ns, --- netsuite cash refund id
+  if_id_ns, --- netsuite item fulfillment id
+  cs_id_ns --- netsuite cash sale id
 FROM
   ns_salesorder
   LEFT OUTER JOIN ns_cashrefund ON ns_cashrefund.order_num = ns_salesorder.order_num
