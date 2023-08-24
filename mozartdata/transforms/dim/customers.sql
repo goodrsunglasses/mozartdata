@@ -30,17 +30,17 @@ SELECT DISTINCT
   MD5(cust_ns.email) AS goodr_customer_id,
   cust_ns.id AS cust_id_ns, --Netsuite customer ID
   cust_ns.entityid AS entity_id_ns, --Netsuite customer realtext ID
+  cust_ns.category AS channel_id_ns, --Customer sales channel
+  cust_ns.entitystatus AS status_id_ns, --Netsuite customer Status (WON open, Closed...)
+  cust_ns.defaultbillingaddress AS address_billing_default_id_ns, --- billing address id
+  cust_ns.defaultshippingaddress as address_shipping_default_id_ns, --shipping address id
   cust_shop.id AS cust_id_shop, --- joined on email
   requester_id AS cust_id_zendesk,
   cust_ns.altname AS altname, --Netsuite customer Full Name
-  cust_ns.defaultbillingaddress AS defaultbillingaddressid, --- billing address id
-  cust_ns.category AS channel, --Customer sales channel
   cust_ns.isperson AS cust_type_ns, --Boolean to determine if customer is Company or Individual
-  cust_ns.entitystatus AS entitystatus, --Netsuite customer Status (WON open, Closed...)
   cust_ns.lastmodifieddate AS last_modified_date, --Netsuite customer last modified date, not sure what this is specfically supposed to be yet
   cust_ns.email AS email_ns, --Netsuite customer email, used to join to shopify
   cust_shop.email AS email_shop, -- Shopify customer email, there just in case there are people who made shopify accounts but didn't order
-  cust_ns.defaultshippingaddress, --shipping address id
   ticket_count, --count of zendesk tickets
   --These 4 next window functions are finding the first/last dates and order IDS in an ordered list of a given customer id's orders, sorted by transaction date ascending
   FIRST_VALUE(tran_ns.trandate) OVER (
