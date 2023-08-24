@@ -36,7 +36,7 @@ SELECT DISTINCT
   cust_ns.defaultshippingaddress as address_shipping_default_id_ns, --shipping address id
   cust_shop.id AS cust_id_shop, --- joined on email
   requester_id AS cust_id_zendesk,
-  cust_ns.altname AS altname, --Netsuite customer Full Name
+  cust_ns.altname AS name_full, --Netsuite customer Full Name
   cust_ns.isperson AS cust_type_ns, --Boolean to determine if customer is Company or Individual
   cust_ns.lastmodifieddate AS last_modified_date, --Netsuite customer last modified date, not sure what this is specfically supposed to be yet
   cust_ns.email AS email_ns, --Netsuite customer email, used to join to shopify
@@ -71,7 +71,7 @@ SELECT DISTINCT
     PARTITION BY
       cust_ns.id
   ) AS order_count,
-  cust_ns.companyname, --NS company name if applicable,
+  cust_ns.companyname as company_name, --NS company name if applicable,
   cust_category_ns.name channel, --NS customer channel they are a part of (sellgoodr,goodr.com,CS,EMP...),
   CASE
     WHEN cust_type_ns = 'T' THEN 'Individual'
