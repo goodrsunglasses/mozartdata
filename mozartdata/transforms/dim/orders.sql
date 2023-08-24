@@ -1,4 +1,5 @@
 /*
+THIS TRANSFORM IS IN DRAFT, DO NOT JOIN TO THIS TRANSFORM OR USE IT FOR ANY REPORTING UNTIL IT IS CERTIFIED.
 purpose:
 One row per sales order.
 This transform creates an order dimension that combines shopify, netsuite and RF Smart information together to give a full picture of the order.
