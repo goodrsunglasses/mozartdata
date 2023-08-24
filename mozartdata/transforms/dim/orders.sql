@@ -96,8 +96,8 @@ WITH
         tran.status = transtatus.id
         AND tran.type = transtatus.trantype
       )
-    WHERE  --- ***KSL IS THIS FILTERING OUT CLOSED ORDERS FROM THIS TABLE???
-      tran_status NOT LIKE '%Closed%'
+    WHERE  
+      tran_status NOT LIKE '%Closed%' --filtering out voided orders
       AND location_id IS NOT NULL
   ),
   --CTE that grabs the perspective related cash refund to the greater order
