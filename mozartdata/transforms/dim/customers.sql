@@ -28,7 +28,7 @@ WITH
       LEFT OUTER JOIN zendesk.user USER ON USER.id = ticket.requester_id
   )
 SELECT DISTINCT
-  MD5(cust_ns.email) AS goodr_customer_id,
+  coalesce(MD5(cust_ns.email),MD5(cust_shop.email) ) AS goodr_customer_id,
   cust_ns.id AS cust_id_ns, --Netsuite customer ID
   cust_ns.entityid AS entity_id_ns, --Netsuite customer realtext ID
   cust_ns.category AS channel_id_ns, --Customer sales channel
