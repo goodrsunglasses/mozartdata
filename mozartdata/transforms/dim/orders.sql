@@ -20,7 +20,10 @@ WITH
     SELECT
       tran_ns.id,
       tran_ns.custbody_goodr_shopify_order order_num,
-      tranline_ns.location,
+      CASE
+        WHEN tranline_ns.itemtype = 'InvtPart' THEN tranline_ns.location
+        ELSE NULL
+      END AS item_location,
       --Aggregrate that selects the product rate when the line item is of type InvtPart, summing all those rates
       CASE
         WHEN tranline_ns.itemtype = 'InvtPart' THEN (SUM(rate))
@@ -50,7 +53,7 @@ WITH
       itemtype,
       tran_ns.id,
       order_num,
-      location
+      item_location
   ),
   --CTE That grabs the bulk of the information to make up an 'order', as the parent record for every order barring extraneous circumstances should be an SO, the window functions are to avoid having to add on dozens of fields to the group by clause
   salesorder_ns AS (
@@ -87,7 +90,7 @@ WITH
       tran.entity AS customer_id,
       tran.trandate,
       tran.shippingaddress AS shippingaddress_id,
-      location AS location_id
+      item_location AS location_id
     FROM
       transactionline_ns
       LEFT OUTER JOIN netsuite.transaction tran ON tran.id = transactionline_ns.id
@@ -150,7 +153,7 @@ SELECT
   CASE
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
     WHEN channel IN ('Goodr.com', 'Amazon', 'Cabana') THEN 'D2C'
-  END AS b2b_d2c, --- d2c or b2b as categorized by sales, which is slightly different than for ops
+  END AS b2b_d2c --- d2c or b2b as categorized by sales, which is slightly different than for ops
   cr_id_ns, --- netsuite cash refund id
   if_id_ns, --- netsuite item fulfillment id
   cs_id_ns --- netsuite cash sale id
