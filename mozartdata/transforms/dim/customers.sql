@@ -67,7 +67,7 @@ SELECT DISTINCT
     ORDER BY
       tran_ns.trandate asc
   ) most_recent_order_date,
-  COUNT(tran_ns.trandate) OVER (
+  COUNT(distinct tran_ns.custbody_goodr_shopify_order) OVER (
     PARTITION BY
       cust_ns.id
   ) AS order_count,
