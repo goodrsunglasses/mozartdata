@@ -24,6 +24,6 @@ WHERE
   converted_timestamp >= DATEADD(DAY, -8, CURRENT_DATE())
   AND orders.channel = 'Goodr.com'
 GROUP BY
-  timestamp_tran,
+  converted_timestamp,
   cust_tier
-order by timestamp_tran asc
+order by converted_timestamp asc
