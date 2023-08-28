@@ -13,7 +13,7 @@ WITH
   order by order_count asc
   )
 SELECT
-  orders.timestamp_tran,
+    TO_DATE(timestamp_tran) as converted_timestamp,
   cust_tier,
   count(orders.order_id_ns) as count_of_orders
 FROM
@@ -21,7 +21,7 @@ FROM
   JOIN dim.customers cust ON orders.cust_id_ns = cust.cust_id_ns
   JOIN cust_tier ON cust.order_count = cust_tier.order_count
 WHERE
-  timestamp_tran >= DATEADD(DAY, -8, CURRENT_DATE())
+  converted_timestamp >= DATEADD(DAY, -8, CURRENT_DATE())
   AND orders.channel = 'Goodr.com'
 GROUP BY
   timestamp_tran,
