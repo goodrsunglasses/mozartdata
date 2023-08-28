@@ -13,7 +13,7 @@ WITH
   order by order_count asc
   )
 SELECT
-    TO_DATE(timestamp_tran) as converted_timestamp,
+    DATE(timestamp_tran) as converted_timestamp,
   cust_tier,
   count(orders.order_id_ns) as count_of_orders
 FROM
