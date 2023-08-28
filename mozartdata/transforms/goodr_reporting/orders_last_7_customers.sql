@@ -1,4 +1,5 @@
 SELECT
-*
+  *
 FROM dim.orders
-WHERE date_trunc('day', timestamp_tran) > dateadd(day, -7, current_date()) and channel = 'goodr.com'
+  JOIN dim.cusotmers on cust_id_ns.orders = ns_
+WHERE timestamp_tran >= dateadd(day,-7,current_date()) AND channel = 'Goodr.com'
