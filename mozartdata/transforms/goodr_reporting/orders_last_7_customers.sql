@@ -15,7 +15,7 @@ WITH
 SELECT
   orders.timestamp_tran,
   cust_tier,
-  count(orders.order_id_ns)
+  count(orders.order_id_ns) as count_of_orders
 FROM
   dim.orders orders
   JOIN dim.customers cust ON orders.cust_id_ns = cust.cust_id_ns
