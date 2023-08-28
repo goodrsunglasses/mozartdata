@@ -3,9 +3,9 @@ WITH
     SELECT distinct 
       order_count,
       CASE
-        WHEN order_count = 1 THEN 'New'
-        WHEN order_count BETWEEN 2 and 5 THEN 'Existing'
-        WHEN order_count >= 5 THEN 'Fan'
+        WHEN order_count = 1 THEN 'NEW'
+        WHEN order_count BETWEEN 2 and 5 THEN 'EXISTING'
+        WHEN order_count >= 5 THEN 'FAN'
         ELSE 'N/A'
       END AS cust_tier
     FROM
