@@ -154,9 +154,9 @@ SELECT
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
     WHEN channel IN ('Goodr.com', 'Amazon', 'Cabana') THEN 'D2C'
   END AS b2b_d2c --- d2c or b2b as categorized by sales, which is slightly different than for ops
-  cr_id_ns, --- netsuite cash refund id
-  if_id_ns, --- netsuite item fulfillment id
-  cs_id_ns --- netsuite cash sale id
+ -- cr_id_ns, --- netsuite cash refund id
+ -- if_id_ns, --- netsuite item fulfillment id
+ -- cs_id_ns --- netsuite cash sale id
 FROM
   salesorder_ns
   LEFT OUTER JOIN cashrefund_ns ON cashrefund_ns.order_num = salesorder_ns.order_num
