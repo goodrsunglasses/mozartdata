@@ -1,5 +1,18 @@
+WITH cust_tier as (
+  SELECT order_count,
+  CASE 
+    WHEN order_count = 1 THEN 'New'
+    WHEN order_count BETWEEN 2 and 5 THEN 'Existing'
+    WHEN order_count > 10 THEN 'Stan'
+    ELSE 'N/A'
+  END as cust_tier
+  FROM dim.customers)
+
 SELECT
-  *
-FROM dim.orders
-  JOIN dim.cusotmers on cust_id_ns.orders = ns_
-WHERE timestamp_tran >= dateadd(day,-7,current_date()) AND channel = 'Goodr.com'
+  *,
+  cust.order_count as cust_order_count,
+  cust_tier
+FROM dim.orders orders
+  JOIN dim.customers cust on orders.cust_id_ns = cust.cust_id_ns
+  JOIN cust_tier on cust.order_count = cust_tier.order_count
+WHERE timestamp_tran >= dateadd(day,-7,current_date()) AND orders.channel = 'Goodr.com'
