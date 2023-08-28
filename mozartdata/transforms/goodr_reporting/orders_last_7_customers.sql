@@ -9,7 +9,10 @@ WITH cust_tier as (
   FROM dim.customers)
 
 SELECT
-  *,
+  orders.order_id_ns,
+  orders.channel,
+  orders.timestamp_tran,
+  orders.cust_id_ns,
   cust.order_count as cust_order_count,
   cust_tier
 FROM dim.orders orders
