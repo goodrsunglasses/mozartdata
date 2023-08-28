@@ -3,7 +3,7 @@ WITH cust_tier as (
   CASE 
     WHEN order_count = 1 THEN 'New'
     WHEN order_count BETWEEN 2 and 5 THEN 'Existing'
-    WHEN order_count >= 10 THEN 'Stan'
+    WHEN order_count >= 10 THEN 'Fan'
     ELSE 'N/A'
   END as cust_tier
   FROM dim.customers)
