@@ -25,7 +25,7 @@ select
 , acct.description as account_description_ns --mostly NULL/missing. description in netsuite
 , acct.parent as account_parent_id_netsuite
 , p.acctnumber as account_parent_number
-, p.acct.accountsearchdisplayname as account_parent_number_display_name
+, p.accountsearchdisplayname as account_parent_number_display_name
 , acct.accttype as account_type
 , acct.cashflowrate as cash_flow_rate
 , acct.generalrate as general_rate
