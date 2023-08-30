@@ -21,7 +21,7 @@ FROM
   JOIN dim.customers cust ON orders.cust_id_ns = cust.cust_id_ns
   JOIN cust_tier ON cust.order_count = cust_tier.order_count
 WHERE
-  converted_timestamp >= DATEADD(DAY, -8, CURRENT_DATE())
+  converted_timestamp >= DATEADD(DAY, -7, CURRENT_DATE())
   AND orders.channel = 'Goodr.com'
 GROUP BY
   converted_timestamp,
