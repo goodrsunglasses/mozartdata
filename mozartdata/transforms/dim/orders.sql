@@ -99,7 +99,7 @@ SELECT DISTINCT
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
     WHEN channel IN ('Goodr.com', 'Amazon', 'Cabana','Customer Service') THEN 'D2C'
   END AS b2b_d2c, --- d2c or b2b as categorized by sales, which is slightly different than for ops
-  customer_id,
+  customer_id_ns,
   quantity_sold,
   quantity_fulfilled,
   gross_profit,
