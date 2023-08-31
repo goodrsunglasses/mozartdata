@@ -93,7 +93,7 @@ WITH
       order_num
   )
 SELECT DISTINCT
-  order_numbers.order_num as order_id_ns,
+  order_numbers.order_num as order_id_edw,
   channel.name AS channel,
   CASE
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
