@@ -93,21 +93,21 @@ WITH
       order_num
   )
 SELECT DISTINCT
-  order_numbers.order_num,
+  order_numbers.order_num as order_id_ns,
   channel.name AS channel,
   CASE
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
     WHEN channel IN ('Goodr.com', 'Amazon', 'Cabana','Customer Service') THEN 'D2C'
   END AS b2b_d2c, --- d2c or b2b as categorized by sales, which is slightly different than for ops
-  customer_id,
+  customer_id as cust_id_ns,
   quantity_sold,
   quantity_fulfilled,
-  gross_profit,
+  gross_profit as profit_gross,
   profit_percent,
-  totalcostestimate,
-  product_rate,
-  total_product_amount,
-  ship_rate
+  totalcostestimate as cost_estimate,
+  product_rate as rate_items,
+  total_product_amount as amount_items,
+  ship_rate as rate_ship
 FROM
   order_numbers
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
