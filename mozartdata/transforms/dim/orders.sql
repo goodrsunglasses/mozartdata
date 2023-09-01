@@ -36,6 +36,10 @@ WITH
       tran.entity AS customer_id
     FROM
       netsuite.transaction tran
+  -- LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
+  --       tran.status = transtatus.id
+  --       AND tran.type = transtatus.trantype
+  --     )
     WHERE
       tran.recordtype IN ('cashsale', 'invoice', 'salesorder')
   ),
