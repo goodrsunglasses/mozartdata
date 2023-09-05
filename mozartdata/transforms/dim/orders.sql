@@ -30,16 +30,27 @@ WITH
             ELSE 4
           END
       ) AS prioritized_channel_id,
+      FIRST_VALUE(tran.trandate) OVER (
+        PARTITION BY
+          order_num
+        ORDER BY
+          CASE
+            WHEN tran.recordtype = 'cashsale' THEN 1
+            WHEN tran.recordtype = 'invoice' THEN 2
+            WHEN tran.recordtype = 'salesorder' THEN 3
+            ELSE 4
+          END
+      ) AS prioritized_timestamp_tran,
       tran.estgrossprofit AS gross_profit,
       tran.estgrossprofitpercent AS profit_percent,
       tran.totalcostestimate,
       tran.entity AS customer_id
     FROM
       netsuite.transaction tran
-  -- LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
-  --       tran.status = transtatus.id
-  --       AND tran.type = transtatus.trantype
-  --     )
+      -- LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
+      --       tran.status = transtatus.id
+      --       AND tran.type = transtatus.trantype
+      --     ) commented out until we know what we wanna do transaction status wise
     WHERE
       tran.recordtype IN ('cashsale', 'invoice', 'salesorder')
   ),
@@ -97,21 +108,27 @@ WITH
       order_num
   )
 SELECT DISTINCT
-  order_numbers.order_num as order_id_edw,
+  order_numbers.order_num AS order_id_edw,
+  prioritized_timestamp_tran as timestamp_transaction,
   channel.name AS channel,
   CASE
     WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
-    WHEN channel IN ('Goodr.com', 'Amazon', 'Cabana','Customer Service') THEN 'D2C'
+    WHEN channel IN (
+      'Goodr.com',
+      'Amazon',
+      'Cabana',
+      'Customer Service'
+    ) THEN 'D2C'
   END AS b2b_d2c, --- d2c or b2b as categorized by sales, which is slightly different than for ops
-  customer_id as cust_id_ns,
+  customer_id AS cust_id_ns,
   quantity_sold,
   quantity_fulfilled,
-  gross_profit as profit_gross,
+  gross_profit AS profit_gross,
   profit_percent,
-  totalcostestimate as cost_estimate,
-  product_rate as rate_items,
-  total_product_amount as amount_items,
-  ship_rate as rate_ship
+  totalcostestimate AS cost_estimate,
+  product_rate AS rate_items,
+  total_product_amount AS amount_items,
+  ship_rate AS rate_ship
 FROM
   order_numbers
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
