@@ -120,7 +120,7 @@ SELECT DISTINCT
       'Customer Service'
     ) THEN 'D2C'
   END AS b2b_d2c, --- d2c or b2b as categorized by sales, which is slightly different than for ops
-  customer_id AS cust_id_ns,
+  customer_id AS customer_id_ns,
   quantity_sold,
   quantity_fulfilled,
   gross_profit AS profit_gross,
