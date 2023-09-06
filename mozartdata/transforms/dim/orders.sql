@@ -109,7 +109,7 @@ WITH
   )
 SELECT DISTINCT
   order_numbers.order_num AS order_id_edw,
-  prioritized_timestamp_tran AS timestamp_transaction,
+  CONVERT_TIMEZONE('America/Los_Angeles',prioritized_timestamp_tran) AS timestamp_transaction,
   channel.name AS channel,
   CASE
     WHEN channel IN (
