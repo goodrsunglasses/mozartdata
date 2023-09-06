@@ -63,7 +63,8 @@ FROM
       LEFT OUTER JOIN cust_order_count cust_count ON orders.customer_id = cust_count.cust_id_ns
     WHERE
       orders.prioritized_channel_id = 1
-  and converted_timestamp >= DATEADD(DAY, -7, CURRENT_DATE())
+  and  converted_timestamp >= DATEADD(DAY, -7, CURRENT_DATE())
+  and converted_timestamp < CURRENT_DATE()
   )
   
 GROUP BY
