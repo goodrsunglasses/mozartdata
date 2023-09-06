@@ -109,16 +109,29 @@ WITH
   )
 SELECT DISTINCT
   order_numbers.order_num AS order_id_edw,
-  prioritized_timestamp_tran as timestamp_transaction,
+  prioritized_timestamp_tran AS timestamp_transaction,
   channel.name AS channel,
   CASE
-    WHEN channel IN ('Specialty', 'Key Account', 'Global') THEN 'B2B'
+    WHEN channel IN (
+      'Specialty',
+      'Key Account',
+      'Global',
+      'Key Account CAN',
+      'Specialty CAN'
+    ) THEN 'B2B'
     WHEN channel IN (
       'Goodr.com',
       'Amazon',
       'Cabana',
-      'Customer Service'
+      'Goodr.com CAN',
+      'Prescription'
     ) THEN 'D2C'
+    WHEN channel IN (
+      'Goodrwill.com',
+      'Customer Service CAN',
+      'Marketing',
+      'Customer Service'
+    ) THEN 'INDIRECT'
   END AS b2b_d2c, --- d2c or b2b as categorized by sales, which is slightly different than for ops
   customer_id AS customer_id_ns,
   quantity_sold,
