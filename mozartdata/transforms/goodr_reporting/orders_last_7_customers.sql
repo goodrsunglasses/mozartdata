@@ -69,3 +69,4 @@ WHERE
 GROUP BY
   converted_timestamp,
   cust_tier
+order by converted_timestamp asc
