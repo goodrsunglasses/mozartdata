@@ -1,5 +1,5 @@
 SELECT
-  DATE(prioritized_timestamp_tran) AS converted_timestamp,
+    converted_timestamp,
   COUNT( order_num) AS order_count,
   cust_tier
 FROM
@@ -49,7 +49,7 @@ FROM
       )
     SELECT
       orders.order_num,
-      prioritized_timestamp_tran,
+      date(prioritized_timestamp_tran) as converted_timestamp,
       cust_id_ns,
       cust_count.order_count,
       CASE
@@ -63,9 +63,9 @@ FROM
       LEFT OUTER JOIN cust_order_count cust_count ON orders.customer_id = cust_count.cust_id_ns
     WHERE
       orders.prioritized_channel_id = 1
+  and converted_timestamp >= DATEADD(DAY, -7, CURRENT_DATE())
   )
-WHERE
-  converted_timestamp >= DATEADD(DAY, -7, CURRENT_DATE())
+  
 GROUP BY
   converted_timestamp,
   cust_tier
