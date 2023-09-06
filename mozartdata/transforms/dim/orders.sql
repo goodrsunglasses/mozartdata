@@ -30,7 +30,7 @@ WITH
             ELSE 4
           END
       ) AS prioritized_channel_id,
-      FIRST_VALUE(tran.trandate) OVER (
+      FIRST_VALUE(tran.createddate) OVER (
         PARTITION BY
           order_num
         ORDER BY
