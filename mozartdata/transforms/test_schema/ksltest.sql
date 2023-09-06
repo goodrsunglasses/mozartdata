@@ -17,8 +17,7 @@ SELECT DISTINCT
         ORDER BY
           CASE
             WHEN tran.recordtype = 'cashsale' THEN 1
-            WHEN tran.recordtype = 'invoice' THEN 2
-            WHEN tran.recordtype = 'salesorder' THEN 3
+            WHEN tran.recordtype = 'salesorder' THEN 2
             ELSE 4
           END
       ) AS prioritized_timestamp_tran,
