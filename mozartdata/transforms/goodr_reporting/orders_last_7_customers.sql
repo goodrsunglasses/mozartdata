@@ -1,6 +1,6 @@
 WITH
   cust_tier AS (
-    SELECT distinct 
+    SELECT DISTINCT
       order_count,
       CASE
         WHEN order_count = 1 THEN 'NEW'
@@ -10,20 +10,56 @@ WITH
       END AS cust_tier
     FROM
       dim.customers
-  order by order_count asc
+    ORDER BY
+      order_count asc
+  ),
+  order_numbers AS (
+    SELECT DISTINCT
+      tran.custbody_goodr_shopify_order order_num,
+      FIRST_VALUE(tran.cseg7) OVER (
+        PARTITION BY
+          order_num
+        ORDER BY
+          CASE
+            WHEN tran.recordtype = 'cashsale' THEN 1
+            WHEN tran.recordtype = 'invoice' THEN 2
+            WHEN tran.recordtype = 'salesorder' THEN 3
+            ELSE 4
+          END
+      ) AS prioritized_channel_id,
+      FIRST_VALUE(tran.createddate) OVER (
+        PARTITION BY
+          order_num
+        ORDER BY
+          CASE
+            WHEN tran.recordtype = 'cashsale' THEN 1
+            WHEN tran.recordtype = 'invoice' THEN 2
+            WHEN tran.recordtype = 'salesorder' THEN 3
+            ELSE 4
+          END
+      ) AS prioritized_timestamp_tran,
+      tran.estgrossprofit AS gross_profit,
+      tran.estgrossprofitpercent AS profit_percent,
+      tran.totalcostestimate,
+      tran.entity AS customer_id
+    FROM
+      netsuite.transaction tran
+    WHERE
+      tran.recordtype IN ('cashsale', 'invoice', 'salesorder')
   )
 SELECT
-    DATE(timestamp_tran) as converted_timestamp,
+  DATE(prioritized_timestamp_tran) AS converted_timestamp,
   cust_tier,
-  count(orders.order_id_ns) as count_of_orders
+  COUNT(orders.order_num) AS count_of_orders
 FROM
-  dim.orders orders
-  JOIN dim.customers cust ON orders.cust_id_ns = cust.cust_id_ns
+  order_numbers orders
+  JOIN dim.customers cust ON orders.customer_id = cust.cust_id_ns
   JOIN cust_tier ON cust.order_count = cust_tier.order_count
 WHERE
   converted_timestamp >= DATEADD(DAY, -7, CURRENT_DATE())
-  AND orders.channel = 'Goodr.com'
+  AND orders.prioritized_channel_id = 1
 GROUP BY
   converted_timestamp,
   cust_tier
-order by converted_timestamp asc
+ORDER BY
+  converted_timestamp asc
