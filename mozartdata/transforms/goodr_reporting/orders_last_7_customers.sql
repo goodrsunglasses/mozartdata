@@ -1,6 +1,6 @@
 SELECT
   DATE(prioritized_timestamp_tran) AS converted_timestamp,
-  COUNT(order_num) AS order_count,
+  COUNT( order_num) AS order_count,
   cust_tier
 FROM
   (
