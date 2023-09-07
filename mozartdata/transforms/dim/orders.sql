@@ -105,7 +105,7 @@ WITH
       ) AS quantity_sold,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype = 'InvtPart' THEN rate
+          WHEN tranline_ns.itemtype = 'InvtPart' THEN rate * (-quantity)
           ELSE 0
         END
       ) AS product_rate,
