@@ -1,5 +1,6 @@
 SELECT DISTINCT
   tran.custbody_goodr_shopify_order order_num,
+  --Grabs the first value from the transaction type ranking, with a secondary sort that is going for oldest createddate first 
   FIRST_VALUE(tran.cseg7) OVER (
     PARTITION BY
       order_num
@@ -9,8 +10,10 @@ SELECT DISTINCT
         WHEN tran.recordtype = 'invoice' THEN 2
         WHEN tran.recordtype = 'salesorder' THEN 3
         ELSE 4
-      END
+      END,
+      tran.createddate ASC
   ) AS prioritized_channel_id,
+  --Grabs the first value from the transaction type ranking, this time ignoring invoices, with a secondary sort that is going for oldest createddate first 
   FIRST_VALUE(tran.createddate) OVER (
     ORDER BY
       CASE
@@ -20,6 +23,7 @@ SELECT DISTINCT
       END,
       tran.createddate ASC
   ) AS oldest_createddate,
+  -- Uses Coalesce logic to give us the Sum of all the cashsale record's estgrossprift, provided there are none then we take the invoices sum of estgrossprofit
   COALESCE(
     SUM(
       CASE
