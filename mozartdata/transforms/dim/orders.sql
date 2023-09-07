@@ -16,7 +16,7 @@ custbody_goodr_shopify_order = order_num (this is the shopify order number, and 
 */
 WITH
   --CTE to select all the unique order numbers from all transaction records of the salesorder and cashsale type
-  order_number AS (
+  order_numbers AS (
    SELECT DISTINCT
       tran.custbody_goodr_shopify_order order_num,
       FIRST_VALUE(tran.cseg7) OVER (
