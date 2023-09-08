@@ -80,4 +80,4 @@ FROM
   --     ) commented out until we know what we wanna do transaction status wise
 WHERE
   tran.recordtype IN ('cashsale', 'invoice', 'salesorder')
-  AND order_num = 'CS-WQT-LG-SG-71522'
+  AND order_num = 'SG-72004'
