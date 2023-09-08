@@ -60,36 +60,42 @@ WITH
           CASE
             WHEN tran.recordtype = 'cashsale' THEN tran.estgrossprofit
           END
-        ) OVER (),
+        ) OVER ( PARTITION BY
+          order_num),
         SUM(
           CASE
             WHEN tran.recordtype = 'invoice' THEN tran.estgrossprofit
           END
-        ) OVER ()
+        ) OVER ( PARTITION BY
+          order_num)
       ) AS prioritized_grossprofit_sum,
       COALESCE(
         AVG(
           CASE
             WHEN tran.recordtype = 'cashsale' THEN tran.estgrossprofitpercent
           END
-        ) OVER (),
+        ) OVER ( PARTITION BY
+          order_num),
         AVG(
           CASE
             WHEN tran.recordtype = 'invoice' THEN tran.estgrossprofitpercent
           END
-        ) OVER ()
+        ) OVER ( PARTITION BY
+          order_num)
       ) AS prioritized_estgrossprofitpercent_avg,
       COALESCE(
         SUM(
           CASE
             WHEN tran.recordtype = 'cashsale' THEN tran.totalcostestimate
           END
-        ) OVER (),
+        ) OVER ( PARTITION BY
+          order_num),
         SUM(
           CASE
             WHEN tran.recordtype = 'invoice' THEN tran.totalcostestimate
           END
-        ) OVER ()
+        ) OVER ( PARTITION BY
+          order_num)
       ) AS prioritized_totalcostestimate_sum
     FROM
       netsuite.transaction tran
@@ -193,3 +199,4 @@ FROM
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
   LEFT OUTER JOIN line_info_sold ON line_info_sold.order_num = order_numbers.order_num
   LEFT OUTER JOIN line_info_fulfilled ON line_info_fulfilled.order_num = order_numbers.order_num
+where order_id_edw='SG-72004'
