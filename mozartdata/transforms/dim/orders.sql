@@ -60,42 +60,54 @@ WITH
           CASE
             WHEN tran.recordtype = 'cashsale' THEN tran.estgrossprofit
           END
-        ) OVER ( PARTITION BY
-          order_num),
+        ) OVER (
+          PARTITION BY
+            order_num
+        ),
         SUM(
           CASE
             WHEN tran.recordtype = 'invoice' THEN tran.estgrossprofit
           END
-        ) OVER ( PARTITION BY
-          order_num)
+        ) OVER (
+          PARTITION BY
+            order_num
+        )
       ) AS prioritized_grossprofit_sum,
       COALESCE(
         AVG(
           CASE
             WHEN tran.recordtype = 'cashsale' THEN tran.estgrossprofitpercent
           END
-        ) OVER ( PARTITION BY
-          order_num),
+        ) OVER (
+          PARTITION BY
+            order_num
+        ),
         AVG(
           CASE
             WHEN tran.recordtype = 'invoice' THEN tran.estgrossprofitpercent
           END
-        ) OVER ( PARTITION BY
-          order_num)
+        ) OVER (
+          PARTITION BY
+            order_num
+        )
       ) AS prioritized_estgrossprofitpercent_avg,
       COALESCE(
         SUM(
           CASE
             WHEN tran.recordtype = 'cashsale' THEN tran.totalcostestimate
           END
-        ) OVER ( PARTITION BY
-          order_num),
+        ) OVER (
+          PARTITION BY
+            order_num
+        ),
         SUM(
           CASE
             WHEN tran.recordtype = 'invoice' THEN tran.totalcostestimate
           END
-        ) OVER ( PARTITION BY
-          order_num)
+        ) OVER (
+          PARTITION BY
+            order_num
+        )
       ) AS prioritized_totalcostestimate_sum
     FROM
       netsuite.transaction tran
@@ -108,7 +120,7 @@ WITH
   ),
   --CTE that calculates the respective product rates, total product amounts, total quantity and shipping rate based on the line item type, it grabs from the Cashsale and invoice records as they are presumed to be the sources of truth
   line_info_sold AS (
-    SELECT 
+    SELECT
       tran_ns.custbody_goodr_shopify_order order_num,
       SUM(
         CASE
@@ -143,7 +155,7 @@ WITH
       order_num
   ),
   line_info_fulfilled AS (
-    SELECT 
+    SELECT
       tran_ns.custbody_goodr_shopify_order order_num,
       SUM(
         CASE
@@ -189,7 +201,7 @@ SELECT DISTINCT
   quantity_sold,
   quantity_fulfilled,
   prioritized_grossprofit_sum AS profit_gross,
-  prioritized_estgrossprofitpercent_avg as profit_percent,
+  prioritized_estgrossprofitpercent_avg AS profit_percent,
   prioritized_totalcostestimate_sum AS cost_estimate,
   product_rate AS rate_items,
   total_product_amount AS amount_items,
@@ -199,4 +211,3 @@ FROM
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
   LEFT OUTER JOIN line_info_sold ON line_info_sold.order_num = order_numbers.order_num
   LEFT OUTER JOIN line_info_fulfilled ON line_info_fulfilled.order_num = order_numbers.order_num
-where order_id_edw='SG-72004'
