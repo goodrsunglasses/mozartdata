@@ -193,3 +193,5 @@ FROM
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
   LEFT OUTER JOIN line_info_sold ON line_info_sold.order_num = order_numbers.order_num
   LEFT OUTER JOIN line_info_fulfilled ON line_info_fulfilled.order_num = order_numbers.order_num
+where 
+order_id_edw = 'SG-72004'
