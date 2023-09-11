@@ -185,7 +185,10 @@ SELECT DISTINCT
   prioritized_grossprofit_sum AS profit_gross,
   prioritized_estgrossprofitpercent_avg AS profit_percent,
   prioritized_totalcostestimate_sum AS cost_estimate,
-  product_rate AS rate_items,
+  CASE
+    WHEN channel = 'Cabana' THEN total_product_amount
+    ELSE product_rate
+  END AS rate_items,
   total_product_amount AS amount_items,
   ship_rate AS rate_ship
 FROM
