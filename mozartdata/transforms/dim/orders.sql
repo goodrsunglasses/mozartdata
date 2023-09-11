@@ -44,6 +44,18 @@ WITH
           END,
           tran.createddate ASC
       ) AS prioritized_cust_id,
+      FIRST_VALUE(tran.memo) OVER (
+        PARTITION BY
+          order_num
+        ORDER BY
+          CASE
+            WHEN tran.recordtype = 'cashsale' THEN 1
+            WHEN tran.recordtype = 'invoice' THEN 2
+            WHEN tran.recordtype = 'salesorder' THEN 3
+            ELSE 4
+          END,
+          tran.createddate ASC
+      ) AS memo,
       --Grabs the first value from the transaction type ranking, this time ignoring invoices, with a secondary sort that is going for oldest createddate first 
       FIRST_VALUE(tran.createddate) OVER (
         ORDER BY
@@ -94,22 +106,25 @@ WITH
       tran_ns.custbody_goodr_shopify_order order_num,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype ='InvtPart' THEN -1 * quantity
-  when tranline_ns.itemtype = 'NonInvtPart' and tranline_ns.custcol2 like '%GC-%' THEN -1 * quantity
+          WHEN tranline_ns.itemtype = 'InvtPart' THEN -1 * quantity
+          WHEN tranline_ns.itemtype = 'NonInvtPart'
+          AND tranline_ns.custcol2 LIKE '%GC-%' THEN -1 * quantity
           ELSE 0
         END
       ) AS quantity_sold,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype in ('Assembly','InvtPart') THEN rate * (- quantity)
-  when tranline_ns.itemtype = 'NonInvtPart' and tranline_ns.custcol2 like '%GC-%' THEN rate * (- quantity)
+          WHEN tranline_ns.itemtype IN ('Assembly', 'InvtPart') THEN rate * (- quantity)
+          WHEN tranline_ns.itemtype = 'NonInvtPart'
+          AND tranline_ns.custcol2 LIKE '%GC-%' THEN rate * (- quantity)
           ELSE 0
         END
       ) AS product_rate,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype  in ('Assembly','InvtPart') THEN -1 * netamount
-          when tranline_ns.itemtype = 'NonInvtPart' and tranline_ns.custcol2 like '%GC-%' THEN -1 * netamount
+          WHEN tranline_ns.itemtype IN ('Assembly', 'InvtPart') THEN -1 * netamount
+          WHEN tranline_ns.itemtype = 'NonInvtPart'
+          AND tranline_ns.custcol2 LIKE '%GC-%' THEN -1 * netamount
           ELSE 0
         END
       ) AS total_product_amount,
@@ -132,7 +147,7 @@ WITH
       tran_ns.custbody_goodr_shopify_order order_num,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype in ('Assembly','InvtPart') THEN -1 * quantity
+          WHEN tranline_ns.itemtype IN ('Assembly', 'InvtPart') THEN -1 * quantity
           ELSE 0
         END
       ) AS quantity_fulfilled
@@ -148,6 +163,10 @@ SELECT DISTINCT
   order_numbers.order_num AS order_id_edw,
   CONVERT_TIMEZONE('America/Los_Angeles', oldest_createddate) AS timestamp_transaction_PST,
   channel.name AS channel,
+  CASE
+    WHEN memo LIKE '%RMA%' THEN TRUE
+    ELSE false
+  END AS is_exchange,
   CASE
     WHEN channel IN (
       'Specialty',
@@ -191,7 +210,7 @@ SELECT DISTINCT
   CASE
     WHEN channel = 'Cabana' THEN total_product_amount
     ELSE product_rate
-  END AS rate_items,--works for right now, will change given 
+  END AS rate_items, --works for right now, will change given 
   total_product_amount AS amount_items,
   ship_rate AS rate_ship
 FROM
