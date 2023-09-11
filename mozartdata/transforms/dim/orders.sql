@@ -94,19 +94,22 @@ WITH
       tran_ns.custbody_goodr_shopify_order order_num,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype = 'InvtPart' THEN -1 * quantity
+          WHEN tranline_ns.itemtype ='InvtPart' THEN -1 * quantity
+  when tranline_ns.itemtype = 'NonInvtPart' and tranline_ns.custcol2 like '%GC-%' THEN -1 * quantity
           ELSE 0
         END
       ) AS quantity_sold,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype = 'InvtPart' THEN rate * (- quantity)
+          WHEN tranline_ns.itemtype in ('Assembly','InvtPart') THEN rate * (- quantity)
+  when tranline_ns.itemtype = 'NonInvtPart' and tranline_ns.custcol2 like '%GC-%' THEN rate * (- quantity)
           ELSE 0
         END
       ) AS product_rate,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype = 'InvtPart' THEN -1 * netamount
+          WHEN tranline_ns.itemtype  in ('Assembly','InvtPart') THEN -1 * netamount
+          when tranline_ns.itemtype = 'NonInvtPart' and tranline_ns.custcol2 like '%GC-%' THEN -1 * netamount
           ELSE 0
         END
       ) AS total_product_amount,
