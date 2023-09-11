@@ -167,6 +167,18 @@ SELECT DISTINCT
       'Customer Service'
     ) THEN 'INDIRECT'
   END AS b2b_d2c, --- d2c or b2b as categorized by sales, which is slightly different than for ops
+  CASE
+    WHEN channel IN (
+      'Specialty',
+      'Key Account',
+      'Key Account CAN',
+      'Specialty CAN'
+    ) THEN 'Wholesale'
+    WHEN channel IN ('Goodr.com', 'Goodr.com CAN') THEN 'Website'
+    WHEN channel IN ('Amazon', 'Prescription') THEN 'Partners'
+    WHEN channel IN ('Cabana') THEN 'Retail'
+    WHEN channel IN ('Global') THEN 'Distribution'
+  END AS model,
   prioritized_cust_id AS customer_id_ns,
   quantity_sold,
   quantity_fulfilled,
