@@ -55,59 +55,29 @@ WITH
           tran.createddate ASC
       ) AS oldest_createddate,
       -- Uses Coalesce logic to give us the Sum of all the cashsale record's estgrossprift, provided there are none then we take the invoices sum of estgrossprofit
-      COALESCE(
-        SUM(
-          CASE
-            WHEN tran.recordtype = 'cashsale' THEN tran.estgrossprofit
-          END
-        ) OVER (
-          PARTITION BY
-            order_num
-        ),
-        SUM(
-          CASE
-            WHEN tran.recordtype = 'invoice' THEN tran.estgrossprofit
-          END
-        ) OVER (
-          PARTITION BY
-            order_num
-        )
+      SUM(
+        CASE
+          WHEN tran.recordtype IN ('invoice', 'cashsale') THEN tran.estgrossprofit
+        END
+      ) OVER (
+        PARTITION BY
+          order_num
       ) AS prioritized_grossprofit_sum,
-      COALESCE(
-        AVG(
-          CASE
-            WHEN tran.recordtype = 'cashsale' THEN tran.estgrossprofitpercent
-          END
-        ) OVER (
-          PARTITION BY
-            order_num
-        ),
-        AVG(
-          CASE
-            WHEN tran.recordtype = 'invoice' THEN tran.estgrossprofitpercent
-          END
-        ) OVER (
-          PARTITION BY
-            order_num
-        )
+      AVG(
+        CASE
+          WHEN tran.recordtype IN ('invoice', 'cashsale') THEN tran.estgrossprofitpercent
+        END
+      ) OVER (
+        PARTITION BY
+          order_num
       ) AS prioritized_estgrossprofitpercent_avg,
-      COALESCE(
-        SUM(
-          CASE
-            WHEN tran.recordtype = 'cashsale' THEN tran.totalcostestimate
-          END
-        ) OVER (
-          PARTITION BY
-            order_num
-        ),
-        SUM(
-          CASE
-            WHEN tran.recordtype = 'invoice' THEN tran.totalcostestimate
-          END
-        ) OVER (
-          PARTITION BY
-            order_num
-        )
+      SUM(
+        CASE
+          WHEN tran.recordtype IN ('invoice', 'cashsale') THEN tran.totalcostestimate
+        END
+      ) OVER (
+        PARTITION BY
+          order_num
       ) AS prioritized_totalcostestimate_sum
     FROM
       netsuite.transaction tran
