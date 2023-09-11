@@ -129,7 +129,7 @@ WITH
       tran_ns.custbody_goodr_shopify_order order_num,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype = 'InvtPart' THEN -1 * quantity
+          WHEN tranline_ns.itemtype in ('Assembly','InvtPart') THEN -1 * quantity
           ELSE 0
         END
       ) AS quantity_fulfilled
