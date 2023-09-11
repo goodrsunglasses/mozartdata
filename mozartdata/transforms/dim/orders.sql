@@ -188,7 +188,7 @@ SELECT DISTINCT
   CASE
     WHEN channel = 'Cabana' THEN total_product_amount
     ELSE product_rate
-  END AS rate_items,
+  END AS rate_items,--works for right now, will change given 
   total_product_amount AS amount_items,
   ship_rate AS rate_ship
 FROM
