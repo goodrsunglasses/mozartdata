@@ -58,6 +58,8 @@ WITH
       ) AS memo,
       --Grabs the first value from the transaction type ranking, this time ignoring invoices, with a secondary sort that is going for oldest createddate first 
       FIRST_VALUE(tran.createddate) OVER (
+  PARTITION BY
+          order_num
         ORDER BY
           CASE
             WHEN tran.recordtype = 'cashsale' THEN 1
@@ -218,3 +220,4 @@ FROM
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
   LEFT OUTER JOIN line_info_sold ON line_info_sold.order_num = order_numbers.order_num
   LEFT OUTER JOIN line_info_fulfilled ON line_info_fulfilled.order_num = order_numbers.order_num
+where order_id_edw = 'G2000007'
