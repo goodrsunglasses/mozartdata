@@ -135,7 +135,13 @@ WITH
           WHEN tranline_ns.itemtype = 'ShipItem' THEN rate
           ELSE 0
         END
-      ) AS ship_rate
+      ) AS ship_rate,
+  SUM(
+        CASE
+          WHEN tranline_ns.itemtype = 'TaxItem' THEN rate
+          ELSE 0
+        END
+      ) AS rate_tax
     FROM
       netsuite.transactionline tranline_ns
       INNER JOIN netsuite.transaction tran_ns ON tran_ns.id = tranline_ns.transaction
@@ -214,7 +220,8 @@ SELECT DISTINCT
     ELSE product_rate
   END AS rate_items, --works for right now, will change given 
   total_product_amount AS amount_items,
-  ship_rate AS rate_ship
+  ship_rate AS rate_ship,
+  rate_tax
 FROM
   order_numbers
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
