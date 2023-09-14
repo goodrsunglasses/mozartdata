@@ -92,13 +92,14 @@ WITH
       ) OVER (
         PARTITION BY
           order_num
-      ) AS prioritized_totalcostestimate_sum
+      ) AS prioritized_totalcostestimate_sum,
+  case when transtatus.fullname 
     FROM
       netsuite.transaction tran
-      -- LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
-      --       tran.status = transtatus.id
-      --       AND tran.type = transtatus.trantype
-      --     ) commented out until we know what we wanna do transaction status wise
+      LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
+            tran.status = transtatus.id
+            AND tran.type = transtatus.trantype
+          ) 
     WHERE
       tran.recordtype IN ('cashsale', 'invoice', 'salesorder')
   ),
@@ -138,10 +139,15 @@ WITH
       ) AS ship_rate,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype = 'TaxItem' THEN rate
+          WHEN tranline_ns.itemtype = 'TaxItem' THEN - netamount
           ELSE 0
         END
-      ) AS rate_tax
+      ) AS rate_tax,
+      SUM(
+        CASE
+          WHEN tranline_ns.linesequencenumber = 0 THEN netamount
+        END
+      ) AS amount_total
     FROM
       netsuite.transactionline tranline_ns
       INNER JOIN netsuite.transaction tran_ns ON tran_ns.id = tranline_ns.transaction
@@ -168,19 +174,17 @@ WITH
       order_num
   ),
   line_info_refunded AS (
-    SELECT
+    SELECT DISTINCT
       tran_ns.custbody_goodr_shopify_order order_num,
+      FIRST_VALUE(tran_ns.createddate) OVER (
+        PARTITION BY
+          order_num
+        ORDER BY
+          tran_ns.createddate ASC
+      ) AS oldest_createddate_refund,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype IN ('Assembly', 'InvtPart') THEN rate 
-          WHEN tranline_ns.itemtype = 'NonInvtPart'
-          AND tranline_ns.custcol2 LIKE '%GC-%' THEN rate * (- quantity)
-          ELSE 0
-        END
-      ) AS refund_rate,
-      SUM(
-        CASE
-          WHEN tranline_ns.itemtype IN ('Assembly', 'InvtPart') THEN netamount
+          WHEN tranline_ns.itemtype IN ('Assembly', 'InvtPart', 'OthCharge') THEN netamount
           WHEN tranline_ns.itemtype = 'NonInvtPart'
           AND tranline_ns.custcol2 LIKE '%GC-%' THEN -1 * netamount
           ELSE 0
@@ -188,23 +192,29 @@ WITH
       ) AS total_product_amount_refunded,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype = 'ShipItem' THEN rate
+          WHEN tranline_ns.itemtype IN ('ShipItem', 'Payment') THEN rate
           ELSE 0
         END
       ) AS amount_refunded_shipping,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype = 'TaxItem' THEN rate
+          WHEN tranline_ns.itemtype = 'TaxItem' THEN netamount
           ELSE 0
         END
-      ) AS amount_refunded_tax
+      ) AS amount_refunded_tax,
+      SUM(
+        CASE
+          WHEN tranline_ns.linesequencenumber = 0 THEN - netamount
+        END
+      ) AS amount_refunded_total
     FROM
       netsuite.transactionline tranline_ns
       INNER JOIN netsuite.transaction tran_ns ON tran_ns.id = tranline_ns.transaction
     WHERE
       tran_ns.recordtype = 'cashrefund'
     GROUP BY
-      order_num
+      order_num,
+      createddate
   )
 SELECT DISTINCT
   order_numbers.order_num AS order_id_edw,
@@ -261,14 +271,16 @@ SELECT DISTINCT
   total_product_amount AS amount_items,
   ship_rate AS rate_ship,
   rate_tax,
+  amount_total,
   CASE
-    WHEN refund_rate IS NOT NULL THEN TRUE
+    WHEN total_product_amount_refunded IS NOT NULL THEN TRUE
     ELSE FALSE
   END AS is_refunded,
-  refund_rate,
+  oldest_createddate_refund as date_refunded,
   total_product_amount_refunded,
   amount_refunded_shipping,
-  amount_refunded_tax
+  amount_refunded_tax,
+  amount_refunded_total
 FROM
   order_numbers
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
