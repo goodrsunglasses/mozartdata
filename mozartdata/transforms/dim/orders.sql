@@ -92,17 +92,14 @@ WITH
       ) OVER (
         PARTITION BY
           order_num
-      ) AS prioritized_totalcostestimate_sum,
-      CASE
-        WHEN transtatus.fullname REGEXP 'Closed|Voided|Undefined|Rejected|Unapproved|Not Deposited' THEN TRUE
-        ELSE FALSE
-      END AS status_flag_edw
+      ) AS prioritized_totalcostestimate_sum
+  -- case when transtatus.fullname 
     FROM
       netsuite.transaction tran
       LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
-        tran.status = transtatus.id
-        AND tran.type = transtatus.trantype
-      )
+            tran.status = transtatus.id
+            AND tran.type = transtatus.trantype
+          ) 
     WHERE
       tran.recordtype IN ('cashsale', 'invoice', 'salesorder')
   ),
@@ -221,7 +218,6 @@ WITH
   )
 SELECT DISTINCT
   order_numbers.order_num AS order_id_edw,
-  status_flag_edw,
   CONVERT_TIMEZONE('America/Los_Angeles', oldest_createddate) AS timestamp_transaction_PST,
   channel.name AS channel,
   CASE
@@ -273,15 +269,15 @@ SELECT DISTINCT
     ELSE product_rate
   END AS rate_items, --works for right now, will change given 
   total_product_amount AS amount_items,
-  ship_rate AS rate_ship,
-  rate_tax,
+  ship_rate AS amount_ship,
+  rate_tax as amount_tax,
   amount_total,
   CASE
     WHEN total_product_amount_refunded IS NOT NULL THEN TRUE
     ELSE FALSE
-  END AS is_refunded,
-  oldest_createddate_refund AS date_refunded,
-  total_product_amount_refunded,
+  END AS has_refund,
+  oldest_createddate_refund as timestamp_refund,
+  total_product_amount_refunded as amount_refunded_items,
   amount_refunded_shipping,
   amount_refunded_tax,
   amount_refunded_total
