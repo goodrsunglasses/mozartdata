@@ -17,9 +17,6 @@ gt = gl_transactions CTE
 createdate convert to America/Los_Angeles
 use createdate converted instead of trandate
 */
-with
-  gl_transactions as
-  ( 
     select
       concat(transaction,'_',transactionline) as transaction_line_id
     , tran.custbody_goodr_shopify_order order_number
@@ -27,22 +24,19 @@ with
     , channel.name as channel
     , tran.trandate as date_transaction
     , CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) as date_posted
-    , case 
-      when channel.name = 'Amazon' then tran.trandate
-      else CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) 
-      end as date_gl
-    , case when tal.posting = 'T' then 1 else 0 end posting_flag
+    -- , case 
+    --   when channel.name = 'Amazon' then tran.trandate
+    --   else CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) 
+    --   end as date_gl
+    , case when tal.posting = 'T' then true else false end posting_flag
     , ap.periodname as posting_period
-    , sum(tal.amount) as transaction_amount
-    , sum(credit) as  credit_amount
-    , sum(debit) as debit_amount
-    , sum(netamount) as net_amount
-    , abs(sum(tal.amount)) as transaction_positive_amount
+    , sum(coalesce(tal.amount,0)) as amount_transaction
+    , sum(coalesce(credit,0)) as  amount_credit
+    , sum(coalesce(debit,0)) as amount_debit
+    , sum(coalesce(netamount,0)) as amount_net
+    , abs(sum(coalesce(tal.amount,0))) as amount_transaction_positive
     from
       netsuite.transactionaccountingline tal
-    inner join
-      netsuite."ACCOUNT" a
-      on tal."ACCOUNT" = a.id
     inner join
       netsuite.transaction tran
       on tal.transaction = tran.id
@@ -55,6 +49,8 @@ with
     left join
       netsuite.paymentevent pe
       on pe.doc = tran.id
+    where
+      posting_flag = true
     group by
      concat(transaction,'_',transactionline)
     , tran.custbody_goodr_shopify_order
@@ -63,49 +59,48 @@ with
     , tran.trandate
     , pe.eventdate
     , ap.periodname
-    , case when tal.posting = 'T' then 1 else 0 end
-  )
-select
-  gt.order_number
-, gt.date_gl
-, gt.date_transaction
-, gt.date_posted
-, ga.account_number
-, ga.account_full_name
-, ga.account_parent_number
-, ga.account_parent_number_display_name
-, gt.channel
-, ga.summary_flag
-, gt.posting_period
-, gt.posting_flag
-, sum(coalesce(credit_amount,0)) credit_total
-, sum(coalesce(debit_amount,0)) debit_total
-, sum(coalesce(net_amount,0)) net_total
-, sum(coalesce(transaction_amount,0)) amount_total
-from
-  gl_transactions gt
-inner join
-  dim.gl_account ga
-  on gt.account_id_ns = ga.account_id_ns
- -- where
- --  --
- --  account_number like '4%'
- --  and gt.posting_period = 'Jan 2023'
-group by
-  date_transaction
-, gt.order_number
-, gt.date_gl
-, gt.date_transaction
-, gt.date_posted
-, ga.summary_flag
-, ga.account_full_name
-, ga.account_parent_number
-, ga.account_parent_number_display_name
-, gt.posting_period
-, gt.channel
-, ga.account_number
-, gt.posting_flag
-order by date_transaction
+    , case when tal.posting = 'T' then true else false end
+-- select
+--   gt.order_number
+-- , gt.date_gl
+-- , gt.date_transaction
+-- , gt.date_posted
+-- , ga.account_number
+-- , ga.account_full_name
+-- , ga.account_parent_number
+-- , ga.account_parent_number_display_name
+-- , gt.channel
+-- , ga.summary_flag
+-- , gt.posting_period
+-- , gt.posting_flag
+-- , sum(coalesce(credit_amount,0)) credit_total
+-- , sum(coalesce(debit_amount,0)) debit_total
+-- , sum(coalesce(net_amount,0)) net_total
+-- , sum(coalesce(transaction_amount,0)) amount_total
+-- from
+--   gl_transactions gt
+-- inner join
+--   dim.gl_account ga
+--   on gt.account_id_ns = ga.account_id_ns
+--  -- where
+--  --  --
+--  --  account_number like '4%'
+--  --  and gt.posting_period = 'Jan 2023'
+-- group by
+--   date_transaction
+-- , gt.order_number
+-- , gt.date_gl
+-- , gt.date_transaction
+-- , gt.date_posted
+-- , ga.summary_flag
+-- , ga.account_full_name
+-- , ga.account_parent_number
+-- , ga.account_parent_number_display_name
+-- , gt.posting_period
+-- , gt.channel
+-- , ga.account_number
+-- , gt.posting_flag
+-- order by date_transaction
 -- --select * from netsuite.transaction where id='1691860'
 -- select a."ACCOUNT", sum(amount),sum(credit) from netsuite.transactionaccountingline a where transaction='1691860' group by 1
 --   select * from netsuite.transactionaccountingline a where transaction='1691860' --group by 1
