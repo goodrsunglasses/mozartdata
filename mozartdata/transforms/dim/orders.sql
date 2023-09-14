@@ -276,7 +276,7 @@ SELECT DISTINCT
     WHEN total_product_amount_refunded IS NOT NULL THEN TRUE
     ELSE FALSE
   END AS has_refund,
-  oldest_createddate_refund as timestamp_refund,
+  CONVERT_TIMEZONE('America/Los_Angeles', oldest_createddate_refund) AS timestamp_refund_PST,
   total_product_amount_refunded as amount_refunded_items,
   amount_refunded_shipping,
   amount_refunded_tax,
