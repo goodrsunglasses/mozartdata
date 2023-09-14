@@ -58,7 +58,7 @@ WITH
       ) AS memo,
       --Grabs the first value from the transaction type ranking, this time ignoring invoices, with a secondary sort that is going for oldest createddate first 
       FIRST_VALUE(tran.createddate) OVER (
-  PARTITION BY
+        PARTITION BY
           order_num
         ORDER BY
           CASE
@@ -136,7 +136,7 @@ WITH
           ELSE 0
         END
       ) AS ship_rate,
-  SUM(
+      SUM(
         CASE
           WHEN tranline_ns.itemtype = 'TaxItem' THEN rate
           ELSE 0
@@ -166,6 +166,45 @@ WITH
       tran_ns.recordtype = 'itemfulfillment'
     GROUP BY
       order_num
+  ),
+  line_info_refunded AS (
+    SELECT
+      tran_ns.custbody_goodr_shopify_order order_num,
+      SUM(
+        CASE
+          WHEN tranline_ns.itemtype IN ('Assembly', 'InvtPart') THEN rate 
+          WHEN tranline_ns.itemtype = 'NonInvtPart'
+          AND tranline_ns.custcol2 LIKE '%GC-%' THEN rate * (- quantity)
+          ELSE 0
+        END
+      ) AS refund_rate,
+      SUM(
+        CASE
+          WHEN tranline_ns.itemtype IN ('Assembly', 'InvtPart') THEN netamount
+          WHEN tranline_ns.itemtype = 'NonInvtPart'
+          AND tranline_ns.custcol2 LIKE '%GC-%' THEN -1 * netamount
+          ELSE 0
+        END
+      ) AS total_product_amount_refunded,
+      SUM(
+        CASE
+          WHEN tranline_ns.itemtype = 'ShipItem' THEN rate
+          ELSE 0
+        END
+      ) AS amount_refunded_shipping,
+      SUM(
+        CASE
+          WHEN tranline_ns.itemtype = 'TaxItem' THEN rate
+          ELSE 0
+        END
+      ) AS amount_refunded_tax
+    FROM
+      netsuite.transactionline tranline_ns
+      INNER JOIN netsuite.transaction tran_ns ON tran_ns.id = tranline_ns.transaction
+    WHERE
+      tran_ns.recordtype = 'cashrefund'
+    GROUP BY
+      order_num
   )
 SELECT DISTINCT
   order_numbers.order_num AS order_id_edw,
@@ -173,7 +212,7 @@ SELECT DISTINCT
   channel.name AS channel,
   CASE
     WHEN memo LIKE '%RMA%' THEN TRUE
-    ELSE false
+    ELSE FALSE
   END AS is_exchange,
   CASE
     WHEN channel IN (
@@ -221,9 +260,18 @@ SELECT DISTINCT
   END AS rate_items, --works for right now, will change given 
   total_product_amount AS amount_items,
   ship_rate AS rate_ship,
-  rate_tax
+  rate_tax,
+  CASE
+    WHEN refund_rate IS NOT NULL THEN TRUE
+    ELSE FALSE
+  END AS is_refunded,
+  refund_rate,
+  total_product_amount_refunded,
+  amount_refunded_shipping,
+  amount_refunded_tax
 FROM
   order_numbers
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
   LEFT OUTER JOIN line_info_sold ON line_info_sold.order_num = order_numbers.order_num
   LEFT OUTER JOIN line_info_fulfilled ON line_info_fulfilled.order_num = order_numbers.order_num
+  LEFT OUTER JOIN line_info_refunded ON line_info_refunded.order_num = order_numbers.order_num
