@@ -92,8 +92,8 @@ WITH
       ) OVER (
         PARTITION BY
           order_num
-      ) AS prioritized_totalcostestimate_sum,
-  case when transtatus.fullname 
+      ) AS prioritized_totalcostestimate_sum
+  -- case when transtatus.fullname 
     FROM
       netsuite.transaction tran
       LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
