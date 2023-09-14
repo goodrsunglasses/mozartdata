@@ -87,10 +87,10 @@ from
 inner join
   dim.gl_account ga
   on gt.account_id_ns = ga.account_id_ns
- where
-  --
-  account_number like '4%'
-  and gt.posting_period = 'Jan 2023'
+ -- where
+ --  --
+ --  account_number like '4%'
+ --  and gt.posting_period = 'Jan 2023'
 group by
   date_transaction
 , gt.order_number
