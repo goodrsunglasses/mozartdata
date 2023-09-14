@@ -11,7 +11,7 @@ aliases:
 acct = account
 ns = netsuite
 cust = customer
-p = parent
+p = parent account
 */
 
 
