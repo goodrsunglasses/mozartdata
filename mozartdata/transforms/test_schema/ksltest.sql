@@ -1,6 +1,7 @@
-SELECT
-    section.name,
-  task.name
+SELECT distinct
+  section.name,
+  task.name,
+  task.parent_id
 
 FROM
   asana.project_task proj
