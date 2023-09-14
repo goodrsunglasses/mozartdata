@@ -34,7 +34,7 @@ select
 , case when acct.isinactive = 'T' then false else true end as active_flag --the field in NS is called isINactive,I am flipping it to be active or not.
 , case when acct.issummary = 'T' then true else false end as summary_flag 
 , case when acct.reconcilewithmatching = 'T' then true else false end as reconcile_with_matching_flag
-  , case when acct.revalue = 'T' then true else false end as revalue_flag
+, case when acct.revalue = 'T' then true else false end as revalue_flag
 from
   netsuite."ACCOUNT" acct
 left join
@@ -42,4 +42,5 @@ left join
   on acct.parent = p.id
 where
   acct._fivetran_deleted = false
-  and p._fivetran_deleted = false
+  and (p._fivetran_deleted = false or p._fivetran_deleted is null)
+order by account_id_ns
