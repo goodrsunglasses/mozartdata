@@ -11,6 +11,9 @@ select
 , ga.account_full_name
 , gt.channel
 , gt.amount_net
+, gt.amount_credit
+, gt.amount_debit
+, gt.amount_transaction_positive
 from
   fact.gl_transaction gt
 inner join
