@@ -92,14 +92,39 @@ WITH
       ) OVER (
         PARTITION BY
           order_num
-      ) AS prioritized_totalcostestimate_sum
-  -- case when transtatus.fullname 
+      ) AS prioritized_totalcostestimate_sum,
+      FIRST_VALUE(
+        CASE
+          WHEN transtatus.fullname LIKE ANY(
+            '%Closed',
+            '%Voided',
+            '%Undefined',
+            '%Rejected',
+            '%Unapproved',
+            '%Not Deposited'
+          ) THEN TRUE
+          ELSE FALSE
+        END
+      ) OVER (
+        ORDER BY
+          CASE
+            WHEN transtatus.fullname LIKE ANY(
+              '%Closed',
+              '%Voided',
+              '%Undefined',
+              '%Rejected',
+              '%Unapproved',
+              '%Not Deposited'
+            ) THEN 1
+            ELSE 2
+          END
+      ) AS status_flag_edw
     FROM
       netsuite.transaction tran
       LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
-            tran.status = transtatus.id
-            AND tran.type = transtatus.trantype
-          ) 
+        tran.status = transtatus.id
+        AND tran.type = transtatus.trantype
+      )
     WHERE
       tran.recordtype IN ('cashsale', 'invoice', 'salesorder')
   ),
@@ -161,13 +186,16 @@ WITH
       tran_ns.custbody_goodr_shopify_order order_num,
       SUM(
         CASE
-          WHEN tranline_ns.itemtype IN ('Assembly', 'InvtPart') THEN -1 * quantity
+          WHEN tranline_ns.itemtype = 'InvtPart' THEN -1 * tranline_ns.quantity
+          WHEN tranline_ns.itemtype = 'Assembly' THEN itemmember.quantity * - (tranline_ns.quantity)
           ELSE 0
         END
       ) AS quantity_fulfilled
     FROM
       netsuite.transactionline tranline_ns
       INNER JOIN netsuite.transaction tran_ns ON tran_ns.id = tranline_ns.transaction
+      LEFT OUTER JOIN netsuite.item item ON item.id = tranline_ns.item
+      LEFT OUTER JOIN netsuite.itemmember itemmember ON item.id = itemMember.parentitem
     WHERE
       tran_ns.recordtype = 'itemfulfillment'
     GROUP BY
@@ -189,32 +217,41 @@ WITH
           AND tranline_ns.custcol2 LIKE '%GC-%' THEN -1 * netamount
           ELSE 0
         END
+      ) OVER (
+        PARTITION BY
+          order_num
       ) AS total_product_amount_refunded,
       SUM(
         CASE
           WHEN tranline_ns.itemtype IN ('ShipItem', 'Payment') THEN rate
           ELSE 0
         END
+      ) OVER (
+        PARTITION BY
+          order_num
       ) AS amount_refunded_shipping,
       SUM(
         CASE
           WHEN tranline_ns.itemtype = 'TaxItem' THEN netamount
           ELSE 0
         END
+      ) OVER (
+        PARTITION BY
+          order_num
       ) AS amount_refunded_tax,
       SUM(
         CASE
           WHEN tranline_ns.linesequencenumber = 0 THEN - netamount
         END
+      ) OVER (
+        PARTITION BY
+          order_num
       ) AS amount_refunded_total
     FROM
       netsuite.transactionline tranline_ns
       INNER JOIN netsuite.transaction tran_ns ON tran_ns.id = tranline_ns.transaction
     WHERE
       tran_ns.recordtype = 'cashrefund'
-    GROUP BY
-      order_num,
-      createddate
   )
 SELECT DISTINCT
   order_numbers.order_num AS order_id_edw,
@@ -262,7 +299,7 @@ SELECT DISTINCT
   quantity_sold,
   quantity_fulfilled,
   prioritized_grossprofit_sum AS profit_gross,
-  prioritized_estgrossprofitpercent_avg AS profit_percent,
+  -- prioritized_estgrossprofitpercent_avg AS profit_percent,
   prioritized_totalcostestimate_sum AS cost_estimate,
   CASE
     WHEN channel = 'Cabana' THEN total_product_amount
@@ -270,17 +307,21 @@ SELECT DISTINCT
   END AS rate_items, --works for right now, will change given 
   total_product_amount AS amount_items,
   ship_rate AS amount_ship,
-  rate_tax as amount_tax,
+  rate_tax AS amount_tax,
   amount_total,
   CASE
     WHEN total_product_amount_refunded IS NOT NULL THEN TRUE
     ELSE FALSE
   END AS has_refund,
   CONVERT_TIMEZONE('America/Los_Angeles', oldest_createddate_refund) AS timestamp_refund_PST,
-  total_product_amount_refunded as amount_refunded_items,
+  total_product_amount_refunded AS amount_refunded_items,
   amount_refunded_shipping,
   amount_refunded_tax,
-  amount_refunded_total
+  amount_refunded_total,
+  CASE
+    WHEN status_flag_edw THEN TRUE
+    ELSE FALSE
+  END AS status_flag_edw
 FROM
   order_numbers
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
