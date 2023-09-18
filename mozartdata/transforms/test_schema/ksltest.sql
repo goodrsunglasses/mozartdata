@@ -1,17 +1,28 @@
 WITH
-  main_proj_tasks AS (
+  recursive_tasks AS (
     SELECT
-      task_id,
-      task.name
+      task.id,
+      task.name,
+      task.parent_id
     FROM
-      asana.project_task proj
-      LEFT OUTER JOIN asana.task task ON task.id = proj.task_id
+  asana.task task
+      LEFT OUTER JOIN  asana.project_task proj ON task.id = proj.task_id
     WHERE
       proj.project_id = 1205095605823493
+    UNION ALL
+      SELECT
+      task.id,
+      task.name,
+      task.parent_id
+    FROM
+       asana.task task 
+    join recursive_tasks on task.parent_id = recursive_tasks.id
+  
   )
-SELECT DISTINCT
-  main_proj_tasks.name,
-  task.name
+SELECT
+  section.name,
+  recursive_tasks.name
 FROM
-main_proj_tasks
-left outer join asana.task task on task.parent_id = main_proj_tasks.task_id
+  recursive_tasks
+left outer join asana.task_section t_section on t_section.task_id = recursive_tasks.id
+left outer join asana.section section on section.id = t_section.section_id
