@@ -22,9 +22,9 @@ WITH
       JOIN recursive_tasks ON task.parent_id = recursive_tasks.id
   )
 SELECT
-  section.name,
+  section.name as section_name,
   recursive_tasks.name,
-  user.name
+  user.name as assigned_to
 FROM
   recursive_tasks
   LEFT OUTER JOIN asana.section section ON section.id = recursive_tasks.section_id
