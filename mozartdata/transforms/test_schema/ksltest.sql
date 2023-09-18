@@ -25,8 +25,8 @@ WITH RECURSIVE
   )
 SELECT
   section.name AS section_name,
-  recursive_tasks.name,
-  immediate_parent_name,
+  immediate_parent_name AS parent_name,
+  recursive_tasks.name task_name,
   user.name AS assigned_to
 FROM
   recursive_tasks
