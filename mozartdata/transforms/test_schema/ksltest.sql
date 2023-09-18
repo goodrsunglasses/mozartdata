@@ -1,10 +1,11 @@
-WITH
+WITH RECURSIVE
   recursive_tasks AS (
     SELECT
       task.id,
       task.name,
       task.parent_id,
-      t_section.section_id
+      t_section.section_id,
+      NULL AS immediate_parent_name
     FROM
       asana.task task
       LEFT OUTER JOIN asana.project_task proj ON task.id = proj.task_id
@@ -16,18 +17,21 @@ WITH
       task.id,
       task.name,
       task.parent_id,
-      recursive_tasks.section_id
+      recursive_tasks.section_id,
+      recursive_tasks.name AS immediate_parent_name
     FROM
       asana.task task
       JOIN recursive_tasks ON task.parent_id = recursive_tasks.id
   )
 SELECT
-  section.name as section_name,
+  section.name AS section_name,
   recursive_tasks.name,
-  user.name as assigned_to
+  immediate_parent_name,
+  user.name AS assigned_to
 FROM
   recursive_tasks
   LEFT OUTER JOIN asana.section section ON section.id = recursive_tasks.section_id
-  left outer join asana.task task on task.id=recursive_tasks.id
-  left outer join asana.user user on user.id=task.assignee_id
-where section.name='This Sprint'
+  LEFT OUTER JOIN asana.task task ON task.id = recursive_tasks.id
+  LEFT OUTER JOIN asana.user user ON user.id = task.assignee_id
+WHERE
+  section.name = 'This Sprint'
