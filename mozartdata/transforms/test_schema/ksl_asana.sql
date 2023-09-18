@@ -27,7 +27,11 @@ SELECT
   section.name AS section_name,
   immediate_parent_name AS parent_name,
   recursive_tasks.name task_name,
-  user.name AS assigned_to
+  user.name AS assigned_to,
+  CASE
+    WHEN task.completed THEN 'Completed'
+    ELSE 'In Progress'
+  END AS status
 FROM
   recursive_tasks
   LEFT OUTER JOIN asana.section section ON section.id = recursive_tasks.section_id
@@ -35,3 +39,4 @@ FROM
   LEFT OUTER JOIN asana.user user ON user.id = task.assignee_id
 WHERE
   section.name = 'This Sprint'
+order by status desc
