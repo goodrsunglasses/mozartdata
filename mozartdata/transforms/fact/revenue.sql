@@ -9,5 +9,5 @@ SELECT
   ---ns_revenue_date
   transactions.ns_rate
   
-FROM dim.transactions transactions
+FROM draft_dim.transactions transactions
 left outer join draft_dim.customers customers on customers.ns_cust_id = transactions.ns_cust_id
