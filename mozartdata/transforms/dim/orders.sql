@@ -1,11 +1,12 @@
 /*
-THIS TRANSFORM IS IN DRAFT, DO NOT JOIN TO THIS TRANSFORM OR USE IT FOR ANY REPORTING UNTIL IT IS CERTIFIED.
+THIS TRANSFORM IS CERTIFIED, ANY CHANGES TO THIS TRANSFORM MUST BE APPROVED PRIOR TO ANY CHANGES MADE.
 purpose:
-One row per sales order.
+One row per order.
 This transform creates an order dimension that combines shopify, netsuite and RF Smart information together to give a full picture of the order.
 
 joins: 
-Sales Order CTE to Cash Sale, Cash Refund, and Item Fulfillment CTEs on order_num which is shopify's order number that is pulled into NS using custbody_goodr_shopify_order and is being pulled from NS.
+Sales Order CTE to Cash Sale, Cash Refund, and Item Fulfillment 
+CTEs on order_num which is shopify's order number that is pulled into NS using custbody_goodr_shopify_order and is being pulled from NS.
 
 aliases: 
 ns = netsuite
