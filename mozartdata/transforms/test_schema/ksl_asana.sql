@@ -38,5 +38,5 @@ FROM
   LEFT OUTER JOIN asana.task task ON task.id = recursive_tasks.id
   LEFT OUTER JOIN asana.user user ON user.id = task.assignee_id
 WHERE
-  section.name = 'This Sprint'
-order by status,assigned_to desc
+  section.name = 'This Sprint' and status = 'In Progress'
+order by assigned_to asc
