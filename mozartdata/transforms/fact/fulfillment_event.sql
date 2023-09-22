@@ -2,7 +2,7 @@
 SELECT DISTINCT
   custbody_goodr_shopify_order order_id_edw,
   tran.id fulfillment_event_id_edw,
-  createddate,
+  CONVERT_TIMEZONE('America/Los_Angeles', createddate) converted_timestamp_pst,
   sum(CASE
           WHEN tranline.itemtype = 'InvtPart' THEN -1 * quantity
           WHEN tranline.itemtype = 'NonInvtPart'
