@@ -1,30 +1,30 @@
 --NS Events on IF's
 SELECT DISTINCT
-  custbody_goodr_shopify_order order_num,
-  id,
+  custbody_goodr_shopify_order order_id_edw,
+  tran.id fulfillment_event_id_edw,
   createddate,
   sum(CASE
-          WHEN tranline_ns.itemtype = 'InvtPart' THEN -1 * quantity
-          WHEN tranline_ns.itemtype = 'NonInvtPart'
-          AND tranline_ns.custcol2 LIKE '%GC-%' THEN -1 * quantity
+          WHEN tranline.itemtype = 'InvtPart' THEN -1 * quantity
+          WHEN tranline.itemtype = 'NonInvtPart'
+          AND tranline.custcol2 LIKE '%GC-%' THEN -1 * quantity
           ELSE 0
-        END) over (partition by order_num) as quantity_listed
+        END) over (partition by order_id_edw) as quantity_listed
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
 WHERE
   recordtype = 'itemfulfillment'
   AND createddate >= '2022-01-01T00:00:00Z'
-UNION ALL
---Shipstation Shipment Creations
-SELECT
-  ordernumber AS order_num,
-  shipmentid
-  createdate
-FROM
-  shipstation_portable.shipstation_shipments_8589936627 shipments
-  where createdate >= '2022-01-01T00:00:00Z'
-UNION ALL
+-- UNION ALL
+-- --Shipstation Shipment Creations
+-- SELECT
+--   ordernumber AS order_num,
+--   shipmentid
+--   createdate
+-- FROM
+--   shipstation_portable.shipstation_shipments_8589936627 shipments
+--   where createdate >= '2022-01-01T00:00:00Z'
+-- UNION ALL
 --Shopify Fulfillment Events
 -- SELECT
 --   shop_order.name AS order_num,
