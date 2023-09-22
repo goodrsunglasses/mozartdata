@@ -106,7 +106,8 @@ WITH
           ) THEN TRUE
           ELSE FALSE
         END
-      ) OVER (
+      ) OVER ( PARTITION BY
+          order_num
         ORDER BY
           CASE
             WHEN transtatus.fullname LIKE ANY(
@@ -319,10 +320,7 @@ SELECT DISTINCT
   amount_refunded_shipping,
   amount_refunded_tax,
   amount_refunded_total,
-  CASE
-    WHEN status_flag_edw THEN TRUE
-    ELSE FALSE
-  END AS status_flag_edw
+  status_flag_edw
 FROM
   order_numbers
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
