@@ -8,22 +8,31 @@ SELECT DISTINCT
           WHEN tranline.itemtype = 'NonInvtPart'
           AND tranline.custcol2 LIKE '%GC-%' THEN -1 * quantity
           ELSE 0
-        END) over (partition by order_id_edw) as quantity_listed
+        END) over (partition by order_id_edw,fulfillment_event_id_edw) as quantity_listed,
+  'IF Created' as event_type,
+  null as void_flag
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
 WHERE
   recordtype = 'itemfulfillment'
   AND createddate >= '2022-01-01T00:00:00Z'
--- UNION ALL
--- --Shipstation Shipment Creations
--- SELECT
---   ordernumber AS order_num,
---   shipmentid
---   createdate
--- FROM
---   shipstation_portable.shipstation_shipments_8589936627 shipments
---   where createdate >= '2022-01-01T00:00:00Z'
+and order_id_edw = 'G1863077'
+
+UNION ALL
+--Shipstation Shipment Creations
+SELECT
+  ordernumber AS order_num,
+  shipmentid,
+  createdate,
+null as quantity_listed,
+  'Shipment Created' as event_type,
+  voided as void_flag
+FROM
+  shipstation_portable.shipstation_shipments_8589936627 shipments
+  where createdate >= '2022-01-01T00:00:00Z'
+and order_num = 'G1863077'
+order by event_type desc
 -- UNION ALL
 --Shopify Fulfillment Events
 -- SELECT
