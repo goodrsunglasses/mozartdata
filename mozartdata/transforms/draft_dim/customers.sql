@@ -84,13 +84,13 @@ WITH
   LEFT OUTER JOIN netsuite.transaction tran_ns ON tran_ns.entity = cust_ns.id
   )
 SELECT DISTINCT
-  COALESCE(MD5(cust_ns.email), MD5(cust_shop.email)) AS goodr_customer_id,
+  COALESCE(MD5(cust_ns.email), MD5(cust_shop.email)) AS customter_id_edw,
   cust_ns.id AS cust_id_ns, --Netsuite customer ID
   cust_ns.entityid AS entity_id_ns, --Netsuite customer realtext ID
-  cust_ns.category AS channel_id_ns, --Customer sales channel
-  cust_ns.entitystatus AS status_id_ns, --Netsuite customer Status (WON open, Closed...)
-  cust_ns.defaultbillingaddress AS address_billing_default_id_ns, --- billing address id
-  cust_ns.defaultshippingaddress AS address_shipping_default_id_ns, --shipping address id
+  cust_ns.category AS channel_id, --Customer sales channel
+  cust_ns.entitystatus AS status_id, --Netsuite customer Status (WON open, Closed...)
+  cust_ns.defaultbillingaddress AS address_billing_default_id, --- billing address id
+  cust_ns.defaultshippingaddress AS address_shipping_default_id, --shipping address id
   cust_shop.id AS cust_id_shop, --- joined on email
   requester_id AS cust_id_zendesk,
   cust_ns.altname AS name_full, --Netsuite customer Full Name
