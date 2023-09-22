@@ -1,48 +1,39 @@
-WITH
-  distinct_order_info AS (
-    SELECT DISTINCT
-      order_id_edw,
-      channel,
-      timestamp_transaction_pst
-    FROM
-      dim.orders
-  ),
-  ns_shipments AS (
-    SELECT DISTINCT
-      custbody_goodr_shopify_order order_num,
-      actualshipdate
-    FROM
-      netsuite.transaction
-  ),
-  ss_shipments AS (
-    SELECT
-      ordernumber AS order_num,
-      createdate
-    FROM
-      shipstation_portable.shipstation_shipments_8589936627 shipments
-  ),
-  shop_fulfill AS (
-    SELECT
-      shop_order.name AS order_num,
-       MAX(estimated_delivery_at) OVER (
-    PARTITION BY
-      order_id
-  ) AS est_delivery,
-      happened_at,
-      message
-    FROM
-      shopify.fulfillment_event fulfill_event
-      LEFT OUTER JOIN shopify."ORDER" shop_order ON shop_order.id = fulfill_event.order_id
-  )
+--NS Events on IF's
 SELECT DISTINCT
-  order_id_edw,
-  channel,
-
-  
- 
+  custbody_goodr_shopify_order order_num,
+  id,
+  createddate,
+  sum(CASE
+          WHEN tranline_ns.itemtype = 'InvtPart' THEN -1 * quantity
+          WHEN tranline_ns.itemtype = 'NonInvtPart'
+          AND tranline_ns.custcol2 LIKE '%GC-%' THEN -1 * quantity
+          ELSE 0
+        END) over (partition by order_num) as quantity_listed
 FROM
-  distinct_order_info
-  LEFT OUTER JOIN ss_shipments ON ss_shipments.order_num = distinct_order_info.order_id
-  LEFT OUTER JOIN shop_fulfill ON shop_fulfill.order_num = distinct_order_info.order_id
+  netsuite.transaction tran
+  LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
 WHERE
-  timestamp_transaction_pst >= '2022-01-01T00:00:00Z' --filtered to ignore alot of early weird data from NS/Shopify
+  recordtype = 'itemfulfillment'
+  AND createddate >= '2022-01-01T00:00:00Z'
+UNION ALL
+--Shipstation Shipment Creations
+SELECT
+  ordernumber AS order_num,
+  shipmentid
+  createdate
+FROM
+  shipstation_portable.shipstation_shipments_8589936627 shipments
+  where createdate >= '2022-01-01T00:00:00Z'
+UNION ALL
+--Shopify Fulfillment Events
+-- SELECT
+--   shop_order.name AS order_num,
+--   MAX(estimated_delivery_at) OVER (
+--     PARTITION BY
+--       order_id
+--   ) AS est_delivery,
+--   happened_at,
+--   message
+-- FROM
+--   shopify.fulfillment_event fulfill_event
+--   LEFT OUTER JOIN shopify."ORDER" shop_order ON shop_order.id = fulfill_event.order_id
