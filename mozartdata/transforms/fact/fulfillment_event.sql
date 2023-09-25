@@ -28,7 +28,7 @@ FROM
 WHERE
   recordtype = 'itemfulfillment'
   AND createddate >= '2022-01-01T00:00:00Z'
-  AND fulfillment_event_id_edw = 'TO0000763'
+  AND fulfillment_event_id_edw = 'G1863077'
 UNION ALL
 --Shipstation Shipment Creations
 SELECT
