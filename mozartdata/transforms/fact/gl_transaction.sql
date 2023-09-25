@@ -47,8 +47,6 @@ use createdate converted instead of trandate
     left join
       netsuite.paymentevent pe
       on pe.doc = tran.id
-    where
-      posting_flag = true
     group by
      concat(transaction,'_',transactionline)
     , tran.custbody_goodr_shopify_order
