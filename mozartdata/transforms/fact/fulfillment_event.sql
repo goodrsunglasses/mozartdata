@@ -45,7 +45,7 @@ WHERE
 ORDER BY
   event_type desc
 UNION ALL
-Shopify Fulfillment Events
+--Shopify Fulfillment Events
 SELECT
   shop_order.name AS order_num,
   MAX(estimated_delivery_at) OVER (
