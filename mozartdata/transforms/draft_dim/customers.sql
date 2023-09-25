@@ -97,7 +97,6 @@ SELECT DISTINCT
   cust_ns.lastmodifieddate AS last_modified_date, --Netsuite customer last modified date, not sure what this is specfically supposed to be yet
   COALESCE(cust_ns.email, cust_shop.email) AS email,
   ticket_count, --count of zendesk tickets
-  --These 4 next window functions are finding the first/last dates and order IDS in an ordered list of a given customer id's orders, sorted by transaction date ascending
   cust_ns.companyname AS company_name, --NS company name if applicable,
   cust_category_ns.name channel, --NS customer channel they are a part of (sellgoodr,goodr.com,CS,EMP...),
   CASE
