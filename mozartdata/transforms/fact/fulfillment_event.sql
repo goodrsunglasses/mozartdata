@@ -15,10 +15,7 @@ SELECT DISTINCT
       order_id_edw,
       fulfillment_event_id_edw
   ) AS quantity_listed,
-  CASE
-    WHEN recordtype = 'itemfulfillment' THEN 'IF Created'
-    ELSE 'Transfer Order'
-  END AS event_type,
+  'IF Created' AS event_type,
   status_flag_edw,
   NULL AS void_flag
 FROM
@@ -47,16 +44,17 @@ WHERE
   AND order_num = 'G1863077'
 ORDER BY
   event_type desc
-  -- UNION ALL
-  --Shopify Fulfillment Events
-  -- SELECT
-  --   shop_order.name AS order_num,
-  --   MAX(estimated_delivery_at) OVER (
-  --     PARTITION BY
-  --       order_id
-  --   ) AS est_delivery,
-  --   happened_at,
-  --   message
-  -- FROM
-  --   shopify.fulfillment_event fulfill_event
-  --   LEFT OUTER JOIN shopify."ORDER" shop_order ON shop_order.id = fulfill_event.order_id
+UNION ALL
+Shopify Fulfillment Events
+SELECT
+  shop_order.name AS order_num,
+  MAX(estimated_delivery_at) OVER (
+    PARTITION BY
+      order_id
+  ) AS est_delivery,
+  happened_at,
+  message
+FROM
+  shopify.fulfillment_event fulfill_event
+  LEFT OUTER JOIN shopify."ORDER" shop_order ON shop_order.id = fulfill_event.order_id
+  LEFT OUTER JOIN shopify
