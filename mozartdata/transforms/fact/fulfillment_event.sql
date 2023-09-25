@@ -26,7 +26,7 @@ FROM
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
   LEFT OUTER JOIN dim.orders orders ON orders.order_id_edw = tran.custbody_goodr_shopify_order
 WHERE
-  recordtype IN ('itemfulfillment', 'transferorder')
+  recordtype = 'itemfulfillment'
   AND createddate >= '2022-01-01T00:00:00Z'
   AND fulfillment_event_id_edw = 'TO0000763'
 UNION ALL
