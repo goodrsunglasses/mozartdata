@@ -21,4 +21,5 @@ inner join
   on ga.account_id_ns = gt.account_id_ns
 where
   gt.posting_period = 'Jan 2023'
+  and posting_flag = true
 and ga.account_number = 4000 and ga.account_number < 7000
