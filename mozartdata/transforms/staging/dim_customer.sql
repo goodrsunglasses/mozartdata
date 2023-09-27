@@ -2,9 +2,28 @@ with ns as
   (
 SELECT distinct
   c.email
-, case 
-  when channel.name in ('Key Account','Global','Specialty','Key Account CAN') then 'B2B' 
-  else 'D2C' end customer_category
+, CASE
+    WHEN channel.name IN (
+      'Specialty',
+      'Key Account',
+      'Global',
+      'Key Account CAN',
+      'Specialty CAN'
+    ) THEN 'B2B'
+    WHEN channel.name IN (
+      'Goodr.com',
+      'Amazon',
+      'Cabana',
+      'Goodr.com CAN',
+      'Prescription'
+    ) THEN 'D2C'
+    WHEN channel.name IN (
+      'Goodrwill.com',
+      'Customer Service CAN',
+      'Marketing',
+      'Customer Service'
+    ) THEN 'INDIRECT'
+  END AS  customer_category
 --, 'ns' as source
 FROM
   netsuite.transaction t
@@ -82,9 +101,12 @@ order by
     on a.email = c.email
     and a.customer_category = 'B2B'
   WHERE
-    prospect_flag = 1 and customer_category = 'B2B'
+    coalesce(b.prospect_flag,c.prospect_flag,0) = 1 and a.customer_category = 'B2B'
 order by
   email
+
+--select * from specialty_shopify.customer where email = 'Andy@golfballs.com'
+
   /*
 select email, channel.name from netsuite.transaction t
   LEFT OUTER JOIN 
