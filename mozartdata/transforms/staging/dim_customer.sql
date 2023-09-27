@@ -1,7 +1,7 @@
 with ns as
   (
 SELECT distinct
-  c.email
+  lower(c.email) email
 , CASE
     WHEN channel.name IN (
       'Specialty',
@@ -41,7 +41,7 @@ order by
 , d2c_shop as
 (
   SELECT distinct
-    email
+    lower(email) email
   , 'D2C' as customer_category
 --  , 'goodr' as source
   from
@@ -50,7 +50,7 @@ order by
 , b2b_shop as
 (
   SELECT distinct
-    email
+    lower(email) email
   , 'B2B' as customer_category
  -- , 'specialty' as source
   from
@@ -100,8 +100,6 @@ order by
     b2b_prospect c
     on a.email = c.email
     and a.customer_category = 'B2B'
-  WHERE
-    coalesce(b.prospect_flag,c.prospect_flag,0) = 1 and a.customer_category = 'B2B'
 order by
   email
 
