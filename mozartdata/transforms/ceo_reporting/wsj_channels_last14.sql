@@ -3,7 +3,7 @@ SELECT
   channel,
   COUNT(*) AS orders_count,
   sum(quantity_sold) as units_sold,
-  ROUND(SUM(amount_total), 2) as total_amount
+  ROUND(SUM(amount_total), 2) as total_amount,
 FROM
   dim.orders
 WHERE
