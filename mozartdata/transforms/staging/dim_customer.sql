@@ -81,6 +81,8 @@ order by
     b2b_prospect c
     on a.email = c.email
     and a.customer_category = 'B2B'
+  WHERE
+    prospect_flag = 1 and customer_category = 'B2B'
 order by
   email
   /*
