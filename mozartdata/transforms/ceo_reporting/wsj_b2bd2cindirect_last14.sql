@@ -1,7 +1,7 @@
 SELECT
   DATE_TRUNC('DAY', timestamp_transaction_pst)::DATE AS transaction_date,
   b2b_d2c,
-  COUNT(*) AS b2b_d2c_count
+  COUNT(*) AS orders_count
 FROM
   dim.orders
 WHERE
