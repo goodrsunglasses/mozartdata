@@ -1,14 +1,17 @@
 with ns as
   (
 SELECT distinct
-  t.email
+  c.email
 , case 
   when channel.name in ('Key Account','Global','Specialty','Key Account CAN') then 'B2B' 
   else 'D2C' end customer_category
-, 'ns' as source
+--, 'ns' as source
 FROM
   netsuite.transaction t
-LEFT OUTER JOIN 
+inner join
+  netsuite.customer c
+  on t.entity = c.id
+  LEFT OUTER JOIN 
   netsuite.customrecord_cseg7 channel
   on channel.id = t.cseg7
 where
@@ -21,7 +24,7 @@ order by
   SELECT distinct
     email
   , 'D2C' as customer_category
-  , 'goodr' as source
+--  , 'goodr' as source
   from
     shopify.customer
   )
@@ -30,29 +33,62 @@ order by
   SELECT distinct
     email
   , 'B2B' as customer_category
-  , 'goodr' as source
+ -- , 'specialty' as source
   from
     specialty_shopify.customer
   )
- , final as
-  (SELECT distinct
-    coalesce(a.email,b.email) email
-    , coalesce(a.customer_category,b.customer_category) customer_category
-    , coalesce(a.source,b.source) source
-    , case when a.email is null then true else false end prospect_flag
+, d2c_prospect as
+  (select 
+    a.email
+  , case when b.email is null then 1 else 0 end prospect_flag
+  FROM
+    d2c_shop a
+  left join
+    ns b
+  on a.email = b.email
+  and b.customer_category = 'D2C')
+, b2b_prospect as
+  (select 
+    a.email
+  , case when b.email is null then 1 else 0 end prospect_flag
+  FROM
+    b2b_shop a
+  left join
+    ns b
+  on a.email = b.email
+  and b.customer_category = 'B2B')
+ , unions as
+  (
+  SELECT distinct
+    *
   from
     ns a
-  right join
-   d2c_shop b
+  union all select * from d2c_shop
+  union all select * from b2b_shop
+  ) 
+  select distinct
+    a.email
+  , a.customer_category
+  , md5(concat(a.email, '::', a.customer_category)) customer_id_edw
+  , coalesce(b.prospect_flag,c.prospect_flag,0) prospect_flag
+  from
+    unions a
+  left join
+    d2c_prospect b
     on a.email = b.email
-    and a.customer_category = b.customer_category
-  ) select * from final where email = 'joe@sbrunningco.com'
-  select email, channel.name from netsuite.transaction t
+    and a.customer_category = 'D2C'
+  left join
+    b2b_prospect c
+    on a.email = c.email
+    and a.customer_category = 'B2B'
+order by
+  email
+  /*
+select email, channel.name from netsuite.transaction t
   LEFT OUTER JOIN 
   netsuite.customrecord_cseg7 channel
   on channel.id = t.cseg7
   where t.email in (select email from final where prospect_flag = true and customer_category = 'D2C')
-  /*
 
 select * from ns where email = 'sjones1@tarleton.edu'
 --select * from netsuite.transaction t where email = 'katiewright0110@gmail.com'
