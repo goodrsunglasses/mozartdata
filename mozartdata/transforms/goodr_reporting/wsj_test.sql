@@ -9,3 +9,4 @@ GROUP BY
   b2b_d2c
 ORDER BY
   transaction_date desc
+limit 16
