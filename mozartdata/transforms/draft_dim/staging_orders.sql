@@ -1,1 +1,1 @@
- 
+select distinct email
