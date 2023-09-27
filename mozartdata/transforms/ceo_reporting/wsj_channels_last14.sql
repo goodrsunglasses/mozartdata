@@ -1,7 +1,9 @@
 SELECT
   DATE_TRUNC('DAY', timestamp_transaction_pst)::DATE AS transaction_date,
   channel,
-  COUNT(*) AS orders_count
+  COUNT(*) AS orders_count,
+  sum(quantity_sold) as units_sold
+  
 FROM
   dim.orders
 WHERE
