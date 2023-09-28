@@ -15,6 +15,10 @@ cust = customer
 custbody_goodr_shopify_order = order_num (this is the shopify order number, and is pulled into NS using the custom field custbody_goodr_shopify_order)
 
 */
+SELECT
+  order_id_edw,
+  timestamp_transaction_pst,
+  channel,
 WITH
   --CTE to select all the unique order numbers from all transaction records of the salesorder and cashsale type
   order_numbers AS (
@@ -45,6 +49,7 @@ WITH
           END,
           tran.createddate ASC
       ) AS prioritized_cust_id,
+      ns_cust.email,
       FIRST_VALUE(tran.memo) OVER (
         PARTITION BY
           order_num
@@ -106,7 +111,8 @@ WITH
           ) THEN TRUE
           ELSE FALSE
         END
-      ) OVER ( PARTITION BY
+      ) OVER (
+        PARTITION BY
           order_num
         ORDER BY
           CASE
@@ -127,6 +133,7 @@ WITH
         tran.status = transtatus.id
         AND tran.type = transtatus.trantype
       )
+      LEFT OUTER JOIN netsuite.customer ns_cust ON ns_cust.id = prioritized_cust_id
     WHERE
       tran.recordtype IN ('cashsale', 'invoice', 'salesorder')
   ),
@@ -298,6 +305,7 @@ SELECT DISTINCT
     WHEN channel IN ('Global') THEN 'Distribution'
   END AS model,
   prioritized_cust_id AS customer_id_ns,
+  ns_cust.email,
   quantity_sold,
   quantity_fulfilled,
   prioritized_grossprofit_sum AS profit_gross,
@@ -306,7 +314,7 @@ SELECT DISTINCT
   CASE
     WHEN channel = 'Cabana' THEN total_product_amount
     ELSE product_rate
-  END AS rate_items, 
+  END AS rate_items,
   total_product_amount AS amount_items,
   ship_rate AS amount_ship,
   rate_tax AS amount_tax,
