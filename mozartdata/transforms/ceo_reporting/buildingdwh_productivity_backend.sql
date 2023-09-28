@@ -41,4 +41,4 @@ FROM
   LEFT OUTER JOIN asana.user user ON user.id = task.assignee_id
 --WHERE
 --  section.name = '1️⃣This Sprint'
-order by assigned_to asc
+order by created_at desc
