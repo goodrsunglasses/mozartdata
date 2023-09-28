@@ -18,7 +18,7 @@ SELECT
   customer_category,
   customer_id_edw,
   prospect_flag,
-  coalesce((shop_customer.first_name || ' ' || shop_customer.last_name),(specialty_shopify.first_name || ' ' || specialty_shopify.last_name),(ns_cust.altname))
+  coalesce((shop_customer.first_name || ' ' || shop_customer.last_name),(specialty_shopify.first_name || ' ' || specialty_shopify.last_name),(ns_cust.altname)) as fullname
 FROM
   staging.dim_customer staging_customer
   LEFT OUTER JOIN shopify.customer shop_customer ON shop_customer.email = staging_customer.email
