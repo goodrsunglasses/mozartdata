@@ -13,8 +13,7 @@ shop = shopify
 cust = customer
 
 */
-SELECT DISTINCT
-  email
+SELECT
+  *
 FROM
-  shopify.customer shop_cust 
-left outer join dim.orders
+  staging.dim_customer
