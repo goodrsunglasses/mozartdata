@@ -165,5 +165,7 @@ aliases:
     b2b_prospect bp
     on u.email = bp.email
     and u.customer_category = 'B2B'
+  where
+    u.email is not null
 order by
   email
