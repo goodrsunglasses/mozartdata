@@ -64,8 +64,6 @@ inner join
   on channel.id = t.cseg7
 where
   t.recordtype in ('salesorder','cashsale','invoice')
-order by
-  email
 )
 /*
 The "d2c_shopify" CTE pulls emails and customer categories based on shopify store from goodr.com shopify. All goodr.com sales are considered D2C
