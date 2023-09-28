@@ -1,7 +1,7 @@
 /*
 THIS TRANSFORM IS IN PROGRESS, DO NOT USE YET
 purpose: 
-One row per customer and category (B2B, D2C).
+One row per customer and category (B2B, D2C). ie. one row per MD5
 This transform creates a staging table which creates customer_id_edw for every customer in our various source systems (NetSuite, Shopify...)
 
 We will use channel in NetSuite to determine categories, but also use the shopify store (goodr.com/sellgoodr) to differentiate between D2C and B2B customers.
