@@ -9,7 +9,9 @@ ga = dim.gl_account
 select
   ga.account_number
 , ga.account_full_name
+, concat(ga.account_number,' - ',ga.account_full_name) account_with_name
 , gt.channel
+, gt.amount_transaction
 , gt.amount_net
 , gt.amount_credit
 , gt.amount_debit
@@ -20,6 +22,6 @@ inner join
   dim.gl_account ga
   on ga.account_id_ns = gt.account_id_ns
 where
-  gt.posting_period = 'Jan 2023'
+  gt.posting_period = 'Feb 2023'
   and posting_flag = true
-and ga.account_number = 4000 and ga.account_number < 7000
+and ga.account_number >= 4000 and ga.account_number < 7000
