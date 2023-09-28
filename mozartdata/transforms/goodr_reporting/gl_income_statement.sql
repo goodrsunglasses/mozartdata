@@ -24,4 +24,4 @@ inner join
 where
   gt.posting_period = 'Feb 2023'
   and posting_flag = true
-and ga.account_number >= 4000 and ga.account_number < 7000
+and ga.account_number >= 4000 and ga.account_number < 9000
