@@ -27,6 +27,8 @@ SELECT
   section.name AS section_name,
   immediate_parent_name AS parent_name,
   recursive_tasks.name task_name,
+  task.created_at,
+  task.completed_at,
   user.name AS assigned_to,
   CASE
     WHEN task.completed THEN 'Completed'
