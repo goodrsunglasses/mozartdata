@@ -1,3 +1,31 @@
+/*
+THIS TRANSFORM IS IN PROGRESS, DO NOT USE YET
+purpose: 
+One row per customer and category (B2B, D2C).
+This transform creates a staging table which creates customer_id_edw for every customer in our various source systems (NetSuite, Shopify...)
+
+We will use channel in NetSuite to determine categories, but also use the shopify store (goodr.com/sellgoodr) to differentiate between D2C and B2B customers.
+
+joins: 
+
+
+aliases: 
+ns = netsuite
+shop = shopify
+cust = customer
+custbody_goodr_shopify_order = order_num (this is the shopify order number, and is pulled into NS using the custom field custbody_goodr_shopify_order)
+
+*/
+/*
+The "ns" CTE pulls emails and customer categories based on order channel in netsuite. The channels come from dim.orders and the classification has been approved. 
+A single customer MAY be in multiple categories. ex. someone who works for a specialty store also uses their work email to place an order on goodr.com
+We have to lowercase the email, otherwise we would get different emails based on capitalization, which doesn't truly differentiate emails.
+aliases: 
+t = netsuite.transaction
+c = netsuite.customer
+channel = netsuite.customrecord_cseg7
+*/
+
 with ns as
   (
 SELECT distinct
@@ -24,7 +52,6 @@ SELECT distinct
       'Customer Service'
     ) THEN 'INDIRECT'
   END AS  customer_category
---, 'ns' as source
 FROM
   netsuite.transaction t
 inner join
@@ -38,12 +65,16 @@ where
 order by
   email
 )
+/*
+The "d2c_shop" CTE pulls emails and customer categories based on shopify store from goodr.com shopify. All goodr.com sales are considered D2C
+aliases: 
+  none
+*/
 , d2c_shop as
 (
   SELECT distinct
     lower(email) email
   , 'D2C' as customer_category
---  , 'goodr' as source
   from
     shopify.customer
   )
