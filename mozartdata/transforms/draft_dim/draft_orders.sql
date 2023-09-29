@@ -289,6 +289,7 @@ SELECT DISTINCT
     WHEN channel IN ('Cabana') THEN 'Retail'
     WHEN channel IN ('Global') THEN 'Distribution'
   END AS model,
+  prioritized_cust_id,
   customer.customer_id_edw,
   quantity_sold,
   quantity_fulfilled,
