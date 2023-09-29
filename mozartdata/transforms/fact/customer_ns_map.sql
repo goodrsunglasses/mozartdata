@@ -36,6 +36,7 @@ SELECT
   id,
   customer_id_edw,
   isperson,
+  channel,
   CASE
     WHEN id IN (
       12489,
