@@ -1,7 +1,38 @@
+WITH
+  customer_category AS (
+    SELECT DISTINCT
+      cust.id,
+      cust.email,
+      channel.name AS channel,
+      CASE
+        WHEN channel IN (
+          'Specialty',
+          'Key Account',
+          'Global',
+          'Key Account CAN',
+          'Specialty CAN'
+        ) THEN 'B2B'
+        WHEN channel IN (
+          'Goodr.com',
+          'Amazon',
+          'Cabana',
+          'Goodr.com CAN',
+          'Prescription'
+        ) THEN 'D2C'
+        WHEN channel IN (
+          'Goodrwill.com',
+          'Customer Service CAN',
+          'Marketing',
+          'Customer Service'
+        ) THEN 'INDIRECT'
+      END AS b2b_d2c
+    FROM
+      netsuite.transaction tran
+      LEFT OUTER JOIN netsuite.customer cust ON cust.id = tran.entity
+      LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
+  )
 SELECT
-  prioritized_cust_id,
-  b2b_d2c,
-  entityid,
+  id,
   customer_id_edw,
   CASE
     WHEN id IN (
@@ -26,5 +57,8 @@ SELECT
     ELSE FALSE
   END AS is_key_account_current
 FROM
-  draft_dim.draft_orders orders
-  LEFT OUTER JOIN netsuite.customer ns_cust ON ns_cust.id = orders.prioritized_cust_id
+  customer_category
+  LEFT OUTER JOIN draft_dim.customers customers ON (
+    customers.email = customer_category.email
+    AND customer_category.b2b_d2c = customers.customer_category
+  )
