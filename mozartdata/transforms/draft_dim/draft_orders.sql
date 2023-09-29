@@ -15,54 +15,57 @@ cust = customer
 custbody_goodr_shopify_order = order_num (this is the shopify order number, and is pulled into NS using the custom field custbody_goodr_shopify_order)
 
 */
-SELECT
-  order_id_edw,
-  timestamp_transaction_pst,
-  channel,
 WITH
+  priority_stage AS (
+    SELECT
+      tran.custbody_goodr_shopify_order order_num,
+      FIRST_VALUE(tran.id) OVER (
+        PARTITION BY
+          order_num
+        ORDER BY
+          CASE
+            WHEN tran.recordtype = 'cashsale' THEN 1
+            WHEN tran.recordtype = 'invoice' THEN 2
+            WHEN tran.recordtype = 'salesorder' THEN 3
+            ELSE 4
+          END,
+          tran.createddate ASC
+      ) AS id
+    FROM
+      netsuite.transaction tran
+  ),
   --CTE to select all the unique order numbers from all transaction records of the salesorder and cashsale type
   order_numbers AS (
     SELECT DISTINCT
       tran.custbody_goodr_shopify_order order_num,
       --Grabs the first value from the transaction type ranking, with a secondary sort that is going for oldest createddate first 
-      FIRST_VALUE(tran.cseg7) OVER (
-        PARTITION BY
-          order_num
-        ORDER BY
-          CASE
-            WHEN tran.recordtype = 'cashsale' THEN 1
-            WHEN tran.recordtype = 'invoice' THEN 2
-            WHEN tran.recordtype = 'salesorder' THEN 3
-            ELSE 4
-          END,
-          tran.createddate ASC
-      ) AS prioritized_channel_id,
-      FIRST_VALUE(tran.entity) OVER (
-        PARTITION BY
-          order_num
-        ORDER BY
-          CASE
-            WHEN tran.recordtype = 'cashsale' THEN 1
-            WHEN tran.recordtype = 'invoice' THEN 2
-            WHEN tran.recordtype = 'salesorder' THEN 3
-            ELSE 4
-          END,
-          tran.createddate ASC
-      ) AS prioritized_cust_id,
-      ns_cust.email,
-      FIRST_VALUE(tran.memo) OVER (
-        PARTITION BY
-          order_num
-        ORDER BY
-          CASE
-            WHEN tran.recordtype = 'cashsale' THEN 1
-            WHEN tran.recordtype = 'invoice' THEN 2
-            WHEN tran.recordtype = 'salesorder' THEN 3
-            ELSE 4
-          END,
-          tran.createddate ASC
-      ) AS memo,
+      channel.name as channel,
+      priority.entity AS prioritized_cust_id,
+      cust.email,
+      priority.memo AS memo,
       --Grabs the first value from the transaction type ranking, this time ignoring invoices, with a secondary sort that is going for oldest createddate first 
+    CASE
+    WHEN channel IN (
+      'Specialty',
+      'Key Account',
+      'Global',
+      'Key Account CAN',
+      'Specialty CAN'
+    ) THEN 'B2B'
+    WHEN channel IN (
+      'Goodr.com',
+      'Amazon',
+      'Cabana',
+      'Goodr.com CAN',
+      'Prescription'
+    ) THEN 'D2C'
+    WHEN channel IN (
+      'Goodrwill.com',
+      'Customer Service CAN',
+      'Marketing',
+      'Customer Service'
+    ) THEN 'INDIRECT'
+  END AS b2b_d2c, --- d2c or b2b as categorized by sales, which is slightly different than for ops
       FIRST_VALUE(tran.createddate) OVER (
         PARTITION BY
           order_num
@@ -133,7 +136,10 @@ WITH
         tran.status = transtatus.id
         AND tran.type = transtatus.trantype
       )
-      LEFT OUTER JOIN netsuite.customer ns_cust ON ns_cust.id = prioritized_cust_id
+      LEFT JOIN priority_stage ON tran.custbody_goodr_shopify_order = priority_stage.order_num
+      LEFT JOIN netsuite.transaction priority ON priority.id = priority_stage.id
+    LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON priority.cseg7 = channel.id
+      LEFT OUTER JOIN netsuite.customer cust ON cust.id = priority.entity
     WHERE
       tran.recordtype IN ('cashsale', 'invoice', 'salesorder')
   ),
@@ -265,33 +271,12 @@ WITH
 SELECT DISTINCT
   order_numbers.order_num AS order_id_edw,
   CONVERT_TIMEZONE('America/Los_Angeles', oldest_createddate) AS timestamp_transaction_PST,
-  channel.name AS channel,
-  CASE
+  order_numbers.channel,
+  case
     WHEN memo LIKE '%RMA%' THEN TRUE
     ELSE FALSE
   END AS is_exchange,
-  CASE
-    WHEN channel IN (
-      'Specialty',
-      'Key Account',
-      'Global',
-      'Key Account CAN',
-      'Specialty CAN'
-    ) THEN 'B2B'
-    WHEN channel IN (
-      'Goodr.com',
-      'Amazon',
-      'Cabana',
-      'Goodr.com CAN',
-      'Prescription'
-    ) THEN 'D2C'
-    WHEN channel IN (
-      'Goodrwill.com',
-      'Customer Service CAN',
-      'Marketing',
-      'Customer Service'
-    ) THEN 'INDIRECT'
-  END AS b2b_d2c, --- d2c or b2b as categorized by sales, which is slightly different than for ops
+  order_numbers.b2b_d2c,
   CASE
     WHEN channel IN (
       'Specialty',
@@ -304,8 +289,7 @@ SELECT DISTINCT
     WHEN channel IN ('Cabana') THEN 'Retail'
     WHEN channel IN ('Global') THEN 'Distribution'
   END AS model,
-  prioritized_cust_id AS customer_id_ns,
-  ns_cust.email,
+  customer.customer_id_edw,
   quantity_sold,
   quantity_fulfilled,
   prioritized_grossprofit_sum AS profit_gross,
@@ -331,7 +315,10 @@ SELECT DISTINCT
   status_flag_edw
 FROM
   order_numbers
-  LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON order_numbers.prioritized_channel_id = channel.id
   LEFT OUTER JOIN line_info_sold ON line_info_sold.order_num = order_numbers.order_num
   LEFT OUTER JOIN line_info_fulfilled ON line_info_fulfilled.order_num = order_numbers.order_num
   LEFT OUTER JOIN line_info_refunded ON line_info_refunded.order_num = order_numbers.order_num
+  LEFT OUTER JOIN staging.dim_customer customer ON (
+    customer.email = order_numbers.email
+    AND customer.customer_category = order_numbers.b2b_d2c
+  )
