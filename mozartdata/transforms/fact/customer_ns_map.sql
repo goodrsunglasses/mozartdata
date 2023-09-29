@@ -3,6 +3,7 @@ WITH
     SELECT DISTINCT
       cust.id,
       cust.email,
+      cust.isperson,
       channel.name AS channel,
       CASE
         WHEN channel IN (
@@ -34,6 +35,7 @@ WITH
 SELECT
   id,
   customer_id_edw,
+  isperson,
   CASE
     WHEN id IN (
       12489,
