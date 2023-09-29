@@ -18,6 +18,7 @@ use createdate converted instead of trandate
     select
       concat(transaction,'_',transactionline) as transaction_line_id
     , tran.custbody_goodr_shopify_order order_number
+    , tran.tranid as order_transaction_id_ns
     , tal."ACCOUNT" as account_id_ns
     , channel.name as channel
     , tran.trandate as date_transaction
@@ -50,6 +51,7 @@ use createdate converted instead of trandate
     group by
      concat(transaction,'_',transactionline)
     , tran.custbody_goodr_shopify_order
+    , tran.tranid
     , tal."ACCOUNT"
     , channel.name
     , tran.trandate
