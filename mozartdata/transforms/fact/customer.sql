@@ -30,26 +30,3 @@ SELECT DISTINCT
   ) AS order_count
 FROM
   draft_dim.draft_orders
- 
-  -- CASE
-  --   WHEN cust_id_ns IN (
-  --     12489,
-  --     479,
-  --     465,
-  --     476,
-  --     8147,
-  --     73200,
-  --     3363588,
-  --     8169,
-  --     3633497,
-  --     3682848,
-  --     467,
-  --     466,
-  --     2510,
-  --     478,
-  --     475,
-  --     4484902,
-  --     4533439
-  --   ) THEN TRUE
-  --   ELSE FALSE
-  -- END AS is_key_account_current
