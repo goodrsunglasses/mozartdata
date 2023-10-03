@@ -7,7 +7,7 @@ SELECT DISTINCT
   shipments.createdate,
   SUM(flattened.value:QUANTITY::INTEGER) over (
     PARTITION BY
-      shipmentitems
+      shipments.shipmentid
   ) AS quantity_listed,
   SUM(
     CASE
