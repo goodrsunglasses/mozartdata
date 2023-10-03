@@ -5,20 +5,17 @@ SELECT DISTINCT
   shipments.servicecode,
   shipments.shipmentcost,
   shipments.createdate,
-  SUM(flattened.value:QUANTITY::INTEGER) over (
-    PARTITION BY
-      shipments.shipmentid
-  ) AS quantity_listed,
-  SUM(
-    CASE
-      WHEN tranline.itemtype = 'InvtPart'
-      AND tranline.custcol1 IS NOT NULL THEN tranline.quantity * -1
-      ELSE 0
-    END
-  ) over (
-    PARTITION BY
-      ss_shipmentid
-  ) AS if_qty,
+  SUM(flattened.value:QUANTITY::INTEGER)  AS quantity_listed,
+  -- SUM(
+  --   CASE
+  --     WHEN tranline.itemtype = 'InvtPart'
+  --     AND tranline.custcol1 IS NOT NULL THEN tranline.quantity * -1
+  --     ELSE 0
+  --   END
+  -- ) over (
+  --   PARTITION BY
+  --     ss_shipmentid
+  -- ) AS if_qty,
   shipments.voided AS void_flag
 FROM
   shipstation_portable.shipstation_shipments_8589936627 shipments
