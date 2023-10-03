@@ -29,6 +29,6 @@ FROM
   netsuite.transaction tran
 WHERE
   cseg7 = 10
-  AND order_num = 'CS-LST-SD-G2496087'
+  AND order_num in ('CS-LST-SD-G2496087','CS-LST- G1196792')
 GROUP BY
   order_num
