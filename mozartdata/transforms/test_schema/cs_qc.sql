@@ -29,7 +29,7 @@ FROM
   netsuite.transaction tran
 WHERE
   cseg7 = 10
-  AND createddate >= '2023-09-25T00:00:00Z'
+  AND createddate >= '2023-09-20T00:00:00Z'
 GROUP BY
   order_num
 HAVING
@@ -50,7 +50,7 @@ FROM
   netsuite.transaction tran
 WHERE
   cseg7 = 10
-  AND createddate >= '2023-09-25T00:00:00Z'
+  AND createddate >= '2023-09-20T00:00:00Z'
   AND order_num NOT LIKE '%CS-%'
 AND order_num NOT LIKE '%SD-%'
 AND order_num NOT LIKE '%CI-%'
