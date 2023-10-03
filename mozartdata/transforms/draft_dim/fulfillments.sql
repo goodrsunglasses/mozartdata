@@ -1,5 +1,5 @@
 --Idea for this is to replicate the logic we already have in place for SS->NS that makes it so that we'll have one shipment per row, 
-SELECT
+SELECT distinct 
   shipments.ordernumber AS order_num,
   shipments.shipmentid ss_shipmentid,
   shipments.servicecode,
@@ -9,13 +9,13 @@ SELECT
   SUM(
     CASE
       WHEN tranline.itemtype = 'InvtPart'
-      AND tranline.custcol1 IS NOT NULL THEN tranline.quantity * 1
+      AND tranline.custcol1 IS NOT NULL THEN tranline.quantity * -1
       ELSE 0
     END
   ) over (
     PARTITION BY
       ss_shipmentid
-  ),
+  ) as if_qty,
   shipments.voided AS void_flag
 FROM
   shipstation_portable.shipstation_shipments_8589936627 shipments
@@ -25,5 +25,3 @@ FROM
 WHERE
   shipments.createdate >= '2022-01-01T00:00:00Z'
   AND order_num = 'G1863077'
-ORDER BY
-  event_type desc
