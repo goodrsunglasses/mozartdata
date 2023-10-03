@@ -5,7 +5,7 @@ SELECT distinct
   shipments.servicecode,
   shipments.shipmentcost,
   shipments.createdate,
-  shipmentitems[0]:QUANTITY::INTEGER AS quantity_listed,
+  SUM(flattened.value:QUANTITY::INTEGER) over (partition by shipmentitems) AS quantity_listed,
   SUM(
     CASE
       WHEN tranline.itemtype = 'InvtPart'
@@ -18,7 +18,8 @@ SELECT distinct
   ) as if_qty,
   shipments.voided AS void_flag
 FROM
-  shipstation_portable.shipstation_shipments_8589936627 shipments
+  shipstation_portable.shipstation_shipments_8589936627 shipments,
+  LATERAL FLATTEN(input => shipments.shipmentitems) AS flattened
   LEFT OUTER JOIN shipstation_portable.shipstation_shipment_items_8589936627 ship_item ON ship_item.shipmentid = shipments.shipmentid
   LEFT OUTER JOIN netsuite.transaction tran ON tran.custbody_shipment_id = shipments.shipmentid
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
