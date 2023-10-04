@@ -16,7 +16,7 @@ createdate convert to America/Los_Angeles
 use createdate converted instead of trandate
 */
     select
-      concat(transaction,'_',transactionline) as transaction_line_id
+      concat(tal.transaction,'_',tal.transactionline) as transaction_line_id
     , tran.custbody_goodr_shopify_order order_number
     , tran.tranid as order_transaction_id_ns
     , tal."ACCOUNT" as account_id_ns
@@ -30,9 +30,9 @@ use createdate converted instead of trandate
     , case when tal.posting = 'T' then true else false end posting_flag
     , ap.periodname as posting_period
     , sum(coalesce(tal.amount,0)) as amount_transaction
-    , sum(coalesce(credit,0)) as  amount_credit
-    , sum(coalesce(debit,0)) as amount_debit
-    , sum(coalesce(netamount,0)) as amount_net
+    , sum(coalesce(tal.credit,0)) as  amount_credit
+    , sum(coalesce(tal.debit,0)) as amount_debit
+    , sum(coalesce(tal.netamount,0)) as amount_net
     , abs(sum(coalesce(tal.amount,0))) as amount_transaction_positive
     from
       netsuite.transactionaccountingline tal
@@ -42,14 +42,18 @@ use createdate converted instead of trandate
     inner join
       netsuite.accountingperiod ap
       on tran.postingperiod = ap.id
+    left join
+      netsuite.transactionline tl
+      on tran.id = tl.transaction
+      and tal.transactionline = tl.id
     left join 
       netsuite.customrecord_cseg7 channel 
-      on tran.cseg7 = channel.id
+      on tl.cseg7 = channel.id
     left join
       netsuite.paymentevent pe
       on pe.doc = tran.id
     group by
-     concat(transaction,'_',transactionline)
+     concat(tal.transaction,'_',tal.transactionline)
     , tran.custbody_goodr_shopify_order
     , tran.tranid
     , tal."ACCOUNT"
