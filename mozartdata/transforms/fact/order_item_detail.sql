@@ -28,12 +28,13 @@ WHERE
     'itemfulfillment',
     'cashrefund'
   )
-  AND itemtype IN ('InvtPart', 'ShipItem')
+  AND itemtype IN ('InvtPart','Assembly','OthCharge')
   AND tranline.mainline = 'F'
   AND accountinglinetype != 'ASSET'
-  -- AND full_status NOT LIKE '%Closed'
-  -- AND full_status NOT LIKE '%Voided'
-  -- AND full_status NOT LIKE '%Rejected'
-  -- AND full_status NOT LIKE '%Unapproved'
-  -- AND full_status NOT LIKE '%Not Deposited'
+  AND full_status NOT LIKE '%Closed'
+  AND full_status NOT LIKE '%Voided'
+  AND full_status NOT LIKE '%Rejected'
+  AND full_status NOT LIKE '%Unapproved'
+  AND full_status NOT LIKE '%Not Deposited'
   AND order_id_edw = 'G1546499'
+order by order_id_edw,recordtype asc
