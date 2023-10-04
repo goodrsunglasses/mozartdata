@@ -22,6 +22,6 @@ inner join
   dim.gl_account ga
   on ga.account_id_ns = gt.account_id_ns
 where
-  gt.posting_period = 'Feb 2023'
+  gt.posting_period in ('Feb 2023','Mar 2023','Apr 2023','May 2023','Jun 2023','Jul 2023','Aug 2023','Sep 2023')
   and posting_flag = true
 and ga.account_number >= 4000 and ga.account_number < 9000
