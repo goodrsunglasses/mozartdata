@@ -3,12 +3,15 @@ SELECT
   tran.recordtype,
   tran.id,
   transtatus.fullname AS full_status,
-  item,
-  itemtype,
+  tranline.item,
   CASE
     WHEN quantity < 0 THEN - quantity
     ELSE quantity
-  END AS quantity,
+  END AS full_quantity,
+  tranline.rate *full_quantity product_rate,--multiplied by -1 to just show financial values positively
+  -tranline.netamount AS netamount,
+  tranline.estgrossprofit,
+  -tranline.costestimate as costestimate,--multiplied by -1 to just show financial values positively
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS timestamp_transaction_PST
 FROM
   netsuite.transaction tran
@@ -25,10 +28,10 @@ WHERE
     'itemfulfillment',
     'cashrefund'
   )
-  AND itemtype IN ('InvtPart')
+  AND itemtype IN ('InvtPart', 'ShipItem')
   AND mainline = 'F'
   AND accountinglinetype != 'ASSET'
-  and full_status NOT LIKE '%Closed'
+  AND full_status NOT LIKE '%Closed'
   AND full_status NOT LIKE '%Voided'
   AND full_status NOT LIKE '%Undefined'
   AND full_status NOT LIKE '%Rejected'
