@@ -25,6 +25,7 @@ use createdate converted instead of trandate
     , tal."ACCOUNT" as account_id_ns
     , channel.name as channel
     , tran.trandate as date_transaction
+    , CONVERT_TIMEZONE('America/Los_Angeles', tran.trandate) AS timestamp_transaction_PST
     , CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) as date_posted
     -- , case 
     --   when channel.name = 'Amazon' then tran.trandate
@@ -55,6 +56,8 @@ use createdate converted instead of trandate
     left join
       netsuite.paymentevent pe
       on pe.doc = tran.id
+    where
+        date(tran.trandate) >= '2022-01-01' --limit the row count
     group by
      concat(tal.transaction,'_',tal.transactionline)
     , tran.custbody_goodr_shopify_order
