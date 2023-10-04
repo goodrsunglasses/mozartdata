@@ -25,7 +25,7 @@ WHERE
     'itemfulfillment',
     'cashrefund'
   )
-  and status not regexp 'billed'
+  and status not like '%Billed%'
   AND itemtype IN ('InvtPart')
   AND mainline = 'F'
   AND accountinglinetype != 'ASSET'
