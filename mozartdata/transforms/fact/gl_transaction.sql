@@ -10,7 +10,10 @@ self joins to account to pull the parent account number
 aliases: 
 tal = transactionaccountingline
 tran = transaction
+tl = transactionline
 ap = accountingperiod
+channel = cseg7 aka channel
+pe = paymentevent
 
 createdate convert to America/Los_Angeles
 use createdate converted instead of trandate
