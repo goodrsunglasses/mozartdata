@@ -1,1 +1,1 @@
- 
+select order_id_edw from fact.order_item_detail
