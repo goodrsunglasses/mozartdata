@@ -16,4 +16,21 @@ WITH
       ) AS id
     FROM
       fact.orderline
+  ),
+  order_level AS (
+    SELECT distinct
+      priority.order_id_edw,
+      priority.id,
+      channel,
+      timestamp_transaction_pst
+    FROM
+      priority
+      LEFT OUTER JOIN fact.orderline orderline ON (
+        orderline.id = priority.id
+        AND orderline.order_id_edw = priority.order_id_edw
+      )
   )
+SELECT
+  *
+FROM
+  order_level
