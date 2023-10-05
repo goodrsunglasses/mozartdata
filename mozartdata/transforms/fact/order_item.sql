@@ -55,5 +55,3 @@ SELECT DISTINCT
   
 FROM
   fact.order_item_detail
-WHERE
-  order_id_edw = 'G2577570'
