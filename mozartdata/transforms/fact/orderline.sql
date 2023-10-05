@@ -11,5 +11,3 @@ SELECT distinct
 
 FROM
   fact.order_item_detail
-WHERE
-  order_id_edw = 'G1863077'
