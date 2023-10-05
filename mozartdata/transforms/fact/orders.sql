@@ -22,7 +22,7 @@ WITH
       priority.order_id_edw,
       priority.id,
       channel,
-      timestamp_transaction_pst
+      timestamp_transaction_pst,
     FROM
       priority
       LEFT OUTER JOIN fact.orderline orderline ON (
