@@ -1,15 +1,19 @@
-with priority as (
-tran.custbody_goodr_shopify_order order_num,
-      FIRST_VALUE(tran.id) OVER (
+WITH
+  priority AS (
+    SELECT
+      order_id_edw,
+      FIRST_VALUE(id) OVER (
         PARTITION BY
-          order_num
+          order_id_edw
         ORDER BY
           CASE
-            WHEN tran.recordtype = 'cashsale' THEN 1
-            WHEN tran.recordtype = 'invoice' THEN 2
-            WHEN tran.recordtype = 'salesorder' THEN 3
+            WHEN recordtype = 'cashsale' THEN 1
+            WHEN recordtype = 'invoice' THEN 2
+            WHEN recordtype = 'salesorder' THEN 3
             ELSE 4
           END,
-          tran.createddate ASC
+          timestamp_transaction_pst ASC
       ) AS id
-  from fact.orderline
+    FROM
+      fact.orderline
+  )
