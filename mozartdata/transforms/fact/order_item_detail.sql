@@ -35,11 +35,15 @@ WHERE
     'InvtPart',
     'Assembly',
     'OthCharge',
-    'NonInvtPart'
+    'NonInvtPart',
+    'ShipItem',
+    'TaxItem'
   )
   AND tranline.mainline = 'F'
-  AND accountinglinetype != 'ASSET'
-
+  AND (
+    accountinglinetype != 'ASSET'
+    OR accountinglinetype IS NULL
+  )
 ORDER BY
   order_id_edw,
   recordtype asc
