@@ -14,9 +14,20 @@ SELECT DISTINCT
       order_id_edw,
       item_detail.id
   ) AS total_quantity,
-  timestamp_transaction_pst
+  timestamp_transaction_pst,
+  CASE
+    WHEN full_status LIKE ANY(
+      '%Closed',
+      '%Voided',
+      '%Undefined',
+      '%Rejected',
+      '%Unapproved',
+      '%Not Deposited'
+    ) THEN TRUE
+    ELSE FALSE
+  END AS status_flag_edw
 FROM
   fact.order_item_detail item_detail
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.id
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
-left outer join netsuite.customer customer on customer.id = tran.entity
+  LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
