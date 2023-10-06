@@ -110,3 +110,4 @@ FROM
     customer.email = order_level.email
     AND customer.customer_category = order_level.b2b_d2c
   )
+where timestamp_transaction_pst >= '2022-01-01T00:00:00Z'
