@@ -75,4 +75,3 @@ SELECT DISTINCT
   
 FROM
   fact.order_item_detail
-where order_id_edw = 'G1863077'
