@@ -51,7 +51,28 @@ SELECT DISTINCT
     PARTITION BY
       order_id_edw,
       item
-  ) AS amount_items 
+  ) AS amount_items,
+  SUM(
+    CASE
+      WHEN recordtype IN ('invoice', 'cashsale') THEN costestimate
+      ELSE 0
+    END
+  ) over (
+    PARTITION BY
+      order_id_edw,
+      item
+  ) AS costestimate,
+  SUM(
+    CASE
+      WHEN recordtype IN ('invoice', 'cashsale') THEN estgrossprofit
+      ELSE 0
+    END
+  ) over (
+    PARTITION BY
+      order_id_edw,
+      item
+  ) AS estgrossprofit
   
 FROM
   fact.order_item_detail
+where order_id_edw = 'G1863077'
