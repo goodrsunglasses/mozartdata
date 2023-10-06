@@ -4,6 +4,7 @@ SELECT DISTINCT
   item_detail.id,
   channel.name AS channel,
   entity customer_id,
+  customer.email,
   CASE
     WHEN memo LIKE '%RMA%' THEN TRUE
     ELSE FALSE
@@ -18,3 +19,4 @@ FROM
   fact.order_item_detail item_detail
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.id
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
+left outer join netsuite.customer customer on customer.id = tran.entity
