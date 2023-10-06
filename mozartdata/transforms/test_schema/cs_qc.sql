@@ -51,7 +51,7 @@ FROM
 WHERE
   cseg7 = 10
   AND createddate >= '2023-09-20T00:00:00Z'
-  AND order_num NOT LIKE '%CS-%'
+  and lower(order_num) not like '%cs-%'
 AND order_num NOT LIKE '%SD-%'
 AND order_num NOT LIKE '%CI-%'
 AND order_num NOT LIKE '%DON-%'
