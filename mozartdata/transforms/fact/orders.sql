@@ -89,7 +89,23 @@ SELECT DISTINCT
   SUM(quantity_refunded) over (
     PARTITION BY
       order_level.order_id_edw
-  ) AS quantity_refunded
+  ) AS quantity_refunded,
+  SUM(rate_items) over (
+    PARTITION BY
+      order_level.order_id_edw
+  ) AS rate_items,
+   SUM(amount_items) over (
+    PARTITION BY
+      order_level.order_id_edw
+  ) AS amount_items,
+  SUM(costestimate) over (
+    PARTITION BY
+      order_level.order_id_edw
+  ) AS costestimate,
+  SUM(estgrossprofit) over (
+    PARTITION BY
+      order_level.order_id_edw
+  ) AS estgrossprofit
 FROM
   order_level
   LEFT OUTER JOIN fact.order_item orderitem ON orderitem.order_id_edw = order_level.order_id_edw
@@ -98,3 +114,4 @@ FROM
     customer.email = order_level.email
     AND customer.customer_category = order_level.b2b_d2c
   )
+where order_level.order_id_edw = 'CI-F.MAY.101421'
