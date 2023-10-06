@@ -107,7 +107,7 @@ FROM
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
   -- LEFT OUTER JOIN fact.orderline orderline ON orderline.order_id_edw = order_level.order_id_edw
   LEFT OUTER JOIN staging.dim_customer customer ON (
-    customer.email = order_level.email
+    lower(customer.email) = lower(order_level.email)
     AND customer.customer_category = order_level.b2b_d2c
   )
 where timestamp_transaction_pst >= '2022-01-01T00:00:00Z'
