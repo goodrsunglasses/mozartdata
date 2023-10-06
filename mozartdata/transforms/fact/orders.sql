@@ -55,7 +55,7 @@ WITH
         AND orderline.order_id_edw = priority.order_id_edw
       )
   )
-SELECT
+SELECT distinct
   order_level.order_id_edw,
   channel,
   customer_id_edw,
