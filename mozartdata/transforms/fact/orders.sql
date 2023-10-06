@@ -55,24 +55,28 @@ WITH
         AND orderline.order_id_edw = priority.order_id_edw
       )
   )
-SELECT distinct
+SELECT DISTINCT
   order_level.order_id_edw,
-  channel,
+  order_level.channel,
   customer_id_edw,
-  timestamp_transaction_pst,
-  is_exchange,
+  order_level.timestamp_transaction_pst,
+  order_level.is_exchange,
   b2b_d2c,
+  MAX(status_flag_edw) over (
+    PARTITION BY
+      order_level.order_id_edw
+  ) AS status_flag_edw,
   CASE
-    WHEN channel IN (
+    WHEN order_level.channel IN (
       'Specialty',
       'Key Account',
       'Key Account CAN',
       'Specialty CAN'
     ) THEN 'Wholesale'
-    WHEN channel IN ('Goodr.com', 'Goodr.com CAN') THEN 'Website'
-    WHEN channel IN ('Amazon', 'Prescription') THEN 'Partners'
-    WHEN channel IN ('Cabana') THEN 'Retail'
-    WHEN channel IN ('Global') THEN 'Distribution'
+    WHEN order_level.channel IN ('Goodr.com', 'Goodr.com CAN') THEN 'Website'
+    WHEN order_level.channel IN ('Amazon', 'Prescription') THEN 'Partners'
+    WHEN order_level.channel IN ('Cabana') THEN 'Retail'
+    WHEN order_level.channel IN ('Global') THEN 'Distribution'
   END AS model,
   SUM(quantity_sold) over (
     PARTITION BY
@@ -89,6 +93,7 @@ SELECT distinct
 FROM
   order_level
   LEFT OUTER JOIN fact.order_item orderitem ON orderitem.order_id_edw = order_level.order_id_edw
+  LEFT OUTER JOIN fact.orderline orderline ON orderline.order_id_edw = order_level.order_id_edw
   LEFT OUTER JOIN staging.dim_customer customer ON (
     customer.email = order_level.email
     AND customer.customer_category = order_level.b2b_d2c
