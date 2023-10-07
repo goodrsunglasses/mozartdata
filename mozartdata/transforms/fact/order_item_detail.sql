@@ -2,7 +2,7 @@
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
   tran.recordtype,
-  tran.id,
+  tran.id as ns_id,
   transtatus.fullname AS full_status,
   tranline.item,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
@@ -14,7 +14,8 @@ SELECT
   - tranline.netamount AS netamount,
   tranline.estgrossprofit,
   - tranline.costestimate AS costestimate, --multiplied by -1 to just show financial values positively
-  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS timestamp_transaction_PST
+  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS timestamp_transaction_pst,
+  concat(order_id_edw,id,item) as detail_id
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
