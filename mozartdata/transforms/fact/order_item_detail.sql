@@ -1,5 +1,5 @@
 --note, leaving closed or otherwise odd transaction statuses as they can be later filtered out or operated on
-SELECT distinct
+SELECT 
   tran.custbody_goodr_shopify_order AS order_id_edw,
   tran.recordtype,
   tran.id as ns_id,
