@@ -45,6 +45,7 @@ WHERE
     accountinglinetype != 'ASSET'
     OR accountinglinetype IS NULL
   )
+  and custcolcustom_shopify_line_item_id is null --added as some IF's had null accountinglinetype items on them, and for some reason they also seem to have this column filled in, whereas the ASSET or COGS ones don't.
 ORDER BY
   order_id_edw,
   recordtype asc
