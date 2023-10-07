@@ -15,7 +15,7 @@ SELECT
   tranline.estgrossprofit,
   - tranline.costestimate AS costestimate, --multiplied by -1 to just show financial values positively
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS timestamp_transaction_pst,
-  concat(order_id_edw,id,item) as detail_id
+  md5(concat(order_id_edw,tran.id,item)) as detail_id
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
