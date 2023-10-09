@@ -1,7 +1,7 @@
 SELECT DISTINCT
   item_detail.order_id_edw,
   item_detail.recordtype,
-  item_detail.id,
+  item_detail.ns_id,
   channel.name AS channel,
   entity customer_id,
   customer.email,
@@ -12,7 +12,7 @@ SELECT DISTINCT
   SUM(full_quantity) over (
     PARTITION BY
       order_id_edw,
-      item_detail.id
+      item_detail.ns_id
   ) AS total_quantity,
   timestamp_transaction_pst,
   CASE
@@ -28,6 +28,6 @@ SELECT DISTINCT
   END AS status_flag_edw
 FROM
   fact.order_item_detail item_detail
-  LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.id
+  LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.ns_id
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
