@@ -1,4 +1,5 @@
 --note, leaving closed or otherwise odd transaction statuses as they can be later filtered out or operated on
+--CS,INV,SO
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
   tran.recordtype,
@@ -37,6 +38,7 @@ WHERE
   -- AND custcol1 IS NULL --added as some IF's had null accountinglinetype items on them, and for some reason they also seem to have this column filled in, whereas the ASSET or COGS ones don't.
   -- AND custcolcustom_shopify_line_item_id IS NULL --same as above
   AND donotdisplayline != 'T'
+  --IF
 UNION ALL
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
@@ -76,7 +78,7 @@ WHERE
   -- AND custcol1 IS NULL --added as some IF's had null accountinglinetype items on them, and for some reason they also seem to have this column filled in, whereas the ASSET or COGS ones don't.
   -- AND custcolcustom_shopify_line_item_id IS NULL --same as above
   AND donotdisplayline != 'T'
-  --note, leaving closed or otherwise odd transaction statuses as they can be later filtered out or operated on
+  --CR
 UNION ALL
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
