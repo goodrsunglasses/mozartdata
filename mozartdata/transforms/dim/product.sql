@@ -5,7 +5,10 @@ One row per product item.
 This transform creates a product list
 
 joins: 
-self joins to account to pull the parent account number
+customlist988 joins to item.custitem21 and item.custitem33
+customlist991 joins to item.custitem20 and item.custitem30
+customlist1271 joins to item.custitem30 and item.custitem29
+customlist1272 joins to item.custitem31
 
 aliases: 
 i = netsuite.item
@@ -24,13 +27,13 @@ SELECT
 , i.custitem19 as logo_sku
 , i.custitem_psgss_merc_class as merchandise_class
   /* need to figure out the color mapping */
-, i.custitem_psgss_product_color_desc
-, i.custitem_psgss_nrf_color_code
-,  i.custitem20 as color_frame_id
+-- , i.custitem_psgss_product_color_desc
+-- , i.custitem_psgss_nrf_color_code
 , framecolor.name as color_frame
-, i.custitem28 as color_lens_base_id --missing in mozart
-, lenscolorbase.name as color_lens_base
-, i.custitem22 as color_lens_finish_id
+, templecolor.name as color_temple
+, framefinish.name as finish_frame
+, templefinish.name as finish_temple
+
 , lenscolor.name as color_lens_finish
 , i.custitem24 as lens_type
 , i.custitem7 as date_d2c_launch --not mapped correctly in mozart
@@ -49,8 +52,17 @@ SELECT
 FROM
   netsuite.item i
 left join
-  netsuite.customlist_psgss_product_color framecolor
+  netsuite.customlist991 framecolor
   on i.custitem20 = framecolor.id
+left join
+  netsuite.customlist991 templecolor
+  on i.custitem32 = templecolor.id
+left join
+  netsuite.customlist988 framefinish
+  on i.custitem21 = framefinish.id
+left join
+  netsuite.customlist988 templefinish
+  on i.custitem33 = templefinish.id
 left join
   netsuite.customlist_psgss_product_color lenscolor
   on i.custitem22 = lenscolor.id
@@ -59,3 +71,4 @@ left join
   on i.custitem28 = lenscolorbase.id
 WHERE
   itemtype = 'InvtPart'
+and sku = 'BFG-BK-BK1-NR'
