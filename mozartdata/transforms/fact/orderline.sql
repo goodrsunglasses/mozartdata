@@ -1,4 +1,5 @@
 SELECT DISTINCT
+  MD5(CONCAT(order_id_edw, ns_id)) AS detail_id,
   item_detail.order_id_edw,
   item_detail.recordtype,
   item_detail.ns_id,
