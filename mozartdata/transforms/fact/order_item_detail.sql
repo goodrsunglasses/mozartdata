@@ -60,27 +60,32 @@ SELECT
   SUM(- netamount) over (
     PARTITION BY
       ns_id,
-      item
+      item,
+      order_id_edw
   ) netamount,
   SUM(rate) over (
     PARTITION BY
       ns_id,
-      item
+      item,
+      order_id_edw
   ) rate,
   SUM(ABS(quantity)) over (
     PARTITION BY
       ns_id,
-      item
+      item,
+      order_id_edw
   ) AS full_quantity,
   SUM(tranline.estgrossprofit) over (
     PARTITION BY
       ns_id,
-      item
+      item,
+      order_id_edw
   ) AS estgrossprofit,
   SUM(tranline.costestimate) over (
     PARTITION BY
       ns_id,
-      item
+      item,
+      order_id_edw
   ) AS costestimate
 FROM
   netsuite.transaction tran
