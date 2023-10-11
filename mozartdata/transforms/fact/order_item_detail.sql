@@ -37,7 +37,6 @@ WHERE
   )
   AND tranline.mainline = 'F'
   AND accountinglinetype IN ('INCOME', 'COGS')
-  AND order_id_edw = 'CG-33553'
 GROUP BY
   order_id_edw,
   timestamp_transaction_pst,
