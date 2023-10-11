@@ -45,7 +45,6 @@ WHERE
       ELSE FALSE
     END
   )
-  and order_id_edw = 'CG-33553'
 GROUP BY
   order_id_edw,
   timestamp_transaction_pst,
