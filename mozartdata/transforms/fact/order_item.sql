@@ -1,4 +1,5 @@
 SELECT DISTINCT
+  MD5(CONCAT(order_id_edw, item)) AS orderline_id,
   order_id_edw,
   item,
   plain_name,
@@ -34,7 +35,7 @@ SELECT DISTINCT
   ) AS quantity_refunded,
   SUM(
     CASE
-      WHEN recordtype IN ('invoice', 'cashsale','cashrefund') THEN rate
+      WHEN recordtype IN ('invoice', 'cashsale', 'cashrefund') THEN rate
       ELSE 0
     END
   ) over (
@@ -42,9 +43,9 @@ SELECT DISTINCT
       order_id_edw,
       item
   ) AS rate_items,
-    SUM(
+  SUM(
     CASE
-      WHEN recordtype IN ('invoice', 'cashsale','cashrefund') THEN netamount
+      WHEN recordtype IN ('invoice', 'cashsale', 'cashrefund') THEN netamount
       ELSE 0
     END
   ) over (
@@ -72,6 +73,5 @@ SELECT DISTINCT
       order_id_edw,
       item
   ) AS estgrossprofit
-  
 FROM
   fact.order_item_detail
