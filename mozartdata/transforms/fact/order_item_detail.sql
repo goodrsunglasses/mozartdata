@@ -1,5 +1,5 @@
 --note, leaving closed or otherwise odd transaction statuses as they can be later filtered out or operated on
---CS,INV,SO
+--CS,INV,SO,IF
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
   MD5(CONCAT(order_id_edw, tran.id, item)) AS detail_id,
