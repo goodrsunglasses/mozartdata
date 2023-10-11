@@ -20,6 +20,7 @@ WITH
       ) AS id
     FROM
       fact.orderline
+   where channel = 'Key Account'
   ),
   order_level AS (
     SELECT DISTINCT
