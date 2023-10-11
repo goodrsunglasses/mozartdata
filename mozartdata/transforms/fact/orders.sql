@@ -6,7 +6,7 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS status_flag_edw,
-      FIRST_VALUE(id) OVER (
+      FIRST_VALUE(ns_id) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -56,7 +56,7 @@ WITH
     FROM
       priority
       LEFT OUTER JOIN fact.orderline orderline ON (
-        orderline.id = priority.id
+        orderline.ns_id = priority.id
         AND orderline.order_id_edw = priority.order_id_edw
       )
   ),
