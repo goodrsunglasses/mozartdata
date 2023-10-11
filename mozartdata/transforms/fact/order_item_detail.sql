@@ -34,10 +34,6 @@ WHERE
     'NonInvtPart'
   )
   AND tranline.mainline = 'F'
-  AND accountinglinetype != 'ASSET'
-  -- AND custcol1 IS NULL --added as some IF's had null accountinglinetype items on them, and for some reason they also seem to have this column filled in, whereas the ASSET or COGS ones don't.
-  -- AND custcolcustom_shopify_line_item_id IS NULL --same as above
-  AND donotdisplayline != 'T'
   --IF
 -- UNION ALL
 -- SELECT
