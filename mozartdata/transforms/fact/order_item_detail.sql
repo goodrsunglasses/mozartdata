@@ -1,59 +1,73 @@
 --note, leaving closed or otherwise odd transaction statuses as they can be later filtered out or operated on
 --CS,INV,SO
-WITH
-  aggregate_line AS (
-    SELECT
-      tran.custbody_goodr_shopify_order AS order_id_edw,
-      tran.id,
-      tranline.item,
-      SUM(- netamount) netamount,
-      SUM(rate) rate,
-      SUM(- quantity) AS full_quantity,
-      SUM(tranline.estgrossprofit) AS estgrossprofit,
-      SUM(tranline.costestimate) AS costestimate
-    FROM
-      netsuite.transaction tran
-      LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
-    WHERE
-      recordtype IN ('invoice', 'cashsale', 'salesorder')
-      AND tranline.itemtype IN (
-        'InvtPart',
-        'Assembly',
-        'OthCharge',
-        'NonInvtPart'
-      )
-      AND tranline.mainline = 'F'
-      AND accountinglinetype = 'INCOME'
-    GROUP BY
-      order_id_edw,
-      tran.id,
-      item
-  )
+-- WITH
+--   aggregate_line AS (
 SELECT
-  MD5(CONCAT(order_id_edw, tran.id, item)) AS detail_id,
   tran.custbody_goodr_shopify_order AS order_id_edw,
+  MD5(CONCAT(order_id_edw, tran.id, item)) AS detail_id,
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS timestamp_transaction_pst,
   tran.recordtype,
   tran.id AS ns_id,
   transtatus.fullname AS full_status,
-  agg.item,
+  tranline.item,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  agg.full_quantity,
-  agg.netamount,
-  agg.rate as product_rate,
-  agg.estgrossprofit,
-  agg.costestimate
-  
+  SUM(- netamount) netamount,
+  SUM(rate) rate,
+  SUM(- quantity) AS full_quantity,
+  SUM(tranline.estgrossprofit) AS estgrossprofit,
+  SUM(tranline.costestimate) AS costestimate
 FROM
   netsuite.transaction tran
-  LEFT OUTER JOIN aggregate_line agg ON agg.id = tran.id
+  LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
   LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
     tran.status = transtatus.id
     AND tran.type = transtatus.trantype
   )
-  LEFT OUTER JOIN netsuite.item item ON item.id = agg.item
+  LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
 WHERE
   recordtype IN ('invoice', 'cashsale', 'salesorder')
+  AND tranline.itemtype IN (
+    'InvtPart',
+    'Assembly',
+    'OthCharge',
+    'NonInvtPart'
+  )
+  AND tranline.mainline = 'F'
+  AND accountinglinetype = 'INCOME'
+GROUP BY
+  order_id_edw,
+  timestamp_transaction_pst,
+  full_status,
+  recordtype,
+  plain_name,
+  ns_id,
+  item,
+  detail_id
+  --   )
+  -- SELECT
+  --   MD5(CONCAT(order_id_edw, tran.id, item)) AS detail_id,
+  --   tran.custbody_goodr_shopify_order AS order_id_edw,
+  --   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS timestamp_transaction_pst,
+  --   tran.recordtype,
+  --   tran.id AS ns_id,
+  --   transtatus.fullname AS full_status,
+  --   agg.item,
+  --   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
+  --   agg.full_quantity,
+  --   agg.netamount,
+  --   agg.rate as product_rate,
+  --   agg.estgrossprofit,
+  --   agg.costestimate
+  -- FROM
+  --   netsuite.transaction tran
+  --   LEFT OUTER JOIN aggregate_line agg ON agg.id = tran.id
+  --   LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
+  --     tran.status = transtatus.id
+  --     AND tran.type = transtatus.trantype
+  --   )
+  --   LEFT OUTER JOIN netsuite.item item ON item.id = agg.item
+  -- WHERE
+  --   recordtype IN ('invoice', 'cashsale', 'salesorder')
   --IF
   -- UNION ALL
   -- SELECT
