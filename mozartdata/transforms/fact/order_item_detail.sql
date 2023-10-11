@@ -109,7 +109,15 @@ WHERE
     'NonInvtPart'
   )
   AND tranline.mainline = 'F'
-  AND accountinglinetype IN ('INCOME', 'COGS')
+  AND (
+    CASE
+      WHEN recordtype != 'itemfulfillment'
+      AND accountinglinetype IN ('INCOME') THEN TRUE
+      WHEN recordtype = 'itemfulfillment'
+      AND accountinglinetype IN ('COGS') THEN TRUE
+      ELSE FALSE
+    END
+  )
   --IF
   -- UNION ALL
   -- SELECT
