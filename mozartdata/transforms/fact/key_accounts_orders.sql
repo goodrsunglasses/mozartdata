@@ -20,7 +20,7 @@ WITH
       ) AS id
     FROM
       fact.orderline
-   where channel = 'Key Account'
+  where channel = 'Key Account'
   ),
   order_level AS (
     SELECT DISTINCT
@@ -30,8 +30,30 @@ WITH
       customer_id,
       email,
       is_exchange,
-      priority.status_flag_edw,
-      timestamp_transaction_pst
+  priority.status_flag_edw,
+      timestamp_transaction_pst,
+      CASE
+        WHEN channel IN (
+          'Specialty',
+          'Key Account',
+          'Global',
+          'Key Account CAN',
+          'Specialty CAN'
+        ) THEN 'B2B'
+        WHEN channel IN (
+          'Goodr.com',
+          'Amazon',
+          'Cabana',
+          'Goodr.com CAN',
+          'Prescription'
+        ) THEN 'D2C'
+        WHEN channel IN (
+          'Goodrwill.com',
+          'Customer Service CAN',
+          'Marketing',
+          'Customer Service'
+        ) THEN 'INDIRECT'
+      END AS b2b_d2c
     FROM
       priority
       LEFT OUTER JOIN fact.orderline orderline ON (
@@ -62,6 +84,18 @@ SELECT
   order_level.is_exchange,
   order_level.status_flag_edw,
   b2b_d2c,
+  CASE
+    WHEN order_level.channel IN (
+      'Specialty',
+      'Key Account',
+      'Key Account CAN',
+      'Specialty CAN'
+    ) THEN 'Wholesale'
+    WHEN order_level.channel IN ('Goodr.com', 'Goodr.com CAN') THEN 'Website'
+    WHEN order_level.channel IN ('Amazon', 'Prescription') THEN 'Partners'
+    WHEN order_level.channel IN ('Cabana') THEN 'Retail'
+    WHEN order_level.channel IN ('Global') THEN 'Distribution'
+  END AS model,
   quantity_sold,
   quantity_fulfilled,
   quantity_refunded,
