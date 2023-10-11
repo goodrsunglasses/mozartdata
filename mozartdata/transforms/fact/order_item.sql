@@ -34,7 +34,7 @@ SELECT DISTINCT
   ) AS quantity_refunded,
   SUM(
     CASE
-      WHEN recordtype IN ('invoice', 'cashsale','cashrefund') THEN product_rate
+      WHEN recordtype IN ('invoice', 'cashsale','cashrefund') THEN rate
       ELSE 0
     END
   ) over (
