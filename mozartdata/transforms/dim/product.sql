@@ -71,4 +71,3 @@ left join
   on i.custitem28 = lenscolorbase.id
 WHERE
   itemtype = 'InvtPart'
-and sku = 'BFG-BK-BK1-NR'
