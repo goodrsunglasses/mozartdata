@@ -118,7 +118,6 @@ WHERE
       ELSE FALSE
     END
   )
-and order_id_edw = '112-2982770-5960268'
   --IF
   -- UNION ALL
   -- SELECT
