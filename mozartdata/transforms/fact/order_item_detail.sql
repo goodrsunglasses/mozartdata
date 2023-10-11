@@ -48,7 +48,7 @@
 --   detail_id
 -- ORDER BY
 --   ns_id asc
-SELECT
+SELECT distinct
   tran.custbody_goodr_shopify_order AS order_id_edw,
   MD5(CONCAT(order_id_edw, tran.id, item)) AS detail_id,
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS timestamp_transaction_pst,
@@ -118,6 +118,7 @@ WHERE
       ELSE FALSE
     END
   )
+and order_id_edw = '112-2982770-5960268'
   --IF
   -- UNION ALL
   -- SELECT
