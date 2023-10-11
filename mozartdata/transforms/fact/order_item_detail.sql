@@ -34,6 +34,7 @@ WHERE
     'NonInvtPart'
   )
   AND tranline.mainline = 'F'
+and accountinglinetype = 'Income'
   --IF
 -- UNION ALL
 -- SELECT
