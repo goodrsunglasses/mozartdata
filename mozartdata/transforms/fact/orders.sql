@@ -1,6 +1,6 @@
 WITH
   priority AS (
-    SELECT distinct
+    SELECT DISTINCT
       order_id_edw,
       MAX(status_flag_edw) over (
         PARTITION BY
@@ -29,7 +29,7 @@ WITH
       customer_id,
       email,
       is_exchange,
-  priority.status_flag_edw,
+      priority.status_flag_edw,
       timestamp_transaction_pst,
       CASE
         WHEN channel IN (
@@ -63,13 +63,66 @@ WITH
   aggregates AS (
     SELECT
       order_id_edw,
-      SUM(quantity_sold) quantity_sold,
-      SUM(quantity_fulfilled) quantity_fulfilled,
-      SUM(quantity_refunded) quantity_refunded,
-      SUM(rate_items) rate_items,
-      SUM(amount_items) amount_items,
-      SUM(costestimate) costestimate,
-      SUM(estgrossprofit) estgrossprofit
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_booked
+          ELSE 0
+        END
+      ) AS quantity_booked,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_sold
+          ELSE 0
+        END
+      ) AS quantity_sold,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_fulfilled
+          ELSE 0
+        END
+      ) AS quantity_fulfilled,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_refunded
+          ELSE 0
+        END
+      ) AS quantity_refunded,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_booked
+          ELSE 0
+        END
+      ) AS rate_booked,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_sold
+          ELSE 0
+        END
+      ) AS rate_sold,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_refunded
+          ELSE 0
+        END
+      ) AS rate_refunded,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_booked
+          ELSE 0
+        END
+      ) AS amount_booked,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_sold
+          ELSE 0
+        END
+      ) AS amount_sold,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_refunded
+          ELSE 0
+        END
+      ) AS amount_refunded
     FROM
       fact.order_item
     GROUP BY
@@ -95,19 +148,24 @@ SELECT
     WHEN order_level.channel IN ('Cabana') THEN 'Retail'
     WHEN order_level.channel IN ('Global') THEN 'Distribution'
   END AS model,
+  quantity_booked,
   quantity_sold,
   quantity_fulfilled,
   quantity_refunded,
-  rate_items,
-  amount_items,
-  costestimate,
-  estgrossprofit
+  rate_booked,
+  rate_sold,
+  rate_refunded,
+  amount_booked,
+  amount_sold,
+  amount_refunded
 FROM
   order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
   -- LEFT OUTER JOIN fact.orderline orderline ON orderline.order_id_edw = order_level.order_id_edw
   LEFT OUTER JOIN staging.dim_customer customer ON (
-    lower(customer.email) = lower(order_level.email)
+    LOWER(customer.email) = LOWER(order_level.email)
     AND customer.customer_category = order_level.b2b_d2c
   )
-where timestamp_transaction_pst >= '2022-01-01T00:00:00Z'
+WHERE
+  timestamp_transaction_pst >= '2022-01-01T00:00:00Z'
+  AND order_level.order_id_edw = 'G2555538'
