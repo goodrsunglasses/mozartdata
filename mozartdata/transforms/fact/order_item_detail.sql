@@ -11,8 +11,8 @@ SELECT
   tranline.itemtype,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(- netamount) netamount,
-  SUM(rate) rate,
   SUM(ABS(quantity)) AS full_quantity,
+  SUM(rate)*full_quantity rate,
   SUM(tranline.estgrossprofit) AS estgrossprofit,
   SUM(tranline.costestimate) AS costestimate
 FROM
