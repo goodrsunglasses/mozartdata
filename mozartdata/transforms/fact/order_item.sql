@@ -9,8 +9,7 @@ WITH
         END
       ) OVER (
         PARTITION BY
-          order_id_edw,
-          item
+          order_id_edw
       ) AS has_invoice_cashsale
     FROM
       fact.order_item_detail
