@@ -13,7 +13,7 @@ WITH
       ) AS has_invoice_cashsale
     FROM
       fact.order_item_detail
-  )
+  )aw
 SELECT DISTINCT
   order_id_edw,
   item,
@@ -104,3 +104,4 @@ SELECT DISTINCT
 FROM
   fact.order_item_detail detail
   LEFT OUTER JOIN detector ON detector.order_id = detail.order_id_edw
+where order_id_edw = 'G1004173'
