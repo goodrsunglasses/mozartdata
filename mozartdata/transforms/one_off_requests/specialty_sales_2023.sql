@@ -35,7 +35,7 @@ inner join
   and cm.ns_primary_id_flag = true
 where
   o.channel = 'Specialty'
-  and ns_customer_id = 'CUST544'
+
 ) 
 , grid as
 (
