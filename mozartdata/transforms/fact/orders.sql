@@ -123,18 +123,54 @@ WITH
           ELSE 0
         END
       ) AS amount_refunded,
-  sUM(
+      SUM(
         CASE
           WHEN plain_name NOT IN ('Tax', 'Shipping') THEN estgrossprofit
           ELSE 0
         END
       ) AS estgrossprofit,
-    sUM(
+      SUM(
         CASE
           WHEN plain_name NOT IN ('Tax', 'Shipping') THEN costestimate
           ELSE 0
         END
-      ) AS costestimate
+      ) AS costestimate,
+  SUM(
+        CASE
+          WHEN plain_name = 'Tax' THEN amount_booked
+          ELSE 0
+        END
+      ) AS tax_booked,
+  SUM(
+        CASE
+          WHEN plain_name = 'Tax' THEN amount_sold
+          ELSE 0
+        END
+      ) AS tax_sold,
+  SUM(
+        CASE
+          WHEN plain_name = 'Tax' THEN amount_refunded
+          ELSE 0
+        END
+      ) AS tax_refunded,
+  SUM(
+        CASE
+          WHEN plain_name = 'Shipping' THEN amount_booked
+          ELSE 0
+        END
+      ) AS shipping_booked,
+  SUM(
+        CASE
+          WHEN plain_name = 'Tax' THEN amount_sold
+          ELSE 0
+        END
+      ) AS shipping_sold,
+  SUM(
+        CASE
+          WHEN plain_name = 'Tax' THEN amount_refunded
+          ELSE 0
+        END
+      ) AS shipping_refunded
     FROM
       fact.order_item
     GROUP BY
@@ -171,16 +207,21 @@ SELECT
   amount_sold,
   amount_refunded,
   aggregates.estgrossprofit,
-  aggregates.costestimate
+  aggregates.costestimate,
+  tax_booked,
+  tax_sold,
+  tax_refunded,
+  shipping_booked,
+  shipping_sold,
+  shipping_refunded
 FROM
   order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
-  -- LEFT OUTER JOIN fact.orderline orderline ON orderline.order_id_edw = order_level.order_id_edw
   LEFT OUTER JOIN staging.dim_customer customer ON (
     LOWER(customer.email) = LOWER(order_level.email)
     AND customer.customer_category = order_level.b2b_d2c
   )
 WHERE
   timestamp_transaction_pst >= '2022-01-01T00:00:00Z'
-  AND order_level.order_id_edw = 'PB-240215WAR-GOODR-F'
-order by timestamp_transaction_pst desc
+ORDER BY
+  timestamp_transaction_pst desc
