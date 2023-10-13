@@ -29,4 +29,4 @@ SELECT DISTINCT
       customer_id_edw
   ) AS order_count
 FROM
-  draft_dim.draft_orders
+  fact.orders
