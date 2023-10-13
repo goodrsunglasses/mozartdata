@@ -20,20 +20,22 @@ SELECT DATEADD(DAY, SEQ4(), '2000-01-01') AS MY_DATE
   )
 , customers as --29 duplicate emails
 (
-select
-    c.entityid ns_customer_id
-  , c.email ns_email
-  , sc.id shopify_customer_id
-  , dc.customer_id_edw
+select distinct
+    ns_customer_id
+    ,o.customer_id_edw
 from
-  netsuite.customer c
-inner join
-  specialty_shopify.customer sc
-  on c.email = sc.email
+  fact.orders o
 inner join
   draft_dim.customers dc
-  on lower(dc.email) = lower(c.email)
-  and dc.customer_category = 'B2B'
+  on o.customer_id_edw = dc.customer_id_edw
+inner join
+  fact.customer_ns_map cm
+  on o.customer_id_edw = cm.customer_id_edw
+  and cm.b2b_d2c = 'B2B'
+  and cm.ns_primary_id_flag = true
+where
+  o.channel = 'Specialty'
+  and ns_customer_id = 'CUST544'
 ) 
 , grid as
 (
