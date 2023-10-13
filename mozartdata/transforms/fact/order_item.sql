@@ -82,6 +82,6 @@ SELECT DISTINCT
       order_id_edw,
       item
   ) AS estgrossprofit,
-    MD5(CONCAT(order_id_edw, item,plain_name)) AS order_item_id
+    MD5(CONCAT(order_id_edw, '_',item)) AS order_item_id
 FROM
   fact.order_item_detail
