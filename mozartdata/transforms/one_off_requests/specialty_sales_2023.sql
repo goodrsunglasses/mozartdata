@@ -48,8 +48,9 @@ select
   c.ns_customer_id
 , c.customer_id_edw
 , sum(amount_items) ltv 
+,DATEDIFF(DAY,min(o.timestamp_transaction_pst), current_date())
 , case 
-  --when DATEDIFF(DAY, min(c.created_date), '2022-07-15') >=0 and DATEDIFF(DAY, min(c.created_date), '2022-07-15') <= 90 then 'Tier 4'
+  when DATEDIFF(DAY,min(o.timestamp_transaction_pst), current_date()) >=0 and DATEDIFF(DAY, min(o.timestamp_transaction_pst),current_date()) <= 90 then 'Tier 4'
   when sum(amount_items) > 100000 then 'Tier 1'
   when sum(amount_items) > 50000 then 'Tier 2'
   when sum(amount_items) > 300 then 'Tier 3'
@@ -65,6 +66,7 @@ inner join
   on c.customer_id_edw = o.customer_id_edw
 where
   left(o.order_id_edw,4)<>'POP-'
+  and DATEDIFF(month,o.timestamp_transaction_pst, current_date()) <=15
 group by
   c.ns_customer_id
 , c.customer_id_edw
@@ -99,13 +101,14 @@ order by
   , g.yrmo
   -- , g.yrq
   -- , g.month
-  , ltv.first_order_date
+  --, ltv.first_order_date
   , ltv.last_order_date
   , DATEDIFF(DAY, ltv.last_order_date, GETDATE()) days_since_last_order
-  , ltv.tier
+  , ltv.tier mozart_tier
+  , st.tier 
   , coalesce(r.revenue,0) revenue
   , coalesce(r.order_count,0) order_count
-  , sum(case when left(r.yrmo,4)=2023 then coalesce(r.revenue,0) else 0 end) over(partition by g.ns_customer_id) total
+  , sum(coalesce(r.revenue,0)) over(partition by g.ns_customer_id,left(r.yrmo,4)) as total_year
   , ltv.ltv
   from 
     grid g
@@ -116,6 +119,9 @@ order by
     revenue r
     on g.ns_customer_id = r.ns_customer_id
     and g.yrmo = r.yrmo
+  left join
+    google_sheets.specialty_tiers_20231013 st
+    on g.ns_customer_id = trim(left(st.ns_id,POSITION(' ',st.ns_id)))
   --where g.ns_customer_id = 'CUST725797'--tier = 'Tier 1' --Change tier here
   where g.yrmo >= 202201
   order by ns_customer_id asc, yrmo asc
