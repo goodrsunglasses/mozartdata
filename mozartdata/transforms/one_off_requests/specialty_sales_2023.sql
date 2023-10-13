@@ -34,7 +34,7 @@ inner join
   draft_dim.customers dc
   on lower(dc.email) = lower(c.email)
   and dc.customer_category = 'B2B'
-)
+) 
 , grid as
 (
   select distinct 
@@ -90,6 +90,7 @@ order by
     on mc.date = date(o.timestamp_transaction_pst)
   where
     left(o.order_id_edw,4)<>'POP-'
+  and o.channel = 'Specialty'
   group by
     c.ns_customer_id
   , mc.yrmo
