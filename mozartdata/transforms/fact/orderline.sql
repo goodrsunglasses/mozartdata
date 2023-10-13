@@ -10,11 +10,6 @@ SELECT DISTINCT
     WHEN memo LIKE '%RMA%' THEN TRUE
     ELSE FALSE
   END AS is_exchange,
-  SUM(full_quantity) over (
-    PARTITION BY
-      order_id_edw,
-      item_detail.ns_id
-  ) AS total_quantity,
   timestamp_transaction_pst,
   CASE
     WHEN full_status LIKE ANY(
