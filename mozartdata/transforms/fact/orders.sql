@@ -122,7 +122,19 @@ WITH
           WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_refunded
           ELSE 0
         END
-      ) AS amount_refunded
+      ) AS amount_refunded,
+  sUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN estgrossprofit
+          ELSE 0
+        END
+      ) AS estgrossprofit,
+    sUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN costestimate
+          ELSE 0
+        END
+      ) AS costestimate
     FROM
       fact.order_item
     GROUP BY
@@ -157,7 +169,9 @@ SELECT
   rate_refunded,
   amount_booked,
   amount_sold,
-  amount_refunded
+  amount_refunded,
+  aggregates.estgrossprofit,
+  aggregates.costestimate
 FROM
   order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
