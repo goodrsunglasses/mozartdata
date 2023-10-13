@@ -4,9 +4,10 @@ WITH
       order_id_edw,
       item,
       plain_name,
-      SUM(case when full_quantity) AS quantity_booked
-    sum(rate) as rate_booked,
-    sum(netamount)
+      CONCAT(order_id_edw, '_', item) AS order_item_id,
+      SUM(full_quantity) AS quantity_booked,
+      SUM(rate) AS rate_booked,
+      SUM(netamount) AS amount_booked
     FROM
       fact.order_item_detail
     WHERE
@@ -14,92 +15,106 @@ WITH
     GROUP BY
       order_id_edw,
       item,
-      plain_name
+      plain_name,
+      order_item_id
+  ),
+  sold AS (
+    SELECT
+      order_id_edw,
+      item,
+      plain_name,
+      CONCAT(order_id_edw, '_', item) AS order_item_id,
+      SUM(full_quantity) AS quantity_sold,
+      SUM(rate) AS rate_sold,
+      SUM(netamount) AS amount_sold,
+      sum(estgrossprofit) as estgrossprofit,
+      sum(costestimate) as costestimate
+    FROM
+      fact.order_item_detail
+    WHERE
+      recordtype IN ('cashsale', 'invoice')
+    GROUP BY
+      order_id_edw,
+      item,
+      plain_name,
+      order_item_id
+  ),
+  fulfilled AS (
+    SELECT
+      order_id_edw,
+      item,
+      plain_name,
+      CONCAT(order_id_edw, '_', item) AS order_item_id,
+      SUM(full_quantity) AS quantity_fulfilled,
+      SUM(rate) AS rate_fulfilled,
+      SUM(netamount) AS amount_fulfilled
+    FROM
+      fact.order_item_detail
+    WHERE
+      recordtype = 'itemfulfillment'
+    GROUP BY
+      order_id_edw,
+      item,
+      plain_name,
+      order_item_id
+  ),
+  refunded AS (
+    SELECT
+      order_id_edw,
+      item,
+      plain_name,
+      CONCAT(order_id_edw, '_', item) AS order_item_id,
+      SUM(full_quantity) AS quantity_refunded,
+      SUM(rate) AS rate_refunded,
+      SUM(abs(netamount)) AS amount_refunded
+    FROM
+      fact.order_item_detail
+    WHERE
+      recordtype = 'cashrefund'
+    GROUP BY
+      order_id_edw,
+      item,
+      plain_name,
+      order_item_id
   )
 SELECT DISTINCT
-  order_id_edw,
-  item,
-  plain_name,
-  SUM(
-    CASE
-      WHEN recordtype IN ('salesorder') THEN full_quantity
-      ELSE 0
-    END
-  ) over (
-    PARTITION BY
-      order_id_edw,
-      item
-  ) AS quantity_booked,
-  SUM(
-    CASE
-      WHEN recordtype IN ('invoice', 'cashsale') THEN full_quantity
-      ELSE 0
-    END
-  ) over (
-    PARTITION BY
-      order_id_edw,
-      item
-  ) AS quantity_sold,
-  SUM(
-    CASE
-      WHEN recordtype IN ('itemfulfillment') THEN full_quantity
-      ELSE 0
-    END
-  ) over (
-    PARTITION BY
-      order_id_edw,
-      item
-  ) AS quantity_fulfilled,
-  SUM(
-    CASE
-      WHEN recordtype IN ('cashrefund') THEN full_quantity
-      ELSE 0
-    END
-  ) over (
-    PARTITION BY
-      order_id_edw,
-      item
-  ) AS quantity_refunded,
-  SUM(
-    CASE
-      WHEN recordtype IN ('invoice', 'cashsale') THEN rate
-      ELSE 0
-    END
-  ) over (
-    PARTITION BY
-      order_id_edw,
-      item
-  ) AS rate_items,
-  SUM(
-    CASE
-      WHEN recordtype IN ('invoice', 'cashsale') THEN netamount
-      ELSE 0
-    END
-  ) over (
-    PARTITION BY
-      order_id_edw,
-      item
-  ) AS amount_items,
-  SUM(
-    CASE
-      WHEN recordtype IN ('invoice', 'cashsale') THEN ABS(costestimate)
-      ELSE 0
-    END
-  ) over (
-    PARTITION BY
-      order_id_edw,
-      item
-  ) AS costestimate,
-  SUM(
-    CASE
-      WHEN recordtype IN ('invoice', 'cashsale') THEN estgrossprofit
-      ELSE 0
-    END
-  ) over (
-    PARTITION BY
-      order_id_edw,
-      item
-  ) AS estgrossprofit,
-  CONCAT(order_id_edw, '_', item) AS order_item_id
+  detail.order_id_edw,
+  detail.item,
+  detail.plain_name,
+  CONCAT(detail.order_id_edw, '_', detail.item) AS order_item_id,
+  quantity_booked,
+  quantity_sold,
+  quantity_fulfilled,
+  quantity_refunded,
+  rate_booked,
+  rate_sold,
+  rate_fulfilled,
+  rate_refunded,
+  amount_booked,
+  amount_sold,
+  amount_fulfilled,
+  amount_refunded,
+  estgrossprofit,
+  costestimate
 FROM
   fact.order_item_detail detail
+  LEFT OUTER JOIN booked ON (
+    booked.order_id_edw = detail.order_id_edw
+    AND booked.item = detail.item
+  )
+  LEFT OUTER JOIN sold ON (
+    sold.order_id_edw = detail.order_id_edw
+    AND sold.item = detail.item
+  )
+  LEFT OUTER JOIN fulfilled ON (
+    fulfilled.order_id_edw = detail.order_id_edw
+    AND fulfilled.item = detail.item
+  )
+  LEFT OUTER JOIN refunded ON (
+    refunded.order_id_edw = detail.order_id_edw
+    AND refunded.item = detail.item
+  )
+WHERE
+  detail.order_id_edw IN ('G1017793', 'G1004173')
+ORDER BY
+  detail.order_id_edw
