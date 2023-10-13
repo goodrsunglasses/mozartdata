@@ -64,7 +64,7 @@ SELECT DISTINCT
   ) AS amount_items,
   SUM(
     CASE
-      WHEN recordtype IN ('invoice', 'cashsale') THEN costestimate
+      WHEN recordtype IN ('invoice', 'cashsale') THEN abs(costestimate)
       ELSE 0
     END
   ) over (
