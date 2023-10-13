@@ -104,3 +104,4 @@ SELECT DISTINCT
 FROM
   fact.order_item_detail detail
   LEFT OUTER JOIN detector ON detector.order_id = detail.order_id_edw
+where order_id_edw = 'SG-70285'
