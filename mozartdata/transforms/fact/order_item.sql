@@ -114,7 +114,5 @@ FROM
     refunded.order_id_edw = detail.order_id_edw
     AND refunded.item = detail.item
   )
-WHERE
-  detail.order_id_edw IN ('G1017793', 'G1004173')
 ORDER BY
   detail.order_id_edw
