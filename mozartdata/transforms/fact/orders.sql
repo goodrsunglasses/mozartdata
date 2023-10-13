@@ -182,4 +182,5 @@ FROM
   )
 WHERE
   timestamp_transaction_pst >= '2022-01-01T00:00:00Z'
-  AND order_level.order_id_edw = 'G2555538'
+  AND order_level.order_id_edw = 'PB-240215WAR-GOODR-F'
+order by timestamp_transaction_pst desc
