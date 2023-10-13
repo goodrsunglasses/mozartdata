@@ -1,3 +1,21 @@
+WITH
+  booked AS (
+    SELECT
+      order_id_edw,
+      item,
+      plain_name,
+      SUM(case when full_quantity) AS quantity_booked
+    sum(rate) as rate_booked,
+    sum(netamount)
+    FROM
+      fact.order_item_detail
+    WHERE
+      recordtype = 'salesorder'
+    GROUP BY
+      order_id_edw,
+      item,
+      plain_name
+  )
 SELECT DISTINCT
   order_id_edw,
   item,
@@ -64,7 +82,7 @@ SELECT DISTINCT
   ) AS amount_items,
   SUM(
     CASE
-      WHEN recordtype IN ('invoice', 'cashsale') THEN abs(costestimate)
+      WHEN recordtype IN ('invoice', 'cashsale') THEN ABS(costestimate)
       ELSE 0
     END
   ) over (
