@@ -105,7 +105,7 @@ order by
   , ltv.last_order_date
   , DATEDIFF(DAY, ltv.last_order_date, GETDATE()) days_since_last_order
   , ltv.tier mozart_tier
-  , st.tier 
+  , coalesce(st.tier,mozart_tier) as tier
   , coalesce(r.revenue,0) revenue
   , coalesce(r.order_count,0) order_count
   , sum(coalesce(r.revenue,0)) over(partition by g.ns_customer_id,left(r.yrmo,4)) as total_year
