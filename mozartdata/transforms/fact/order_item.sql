@@ -5,6 +5,16 @@ SELECT DISTINCT
   plain_name,
   SUM(
     CASE
+      WHEN recordtype IN ('salesorder') THEN full_quantity
+      ELSE 0
+    END
+  ) over (
+    PARTITION BY
+      order_id_edw,
+      item
+  ) AS quantity_booked,
+  SUM(
+    CASE
       WHEN recordtype IN ('invoice', 'cashsale') THEN full_quantity
       ELSE 0
     END
