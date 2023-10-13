@@ -1,5 +1,5 @@
 SELECT DISTINCT
-  MD5(CONCAT(order_id_edw, item)) AS orderline_id,
+  MD5(CONCAT(order_id_edw, item)) AS order_item_id,
   order_id_edw,
   item,
   plain_name,
