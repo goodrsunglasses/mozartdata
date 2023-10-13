@@ -28,7 +28,7 @@ WITH
       SUM(rate) AS rate_sold,
       SUM(netamount) AS amount_sold,
       sum(estgrossprofit) as estgrossprofit,
-      sum(costestimate) as costestimate
+      sum(abs(costestimate)) as costestimate
     FROM
       fact.order_item_detail
     WHERE
@@ -94,8 +94,8 @@ SELECT DISTINCT
   amount_sold,
   amount_fulfilled,
   amount_refunded,
-  estgrossprofit,
-  costestimate
+  sold.estgrossprofit,
+  sold.costestimate
 FROM
   fact.order_item_detail detail
   LEFT OUTER JOIN booked ON (
