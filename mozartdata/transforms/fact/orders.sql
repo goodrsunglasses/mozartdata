@@ -161,13 +161,13 @@ WITH
       ) AS shipping_booked,
   SUM(
         CASE
-          WHEN plain_name = 'Tax' THEN amount_sold
+          WHEN plain_name = 'Shipping' THEN amount_sold
           ELSE 0
         END
       ) AS shipping_sold,
   SUM(
         CASE
-          WHEN plain_name = 'Tax' THEN amount_refunded
+          WHEN plain_name = 'Shipping' THEN amount_refunded
           ELSE 0
         END
       ) AS shipping_refunded
