@@ -13,7 +13,7 @@ WITH
       ) AS has_invoice_cashsale
     FROM
       fact.order_item_detail
-  )aw
+  )
 SELECT DISTINCT
   order_id_edw,
   item,
