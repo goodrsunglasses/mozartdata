@@ -82,6 +82,7 @@ SELECT
     ) THEN TRUE
     ELSE FALSE
   END AS is_key_account_current_flag,
+  b2b_d2c,
   case when min(rn) = 1 then true else false end as ns_primary_id_flag
 FROM
   customer_category
@@ -117,5 +118,6 @@ GROUP BY
       4533439
     ) THEN TRUE
     ELSE FALSE
-  END
+  END,
+    b2b_d2c
   order by customer_id_edw
