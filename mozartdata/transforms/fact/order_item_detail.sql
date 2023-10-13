@@ -8,6 +8,7 @@ SELECT
   tran.id AS ns_id,
   transtatus.fullname AS full_status,
   tranline.item,
+  tranline.itemtype,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(- netamount) netamount,
   SUM(rate) rate,
@@ -58,6 +59,7 @@ GROUP BY
   plain_name,
   ns_id,
   item,
+  tranline.itemtype,
   detail_id
   --Shipping and Tax
 UNION ALL
@@ -69,6 +71,7 @@ SELECT
   tran.id AS ns_id,
   transtatus.fullname AS full_status,
   tranline.item,
+  tranline.itemtype,
   CASE
     WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
     WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
@@ -102,6 +105,7 @@ GROUP BY
   order_id_edw,
   timestamp_transaction_pst,
   full_status,
+  tranline.itemtype,
   recordtype,
   plain_name,
   ns_id,
