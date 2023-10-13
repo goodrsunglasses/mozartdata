@@ -1,3 +1,22 @@
+WITH
+  detector AS (
+    SELECT distinct
+      order_id_edw,
+      MAX(
+        CASE
+          WHEN recordtype IN ('invoice', 'cashsale') THEN 1
+          ELSE 0
+        END
+      ) OVER (
+        PARTITION BY
+          order_id_edw,
+          item
+      ) AS has_invoice_cashsale
+    FROM
+      fact.order_item_detail
+    WHERE
+      order_id_edw in  ('G2089919','G1695394')
+  )
 SELECT DISTINCT
   order_id_edw,
   item,
@@ -15,6 +34,7 @@ SELECT DISTINCT
   SUM(
     CASE
       WHEN recordtype IN ('invoice', 'cashsale') THEN full_quantity
+  WHEN recordtype = 'salesorder' AND has_invoice_cashsale = 0 THEN full_quantity
       ELSE 0
     END
   ) over (
@@ -82,6 +102,6 @@ SELECT DISTINCT
       order_id_edw,
       item
   ) AS estgrossprofit,
-    MD5(CONCAT(order_id_edw, '_',item)) AS order_item_id
+  MD5(CONCAT(order_id_edw, '_', item)) AS order_item_id
 FROM
   fact.order_item_detail
