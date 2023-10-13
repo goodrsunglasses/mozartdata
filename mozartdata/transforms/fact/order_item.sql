@@ -62,7 +62,7 @@ SELECT DISTINCT
   ) AS quantity_refunded,
   SUM(
     CASE
-      WHEN recordtype IN ('invoice', 'cashsale', 'cashrefund') THEN rate
+      WHEN recordtype IN ('invoice', 'cashsale') THEN rate
       ELSE 0
     END
   ) over (
@@ -72,7 +72,7 @@ SELECT DISTINCT
   ) AS rate_items,
   SUM(
     CASE
-      WHEN recordtype IN ('invoice', 'cashsale', 'cashrefund') THEN netamount
+      WHEN recordtype IN ('invoice', 'cashsale') THEN netamount
       ELSE 0
     END
   ) over (
