@@ -117,5 +117,5 @@ order by
     on g.ns_customer_id = r.ns_customer_id
     and g.yrmo = r.yrmo
   --where g.ns_customer_id = 'CUST725797'--tier = 'Tier 1' --Change tier here
-  where g.yrmo >= 202301
+  where g.yrmo >= 202201
   order by ns_customer_id asc, yrmo asc
