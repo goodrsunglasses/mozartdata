@@ -2,6 +2,7 @@ WITH
   customer_category AS (
     SELECT DISTINCT
       cust.id,
+      cust.entityid,
       cust.email,
       cust.isperson,
       channel.name AS channel,
@@ -33,9 +34,10 @@ WITH
       LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
   )
 SELECT
-  id,
   customer_id_edw,
-  isperson,
+  id as ns_customer_internal_id,
+  entityid as ns_customer_id,  
+  isperson as is_person_flag,
   CASE
     WHEN id IN (
       12489,
@@ -57,7 +59,7 @@ SELECT
       4533439
     ) THEN TRUE
     ELSE FALSE
-  END AS is_key_account_current
+  END AS is_key_account_current_flag
 FROM
   customer_category
   LEFT OUTER JOIN draft_dim.customers customers ON (
