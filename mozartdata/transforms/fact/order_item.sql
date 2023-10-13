@@ -1,5 +1,4 @@
 SELECT DISTINCT
-  MD5(CONCAT(order_id_edw, item)) AS order_item_id,
   order_id_edw,
   item,
   plain_name,
@@ -82,6 +81,7 @@ SELECT DISTINCT
     PARTITION BY
       order_id_edw,
       item
-  ) AS estgrossprofit
+  ) AS estgrossprofit,
+    MD5(CONCAT(order_id_edw, item,plain_name)) AS order_item_id
 FROM
   fact.order_item_detail
