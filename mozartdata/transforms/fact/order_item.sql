@@ -1,19 +1,3 @@
-WITH
-  detector AS (
-    SELECT DISTINCT
-      order_id_edw order_id,
-      MAX(
-        CASE
-          WHEN recordtype IN ('invoice', 'cashsale') THEN 1
-          ELSE 0
-        END
-      ) OVER (
-        PARTITION BY
-          order_id_edw
-      ) AS has_invoice_cashsale
-    FROM
-      fact.order_item_detail
-  )
 SELECT DISTINCT
   order_id_edw,
   item,
@@ -31,8 +15,6 @@ SELECT DISTINCT
   SUM(
     CASE
       WHEN recordtype IN ('invoice', 'cashsale') THEN full_quantity
-      WHEN recordtype = 'salesorder'
-      AND has_invoice_cashsale = 0 THEN full_quantity
       ELSE 0
     END
   ) over (
@@ -103,4 +85,3 @@ SELECT DISTINCT
   CONCAT(order_id_edw, '_', item) AS order_item_id
 FROM
   fact.order_item_detail detail
-  LEFT OUTER JOIN detector ON detector.order_id = detail.order_id_edw
