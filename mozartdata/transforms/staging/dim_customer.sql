@@ -31,7 +31,7 @@ channel = netsuite.customrecord_cseg7
 with ns as
   (
 SELECT distinct
-  lower(c.email) email
+  lower(case when c.id= 1836849 then t.email else c.email end) email
 , CASE
     WHEN channel.name IN (
       'Specialty',
