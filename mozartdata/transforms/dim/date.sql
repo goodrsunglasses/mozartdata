@@ -7,7 +7,7 @@ WITH CTE_MY_DATE AS (
         ,to_char(MY_DATE, 'YYYYMMDD')::int as date_int
         ,YEAR(MY_DATE) as year
         ,MONTH(MY_DATE) as month
-        ,MONTHNAME(MY_DATE) as moonth_name
+        ,MONTHNAME(MY_DATE) as month_name
         ,DAY(MY_DATE) as day
         ,DAYOFWEEK(MY_DATE) as day_of_week
         ,WEEKOFYEAR(MY_DATE) as week_of_year
