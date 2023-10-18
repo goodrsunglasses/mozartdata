@@ -6,17 +6,17 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS status_flag_edw,
-      FIRST_VALUE(ns_id) OVER (
+      FIRST_VALUE(order_id_ns) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
           CASE
-            WHEN recordtype = 'cashsale' THEN 1
-            WHEN recordtype = 'invoice' THEN 2
-            WHEN recordtype = 'salesorder' THEN 3
+            WHEN record_type = 'cashsale' THEN 1
+            WHEN record_type = 'invoice' THEN 2
+            WHEN record_type = 'salesorder' THEN 3
             ELSE 4
           END,
-          timestamp_transaction_pst ASC
+          transaction_timestamp_pst ASC
       ) AS id
     FROM
       fact.order_line
@@ -26,11 +26,11 @@ WITH
       priority.order_id_edw,
       priority.id,
       channel,
-      customer_id,
+      customer_id_ns,
       email,
       is_exchange,
       priority.status_flag_edw,
-      timestamp_transaction_pst,
+      transaction_timestamp_pst,
       CASE
         WHEN channel IN (
           'Specialty',
@@ -56,7 +56,7 @@ WITH
     FROM
       priority
       LEFT OUTER JOIN fact.order_line orderline ON (
-        orderline.ns_id = priority.id
+        orderline.order_id_ns = priority.id
         AND orderline.order_id_edw = priority.order_id_edw
       )
   ),
@@ -125,16 +125,16 @@ WITH
       ) AS amount_refunded,
       SUM(
         CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN estgrossprofit
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN gross_profit_estimate
           ELSE 0
         END
-      ) AS estgrossprofit,
+      ) AS gross_profit_estimate,
       SUM(
         CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN costestimate
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN cost_estimate
           ELSE 0
         END
-      ) AS costestimate,
+      ) AS cost_estimate,
   SUM(
         CASE
           WHEN plain_name = 'Tax' THEN amount_booked
@@ -180,7 +180,8 @@ SELECT
   order_level.order_id_edw,
   order_level.channel,
   customer_id_edw,
-  order_level.timestamp_transaction_pst,
+  order_level.transaction_timestamp_pst,
+  date(order_level.transaction_timestamp_pst) as order_date_pst,
   order_level.is_exchange,
   order_level.status_flag_edw,
   b2b_d2c,
@@ -206,8 +207,8 @@ SELECT
   amount_booked,
   amount_sold,
   amount_refunded,
-  aggregates.estgrossprofit,
-  aggregates.costestimate,
+  aggregates.gross_profit_estimate,
+  aggregates.cost_estimate,
   tax_booked,
   tax_sold,
   tax_refunded,
@@ -222,6 +223,9 @@ FROM
     AND customer.customer_category = order_level.b2b_d2c
   )
 WHERE
-  timestamp_transaction_pst >= '2022-01-01T00:00:00Z'
+  --transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
+ -- order_date_pst = '2023-10-13'
+  order_level.order_id_edw = 'G2591359'
 ORDER BY
-  timestamp_transaction_pst desc
+  transaction_timestamp_pst desc
+limit 2000
