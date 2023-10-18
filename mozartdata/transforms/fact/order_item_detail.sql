@@ -2,19 +2,20 @@
 --CS,INV,SO,IF
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
-  MD5(CONCAT(order_id_edw, tran.id, item)) AS detail_id,
-  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS timestamp_transaction_pst,
-  tran.recordtype,
-  tran.id AS ns_id,
+  tran.id AS order_id_ns,
+  CONCAT(order_id_edw,'_', tran.id,'_', item) AS order_item_detail_id,
+  tranline.item as item_id_ns,
+  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS order_timestamp_pst,
+  date(CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)) AS order_date_pst,
+  tran.recordtype as record_type,
   transtatus.fullname AS full_status,
-  tranline.item,
-  tranline.itemtype,
+  tranline.itemtype as item_type,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  SUM(- netamount) netamount,
-  SUM(ABS(quantity)) AS full_quantity,
-  SUM(rate)*full_quantity rate,
-  SUM(tranline.estgrossprofit) AS estgrossprofit,
-  SUM(tranline.costestimate) AS costestimate
+  SUM(- netamount) as net_amount,
+  SUM(ABS(quantity)) AS total_quantity,
+  SUM(rate)*total_quantity rate,
+  SUM(tranline.estgrossprofit) AS gross_profit_estimate,
+  SUM(tranline.costestimate) AS cost_estimate
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -53,35 +54,38 @@ WHERE
   )
 GROUP BY
   order_id_edw,
-  timestamp_transaction_pst,
+  order_id_ns,
+  order_item_detail_id,
+  item_id_ns,
+  order_timestamp_pst,
+  order_date_pst,
+  record_type,
   full_status,
-  recordtype,
   plain_name,
-  ns_id,
-  item,
-  tranline.itemtype,
-  detail_id
+  item_type
+  
   --Shipping and Tax
 UNION ALL
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
-  MD5(CONCAT(order_id_edw, tran.id, item)) AS detail_id,
-  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS timestamp_transaction_pst,
-  tran.recordtype,
-  tran.id AS ns_id,
+  tran.id AS order_id_ns,
+  CONCAT(order_id_edw,'_', tran.id,'_', item) AS order_item_detail_id,
+  tranline.item as item_id_ns,
+  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS order_timestamp_pst,
+  date(CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)) AS order_date_pst,
+  tran.recordtype as record_type,
   transtatus.fullname AS full_status,
-  tranline.item,
-  tranline.itemtype,
+  tranline.itemtype as item_type,
   CASE
     WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
     WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
     ELSE NULL
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  SUM(- netamount) netamount,
+  SUM(- netamount) net_amount,
+  SUM(ABS(quantity)) AS total_quantity,
   SUM(rate) rate,
-  SUM(ABS(quantity)) AS full_quantity,
-  SUM(tranline.estgrossprofit) AS estgrossprofit,
-  SUM(tranline.costestimate) AS costestimate
+  SUM(tranline.estgrossprofit) AS gross_profit_estimate,
+  SUM(tranline.costestimate) AS cost_estimate
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -103,13 +107,15 @@ WHERE
   AND order_id_edw IS NOT NULL
 GROUP BY
   order_id_edw,
-  timestamp_transaction_pst,
+  order_id_ns,
+  order_item_detail_id,
+  item_id_ns,
+  order_timestamp_pst,
+  order_date_pst,
+  record_type,
   full_status,
-  tranline.itemtype,
-  recordtype,
   plain_name,
-  ns_id,
-  item,
-  detail_id
+  item_type
+
 ORDER BY
-  ns_id asc
+  order_id_ns asc
