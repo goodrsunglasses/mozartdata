@@ -6,7 +6,7 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS status_flag_edw,
-      FIRST_VALUE(order_id_ns) OVER (
+      FIRST_VALUE(transaction_id_ns) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -56,7 +56,7 @@ WITH
     FROM
       priority
       LEFT OUTER JOIN fact.order_line orderline ON (
-        orderline.order_id_ns = priority.id
+        orderline.transaction_id_ns = priority.id
         AND orderline.order_id_edw = priority.order_id_edw
       )
   ),
@@ -180,7 +180,7 @@ SELECT
   order_level.order_id_edw,
   order_level.channel,
   customer_id_edw,
-  order_level.transaction_timestamp_pst,
+  order_level.transaction_timestamp_pst as order_timestamp_pst,
   date(order_level.transaction_timestamp_pst) as order_date_pst,
   order_level.is_exchange,
   order_level.status_flag_edw,
@@ -223,9 +223,6 @@ FROM
     AND customer.customer_category = order_level.b2b_d2c
   )
 WHERE
-  --transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
- -- order_date_pst = '2023-10-13'
-  order_level.order_id_edw = 'G2591359'
+  transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
 ORDER BY
   transaction_timestamp_pst desc
-limit 2000
