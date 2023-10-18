@@ -24,6 +24,6 @@ SELECT DISTINCT
   END AS status_flag_edw
 FROM
   fact.order_item_detail item_detail
-  LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.item_id_ns
+  LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
