@@ -2,7 +2,7 @@
 --CS,INV,SO,IF
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
-  tran.id AS order_id_ns,
+  tran.id AS transaction_id_ns,
   CONCAT(order_id_edw,'_', tran.id,'_', item) AS order_item_detail_id,
   tranline.item as item_id_ns,
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_timestamp_pst,
@@ -54,7 +54,7 @@ WHERE
   )
 GROUP BY
   order_id_edw,
-  order_id_ns,
+  transaction_id_ns,
   order_item_detail_id,
   item_id_ns,
   transaction_timestamp_pst,
@@ -68,7 +68,7 @@ GROUP BY
 UNION ALL
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
-  tran.id AS order_id_ns,
+  tran.id AS transaction_id_ns,
   CONCAT(order_id_edw,'_', tran.id,'_', item) AS order_item_detail_id,
   tranline.item as item_id_ns,
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_timestamp_pst,
@@ -107,7 +107,7 @@ WHERE
   AND order_id_edw IS NOT NULL
 GROUP BY
   order_id_edw,
-  order_id_ns,
+  transaction_id_ns,
   order_item_detail_id,
   item_id_ns,
   transaction_timestamp_pst,
@@ -118,4 +118,4 @@ GROUP BY
   item_type
 
 ORDER BY
-  order_id_ns asc
+  transaction_id_ns asc
