@@ -19,7 +19,7 @@ WITH
           timestamp_transaction_pst ASC
       ) AS id
     FROM
-      fact.orderline
+      fact.order_line
   ),
   order_level AS (
     SELECT DISTINCT
@@ -55,7 +55,7 @@ WITH
       END AS b2b_d2c
     FROM
       priority
-      LEFT OUTER JOIN fact.orderline orderline ON (
+      LEFT OUTER JOIN fact.order_line orderline ON (
         orderline.ns_id = priority.id
         AND orderline.order_id_edw = priority.order_id_edw
       )
