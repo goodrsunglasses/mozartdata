@@ -20,7 +20,9 @@ WITH
   )
 SELECT
   collection_cte.collection,
+  o.channel,
   SUM(oi.amount_sold),
+  sum(oi.quantity_sold),
   COUNT(DISTINCT o.order_id_edw) as sales_containing_colleciton
 FROM
   fact.orders o
@@ -29,7 +31,9 @@ FROM
   INNER JOIN collection_cte ON collection_cte.sku = p.sku
 WHERE
   collection_cte.collection IS NOT NULL
+  and o.channel = 'Goodr.com'
 GROUP BY
-  collection_cte.collection
+  collection_cte.collection,
+  o.channel
 ORDER BY
   collection
