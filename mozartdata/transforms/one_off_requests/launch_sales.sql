@@ -28,7 +28,6 @@ FROM
   INNER JOIN draft_dim.product p ON p.item_id_ns = oi.item_id_ns
   INNER JOIN collection_cte ON collection_cte.sku = p.sku
 GROUP BY
-  p.sku,
   collection_cte.collection
 ORDER BY
   collection
