@@ -19,7 +19,6 @@ WITH
       draft_dim.product
   )
 SELECT
-  p.sku,
   collection_cte.collection,
   SUM(o.amount_sold)
 FROM
