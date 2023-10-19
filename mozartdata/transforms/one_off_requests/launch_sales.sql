@@ -16,7 +16,7 @@ WITH
   )
 SELECT
   collection_cte.collection,
-  SUM(o.amount_sold),
+  SUM(oi.amount_sold),
   COUNT(DISTINCT o.order_id_edw)
 FROM
   fact.orders o
