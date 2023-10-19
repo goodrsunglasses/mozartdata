@@ -13,6 +13,6 @@ SELECT MY_DATE as date_timestamp
     , WEEKOFYEAR(MY_DATE) as week_of_year
     , DAYOFYEAR(MY_DATE) as day_of_year
     , CONCAT(MONTH(MY_DATE), '-', DAY(MY_DATE)) as day_month
-    , fact.sales_seasons.season as sales_season
+    , google_sheets.sales_seasons.season as sales_season
 FROM CTE_MY_DATE
-LEFT JOIN fact.sales_seasons on day_month = fact.sales_seasons.date
+LEFT JOIN google_sheets.sales_seasons on day_month = google_sheets.sales_seasons.date
