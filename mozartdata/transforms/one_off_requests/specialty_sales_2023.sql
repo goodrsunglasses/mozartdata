@@ -29,7 +29,7 @@ inner join
   draft_dim.customers dc
   on o.customer_id_edw = dc.customer_id_edw
 inner join
-  fact.customer_ns_map cm
+  draft_fact.customer_ns_map cm
   on o.customer_id_edw = cm.customer_id_edw
   and cm.b2b_d2c = 'B2B'
   and cm.ns_primary_id_flag = true
