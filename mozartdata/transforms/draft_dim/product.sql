@@ -18,7 +18,11 @@ i = netsuite.item
 SELECT
   i.id as item_id_ns
 , i.itemid as sku
+, i.incomeaccount
+  ,ga.account_display_name
+  , ga.account_number
 , i.displayname as display_name
+, i.itemtype as item_type
 , i.custitem5 as collection 
 , class.name AS class
 , family.name AS family
@@ -36,7 +40,6 @@ SELECT
 , templecolor.name as color_temple
 , framefinish.name as finish_frame
 , templefinish.name as finish_temple
-
 , lenscolor.name as color_lens_finish
 , i.custitem24 as lens_type
 , i.custitem7 as date_d2c_launch --not mapped correctly in mozart
@@ -54,6 +57,9 @@ SELECT
 , i.CUSTITEM1 as country_of_origin
 FROM
   netsuite.item i
+inner join
+  draft_dim.gl_account ga
+  on i.incomeaccount = ga.account_id_ns
 left join
   netsuite.customlist991 framecolor
   on i.custitem20 = framecolor.id
@@ -82,4 +88,6 @@ left join
   netsuite.CUSTOMLIST896 stage 
   ON stage.id = i.custitem6
 WHERE
-  itemtype = 'InvtPart'
+  itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment')
+and itemtype = 'InvtPart'
+/*bring in free shit indicator, merchandise division*/
