@@ -21,8 +21,7 @@ WITH
 SELECT
   p.sku,
   collection_cte.collection,
-  SUM(o.amount_sold),
-  COUNT()
+  SUM(o.amount_sold)
 FROM
   fact.orders o
   INNER JOIN fact.order_item oi ON o.order_id_edw = oi.order_id_edw
