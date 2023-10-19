@@ -2,7 +2,7 @@
 This report produces an Income statement which can be reconciled against Net Suite
 
 Aliases:
-gt = fact.gl_transaction
+gt = draft_fact.gl_transaction
 ga = draft_dim.gl_account
 */
 
@@ -18,7 +18,7 @@ select
 , sum(gt.amount_debit) amount_debit
 , sum(gt.amount_transaction_positive) amount_transaction_positive
 from
-  fact.gl_transaction gt
+  draft_fact.gl_transaction gt
 inner join
   draft_dim.gl_account ga
   on ga.account_id_ns = gt.account_id_ns
