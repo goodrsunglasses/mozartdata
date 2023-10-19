@@ -1,1 +1,1 @@
- 
+SELECT * FROM google_sheets.sales_seasons
