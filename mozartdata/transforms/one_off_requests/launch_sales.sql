@@ -21,7 +21,7 @@ WITH
 SELECT
   collection_cte.collection,
   SUM(oi.amount_sold),
-  COUNT(DISTINCT o.order_id_edw)
+  COUNT(DISTINCT o.order_id_edw) as sales_containing_colleciton
 FROM
   fact.orders o
   INNER JOIN fact.order_item oi ON o.order_id_edw = oi.order_id_edw
