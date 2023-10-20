@@ -42,8 +42,10 @@ SELECT
 , templefinish.name as finish_temple
 , lenscolor.name as color_lens_finish
 , i.custitem24 as lens_type
-, i.custitem7 as date_d2c_launch --not mapped correctly in mozart
-, i.custitem16 as date_b2b_launch
+, i.custitem7 as d2c_launch_timestamp 
+, date(i.custitem7) as d2c_launch_date  
+, i.custitem16 as b2b_launch_timestamp
+, date(i.custitem16) as b2b_launch_date
 , i.custitem_goodr_mc_ip_qty as mc_quantity
 , i.custitem_goodr_mc_weight as mc_weight_oz
 , i.custitem_goodr_mc_length as mc_length_in
