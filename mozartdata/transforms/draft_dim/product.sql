@@ -57,6 +57,7 @@ SELECT
 , i.custitem_goodr_ip_height as ip_height_in
 , i.custitem_goodr_hts_code_item as hts_code
 , i.CUSTITEM1 as country_of_origin
+, sum(itemmember.quantity)over(partition by parentitem) as assembly_quantity
 FROM
   netsuite.item i
 inner join
@@ -89,7 +90,10 @@ left join
 left join 
   netsuite.CUSTOMLIST896 stage 
   ON stage.id = i.custitem6
+left join 
+  netsuite.itemmember itemmember 
+  ON i.id = itemMember.parentitem
 WHERE
   itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment')
-and itemtype = 'InvtPart'
+and itemtype = 'Assembly'
 /*bring in free shit indicator, merchandise division*/
