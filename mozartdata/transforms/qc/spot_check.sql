@@ -2,7 +2,7 @@ WITH sampled_data AS (
     SELECT *, 
            ROW_NUMBER() OVER(ORDER BY RANDOM()) AS row_num, 
            COUNT(*) OVER() AS total_count
-      FROM fact.customer
+      FROM draft_fact.customer
      SAMPLE (20)
 )
 
