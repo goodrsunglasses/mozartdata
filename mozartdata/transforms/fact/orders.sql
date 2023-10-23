@@ -6,6 +6,10 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS status_flag_edw,
+      MAX(has_refund) over (
+        PARTITION BY
+          order_id_edw
+      ) AS has_refund,
       FIRST_VALUE(transaction_id_ns) OVER (
         PARTITION BY
           order_id_edw
@@ -25,6 +29,7 @@ WITH
     SELECT DISTINCT
       priority.order_id_edw,
       priority.id,
+      priority.has_refund,
       channel,
       customer_id_ns,
       email,
@@ -135,37 +140,37 @@ WITH
           ELSE 0
         END
       ) AS cost_estimate,
-  SUM(
+      SUM(
         CASE
           WHEN plain_name = 'Tax' THEN amount_booked
           ELSE 0
         END
       ) AS tax_booked,
-  SUM(
+      SUM(
         CASE
           WHEN plain_name = 'Tax' THEN amount_sold
           ELSE 0
         END
       ) AS tax_sold,
-  SUM(
+      SUM(
         CASE
           WHEN plain_name = 'Tax' THEN amount_refunded
           ELSE 0
         END
       ) AS tax_refunded,
-  SUM(
+      SUM(
         CASE
           WHEN plain_name = 'Shipping' THEN amount_booked
           ELSE 0
         END
       ) AS shipping_booked,
-  SUM(
+      SUM(
         CASE
           WHEN plain_name = 'Shipping' THEN amount_sold
           ELSE 0
         END
       ) AS shipping_sold,
-  SUM(
+      SUM(
         CASE
           WHEN plain_name = 'Shipping' THEN amount_refunded
           ELSE 0
@@ -180,10 +185,11 @@ SELECT
   order_level.order_id_edw,
   order_level.channel,
   customer_id_edw,
-  order_level.transaction_timestamp_pst as order_timestamp_pst,
-  date(order_level.transaction_timestamp_pst) as order_date_pst,
+  order_level.transaction_timestamp_pst AS order_timestamp_pst,
+  DATE(order_level.transaction_timestamp_pst) AS order_date_pst,
   order_level.is_exchange,
   order_level.status_flag_edw,
+  order_level.has_refund,
   b2b_d2c,
   CASE
     WHEN order_level.channel IN (
