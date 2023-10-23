@@ -14,7 +14,17 @@ aliases:
 i = netsuite.item
 
 */
-
+WITH assembly_aggregate AS(
+  SELECT 
+    parentitem
+   ,SUM(quantity) as assembly_quantity
+  FROM 
+    netsuite.itemmember
+  GROUP BY 
+    parentitem
+  HAVING
+    assembly_quantity is not null
+)
 SELECT
   i.id as item_id_ns
 , i.itemid as sku
@@ -57,7 +67,7 @@ SELECT
 , i.custitem_goodr_ip_height as ip_height_in
 , i.custitem_goodr_hts_code_item as hts_code
 , i.CUSTITEM1 as country_of_origin
-, sum(itemmember.quantity)over(partition by parentitem) as assembly_quantity
+, assembly_quantity
 FROM
   netsuite.item i
 inner join
@@ -91,8 +101,8 @@ left join
   netsuite.CUSTOMLIST896 stage 
   ON stage.id = i.custitem6
 left join 
-  netsuite.itemmember itemmember 
-  ON i.id = itemMember.parentitem
+  assembly_aggregate agg 
+  ON i.id = agg.parentitem
 WHERE
   itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment')
 and itemtype = 'Assembly'
