@@ -8,4 +8,4 @@ WITH sampled_data AS (
 
 SELECT *
   FROM sampled_data
- WHERE CASE WHEN total_count > 10 THEN row_num <= 10 ELSE TRUE END;
+ WHERE CASE WHEN total_row_count > 10 THEN row_num <= 10 ELSE TRUE END;
