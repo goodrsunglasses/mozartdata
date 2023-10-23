@@ -1,11 +1,15 @@
 SELECT DISTINCT
-  CONCAT(order_id_edw,'_', transaction_id_ns) AS order_line_id,
+  CONCAT(order_id_edw, '_', transaction_id_ns) AS order_line_id,
   item_detail.order_id_edw,
   item_detail.transaction_id_ns,
   item_detail.record_type,
   channel.name AS channel,
-  entity as customer_id_ns,
+  entity AS customer_id_ns,
   customer.email,
+  CASE
+    WHEN record_type = 'cashrefund' THEN TRUE
+    ELSE FALSE
+  END AS has_refund,
   CASE
     WHEN memo LIKE '%RMA%' THEN TRUE
     ELSE FALSE
