@@ -1,3 +1,6 @@
+with
+  budget as
+  (
 SELECT
   bl."ACCOUNT" as account_id_ns,
   ga.account_display_name,
@@ -6,7 +9,7 @@ SELECT
   cseg7.name as channel,
   bl.period,
   ap.periodname,
-  SUM(amount) AS amount
+  SUM(amount) AS budget
 FROM
   netsuite.budgetlegacy bl
   LEFT JOIN 
@@ -28,14 +31,43 @@ GROUP BY
   ga.account_display_name,
   ga.account_number,
   category.name,
-  cseg7.name,
+ cseg7.name,
   bl.period,
-   ap.periodname
-order by 
-  period,
-  account_number,
-  channel
-
+  ap.periodname
+)
+select
+  b.account_display_name
+  ,account_number
+  , periodname
+  , b.channel
+  , budget
+, sum(gt.amount_credit) as actual
+  , sum(gt.amount_debit) as actual_debit
+  , sum(gt.amount_net) as actual_net
+from
+  budget b
+left join
+  draft_fact.gl_transaction gt
+  on b.account_id_ns = gt.account_id_ns
+  and b.periodname = gt.posting_period
+  and b.channel = gt.channel
+  and gt.posting_flag = true
+where
+  b.account_number >= 4000 and b.account_number <5000
+  and periodname = 'Feb 2023'
+group by
+  b.account_id_ns
+, b.account_display_name
+, b.account_number
+, b.budget_version
+ , b.channel
+, b.period
+, b.periodname
+ , b.budget
+order by
+  b.period
+, b.channel
 /*
-SELECT * FROM netsuite.accountingperiod
+
+select * from draft_fact.gl_transaction gt where gt.account_id_ns = 269 and gt.posting_period = 'Jan 2023'
 */
