@@ -1,15 +1,41 @@
 SELECT
-  acct.fullname as account_name,
-  category.name AS category,
+  bl."ACCOUNT" as account_id_ns,
+  ga.account_display_name,
+  ga.account_number,
+  category.name AS budget_version,
   cseg7.name as channel,
+  bl.period,
+  ap.periodname,
   SUM(amount) AS amount
 FROM
-  netsuite.budgetlegacy budgets
-  LEFT OUTER JOIN netsuite."ACCOUNT" acct ON acct.id = budgets."ACCOUNT"
-  LEFT OUTER JOIN netsuite.budgetcategory category ON category.id = budgets.category
-  LEFT OUTER JOIN netsuite.customrecord_cseg7 cseg7 ON cseg7.id = budgets.cseg7
-
+  netsuite.budgetlegacy bl
+  LEFT JOIN 
+    draft_dim.gl_account ga 
+  ON ga.account_id_ns = bl."ACCOUNT"
+  LEFT JOIN 
+    netsuite.budgetcategory category 
+    ON category.id = bl.category
+  LEFT JOIN 
+    netsuite.customrecord_cseg7 cseg7 
+    ON cseg7.id = bl.cseg7
+  left join
+    netsuite.accountingperiod ap
+    on bl.period = ap.id
+WHERE
+  budget_version = '2023 - V3'
 GROUP BY
-  acct.fullname,
+  bl."ACCOUNT",
+  ga.account_display_name,
+  ga.account_number,
+  category.name,
   cseg7.name,
-  category.name
+  bl.period,
+   ap.periodname
+order by 
+  period,
+  account_number,
+  channel
+
+/*
+SELECT * FROM netsuite.accountingperiod
+*/
