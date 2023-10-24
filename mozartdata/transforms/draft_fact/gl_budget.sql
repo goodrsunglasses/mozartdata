@@ -1,10 +1,9 @@
 SELECT
-  acct.fullname,
-  category.name cat,
-  budgets.*
+  sum(amount)
 FROM
-  netsuite.budgetimport budgets
+  netsuite.budgetlegacy budgets
 left outer join netsuite."ACCOUNT" acct on acct.id = budgets."ACCOUNT"
   left outer join netsuite.budgetcategory category on category.id = budgets.category
 where acct.fullname = 'Cost of Goods Sold'
-and cat = '2023 - V2'
+  and cseg7 = 7
+and category.name = '2023 - V2'
