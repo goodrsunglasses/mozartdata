@@ -39,4 +39,5 @@ order by
 /*
 SELECT * FROM netsuite.accountingperiod
 SELECT * FROM netsuite.budgetlegacy
+SELECT * FROM netsuite.budgetcategory
 */
