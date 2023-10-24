@@ -1,6 +1,6 @@
 SELECT
   acct.fullname as account_name,
-  category.name AS YEAR,
+  category.name AS category,
   cseg7.name as channel,
   SUM(amount) AS amount
 FROM
@@ -12,4 +12,4 @@ FROM
 GROUP BY
   acct.fullname,
   cseg7.name,
-  YEAR
+  category.name
