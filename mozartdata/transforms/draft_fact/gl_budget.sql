@@ -1,5 +1,5 @@
 SELECT
-  acct.fullname,
+  acct.fullname as account_name,
   category.name AS YEAR,
   cseg7.name as channel,
   SUM(amount) AS amount
