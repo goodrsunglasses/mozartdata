@@ -63,8 +63,8 @@ WITH
   )
 SELECT
   customer_id_edw,
-  id AS customer_internal_id_ns,
-  entityid AS customer_id_ns,
+  id AS ns_customer_internal_id,
+  entityid AS ns_customer_id,
   isperson AS is_person_flag,
   CASE
     WHEN id IN (
