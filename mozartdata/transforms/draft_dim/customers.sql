@@ -32,6 +32,5 @@ FROM
   LEFT OUTER JOIN shopify.customer shop_customer ON shop_customer.email = staging_customer.email
   LEFT OUTER JOIN specialty_shopify.customer specialty_shopify ON specialty_shopify.email = staging_customer.email
   LEFT OUTER JOIN netsuite.customer ns_cust ON ns_cust.email = staging_customer.email
-  where staging_customer.email = 'hollyschaffter@hotmail.com'
 ORDER BY
   email desc
