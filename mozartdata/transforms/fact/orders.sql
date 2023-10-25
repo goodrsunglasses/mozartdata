@@ -224,7 +224,7 @@ SELECT
 FROM
   order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
-  LEFT OUTER JOIN staging.dim_customer customer ON (
+  LEFT OUTER JOIN draft_dim.customer customer ON (
     LOWER(customer.email) = LOWER(order_level.email)
     AND customer.customer_category = order_level.b2b_d2c
   )
