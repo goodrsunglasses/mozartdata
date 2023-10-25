@@ -4,6 +4,7 @@ WITH
     SELECT
       id,
       email,
+      first_name || ' ' || last_name AS fullname,
       'D2C' AS category
     FROM
       shopify.customer shop_cust
@@ -13,6 +14,7 @@ WITH
     SELECT
       id,
       email,
+      first_name || ' ' || last_name AS fullname,
       'B2B' AS category
     FROM
       specialty_shopify.customer shop_cust
@@ -20,6 +22,7 @@ WITH
 SELECT
   customer_id_edw,
   COALESCE(d2c_shop.id, b2b_shop.id) AS shopify_id,
+  coalesce(d2c_shop.fullname,b2b_shop.fullname) as full_name,
   dim_cust.email,
   customer_category
 FROM
