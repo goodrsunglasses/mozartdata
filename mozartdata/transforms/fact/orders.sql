@@ -6,10 +6,6 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS status_flag_edw,
-      MAX(has_refund) over (
-        PARTITION BY
-          order_id_edw
-      ) AS has_refund,
       FIRST_VALUE(transaction_id_ns) OVER (
         PARTITION BY
           order_id_edw
@@ -29,7 +25,6 @@ WITH
     SELECT DISTINCT
       priority.order_id_edw,
       priority.id,
-      priority.has_refund,
       channel,
       customer_id_ns,
       email,
@@ -189,7 +184,12 @@ SELECT
   DATE(order_level.transaction_timestamp_pst) AS order_date_pst,
   order_level.is_exchange,
   order_level.status_flag_edw,
-  order_level.has_refund,
+  CASE
+    WHEN refund.order_id_edw IS NOT NULL THEN TRUE
+    ELSE FALSE
+  END AS has_refund,
+  refund.transaction_timestamp_pst as refund_timestamp_pst,
+  date(refund_timestamp_pst) as refund_date_pst,
   b2b_d2c,
   CASE
     WHEN order_level.channel IN (
@@ -228,7 +228,8 @@ FROM
     LOWER(customer.email) = LOWER(order_level.email)
     AND customer.customer_category = order_level.b2b_d2c
   )
+  LEFT OUTER JOIN draft_fact.refund refund ON refund.order_id_edw = order_level.order_id_edw
 WHERE
-  transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
+  order_level.transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
 ORDER BY
-  transaction_timestamp_pst desc
+  order_level.transaction_timestamp_pst desc
