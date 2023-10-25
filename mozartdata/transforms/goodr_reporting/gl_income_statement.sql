@@ -10,6 +10,7 @@ select
   ga.account_number
 , ga.account_full_name
 , concat(ga.account_number,' - ',ga.account_full_name) account_with_name
+, gt.posting_period
 , gt.channel
 , sum(gt.amount_transaction) amount_transaction
 , sum(gt.amount_net) amount_net
@@ -30,3 +31,4 @@ group by
 , ga.account_full_name
 , concat(ga.account_number,' - ',ga.account_full_name)
 , gt.channel
+, gt.posting_period
