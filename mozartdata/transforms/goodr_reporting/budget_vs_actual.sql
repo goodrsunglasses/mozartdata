@@ -1,73 +1,51 @@
 with
+  actual as
+  (
+    select
+      ga.account_number
+    , ga.account_id_ns
+    , ga.account_full_name
+    , concat(ga.account_number,' - ',ga.account_full_name) account_with_name
+    , gt.posting_period
+    , gt.channel
+    , sum(gt.amount_transaction) amount_transaction
+    , sum(gt.amount_net) amount_net
+    , sum(gt.amount_credit) amount_credit
+    , sum(gt.amount_debit) amount_debit
+    , sum(gt.amount_transaction_positive) amount_transaction_positive
+    from
+      draft_fact.gl_transaction gt
+    inner join
+      draft_dim.gl_account ga
+      on ga.account_id_ns = gt.account_id_ns
+    where
+      gt.posting_period  in ('Jan 2023','Feb 2023','Mar 2023','Apr 2023','May 2023','Jun 2023','Jul 2023','Aug 2023','Sep 2023')
+      and posting_flag = true
+    and ga.account_number >= 4000 and ga.account_number < 9000
+    group by
+      ga.account_number
+    , ga.account_id_ns
+    , ga.account_full_name
+    , concat(ga.account_number,' - ',ga.account_full_name)
+    , gt.channel
+    , gt.posting_period
+  ),
   budget as
   (
-SELECT
-  bl."ACCOUNT" as account_id_ns,
-  ga.account_display_name,
-  ga.account_number,
-  category.name AS budget_version,
-  cseg7.name as channel,
-  bl.period,
-  ap.periodname,
-  SUM(amount) AS budget
-FROM
-  netsuite.budgetlegacy bl
-  LEFT JOIN 
-    draft_dim.gl_account ga 
-  ON ga.account_id_ns = bl."ACCOUNT"
-  LEFT JOIN 
-    netsuite.budgetcategory category 
-    ON category.id = bl.category
-  LEFT JOIN 
-    netsuite.customrecord_cseg7 cseg7 
-    ON cseg7.id = bl.cseg7
-  left join
-    netsuite.accountingperiod ap
-    on bl.period = ap.id
-WHERE
-  budget_version = '2023 - V3'
-GROUP BY
-  bl."ACCOUNT",
-  ga.account_display_name,
-  ga.account_number,
-  category.name,
- cseg7.name,
-  bl.period,
-  ap.periodname
+  select
+    *
+  FROM
+    draft_fact.gl_budget gb
+  WHERE
+    gb.budget_version = '2023 - V3'
 )
-select
-  b.account_display_name
-  ,account_number
- -- , periodname
-  , b.channel
-  , budget
-, sum(gt.amount_credit) as actual
-  , sum(gt.amount_debit) as actual_debit
-  , sum(gt.amount_net) as actual_net
-from
-  budget b
-left join
-  draft_fact.gl_transaction gt
-  on b.account_id_ns = gt.account_id_ns
-  and b.periodname = gt.posting_period
-  and b.channel = gt.channel
-  and gt.posting_flag = true
-where
-  b.account_number >= 4000 and b.account_number <5000
-  --and periodname = 'Feb 2023'
-group by
-  b.account_id_ns
-, b.account_display_name
-, b.account_number
-, b.budget_version
- , b.channel
---, b.period
---, b.periodname
- , b.budget
--- order by
---   b.period
--- , b.channel
-/*
-
-select * from draft_fact.gl_transaction gt where gt.account_id_ns = 269 and gt.posting_period = 'Jan 2023'
-*/
+  SELECT
+    a.*
+  , b.budget_amount
+  FROM
+    actual a
+  left join
+    budget b
+    on a.account_id_ns = b.account_id_ns
+    and a.channel = b.channel
+    and a.posting_period = b.posting_period
