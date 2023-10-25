@@ -319,7 +319,7 @@ FROM
   LEFT OUTER JOIN line_info_sold ON line_info_sold.order_num = order_numbers.order_num
   LEFT OUTER JOIN line_info_fulfilled ON line_info_fulfilled.order_num = order_numbers.order_num
   LEFT OUTER JOIN line_info_refunded ON line_info_refunded.order_num = order_numbers.order_num
-  LEFT OUTER JOIN staging.dim_customer customer ON (
+  LEFT OUTER JOIN draft_dim.customer customer ON (
     customer.email = order_numbers.email
     AND customer.customer_category = order_numbers.b2b_d2c
   )
