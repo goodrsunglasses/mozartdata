@@ -95,7 +95,7 @@ SELECT
   END AS ns_primary_id_flag
 FROM
   customer_category
-  LEFT OUTER JOIN draft_dim.customers customers ON (
+  LEFT OUTER JOIN draft_dim.customer customers ON (
     LOWER(customers.email) = LOWER(customer_category.email)
     AND customer_category.b2b_d2c = customers.customer_category
   )
