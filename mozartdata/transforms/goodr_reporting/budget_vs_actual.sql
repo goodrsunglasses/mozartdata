@@ -1,8 +1,20 @@
 with
+  period_map as
+  (
+    select distinct
+      posting_period
+    , try_to_date(posting_period,'Mon YYYY') posting_period_date
+    , MONTH(TO_DATE(posting_period,'Mon YYYY')) posting_period_month
+    , YEAR(TO_DATE(posting_period,'Mon YYYY')) posting_period_year
+    from
+      draft_fact.gl_transaction gt
+    order by
+      posting_period_date
+  ),
   actual as
   (
     select
-      '2023 - Actual' as budget_version
+      concat(pm.posting_period_year,' - Actual') as budget_version
     , ga.account_number
     , ga.account_id_ns
     , gt.posting_period
@@ -15,12 +27,17 @@ with
     inner join
       draft_dim.gl_account ga
       on ga.account_id_ns = gt.account_id_ns
+    inner join
+      period_map pm
+      on gt.posting_period = pm.posting_period
+      and pm.posting_period_year >= '2021'
     where
-      gt.posting_period  in ('Jan 2023','Feb 2023','Mar 2023','Apr 2023','May 2023','Jun 2023','Jul 2023','Aug 2023','Sep 2023')
-      and posting_flag = true
+      --gt.posting_period  in ('Jan 2023','Feb 2023','Mar 2023','Apr 2023','May 2023','Jun 2023','Jul 2023','Aug 2023','Sep 2023')
+      posting_flag = true
     and ga.account_number >= 4000 and ga.account_number < 5000
     group by
-      ga.account_number
+      concat(pm.posting_period_year,' - Actual')  
+    , ga.account_number
     , ga.account_id_ns
     -- , ga.account_full_name
     -- , concat(ga.account_number,' - ',ga.account_full_name)
@@ -42,7 +59,9 @@ with
     draft_dim.gl_account ga
     on ga.account_id_ns = gb.account_id_ns
     and ga.account_number >= 4000 and ga.account_number < 5000
-  )
+  ),
+  ba_combined as 
+  (
   SELECT
     *
   FROM
@@ -52,3 +71,11 @@ with
     *
   FROM
     budget b
+  )
+  select
+    *
+  from
+    ba_combined bc
+  inner join
+    period_map pm
+    on pm.posting_period = bc.posting_period
