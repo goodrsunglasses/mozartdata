@@ -60,6 +60,14 @@ WITH
       netsuite.transaction tran
       LEFT OUTER JOIN netsuite.customer cust ON cust.id = tran.entity
       LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
+    WHERE
+      tran.recordtype IN (
+        'cashsale',
+        'invoice',
+        'salesorder',
+        'itemfulfillment',
+        'cashrefund'
+      )
   )
 SELECT
   customer_id_edw,
