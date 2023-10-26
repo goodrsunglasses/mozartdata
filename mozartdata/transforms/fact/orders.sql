@@ -175,6 +175,18 @@ WITH
       fact.order_item
     GROUP BY
       order_id_edw
+  ),
+  refund_aggregates AS (
+    SELECT DISTINCT
+      order_id_edw,
+      FIRST_VALUE(transaction_timestamp_pst) over (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          transaction_timestamp_pst asc
+      ) AS refund_timestamp_pst
+    FROM
+      draft_fact.refund
   )
 SELECT
   order_level.order_id_edw,
@@ -188,8 +200,8 @@ SELECT
     WHEN refund.order_id_edw IS NOT NULL THEN TRUE
     ELSE FALSE
   END AS has_refund,
-  refund.transaction_timestamp_pst as refund_timestamp_pst,
-  date(refund_timestamp_pst) as refund_date_pst,
+  refund_timestamp_pst,
+  DATE(refund_timestamp_pst) AS refund_date_pst,
   b2b_d2c,
   CASE
     WHEN order_level.channel IN (
@@ -228,7 +240,7 @@ FROM
     LOWER(customer.email) = LOWER(order_level.email)
     AND customer.customer_category = order_level.b2b_d2c
   )
-  LEFT OUTER JOIN draft_fact.refund refund ON refund.order_id_edw = order_level.order_id_edw
+  LEFT OUTER JOIN refund_aggregates  refund ON refund.order_id_edw = order_level.order_id_edw
 WHERE
   order_level.transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
 ORDER BY
