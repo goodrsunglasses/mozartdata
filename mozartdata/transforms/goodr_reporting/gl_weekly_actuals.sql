@@ -18,6 +18,8 @@ with
     , ga.account_id_ns
     , gt.posting_period
     , date_trunc(week,gt.transaction_date) transaction_week
+    , date_trunc(year,gt.transaction_date) transaction_year
+    , week(gt.transaction_date) week_of_year
     , gt.channel
     , pm.posting_period_date
     , pm.posting_period_month
@@ -44,6 +46,8 @@ with
     , ga.account_id_ns
     , gt.posting_period
     , date_trunc(week,gt.transaction_date)
+    , date_trunc(year,gt.transaction_date)
+    , week(gt.transaction_date)
     , gt.channel
     , pm.posting_period_date
     , pm.posting_period_month
