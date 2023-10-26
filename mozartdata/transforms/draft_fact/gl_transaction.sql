@@ -20,24 +20,26 @@ use createdate converted instead of trandate
 */
     select
       concat(tal.transaction,'_',tal.transactionline) as transaction_line_id
-    , tran.custbody_goodr_shopify_order order_number
-    , tran.tranid as order_transaction_id_ns
+    , tran.custbody_goodr_shopify_order order_id_edw
+    , tran.tranid as transaction_id_ns
     , tal."ACCOUNT" as account_id_ns
     , channel.name as channel
-    , tran.trandate as date_transaction
-    , CONVERT_TIMEZONE('America/Los_Angeles', tran.trandate) AS timestamp_transaction_PST
-    , CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) as date_posted
+    , tran.trandate as transaction_timestamp
+    , date(tran.trandate) as transaction_date
+    , CONVERT_TIMEZONE('America/Los_Angeles', tran.trandate) AS transaction_timestamp_pst
+    , date(CONVERT_TIMEZONE('America/Los_Angeles', tran.trandate)) as transaction_date_pst
+    , CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) as date_posted_pst
     -- , case 
     --   when channel.name = 'Amazon' then tran.trandate
     --   else CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) 
     --   end as date_gl
     , case when tal.posting = 'T' then true else false end posting_flag
     , ap.periodname as posting_period
-    , sum(coalesce(tal.amount,0)) as amount_transaction
-    , sum(coalesce(tal.credit,0)) as  amount_credit
-    , sum(coalesce(tal.debit,0)) as amount_debit
-    , sum(coalesce(tal.netamount,0)) as amount_net
-    , abs(sum(coalesce(tal.amount,0))) as amount_transaction_positive
+    , sum(coalesce(tal.amount,0)) as transaction_amount
+    , sum(coalesce(tal.credit,0)) as  credit_amount
+    , sum(coalesce(tal.debit,0)) as debit_amount
+    , sum(coalesce(tal.netamount,0)) as net_amount
+    , abs(sum(coalesce(tal.amount,0))) as transaction_positive_amount
     from
       netsuite.transactionaccountingline tal
     inner join
