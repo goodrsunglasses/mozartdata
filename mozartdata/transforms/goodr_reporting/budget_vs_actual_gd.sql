@@ -43,6 +43,17 @@ with
     gb.budget_version in ('2023 - V3', '2023 - V2','2023 - V1')
   )
 
+--- MAIN SELECT - UNIONED
+SELECT posting_period, 'amount_credit' AS Type, amount_credit AS value
+FROM actual
+
+UNION ALL
+
+SELECT posting_period, 'budget ' || budget_version AS Type, budget_amount AS value
+FROM budget
+ORDER BY posting_period, Type;
+
+  /*
 --- Main select
   SELECT
     a.*
