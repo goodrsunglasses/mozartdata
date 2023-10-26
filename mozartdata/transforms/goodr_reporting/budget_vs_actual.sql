@@ -2,14 +2,15 @@ with
   period_map as
   (
     select distinct
-      posting_period
+      ap.periodname as posting_period
     , try_to_date(posting_period,'Mon YYYY') posting_period_date
     , MONTH(TO_DATE(posting_period,'Mon YYYY')) posting_period_month
     , YEAR(TO_DATE(posting_period,'Mon YYYY')) posting_period_year
     from
-      draft_fact.gl_transaction gt
-    order by
-      posting_period_date
+      netsuite.accountingperiod ap
+    WHERE
+      try_to_date(posting_period,'Mon YYYY') is not null
+
   ),
   actual as
   (
