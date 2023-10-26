@@ -127,6 +127,7 @@ GROUP BY
     ) THEN TRUE
     ELSE FALSE
   END,
-  b2b_d2c
+  b2b_d2c,
+  customer_category.email
 ORDER BY
   customer_id_edw
