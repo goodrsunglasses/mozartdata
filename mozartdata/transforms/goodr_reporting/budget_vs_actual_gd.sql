@@ -37,8 +37,8 @@ with
   FROM
     draft_fact.gl_budget gb
   WHERE
-    gb.budget_version = '2023 - V3'
-)
+    gb.budget_version in ('2023 - V3', '2023 - V2','2023 - V1')
+  )
   SELECT
     a.*
   , b.budget_amount
@@ -49,3 +49,8 @@ with
     on a.account_id_ns = b.account_id_ns
     and a.channel = b.channel
     and a.posting_period = b.posting_period
+
+
+/*
+SELECT DISTINCT(budget_version) FROM draft_fact.gl_budget
+*/
