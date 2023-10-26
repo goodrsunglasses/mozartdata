@@ -66,6 +66,7 @@ SELECT
   id AS ns_customer_internal_id,
   entityid AS ns_customer_id,
   isperson AS is_person_flag,
+  email,
   CASE
     WHEN id IN (
       12489,
