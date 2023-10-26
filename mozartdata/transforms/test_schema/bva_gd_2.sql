@@ -1,3 +1,4 @@
+--- 2023 ACTUAL
 with
   actual as
   (
@@ -27,6 +28,37 @@ with
     , gt.channel
     , gt.posting_period
   ),
+--- 2022 ACUTAL
+  actual_2022 as
+  (
+    select
+      '2022 - Actual' as budget_version
+    , ga.account_number
+    , ga.account_id_ns
+    , gt.posting_period
+    , gt.channel
+    , sum(gt.amount_credit)-sum(gt.amount_debit) amount
+    -- , sum(gt.amount_debit) amount_debit
+    -- , sum(gt.amount_transaction_positive) amount_transaction_positive
+    from
+      draft_fact.gl_transaction gt
+    inner join
+      draft_dim.gl_account ga
+      on ga.account_id_ns = gt.account_id_ns
+    where
+      gt.posting_period  in ('Jan 2022','Feb 2022','Mar 2022','Apr 2022','May 2022','Jun 2022','Jul 2022','Aug 2022','Sep 2022')
+      and posting_flag = true
+    and ga.account_number >= 4000 and ga.account_number < 5000
+    group by
+      ga.account_number
+    , ga.account_id_ns
+    -- , ga.account_full_name
+    -- , concat(ga.account_number,' - ',ga.account_full_name)
+    , gt.channel
+    , gt.posting_period
+  ),
+
+--- BUDGET 
   budget as
   (
   select
@@ -52,3 +84,7 @@ with
     *
   FROM
     budget b
+  UNION
+  SELECT 
+*
+from actual_2022 a22
