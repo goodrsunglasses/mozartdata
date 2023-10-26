@@ -1,3 +1,4 @@
+--- ACTUALS CTE from fact gl_transaction
 with
   actual as
   (
@@ -30,6 +31,7 @@ with
     , gt.channel
     , gt.posting_period
   ),
+--- BUDGET CTE from gl buget
   budget as
   (
   select
@@ -39,9 +41,11 @@ with
   WHERE
     gb.budget_version in ('2023 - V3', '2023 - V2','2023 - V1')
   )
+--- Main select
   SELECT
     a.*
   , b.budget_amount
+  , b.budget_version
   FROM
     actual a
   left join
@@ -53,4 +57,5 @@ with
 
 /*
 SELECT DISTINCT(budget_version) FROM draft_fact.gl_budget
+SELECT * FROM draft_fact.gl_budget
 */
