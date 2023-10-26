@@ -31,6 +31,7 @@ with
     , gt.channel
     , gt.posting_period
   ),
+  
 --- BUDGET CTE from gl buget
   budget as
   (
@@ -41,6 +42,7 @@ with
   WHERE
     gb.budget_version in ('2023 - V3', '2023 - V2','2023 - V1')
   )
+
 --- Main select
   SELECT
     a.*
