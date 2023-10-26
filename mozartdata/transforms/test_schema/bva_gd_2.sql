@@ -8,7 +8,7 @@ with
     , ga.account_id_ns
     , gt.posting_period
     , gt.channel
-    , sum(gt.amount_credit)-sum(gt.amount_debit) amount
+    , sum(gt.credit_amount)-sum(gt.debit_amount) amount
     -- , sum(gt.amount_debit) amount_debit
     -- , sum(gt.amount_transaction_positive) amount_transaction_positive
     from
@@ -37,7 +37,7 @@ with
     , ga.account_id_ns
     , gt.posting_period
     , gt.channel
-    , sum(gt.amount_credit)-sum(gt.amount_debit) amount
+    , sum(gt.credit_amount)-sum(gt.debit_amount) amount
     -- , sum(gt.amount_debit) amount_debit
     -- , sum(gt.amount_transaction_positive) amount_transaction_positive
     from
