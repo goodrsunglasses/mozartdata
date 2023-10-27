@@ -13,4 +13,4 @@ WHERE
   AND loc.fullname LIKE '%DO NOT USE%'
   and tranline.itemtype = 'InvtPart'
 ORDER BY
-  createddate asc
+  createddate desc
