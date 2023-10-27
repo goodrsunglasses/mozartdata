@@ -11,6 +11,6 @@ FROM
 WHERE
   tran.createddate >= '2023-01-01T00:00:00Z'
   AND loc.fullname LIKE '%DO NOT USE%'
-  and itemtype = 'InvtPart'
+  and tranline.itemtype = 'InvtPart'
 ORDER BY
   createddate asc
