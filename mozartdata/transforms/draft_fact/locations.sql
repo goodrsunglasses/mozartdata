@@ -1,1 +1,1 @@
---test until we sync over the right tables
+--test until we sync over the right
