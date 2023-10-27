@@ -39,7 +39,7 @@ use createdate converted instead of trandate
     , sum(coalesce(tal.credit,0)) as  credit_amount
     , sum(coalesce(tal.debit,0)) as debit_amount
     , sum(coalesce(tal.netamount,0)) as net_amount
-    , abs(sum(coalesce(tal.amount,0))) as transaction_positive_amount
+    , abs(sum(coalesce(tal.amount,0))) as transaction_amount_positive
     from
       netsuite.transactionaccountingline tal
     inner join
