@@ -2,6 +2,7 @@ SELECT
   tran.tranid,
   tran.createddate,
   item.displayname,
+  tranline.quantity,
   loc.fullname
 FROM
   netsuite.transaction tran
