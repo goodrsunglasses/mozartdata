@@ -108,6 +108,8 @@ FROM
     LOWER(customers.email) = LOWER(customer_category.email)
     AND customer_category.b2b_d2c = customers.customer_category
   )
+WHERE
+  ns_customer_internal_id IS NOT NULL
 GROUP BY
   customer_id_edw,
   id,
