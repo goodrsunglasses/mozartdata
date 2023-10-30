@@ -16,6 +16,7 @@ WITH
       record_type = 'salesorder'
       AND item_type = 'InvtPart'
       AND loc.fullname LIKE '%DO NOT USE%'
+  and full_status != 'Sales Order : Closed'
   ),
   fulfilled AS (
     SELECT
@@ -50,4 +51,4 @@ FROM
     AND fulfilled.item_id_ns = sold.item_id_ns
   )
 WHERE
-  location_fulfilled not like '%DO NOT USE%'
+  location_fulfilled is null
