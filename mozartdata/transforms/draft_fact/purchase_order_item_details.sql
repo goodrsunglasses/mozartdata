@@ -27,11 +27,7 @@ FROM
   LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
 WHERE
   recordtype IN (
-    'invoice',
-    'cashsale',
-    'salesorder',
-    'itemfulfillment',
-    'cashrefund'
+    'purchaseorder'
   )
   AND tranline.itemtype IN (
     'InvtPart',
@@ -99,11 +95,7 @@ FROM
   LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
 WHERE
   recordtype IN (
-    'invoice',
-    'cashsale',
-    'salesorder',
-    'itemfulfillment',
-    'cashrefund'
+    'purchaseorder'
   )
   AND tranline.itemtype IN ('ShipItem', 'TaxItem')
   AND tranline.mainline = 'F'
