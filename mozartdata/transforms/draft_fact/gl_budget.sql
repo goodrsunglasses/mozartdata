@@ -4,7 +4,7 @@ SELECT
   cseg7.name as channel,
   bl.period as period_id_ns,
   ap.periodname as posting_period,
-  SUM(amount) AS budget_amount
+  SUM(bl.amount) AS budget_amount
 FROM
   netsuite.budgetlegacy bl
   LEFT JOIN 
