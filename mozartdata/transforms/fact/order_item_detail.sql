@@ -15,7 +15,8 @@ SELECT
   SUM(ABS(quantity)) AS total_quantity,
   SUM(rate)*total_quantity rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
-  SUM(tranline.costestimate) AS cost_estimate
+  SUM(tranline.costestimate) AS cost_estimate,
+  tranline.location
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -62,7 +63,8 @@ GROUP BY
   record_type,
   full_status,
   plain_name,
-  item_type
+  item_type,
+  tranline.location
   
   --Shipping and Tax
 UNION ALL
@@ -85,7 +87,8 @@ SELECT
   SUM(ABS(quantity)) AS total_quantity,
   SUM(rate) rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
-  SUM(tranline.costestimate) AS cost_estimate
+  SUM(tranline.costestimate) AS cost_estimate,
+  null as location
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
