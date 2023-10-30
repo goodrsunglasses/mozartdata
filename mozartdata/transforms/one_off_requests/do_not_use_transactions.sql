@@ -51,4 +51,4 @@ FROM
     AND fulfilled.item_id_ns = sold.item_id_ns
   )
 WHERE
-  location_fulfilled is null
+  location_fulfilled not like '%DO NOT USE%'
