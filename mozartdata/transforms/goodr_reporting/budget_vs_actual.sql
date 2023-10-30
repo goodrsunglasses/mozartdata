@@ -24,7 +24,7 @@ with
     -- , sum(gt.amount_debit) amount_debit
     -- , sum(gt.amount_transaction_positive) amount_transaction_positive
     from
-      draft_fact.gl_transaction gt
+      fact.gl_transaction gt
     inner join
       draft_dim.gl_account ga
       on ga.account_id_ns = gt.account_id_ns
