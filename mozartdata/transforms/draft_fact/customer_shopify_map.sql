@@ -27,7 +27,7 @@ SELECT
   customer_category
 FROM
   --double joins since we know which category each shopify ID is due to it being from either Goodr.com or SG
-  draft_dim.customer dim_cust
+  dim.customer dim_cust
   LEFT OUTER JOIN d2c_shop ON (
     dim_cust.email = d2c_shop.email
     AND d2c_shop.category = dim_cust.customer_category
