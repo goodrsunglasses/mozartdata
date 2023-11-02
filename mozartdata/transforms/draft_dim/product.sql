@@ -28,7 +28,7 @@ WITH assembly_aggregate AS(
 SELECT
   i.id as item_id_ns
 , i.itemid as sku
-, i.income_account_id_ns
+--, i.income_account_id_ns (gd commented out because it was failing the query)
   ,ga.account_display_name
   , ga.account_number
 , i.displayname as display_name
