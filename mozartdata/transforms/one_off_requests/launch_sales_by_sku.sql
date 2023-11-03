@@ -35,6 +35,7 @@ SELECT
   lo.collection,
   lo.family,
   lo.earliest_sale,
+  (o.order_date_pst - lo.earliest_sale) as days_since_launch,
   sum(lo.launch_product_sales) as launch_product_sales,
   sum(lo.launch_product_quantity) as launch_product_quantity,
   SUM(o.amount_sold) total_sales,
