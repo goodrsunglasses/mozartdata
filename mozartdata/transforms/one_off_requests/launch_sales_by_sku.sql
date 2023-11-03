@@ -3,17 +3,17 @@ WITH launch_orders as
     SELECT
       oi.order_id_edw
     , o.order_date_pst
-    , p.display_name
-    , p.collection
-    , p.family
-    , MIN(oid.transaction_date_pst) AS earliest_sale
+    , ld.display_name
+    , ld.collection
+    , ld.family
+    , ld.earliest_sale
     , sum(oi.amount_sold) launch_product_sales
     , sum(oi.quantity_sold) launch_product_quantity
     from
       fact.order_item oi
     inner join
-      draft_dim.product p
-      on p.item_id_ns = oi.item_id_ns
+      one_off_requests.launch_date_vs_earliest_sale ld
+      on ld.item_id_ns = oi.item_id_ns
     inner join
       fact.orders o
       on oi.order_id_edw = o.order_id_edw
@@ -23,9 +23,10 @@ WITH launch_orders as
       on oi.order_id_edw = oid.order_id_edw
     group by
       oi.order_id_edw
-    , p.display_name
-    , p.collection
-    , p.family
+    , ld.display_name
+    , ld.collection
+    , ld.family
+    , ld.earliest_sale
     , o.order_date_pst
   )
 SELECT
