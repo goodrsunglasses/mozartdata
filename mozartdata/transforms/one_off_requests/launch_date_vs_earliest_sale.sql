@@ -1,6 +1,7 @@
 SELECT
   p.item_id_ns,
   p.display_name,
+  p.family,
   MIN(p.d2c_launch_date) AS earlist_d2c_launch_date,
   MIN(oid.transaction_date_pst) AS earliest_sale,
   o.channel
@@ -13,4 +14,5 @@ WHERE
 GROUP BY
   p.item_id_ns,
   o.channel,
+ p.family,
   p.display_name;
