@@ -18,9 +18,6 @@ WITH launch_orders as
       fact.orders o
       on oi.order_id_edw = o.order_id_edw
       and o.channel = 'Goodr.com'
-    inner join 
-      fact.order_item_detail oid 
-      on oi.order_id_edw = oid.order_id_edw
     group by
       oi.order_id_edw
     , ld.display_name
