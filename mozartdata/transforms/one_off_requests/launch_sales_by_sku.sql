@@ -96,13 +96,7 @@ left join
   total_sales ts
   on gp.item_id_ns = ts.item_id_ns
   and gp.days = ts.days_since_launch 
-where
-  gp.item_id_ns = 3653
+
 order by
   gp.item_id_ns
 , days
-
-  /*
-select * from draft_dim.product where display_name = 'Do Androids Dream of Electric Turtles?'
-select * from one_off_requests.launch_date_vs_earliest_sale where item_id_ns = 1835
-*/
