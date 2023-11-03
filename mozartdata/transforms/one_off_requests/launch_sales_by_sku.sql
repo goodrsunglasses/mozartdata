@@ -78,6 +78,7 @@ SELECT
 , p.display_name
 , p.collection
 , p.family
+, p.sku
 , ld.earliest_sale
 , coalesce(ts.launch_product_sales,0) launch_product_sales
 , coalesce(ts.launch_product_quantity,0) launch_product_quantity
@@ -96,7 +97,6 @@ left join
   total_sales ts
   on gp.item_id_ns = ts.item_id_ns
   and gp.days = ts.days_since_launch 
-
 order by
   gp.item_id_ns
 , days
