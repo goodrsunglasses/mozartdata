@@ -60,7 +60,7 @@ SELECT
   sum(lo.launch_product_quantity) as launch_product_quantity,
   SUM(o.amount_sold) total_sales,
   SUM(o.quantity_sold) total_quantity,
-  COUNT(DISTINCT o.order_id_edw) as sales_containing_colleciton
+  COUNT(DISTINCT o.order_id_edw) as orders_containing_colleciton
 FROM
  fact.orders o 
   inner join
