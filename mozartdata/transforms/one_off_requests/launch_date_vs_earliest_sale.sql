@@ -3,7 +3,7 @@ SELECT
   p.display_name,
   p.family,
   p.collection,
-  MIN(p.d2c_launch_date) AS earlist_d2c_launch_date,
+  MIN(p.d2c_launch_date) AS earliest_d2c_launch_date,
   MIN(o.order_date_pst) AS earliest_sale,
   o.channel
 FROM
