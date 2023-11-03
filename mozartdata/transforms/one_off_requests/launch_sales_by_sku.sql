@@ -55,21 +55,21 @@ grid_days as
   ),
   total_sales as
   (
-SELECT
-  lo.item_id_ns,
-  (o.order_date_pst - lo.earliest_sale) as days_since_launch,
-  sum(lo.launch_product_sales) as launch_product_sales,
-  sum(lo.launch_product_quantity) as launch_product_quantity,
-  SUM(o.amount_sold) total_sales,
-  SUM(o.quantity_sold) total_quantity,
-  COUNT(DISTINCT o.order_id_edw) as orders_containing_launch
-FROM
- fact.orders o 
-  inner join
-    launch_orders lo
-  on o.order_id_edw = lo.order_id_edw
-WHERE  o.order_date_pst >= '2023-01-01' 
-group by lo.item_id_ns, days_since_launch
+    SELECT
+      lo.item_id_ns,
+      (o.order_date_pst - lo.earliest_sale) as days_since_launch,
+      sum(lo.launch_product_sales) as launch_product_sales,
+      sum(lo.launch_product_quantity) as launch_product_quantity,
+      SUM(o.amount_sold) total_sales,
+      SUM(o.quantity_sold) total_quantity,
+      COUNT(DISTINCT o.order_id_edw) as orders_containing_launch
+    FROM
+     fact.orders o 
+      inner join
+        launch_orders lo
+      on o.order_id_edw = lo.order_id_edw
+    WHERE  o.order_date_pst >= '2023-01-01' 
+    group by lo.item_id_ns, days_since_launch
   )
 
 SELECT
