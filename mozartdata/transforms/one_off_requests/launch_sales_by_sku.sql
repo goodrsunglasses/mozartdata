@@ -79,6 +79,7 @@ SELECT
 , p.collection
 , p.family
 , p.sku
+, p.class
 , ld.earliest_sale
 , coalesce(ts.launch_product_sales,0) launch_product_sales
 , coalesce(ts.launch_product_quantity,0) launch_product_quantity
