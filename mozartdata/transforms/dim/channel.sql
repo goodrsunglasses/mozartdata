@@ -1,5 +1,5 @@
 SELECT
-  id,
+  id as channel_id_ns,
   name,
   CASE
     WHEN name IN (
@@ -25,3 +25,5 @@ SELECT
   END AS  customer_category
 FROM
   netsuite.customrecord_cseg7 channel
+ORDER BY
+  name
