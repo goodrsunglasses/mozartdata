@@ -112,5 +112,4 @@ left join
   ON i.id = agg.parentitem
 WHERE
   itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment')
-and sku = 'OG-BK-BK1'
 /*bring in free shit indicator, merchandise division*/
