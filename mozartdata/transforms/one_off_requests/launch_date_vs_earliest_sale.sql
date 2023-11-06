@@ -7,7 +7,7 @@ SELECT
   MIN(o.order_date_pst) AS earliest_sale,
   o.channel
 FROM
-  draft_dim.product p
+  dim.product p
   LEFT JOIN fact.order_item oi ON p.item_id_ns = oi.item_id_ns
   LEFT JOIN fact.orders o ON o.order_id_edw = oi.order_id_edw
 WHERE
