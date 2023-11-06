@@ -26,7 +26,7 @@ WITH
       end launch_date,
       max(launch_date) over (partition by custom_collection) latest_launch_date
     FROM
-      draft_dim.product
+      dim.product
   
   ),
 launch_orders as
