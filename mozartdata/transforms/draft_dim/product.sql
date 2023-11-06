@@ -5,10 +5,13 @@ One row per product item.
 This transform creates a product list
 
 joins: 
-customlist988 joins to item.custitem21 and item.custitem33
-customlist991 joins to item.custitem20 and item.custitem30
+customlist988 joins to item.custitem21 and item.custitem33 frame finish, temple finish
+customlist991 joins to item.custitem20 and item.custitem30 frame color, temple color
 customlist1271 joins to item.custitem30 and item.custitem29
-customlist1272 joins to item.custitem31
+customlist_psgss_product_color to item.custitem22 and custitem28 lenscolor lensbase
+customlist_psgss_merc_class to item.customlist_psgss_merc_class class
+customlist894 to item.custitem4 family
+customlist896 to item.custitem6 stage
 
 aliases: 
 i = netsuite.item
@@ -34,18 +37,16 @@ SELECT
 , i.displayname as display_name
 , i.itemtype as item_type
 , i.custitem5 as collection 
-, class.name AS class
-, family.name AS family
-, stage.name AS stage
+, family.name as family
+, stage.name as stage
 , i.fullname as full_name
 , i.upccode as upc_code
 , i.CUSTITEM18 as lens_sku
 , i.vendorname as vendor_name
 , i.custitem19 as logo_sku
-, i.custitem_psgss_merc_class as merchandise_class
-  /* need to figure out the color mapping */
--- , i.custitem_psgss_product_color_desc
--- , i.custitem_psgss_nrf_color_code
+, class.name as merchandise_class
+, dept.name as merchandise_department
+, division.name as merchandise_division
 , framecolor.name as color_frame
 , templecolor.name as color_temple
 , framefinish.name as finish_frame
@@ -92,17 +93,24 @@ left join
   netsuite.customlist_psgss_product_color lenscolorbase
   on i.custitem28 = lenscolorbase.id
 left join 
-  netsuite.CUSTOMLIST_PSGSS_MERC_CLASS class 
+  netsuite.customlist_psgss_merc_class class 
   ON i.custitem_psgss_merc_class = class.id
+left join
+  netsuite.customlist_psgss_merc_dept dept
+  on i.custitem_psgss_merc_dept = dept.id
+left join
+  netsuite.customlist_psgss_merc_division division
+  on i.custitem_psgss_merc_division = division.id
 left join 
-  netsuite.CUSTOMLIST894 family 
+  netsuite.customlist894 family 
   ON i.custitem4 = family.id
 left join 
-  netsuite.CUSTOMLIST896 stage 
-  ON stage.id = i.custitem6
+  netsuite.customlist896 stage 
+  ON i.custitem6 = stage.id
 left join 
   assembly_aggregate agg 
   ON i.id = agg.parentitem
 WHERE
   itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment')
+and sku = 'OG-BK-BK1'
 /*bring in free shit indicator, merchandise division*/
