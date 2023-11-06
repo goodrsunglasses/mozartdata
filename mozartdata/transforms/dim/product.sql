@@ -67,7 +67,7 @@ SELECT
 , i.CUSTITEM1 as country_of_origin
 , case when i.custitemmozard_gp_flag = 'T' then true else false end free_shit_flag
 , assembly_quantity
-, cast(case when left(i.itemid,2) = 'GC' then SPLIT_PART(i.itemid, '-', 2) end as int) gift_card_value
+, cast(case when left(i.itemid,2) = 'GC' then SPLIT_PART(i.itemid, '-', 2) end as int) gift_card_amount
 , i.incomeaccount as account_id_ns
 , ga.account_number
 , ga.account_display_name
