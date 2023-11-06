@@ -31,9 +31,6 @@ WITH assembly_aggregate AS(
 SELECT
   i.id as item_id_ns
 , i.itemid as sku
---, i.income_account_id_ns (gd commented out because it was failing the query)
-  ,ga.account_display_name
-  , ga.account_number
 , i.displayname as display_name
 , i.itemtype as item_type
 , i.custitem5 as collection 
@@ -70,6 +67,9 @@ SELECT
 , i.CUSTITEM1 as country_of_origin
 , case when i.custitemmozard_gp_flag = 'T' then true else false end free_shit_flag
 , assembly_quantity
+, i.incomeaccount as account_id_ns
+, ga.account_number
+, ga.account_display_name
 FROM
   netsuite.item i
 inner join
