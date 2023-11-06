@@ -13,7 +13,7 @@ grid_days as
       p.item_id_ns
     , d.days
     from
-      draft_dim.product p
+      dim.product p
     inner join
       one_off_requests.launch_date_vs_earliest_sale ld
       on p.item_id_ns = ld.item_id_ns
@@ -89,7 +89,7 @@ SELECT
 FROM
   grid_product gp
 inner join
-  draft_dim.product p
+  dim.product p
   on gp.item_id_ns = p.item_id_ns
 inner join
   one_off_requests.launch_date_vs_earliest_sale ld
