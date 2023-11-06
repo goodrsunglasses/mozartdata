@@ -68,6 +68,7 @@ SELECT
 , i.custitem_goodr_ip_height as ip_height_in
 , i.custitem_goodr_hts_code_item as hts_code
 , i.CUSTITEM1 as country_of_origin
+, case when i.custitemmozard_gp_flag = 'T' then true else false end free_shit_flag
 , assembly_quantity
 FROM
   netsuite.item i
