@@ -37,13 +37,13 @@ SELECT
 , family.name as family
 , stage.name as stage
 , i.fullname as full_name
+, class.name as merchandise_class
+, dept.name as merchandise_department
+, division.name as merchandise_division
 , i.upccode as upc_code
 , i.CUSTITEM18 as lens_sku
 , i.vendorname as vendor_name
 , i.custitem19 as logo_sku
-, class.name as merchandise_class
-, dept.name as merchandise_department
-, division.name as merchandise_division
 , framecolor.name as color_frame
 , templecolor.name as color_temple
 , framefinish.name as finish_frame
