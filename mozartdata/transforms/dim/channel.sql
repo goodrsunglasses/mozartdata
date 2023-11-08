@@ -27,7 +27,19 @@ SELECT
       'Content Giveaways',
       'Customer Service'
     ) THEN 'INDIRECT'
-  END AS customer_category
+  END AS customer_category,
+  CASE
+    WHEN name IN (
+      'Specialty',
+      'Key Account',
+      'Key Account CAN',
+      'Specialty CAN'
+    ) THEN 'Wholesale'
+    WHEN name IN ('Goodr.com', 'Goodr.com CAN') THEN 'Website'
+    WHEN name IN ('Amazon', 'Prescription') THEN 'Partners'
+    WHEN name IN ('Cabana') THEN 'Retail'
+    WHEN name IN ('Global') THEN 'Distribution'
+  END AS model
 FROM
   netsuite.customrecord_cseg7 channel
 ORDER BY
