@@ -1,4 +1,5 @@
 SELECT
+  ordernumber,
   shipments.shipto:STATE::STRING AS state,
   shipments.shipdate
 FROM
