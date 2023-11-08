@@ -31,34 +31,15 @@ WITH
       is_exchange,
       priority.status_flag_edw,
       transaction_timestamp_pst,
-      CASE
-        WHEN channel IN (
-          'Specialty',
-          'Key Account',
-          'Global',
-          'Key Account CAN',
-          'Specialty CAN'
-        ) THEN 'B2B'
-        WHEN channel IN (
-          'Goodr.com',
-          'Amazon',
-          'Cabana',
-          'Goodr.com CAN',
-          'Prescription'
-        ) THEN 'D2C'
-        WHEN channel IN (
-          'Goodrwill.com',
-          'Customer Service CAN',
-          'Marketing',
-          'Customer Service'
-        ) THEN 'INDIRECT'
-      END AS b2b_d2c
+      customer_category AS b2b_d2c,
+      model
     FROM
       priority
       LEFT OUTER JOIN fact.order_line orderline ON (
         orderline.transaction_id_ns = priority.id
         AND orderline.order_id_edw = priority.order_id_edw
       )
+    left outer join dim.channel category on category.name = orderline.channel 
   ),
   aggregates AS (
     SELECT
@@ -203,18 +184,7 @@ SELECT
   refund_timestamp_pst,
   DATE(refund_timestamp_pst) AS refund_date_pst,
   b2b_d2c,
-  CASE
-    WHEN order_level.channel IN (
-      'Specialty',
-      'Key Account',
-      'Key Account CAN',
-      'Specialty CAN'
-    ) THEN 'Wholesale'
-    WHEN order_level.channel IN ('Goodr.com', 'Goodr.com CAN') THEN 'Website'
-    WHEN order_level.channel IN ('Amazon', 'Prescription') THEN 'Partners'
-    WHEN order_level.channel IN ('Cabana') THEN 'Retail'
-    WHEN order_level.channel IN ('Global') THEN 'Distribution'
-  END AS model,
+  order_level.model,
   quantity_booked,
   quantity_sold,
   quantity_fulfilled,
