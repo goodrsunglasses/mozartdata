@@ -12,6 +12,7 @@ SELECT
     WHEN name IN (
       'Goodr.com',
       'Amazon',
+      'Amazon Prime',
       'Cabana',
       'Goodr.com CAN',
       'Prescription'
