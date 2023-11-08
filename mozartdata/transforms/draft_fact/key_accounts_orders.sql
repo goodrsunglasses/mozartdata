@@ -6,17 +6,17 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS status_flag_edw,
-      FIRST_VALUE(ns_id) OVER (
+      FIRST_VALUE(order_id_edw) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
           CASE
-            WHEN recordtype = 'cashsale' THEN 1
-            WHEN recordtype = 'invoice' THEN 2
-            WHEN recordtype = 'salesorder' THEN 3
+            WHEN record_type = 'cashsale' THEN 1
+            WHEN record_type = 'invoice' THEN 2
+            WHEN record_type = 'salesorder' THEN 3
             ELSE 4
           END,
-          timestamp_transaction_pst ASC
+          transaction_timestamp_pst ASC
       ) AS id
     FROM
       fact.order_line
@@ -27,11 +27,11 @@ WITH
       priority.order_id_edw,
       priority.id,
       channel,
-      customer_id,
+      customer_id_ns,
       email,
       is_exchange,
   priority.status_flag_edw,
-      timestamp_transaction_pst,
+      transaction_timestamp_pst,
       CASE
         WHEN channel IN (
           'Specialty',
@@ -57,7 +57,7 @@ WITH
     FROM
       priority
       LEFT OUTER JOIN fact.order_line orderline ON (
-        orderline.ns_id = priority.id
+        orderline.order_id_edw = priority.id
         AND orderline.order_id_edw = priority.order_id_edw
       )
   ),
@@ -67,10 +67,10 @@ WITH
       SUM(quantity_sold) quantity_sold,
       SUM(quantity_fulfilled) quantity_fulfilled,
       SUM(quantity_refunded) quantity_refunded,
-      SUM(rate_items) rate_items,
-      SUM(amount_items) amount_items,
-      SUM(costestimate) costestimate,
-      SUM(estgrossprofit) estgrossprofit
+      SUM(rate_sold) rate_sold,
+      SUM(amount_sold) amount_sold,
+      SUM(cost_estimate) cost_estimate,
+      SUM(gross_profit_estimate) gross_profit_estimate
     FROM
       fact.order_item
     GROUP BY
@@ -80,7 +80,7 @@ SELECT
   order_level.order_id_edw,
   order_level.channel,
   customer_id_edw,
-  order_level.timestamp_transaction_pst,
+  order_level.transaction_timestamp_pst,
   order_level.is_exchange,
   order_level.status_flag_edw,
   b2b_d2c,
@@ -99,10 +99,10 @@ SELECT
   quantity_sold,
   quantity_fulfilled,
   quantity_refunded,
-  rate_items,
-  amount_items,
-  costestimate,
-  estgrossprofit
+  rate_sold,
+  amount_sold,
+  cost_estimate,
+  gross_profit_estimate
 FROM
   order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
@@ -111,4 +111,4 @@ FROM
     lower(customer.email) = lower(order_level.email)
     AND customer.customer_category = order_level.b2b_d2c
   )
-where timestamp_transaction_pst >= '2022-01-01T00:00:00Z'
+where transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
