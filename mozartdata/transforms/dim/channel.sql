@@ -1,5 +1,5 @@
 SELECT
-  id as channel_id_ns,
+  id AS channel_id_ns,
   name,
   CASE
     WHEN name IN (
@@ -20,9 +20,13 @@ SELECT
       'Goodrwill.com',
       'Customer Service CAN',
       'Marketing',
+      'Co-Brand',
+      'Donations',
+      'Goodrstock Giveaways',
+      'Content Giveaways',
       'Customer Service'
     ) THEN 'INDIRECT'
-  END AS  customer_category
+  END AS customer_category
 FROM
   netsuite.customrecord_cseg7 channel
 ORDER BY
