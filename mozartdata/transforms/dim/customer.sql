@@ -32,36 +32,16 @@ with ns as
   (
 SELECT distinct
   lower(case when c.id= 1836849 then t.email else c.email end) email
-, CASE
-    WHEN channel.name IN (
-      'Specialty',
-      'Key Account',
-      'Global',
-      'Key Account CAN',
-      'Specialty CAN'
-    ) THEN 'B2B'
-    WHEN channel.name IN (
-      'Goodr.com',
-      'Amazon',
-      'Cabana',
-      'Goodr.com CAN',
-      'Prescription'
-    ) THEN 'D2C'
-    WHEN channel.name IN (
-      'Goodrwill.com',
-      'Customer Service CAN',
-      'Marketing',
-      'Customer Service'
-    ) THEN 'INDIRECT'
-  END AS  customer_category
+, customer_category
 FROM
   netsuite.transaction t
 inner join
   netsuite.customer c
   on t.entity = c.id
-  LEFT OUTER JOIN 
+LEFT OUTER JOIN 
   netsuite.customrecord_cseg7 channel
   on channel.id = t.cseg7
+left outer join dim.channel category on category.name = channel.name  
 where
   t.recordtype in ('salesorder','cashsale','invoice')
 )
