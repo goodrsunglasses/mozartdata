@@ -36,7 +36,7 @@ SELECT
       'Specialty CAN'
     ) THEN 'Wholesale'
     WHEN name IN ('Goodr.com', 'Goodr.com CAN') THEN 'Website'
-    WHEN name IN ('Amazon', 'Prescription') THEN 'Partners'
+    WHEN name IN ('Amazon', 'Prescription') THEN 'Partner'
     WHEN name IN ('Cabana') THEN 'Retail'
     WHEN name IN ('Global') THEN 'Distribution'
   END AS model
