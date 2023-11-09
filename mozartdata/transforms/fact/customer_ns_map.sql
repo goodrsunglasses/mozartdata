@@ -9,57 +9,15 @@ WITH
       ROW_NUMBER() over (
         PARTITION BY
           cust.email,
-          CASE
-            WHEN channel IN (
-              'Specialty',
-              'Key Account',
-              'Global',
-              'Key Account CAN',
-              'Specialty CAN'
-            ) THEN 'B2B'
-            WHEN channel IN (
-              'Goodr.com',
-              'Amazon',
-              'Cabana',
-              'Goodr.com CAN',
-              'Prescription'
-            ) THEN 'D2C'
-            WHEN channel IN (
-              'Goodrwill.com',
-              'Customer Service CAN',
-              'Marketing',
-              'Customer Service'
-            ) THEN 'INDIRECT'
-          END
+          channel.customer_category
         ORDER BY
           CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) desc
       ) AS rn,
-      CASE
-        WHEN channel IN (
-          'Specialty',
-          'Key Account',
-          'Global',
-          'Key Account CAN',
-          'Specialty CAN'
-        ) THEN 'B2B'
-        WHEN channel IN (
-          'Goodr.com',
-          'Amazon',
-          'Cabana',
-          'Goodr.com CAN',
-          'Prescription'
-        ) THEN 'D2C'
-        WHEN channel IN (
-          'Goodrwill.com',
-          'Customer Service CAN',
-          'Marketing',
-          'Customer Service'
-        ) THEN 'INDIRECT'
-      END AS b2b_d2c
+        channel.customer_category as b2b_d2c
     FROM
       netsuite.transaction tran
       LEFT OUTER JOIN netsuite.customer cust ON cust.id = tran.entity
-      LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
+      LEFT OUTER JOIN dim.channel channel ON tran.cseg7 = channel.channel_id_ns
     WHERE
       tran.recordtype IN (
         'cashsale',
