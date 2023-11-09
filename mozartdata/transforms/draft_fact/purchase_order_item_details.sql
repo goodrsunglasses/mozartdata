@@ -1,6 +1,8 @@
 SELECT
-  tran.custbody_goodr_shopify_order AS order_id_edw,
-  tran.custbody_goodr_po_number AS po_number,
+  COALESCE(
+    tran.custbody_goodr_shopify_order,
+    tran.custbody_goodr_po_number
+  ) AS order_id_edw,
   tran.id AS transaction_id_ns,
   CONCAT(order_id_edw, '_', tran.id, '_', item) AS order_item_detail_id,
   tranline.item AS item_id_ns,
@@ -12,7 +14,7 @@ SELECT
   transtatus.fullname AS full_status,
   tranline.itemtype AS item_type,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  SUM(- netamount) AS net_amount,
+  SUM(ABS(netamount)) AS net_amount,
   SUM(ABS(quantity)) AS total_quantity,
   SUM(rate) * total_quantity rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
@@ -33,11 +35,12 @@ WHERE
     'salesorder',
     'itemfulfillment',
     'cashrefund',
-    'purchaseorder'
+    'purchaseorder',
+    'itemreceipt',
+    'vendorbill'
   )
-  AND po_number = 'PBKA8576-ASICS011723-400-1'
+  AND order_id_edw = 'INT-INJI041423-1.2K-2'
   AND tranline.itemtype IN (
-    'Asset',
     'InvtPart',
     'Assembly',
     'OthCharge',
@@ -45,12 +48,15 @@ WHERE
     'Payment'
   )
   AND tranline.mainline = 'F'
+  AND order_id_edw IS NOT NULL
   AND (
     CASE
       WHEN recordtype IN ('invoice', 'cashsale', 'salesorder')
       AND accountinglinetype IN ('INCOME') THEN TRUE
-      WHEN recordtype = 'purchaseorder'
-      AND accountinglinetype IN ('ASSET') THEN TRUE
+      WHEN record_type = 'vendorbill'
+      AND tranline.expenseaccount = 113 THEN TRUE --Bills dont have accountinglinetype
+      WHEN recordtype IN ('purchaseorder', 'itemreceipt')
+      AND accountinglinetype IN ('INCOME', 'ASSET') THEN TRUE
       WHEN recordtype = 'cashrefund'
       AND accountinglinetype IN ('INCOME', 'PAYMENT') THEN TRUE
       WHEN recordtype = 'itemfulfillment'
@@ -60,7 +66,6 @@ WHERE
   )
 GROUP BY
   order_id_edw,
-  po_number,
   transaction_id_ns,
   order_item_detail_id,
   item_id_ns,
@@ -71,3 +76,58 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location
+  -- Shipping and Tax
+  UNION ALL
+  SELECT
+    tran.custbody_goodr_shopify_order AS order_id_edw,
+    tran.id AS transaction_id_ns,
+    CONCAT(order_id_edw,'_', tran.id,'_', item) AS order_item_detail_id,
+    tranline.item as item_id_ns,
+    CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_timestamp_pst,
+    date(CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)) AS transaction_date_pst,
+    tran.recordtype as record_type,
+    transtatus.fullname AS full_status,
+    tranline.itemtype as item_type,
+    CASE
+      WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
+      WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
+      ELSE NULL
+    END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
+    SUM(- netamount) net_amount,
+    SUM(ABS(quantity)) AS total_quantity,
+    SUM(rate) rate,
+    SUM(tranline.estgrossprofit) AS gross_profit_estimate,
+    SUM(tranline.costestimate) AS cost_estimate,
+    null as location
+  FROM
+    netsuite.transaction tran
+    LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
+    LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
+      tran.status = transtatus.id
+      AND tran.type = transtatus.trantype
+    )
+    LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
+  WHERE
+    recordtype IN (
+      'invoice',
+      'cashsale',
+      'salesorder',
+      'itemfulfillment',
+      'cashrefund'
+    )
+    AND tranline.itemtype IN ('ShipItem', 'TaxItem')
+    AND tranline.mainline = 'F'
+    AND order_id_edw IS NOT NULL
+  GROUP BY
+    order_id_edw,
+    transaction_id_ns,
+    order_item_detail_id,
+    item_id_ns,
+    transaction_timestamp_pst,
+    transaction_date_pst,
+    record_type,
+    full_status,
+    plain_name,
+    item_type
+  ORDER BY
+    transaction_id_ns asc
