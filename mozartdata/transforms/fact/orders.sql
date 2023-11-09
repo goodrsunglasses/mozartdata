@@ -167,7 +167,7 @@ WITH
           transaction_timestamp_pst asc
       ) AS refund_timestamp_pst
     FROM
-      draft_fact.refund
+      fact.refund
   )
 SELECT
   order_level.order_id_edw,
