@@ -1,1 +1,4 @@
- 
+SELECT
+  *
+FROM
+  netsuite.inboundshipment
