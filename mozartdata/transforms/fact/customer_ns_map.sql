@@ -29,8 +29,8 @@ WITH
   )
 SELECT
   customer_id_edw,
-  id AS ns_customer_internal_id,
-  entityid AS ns_customer_id,
+  id AS customer_internal_id_ns,
+  entityid AS customer_id_ns,
   isperson AS is_person_flag,
   customer_category.email,
   CASE
@@ -67,7 +67,7 @@ FROM
     AND customer_category.b2b_d2c = customers.customer_category
   )
 WHERE
-  ns_customer_internal_id IS NOT NULL
+  customer_internal_id_ns IS NOT NULL
 GROUP BY
   customer_id_edw,
   id,
