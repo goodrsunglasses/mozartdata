@@ -1,66 +1,86 @@
-SELECT DISTINCT
-  tran.custbody_goodr_shopify_order order_num,
-  emp.entityid,
+SELECT
+  order_id_edw,
+  LISTAGG(DISTINCT emp.entityid, ', ') modifiers,
   COUNT(
-    DISTINCT CASE
-      WHEN tran.recordtype = 'salesorder' THEN tran.id
+    CASE
+      WHEN record_type = 'salesorder' THEN transaction_id_ns
     END
-  ) AS so_count,
+  ) AS salesorder_count,
   COUNT(
-    DISTINCT CASE
-      WHEN tran.recordtype = 'itemfulfillment' THEN tran.id
+    CASE
+      WHEN record_type = 'cashsale' THEN transaction_id_ns
     END
-  ) AS if_count,
+  ) AS cashsale_count,
   COUNT(
-    DISTINCT CASE
-      WHEN tran.recordtype = 'cashsale' THEN tran.id
+    CASE
+      WHEN record_type = 'invoice' THEN transaction_id_ns
     END
-  ) AS cs_count,
+  ) AS invoice_count,
   COUNT(
-    DISTINCT CASE
-      WHEN tran.recordtype = 'invoice' THEN tran.id
+    CASE
+      WHEN record_type = 'itemfulfillment' THEN transaction_id_ns
     END
-  ) AS inv_count,
+  ) AS itemfulfillment_count,
   COUNT(
-    DISTINCT CASE
-      WHEN tran.recordtype = 'cashrefund' THEN tran.id
+    CASE
+      WHEN record_type = 'cashrefund' THEN transaction_id_ns
     END
-  ) AS cr_count
+  ) AS cashrefund_count
 FROM
-  netsuite.transaction tran
+  fact.order_line line
+  LEFT OUTER JOIN netsuite.transaction tran ON tran.id = line.transaction_id_ns
   LEFT OUTER JOIN netsuite.employee emp ON tran.createdby = emp.id
 WHERE
-  cseg7 = 10
-  AND createddate >= '2023-11-03T00:00:00Z'
-  and entityid is not null
+  channel = 'Customer Service'
+  and 
+  transaction_timestamp_pst >= '2023-11-03T00:00:00Z'
 GROUP BY
-  order_num,
-  emp.entityid
+  order_id_edw
 HAVING
-  so_count > 1
-  OR if_count > 1
-  OR cs_count > 1
-  OR inv_count > 1
-  OR cr_count > 1
+  salesorder_count > 1
+  OR cashsale_count > 1
+  OR invoice_count > 1
+  OR itemfulfillment_count > 1
+  OR cashrefund_count > 1
 UNION ALL
-SELECT distinct
-  tran.custbody_goodr_shopify_order order_num,
-  emp.entityid,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL
+SELECT
+  order_id_edw,
+  LISTAGG(DISTINCT emp.entityid, ', ') modifiers,
+  COUNT(
+    CASE
+      WHEN record_type = 'salesorder' THEN transaction_id_ns
+    END
+  ) AS salesorder_count,
+  COUNT(
+    CASE
+      WHEN record_type = 'cashsale' THEN transaction_id_ns
+    END
+  ) AS cashsale_count,
+  COUNT(
+    CASE
+      WHEN record_type = 'invoice' THEN transaction_id_ns
+    END
+  ) AS invoice_count,
+  COUNT(
+    CASE
+      WHEN record_type = 'itemfulfillment' THEN transaction_id_ns
+    END
+  ) AS itemfulfillment_count,
+  COUNT(
+    CASE
+      WHEN record_type = 'cashrefund' THEN transaction_id_ns
+    END
+  ) AS cashrefund_count
 FROM
-  netsuite.transaction tran
+  fact.order_line line
+  LEFT OUTER JOIN netsuite.transaction tran ON tran.id = line.transaction_id_ns
   LEFT OUTER JOIN netsuite.employee emp ON tran.createdby = emp.id
 WHERE
-  cseg7 = 10
-  and entityid is not null
-  AND createddate >= '2023-11-03T00:00:00Z'
-  AND LOWER(order_num) NOT LIKE '%cs-%'
-  AND order_num NOT LIKE '%SD-%'
-  AND order_num NOT LIKE '%CI-%'
-  AND order_num NOT LIKE '%DON-%'
-ORDER BY
-  order_num asc
+  channel = 'Customer Service'
+  AND transaction_timestamp_pst >= '2023-11-03T00:00:00Z'
+  AND LOWER(order_id_edw) NOT LIKE '%cs-%'
+  AND order_id_edw NOT LIKE '%SD-%'
+  AND order_id_edw NOT LIKE '%CI-%'
+  AND order_id_edw NOT LIKE '%DON-%'
+GROUP BY
+  order_id_edw
