@@ -4,7 +4,7 @@ WITH CTE_MY_DATE AS (
 )
 SELECT MY_DATE as date_timestamp
     , date(MY_DATE) as date
-    , to_char(MY_DATE, 'YYYYMMDD')::int as date_int
+    , TO_CHAR(MY_DATE, 'YYYYMMDD')::int as date_int
     , YEAR(MY_DATE) as year
     , MONTH(MY_DATE) as month
     , MONTHNAME(MY_DATE) as month_name
@@ -14,5 +14,6 @@ SELECT MY_DATE as date_timestamp
     , DAYOFYEAR(MY_DATE) as day_of_year
     , CONCAT(MONTH(MY_DATE), '-', DAY(MY_DATE)) as day_month
     , google_sheets.sales_seasons.season as sales_season
+    , TO_CHAR(MY_DATE,'Mon YYYY') as posting_period 
 FROM CTE_MY_DATE
 LEFT JOIN google_sheets.sales_seasons on day_month = google_sheets.sales_seasons.date
