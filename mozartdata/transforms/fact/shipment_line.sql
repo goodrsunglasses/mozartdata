@@ -1,1 +1,4 @@
-select * from fact.shipment_item_detail
+SELECT
+  *
+FROM
+  fact.shipment_item_detail
