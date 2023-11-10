@@ -31,4 +31,11 @@ FROM
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
-where record_type in ('cashsale','itemfulfillment','salesorder','cashrefund','invoice')
+WHERE
+  record_type IN (
+    'cashsale',
+    'itemfulfillment',
+    'salesorder',
+    'cashrefund',
+    'invoice'
+  )
