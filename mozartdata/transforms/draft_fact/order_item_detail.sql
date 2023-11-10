@@ -39,7 +39,6 @@ WHERE
     'itemreceipt',
     'vendorbill'
   )
-  AND order_id_edw = 'INT-INJI041423-1.2K-2'
   AND tranline.itemtype IN (
     'InvtPart',
     'Assembly',
