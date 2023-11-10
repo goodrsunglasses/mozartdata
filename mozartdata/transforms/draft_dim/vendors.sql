@@ -1,7 +1,7 @@
 SELECT
   id as vendor_id_edw,
   id as vendor_id_ns,
-  altname as name,
+  entityid as name,
   balance,
   companyname as company_name,
   currency as currency_id_ns,
