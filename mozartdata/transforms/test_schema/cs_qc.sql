@@ -1,6 +1,7 @@
 SELECT
   order_id_edw,
-  LISTAGG(DISTINCT emp.entityid, ', ') modifiers,
+  'Odd transaction record count' as reason,
+  LISTAGG(DISTINCT emp.entityid, ', ') who_touched_this,
   COUNT(
     CASE
       WHEN record_type = 'salesorder' THEN transaction_id_ns
@@ -35,7 +36,8 @@ WHERE
   and 
   transaction_timestamp_pst >= '2023-11-03T00:00:00Z'
 GROUP BY
-  order_id_edw
+  order_id_edw,
+  reason
 HAVING
   salesorder_count > 1
   OR cashsale_count > 1
@@ -45,6 +47,7 @@ HAVING
 UNION ALL
 SELECT
   order_id_edw,
+  'Odd Naming Convention' as reason,
   LISTAGG(DISTINCT emp.entityid, ', ') modifiers,
   COUNT(
     CASE
@@ -83,4 +86,5 @@ WHERE
   AND order_id_edw NOT LIKE '%CI-%'
   AND order_id_edw NOT LIKE '%DON-%'
 GROUP BY
-  order_id_edw
+  order_id_edw,
+reason
