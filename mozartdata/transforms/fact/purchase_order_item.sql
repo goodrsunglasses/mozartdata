@@ -87,6 +87,5 @@ FROM
     AND received.item_id_ns = detail.item_id_ns
   )
   left outer join dim.product product on product.item_id_ns=detail.item_id_ns
-  where detail.order_id_edw = 'INT-INJI041423-1.2K-2'
 ORDER BY
   detail.order_id_edw
