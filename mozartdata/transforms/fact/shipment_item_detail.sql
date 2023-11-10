@@ -1,9 +1,6 @@
 SELECT
-  shipment.id,
+  shipment.id shipment_id_ns,
   shipment.shipmentnumber,
-  shipment.custrecordgoodrponum,
-  shipment.externaldocumentnumber,
-  shipmentitem.id,
   shipmentitem.shipmentitemdescription,
   tranline.item,
   shipmentitem.expectedrate,
@@ -16,8 +13,7 @@ SELECT
   totalunitcost,
   unitlandedcost,
   purchaseordertransaction,
-  shipmentitemtransaction,
-  vendorid
+  shipmentitemtransaction
 FROM
   netsuite.inboundshipment shipment
   LEFT OUTER JOIN netsuite.inboundshipmentitem shipmentitem ON shipmentitem.inboundshipment = Shipment.id
