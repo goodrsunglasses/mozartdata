@@ -18,5 +18,3 @@ FROM
   netsuite.inboundshipment shipment
   LEFT OUTER JOIN netsuite.inboundshipmentitem shipmentitem ON shipmentitem.inboundshipment = Shipment.id
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.uniquekey = shipmentitem.shipmentitemtransaction
-WHERE
-  shipmentnumber = 'INBSHIP320'
