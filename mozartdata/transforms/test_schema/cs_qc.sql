@@ -31,7 +31,7 @@ FROM
   LEFT OUTER JOIN netsuite.employee emp ON tran.createdby = emp.id
 WHERE
   cseg7 = 10
-  AND createddate >= '2023-10-22T00:00:00Z'
+  AND createddate >= '2023-11-03T00:00:00Z'
   and entityid is not null
 GROUP BY
   order_num,
@@ -57,7 +57,7 @@ FROM
 WHERE
   cseg7 = 10
   and entityid is not null
-  AND createddate >= '2023-10-22T00:00:00Z'
+  AND createddate >= '2023-11-03T00:00:00Z'
   AND LOWER(order_num) NOT LIKE '%cs-%'
   AND order_num NOT LIKE '%SD-%'
   AND order_num NOT LIKE '%CI-%'
