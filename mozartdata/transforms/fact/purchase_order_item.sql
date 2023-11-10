@@ -1,38 +1,36 @@
 WITH
-  booked AS (
+  ordered AS (
     SELECT
       order_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,    
       plain_name,
-      SUM(total_quantity) AS quantity_booked,
-      SUM(rate) AS rate_booked,
-      SUM(net_amount) AS amount_booked
+      SUM(total_quantity) AS quantity_ordered,
+      SUM(rate) AS rate_ordered,
+      SUM(net_amount) AS amount_ordered
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
-      record_type = 'salesorder'
+      record_type = 'purchaseorder'
     GROUP BY
       order_id_edw,
       item_id_ns,
       order_item_id,
       plain_name
   ),
-  sold AS (
+  billed AS (
     SELECT
       order_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,    
       plain_name,
-      SUM(total_quantity) AS quantity_sold,
-      SUM(rate) AS rate_sold,
-      SUM(net_amount) AS amount_sold,
-      sum(gross_profit_estimate) as gross_profit_estimate,
-      sum(abs(cost_estimate)) as cost_estimate
+      SUM(total_quantity) AS quantity_billed,
+      SUM(rate) AS rate_billed,
+      SUM(net_amount) AS amount_billed
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
-      record_type IN ('cashsale', 'invoice')
+      record_type = 'vendorbill'
     GROUP BY
       order_id_edw,
       item_id_ns,
@@ -40,38 +38,19 @@ WITH
       plain_name
 
   ),
-  fulfilled AS (
+  received AS (
     SELECT
       order_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,    
       plain_name,
-      SUM(total_quantity) AS quantity_fulfilled,
-      SUM(rate) AS rate_fulfilled,
-      SUM(net_amount) AS amount_fulfilled
+      SUM(total_quantity) AS quantity_received,
+      SUM(rate) AS rate_received,
+      SUM(net_amount) AS amount_received
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
-      record_type = 'itemfulfillment'
-    GROUP BY
-      order_id_edw,
-      item_id_ns,
-      order_item_id,
-      plain_name
-  ),
-  refunded AS (
-    SELECT
-      order_id_edw,
-      item_id_ns,
-      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,    
-      plain_name,
-      SUM(total_quantity) AS quantity_refunded,
-      SUM(rate) AS rate_refunded,
-      SUM(abs(net_amount)) AS amount_refunded
-    FROM
-      fact.order_item_detail
-    WHERE
-      record_type = 'cashrefund'
+      record_type = 'itemreceipt'
     GROUP BY
       order_id_edw,
       item_id_ns,
@@ -83,37 +62,31 @@ SELECT DISTINCT
   CONCAT(detail.order_id_edw, '_', detail.item_id_ns) AS order_item_id,
   detail.item_id_ns,
   detail.plain_name,
-  quantity_booked,
-  quantity_sold,
-  quantity_fulfilled,
-  quantity_refunded,
-  rate_booked,
-  rate_sold,
-  rate_fulfilled,
-  rate_refunded,
-  amount_booked,
-  amount_sold,
-  amount_fulfilled,
-  amount_refunded,
-  sold.gross_profit_estimate as gross_profit_estimate,
-  sold.cost_estimate as cost_estimate
+  product.family,
+  quantity_ordered,
+  quantity_billed,
+  quantity_received,
+  rate_ordered,
+  rate_billed,
+  rate_received,
+  amount_ordered,
+  amount_billed,
+  amount_received
 FROM
-  fact.order_item_detail detail
-  LEFT OUTER JOIN booked ON (
-    booked.order_id_edw = detail.order_id_edw
-    AND booked.item_id_ns = detail.item_id_ns
+  draft_fact.order_item_detail detail
+  LEFT OUTER JOIN ordered ON (
+    ordered.order_id_edw = detail.order_id_edw
+    AND ordered.item_id_ns = detail.item_id_ns
   )
-  LEFT OUTER JOIN sold ON (
-    sold.order_id_edw = detail.order_id_edw
-    AND sold.item_id_ns = detail.item_id_ns
+  LEFT OUTER JOIN billed ON (
+    billed.order_id_edw = detail.order_id_edw
+    AND billed.item_id_ns = detail.item_id_ns
   )
-  LEFT OUTER JOIN fulfilled ON (
-    fulfilled.order_id_edw = detail.order_id_edw
-    AND fulfilled.item_id_ns = detail.item_id_ns
+  LEFT OUTER JOIN received ON (
+    received.order_id_edw = detail.order_id_edw
+    AND received.item_id_ns = detail.item_id_ns
   )
-  LEFT OUTER JOIN refunded ON (
-    refunded.order_id_edw = detail.order_id_edw
-    AND refunded.item_id_ns = detail.item_id_ns
-  )
+  left outer join dim.product product on product.item_id_ns=detail.item_id_ns
+  where detail.order_id_edw = 'INT-INJI041423-1.2K-2'
 ORDER BY
   detail.order_id_edw
