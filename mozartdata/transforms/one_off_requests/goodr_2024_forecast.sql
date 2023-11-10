@@ -85,6 +85,8 @@ order by
 select
   *
   , AVG(mom_growth) OVER (partition by m.channel ORDER BY m.date_int ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS rolling_3_month_mom_average
+  , AVG(mom_growth) OVER (partition by m.channel ORDER BY m.date_int ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) AS rolling_3_month_mom_average_ex
   , m.previous_amount * AVG(mom_growth) OVER (partition by m.channel ORDER BY m.date_int ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) as projected_amount
+  , m.previous_amount * AVG(mom_growth) OVER (partition by m.channel ORDER BY m.date_int ROWS BETWEEN 3 PRECEDING AND 1 PRECEDING) as projected_amount_ex
 from
   mom m
