@@ -19,7 +19,7 @@ with
     select distinct
       channel
     from
-      draft_fact.gl_budget gb
+      fact.gl_budget gb
     where
       channel is not null
   ),
