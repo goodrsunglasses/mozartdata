@@ -74,7 +74,7 @@ SELECT
 FROM
   netsuite.item i
 inner join
-  draft_dim.gl_account ga
+  dim.gl_account ga
   on i.incomeaccount = ga.account_id_ns
 left join
   netsuite.customlist991 framecolor
