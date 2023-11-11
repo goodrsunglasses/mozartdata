@@ -26,7 +26,7 @@ with
     from
       fact.gl_transaction gt
     inner join
-      draft_dim.gl_account ga
+      dim.gl_account ga
       on ga.account_id_ns = gt.account_id_ns
     inner join
       period_map pm
@@ -57,7 +57,7 @@ with
   FROM
     fact.gl_budget gb
   inner join
-    draft_dim.gl_account ga
+    dim.gl_account ga
     on ga.account_id_ns = gb.account_id_ns
     and ga.account_number >= 4000 and ga.account_number < 5000
   ),
