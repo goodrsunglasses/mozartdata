@@ -16,7 +16,8 @@ p = parent account
 
 
 select
-  acct.id as account_id_ns
+  acct.id as acct_id_edw
+, acct.id as account_id_ns
 , acct.acctnumber as account_number
 , acct.fullname as account_full_name
 , acct.accountsearchdisplaynamecopy as account_display_name
@@ -26,6 +27,18 @@ select
 , acct.parent as account_parent_id_netsuite
 , p.acctnumber as account_parent_number
 , p.accountsearchdisplayname as account_parent_number_display_name
+, case
+  when acct.accttype in ('AcctRec','Bank','DeferExpense','FixedAsset','OthAsset','OthCurrAsset') then 'Assets'
+  when acct.accttype in ('AcctPay','CredCard','DeferRevenue','LongTermLiab','OthCurrLiab') then 'Liabilities'
+  when acct.accttype in ('Equity') then 'Equity'
+  when acct.accttype in ('Income','OthIncome') then 'Revenues'
+  when acct.accttype in ('COGS','Expense','OthExpense') then 'Expenses'
+  when acct.accttype in ('NonPosting') then 'Other'
+  end as account_category
+, case
+  when account_category in ('Assets','Expenses') then 'Debit'
+  when account_category in ('Liabilities','Equity','Revenues') then 'Credit'
+  end as normal_balance
 , acct.accttype as account_type
 , acct.cashflowrate as cash_flow_rate
 , acct.generalrate as general_rate
