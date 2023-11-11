@@ -45,7 +45,7 @@ budget AS
     gb.posting_period,
     gb.channel,
     gb.budget_amount
-  FROM draft_fact.gl_budget gb
+  FROM fact.gl_budget gb
   INNER JOIN draft_dim.gl_account ga ON ga.account_id_ns = gb.account_id_ns
     AND ga.account_number >= 4000 AND ga.account_number < 5000
 )
