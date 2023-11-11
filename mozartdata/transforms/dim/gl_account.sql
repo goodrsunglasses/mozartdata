@@ -16,7 +16,7 @@ p = parent account
 
 
 select
-  acct.id as acct_id_edw
+  acct.id as account_id_edw
 , acct.id as account_id_ns
 , acct.acctnumber as account_number
 , acct.fullname as account_full_name
