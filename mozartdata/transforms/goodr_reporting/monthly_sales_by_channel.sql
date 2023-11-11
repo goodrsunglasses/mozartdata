@@ -3,7 +3,7 @@ This report produces an Income statement which can be reconciled against Net Sui
 
 Aliases:
 gt = fact.gl_transaction
-ga = draft_dim.gl_account
+ga = dim.gl_account
 */
 
 select
@@ -20,7 +20,7 @@ select
 from
   fact.gl_transaction gt
 inner join
-  draft_dim.gl_account ga
+  dim.gl_account ga
   on ga.account_id_ns = gt.account_id_ns
 where
   right(gt.posting_period,4) = '2023'
