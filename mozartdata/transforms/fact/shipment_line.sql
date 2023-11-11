@@ -1,5 +1,6 @@
 SELECT
   shipment.id shipment_id_ns,
+  shipmentstatus,
   shipmentnumber,
   shipmenttype.name,
   custrecordcustrecord_actual_delivery_,
