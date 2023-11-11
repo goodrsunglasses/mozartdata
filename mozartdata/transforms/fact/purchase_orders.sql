@@ -13,7 +13,7 @@ WITH
           transaction_timestamp_pst ASC
       ) AS id
     FROM
-      fact.order_line
+      fact.purchase_order_line
   ),
   order_level AS (
     SELECT DISTINCT
