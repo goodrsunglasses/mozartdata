@@ -55,7 +55,7 @@ with
   , gb.channel
   , gb.budget_amount
   FROM
-    draft_fact.gl_budget gb
+    fact.gl_budget gb
   inner join
     draft_dim.gl_account ga
     on ga.account_id_ns = gb.account_id_ns
