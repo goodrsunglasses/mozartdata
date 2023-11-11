@@ -8,7 +8,7 @@ SELECT
 FROM
   netsuite.budgetlegacy bl
   LEFT JOIN 
-    draft_dim.gl_account ga 
+    dim.gl_account ga 
   ON ga.account_id_ns = bl."ACCOUNT"
   LEFT JOIN 
     netsuite.budgetcategory category 
