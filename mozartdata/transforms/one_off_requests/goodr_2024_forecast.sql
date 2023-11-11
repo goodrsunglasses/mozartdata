@@ -52,7 +52,7 @@ with
       from
         fact.gl_transaction gt
       inner join
-        draft_dim.gl_account ga
+        dim.gl_account ga
         on ga.account_id_ns = gt.account_id_ns
       where
         posting_flag = true
