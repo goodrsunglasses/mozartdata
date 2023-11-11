@@ -20,4 +20,6 @@ SELECT DISTINCT
 FROM
   draft_fact.order_item_detail item_detail
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
-  LEFT OUTER JOIN draft_dim.vendors vendors on vendors.vendor_id_edw=tran.entity
+  LEFT OUTER JOIN draft_dim.vendors vendors ON vendors.vendor_id_edw = tran.entity
+WHERE
+  tran.recordtype IN ('purchaseorder', 'vendorbill', 'itemreceipt')
