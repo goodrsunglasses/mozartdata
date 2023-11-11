@@ -15,6 +15,4 @@ SELECT
   shipmentcreateddate
 FROM
   netsuite.inboundshipment shipment
-  left outer join netsuite.CUSTOMLIST976 shipmenttype on shipmenttype.id=shipment.custrecordcustrecord_inbound_type	
-WHERE
-  shipment_id_ns = 320
+  left outer join netsuite.CUSTOMLIST976 shipmenttype on shipmenttype.id=shipment.custrecordcustrecord_inbound_type
