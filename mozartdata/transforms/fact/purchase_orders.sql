@@ -81,6 +81,8 @@ WITH
   )
 SELECT
   order_level.order_id_edw,
+  order_level.name,
+  order_level.vendor_id_ns,
   order_level.transaction_timestamp_pst AS order_timestamp_pst,
   DATE(order_level.transaction_timestamp_pst) AS order_date_pst,
   quantity_ordered,
