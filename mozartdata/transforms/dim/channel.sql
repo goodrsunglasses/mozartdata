@@ -1,4 +1,5 @@
 SELECT
+  id AS channel_id_edw,
   id AS channel_id_ns,
   name,
   CASE
