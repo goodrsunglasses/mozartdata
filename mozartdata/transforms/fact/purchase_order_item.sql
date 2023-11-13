@@ -87,5 +87,6 @@ FROM
     AND received.item_id_ns = detail.item_id_ns
   )
   left outer join dim.product product on product.item_id_ns=detail.item_id_ns
+  where detail.record_type in ('vendorbill','itemreciept','purchaseorder')
 ORDER BY
   detail.order_id_edw
