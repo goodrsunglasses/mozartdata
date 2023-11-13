@@ -3,6 +3,7 @@ SELECT DISTINCT
   item_detail.order_id_edw,
   item_detail.transaction_id_ns,
   item_detail.record_type,
+  entity AS vendor_id_edw,
   entity AS vendor_id_ns,
   vendors.name,
   transaction_timestamp_pst,
