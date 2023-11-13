@@ -36,6 +36,10 @@ select
   when acct.accttype in ('NonPosting') then 'Other'
   end as account_category
 , case
+  when account_number between 1600 and 1699 then 'Credit'
+  when account_number in (1800, 1810, 1820) then 'Credit'
+  when account_number between 4100 and 4299 then 'Debit'
+  when account_number in (8002, 8020) then 'Debit'
   when account_category in ('Assets','Expenses') then 'Debit'
   when account_category in ('Liabilities','Equity','Revenues') then 'Credit'
   end as normal_balance
