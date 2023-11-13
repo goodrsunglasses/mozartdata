@@ -15,6 +15,7 @@ SELECT DISTINCT
     ELSE FALSE
   END AS is_exchange,
   transaction_timestamp_pst,
+  date(tran.trandate) as transaction_event_date,
   CASE
     WHEN full_status LIKE ANY(
       '%Closed',
