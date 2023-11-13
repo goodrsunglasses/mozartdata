@@ -115,4 +115,3 @@ left join
   ON i.id = agg.parentitem
 WHERE
   itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment')
-/*bring in free shit indicator, merchandise division*/
