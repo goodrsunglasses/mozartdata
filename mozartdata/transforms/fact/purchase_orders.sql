@@ -1,8 +1,8 @@
 WITH
-  priority AS (
+  order_level AS (
     SELECT DISTINCT
       order_id_edw,
-      FIRST_VALUE(transaction_id_ns) OVER (
+      FIRST_VALUE(transaction_timestamp_pst) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -10,24 +10,22 @@ WITH
             WHEN record_type = 'purchaseorder' THEN 1
             ELSE 2
           END,
-          transaction_timestamp_pst ASC
-      ) AS id
+          transaction_timestamp_pst asc
+      ) AS purchase_date,
+      FIRST_VALUE(transaction_timestamp_pst) OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          CASE
+            WHEN record_type = 'itemreceipt' THEN 1
+            ELSE 2
+          END,
+          transaction_timestamp_pst asc
+      ) AS fulfillment_date,
+      vendor_id_ns,
+      name
     FROM
       fact.purchase_order_line
-  ),
-  order_level AS (
-    SELECT DISTINCT
-      priority.order_id_edw,
-      priority.id,
-      vendor_id_ns,
-      name,
-      transaction_timestamp_pst
-    FROM
-      priority
-      LEFT OUTER JOIN fact.purchase_order_line orderline ON (
-        orderline.transaction_id_ns = priority.id
-        AND orderline.order_id_edw = priority.order_id_edw
-      )
   ),
   aggregates AS (
     SELECT
@@ -83,8 +81,10 @@ SELECT
   order_level.order_id_edw,
   order_level.name,
   order_level.vendor_id_ns,
-  order_level.transaction_timestamp_pst AS order_timestamp_pst,
-  DATE(order_level.transaction_timestamp_pst) AS order_date_pst,
+  order_level.purchase_date,
+  DATE(order_level.purchase_date) AS order_date_pst,
+  order_level.fulfillment_date,
+  DATE(order_level.fulfillment_date) AS fulfillment_date_pst,
   quantity_ordered,
   quantity_billed,
   quantity_received,
@@ -95,7 +95,3 @@ SELECT
 FROM
   order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
-WHERE
-  order_level.transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
-ORDER BY
-  order_level.transaction_timestamp_pst desc
