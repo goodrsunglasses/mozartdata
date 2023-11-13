@@ -1,11 +1,23 @@
 SELECT
-  COALESCE(
-    tran.custbody_goodr_shopify_order,
-    tran.custbody_goodr_po_number
+  REPLACE(
+    COALESCE(
+      tran.custbody_goodr_shopify_order,
+      tran.custbody_goodr_po_number
+    ),
+    ' ',
+    ''
   ) AS order_id_edw,
   tran.id AS transaction_id_ns,
   CONCAT(order_id_edw, '_', tran.id, '_', item) AS order_item_detail_id,
-  case when tranline.itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment') then tranline.item end as product_id_edw,
+  CASE
+    WHEN tranline.itemtype IN (
+      'InvtPart',
+      'Assembly',
+      'OthCharge',
+      'NonInvtPart',
+      'Payment'
+    ) THEN tranline.item
+  END AS product_id_edw,
   tranline.item AS item_id_ns,
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_timestamp_pst,
   DATE(
@@ -78,59 +90,69 @@ GROUP BY
   item_type,
   tranline.location
   -- Shipping and Tax
-  UNION ALL
-  SELECT
-    tran.custbody_goodr_shopify_order AS order_id_edw,
-    tran.id AS transaction_id_ns,
-    CONCAT(order_id_edw,'_', tran.id,'_', item) AS order_item_detail_id,
-    case when tranline.itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment') then tranline.item end as product_id_edw,
-    tranline.item as item_id_ns,
-    CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_timestamp_pst,
-    date(CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)) AS transaction_date_pst,
-    tran.recordtype as record_type,
-    transtatus.fullname AS full_status,
-    tranline.itemtype as item_type,
-    CASE
-      WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
-      WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
-      ELSE NULL
-    END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-    SUM(- netamount) net_amount,
-    SUM(ABS(quantity)) AS total_quantity,
-    SUM(rate) rate,
-    SUM(tranline.estgrossprofit) AS gross_profit_estimate,
-    SUM(tranline.costestimate) AS cost_estimate,
-    null as location
-  FROM
-    netsuite.transaction tran
-    LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
-    LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
-      tran.status = transtatus.id
-      AND tran.type = transtatus.trantype
-    )
-    LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
-  WHERE
-    recordtype IN (
-      'invoice',
-      'cashsale',
-      'salesorder',
-      'itemfulfillment',
-      'cashrefund'
-    )
-    AND tranline.itemtype IN ('ShipItem', 'TaxItem')
-    AND tranline.mainline = 'F'
-    AND order_id_edw IS NOT NULL
-  GROUP BY
-    order_id_edw,
-    transaction_id_ns,
-    order_item_detail_id,
-    product_id_edw,
-    item_id_ns,
-    transaction_timestamp_pst,
-    transaction_date_pst,
-    record_type,
-    full_status,
-    plain_name,
-    item_type
-  ORDER BY
-    transaction_id_ns asc
+UNION ALL
+SELECT
+  tran.custbody_goodr_shopify_order AS order_id_edw,
+  tran.id AS transaction_id_ns,
+  CONCAT(order_id_edw, '_', tran.id, '_', item) AS order_item_detail_id,
+  CASE
+    WHEN tranline.itemtype IN (
+      'InvtPart',
+      'Assembly',
+      'OthCharge',
+      'NonInvtPart',
+      'Payment'
+    ) THEN tranline.item
+  END AS product_id_edw,
+  tranline.item AS item_id_ns,
+  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_timestamp_pst,
+  DATE(
+    CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)
+  ) AS transaction_date_pst,
+  tran.recordtype AS record_type,
+  transtatus.fullname AS full_status,
+  tranline.itemtype AS item_type,
+  CASE
+    WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
+    WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
+    ELSE NULL
+  END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
+  SUM(- netamount) net_amount,
+  SUM(ABS(quantity)) AS total_quantity,
+  SUM(rate) rate,
+  SUM(tranline.estgrossprofit) AS gross_profit_estimate,
+  SUM(tranline.costestimate) AS cost_estimate,
+  NULL AS location
+FROM
+  netsuite.transaction tran
+  LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
+  LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
+    tran.status = transtatus.id
+    AND tran.type = transtatus.trantype
+  )
+  LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
+WHERE
+  recordtype IN (
+    'invoice',
+    'cashsale',
+    'salesorder',
+    'itemfulfillment',
+    'cashrefund'
+  )
+  AND tranline.itemtype IN ('ShipItem', 'TaxItem')
+  AND tranline.mainline = 'F'
+  AND order_id_edw IS NOT NULL
+GROUP BY
+  order_id_edw,
+  transaction_id_ns,
+  order_item_detail_id,
+  product_id_edw,
+  item_id_ns,
+  transaction_timestamp_pst,
+  transaction_date_pst,
+  record_type,
+  full_status,
+  plain_name,
+  item_type
+ORDER BY
+  transaction_id_ns asc
