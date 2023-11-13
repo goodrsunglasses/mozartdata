@@ -1,5 +1,5 @@
 SELECT
-  bl."ACCOUNT" as account_id_ns,
+  bl."ACCOUNT" as account_id_edw,
   category.name AS budget_version,
   cseg7.name as channel,
   bl.period as period_id_ns,
@@ -9,7 +9,7 @@ FROM
   netsuite.budgetlegacy bl
   LEFT JOIN 
     dim.gl_account ga 
-  ON ga.account_id_ns = bl."ACCOUNT"
+  ON ga.account_id_edw = bl."ACCOUNT"
   LEFT JOIN 
     netsuite.budgetcategory category 
     ON category.id = bl.category
