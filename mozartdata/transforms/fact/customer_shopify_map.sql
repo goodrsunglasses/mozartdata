@@ -21,7 +21,7 @@ WITH
   )
 SELECT
   customer_id_edw,
-  COALESCE(d2c_shop.id, b2b_shop.id) AS shopify_id,
+  COALESCE(d2c_shop.id, b2b_shop.id) AS customer_id_shopify,
   coalesce(d2c_shop.fullname,b2b_shop.fullname) as full_name,
   dim_cust.email,
   customer_category
@@ -39,4 +39,4 @@ FROM
 WHERE
   --Ignoring Indirect customers, as well as the customers who are D2C/B2B but not in one of our two shopify stores.
   customer_category != 'INDIRECT'
-  AND shopify_id IS NOT NULL
+  AND customer_id_shopify IS NOT NULL
