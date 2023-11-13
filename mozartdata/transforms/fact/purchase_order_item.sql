@@ -3,7 +3,7 @@ WITH
     SELECT
       order_id_edw,
       item_id_ns,
-      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,    
+      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
       SUM(total_quantity) AS quantity_ordered,
       SUM(rate) AS rate_ordered,
@@ -22,7 +22,7 @@ WITH
     SELECT
       order_id_edw,
       item_id_ns,
-      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,    
+      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
       SUM(total_quantity) AS quantity_billed,
       SUM(rate) AS rate_billed,
@@ -36,13 +36,12 @@ WITH
       item_id_ns,
       order_item_id,
       plain_name
-
   ),
   received AS (
     SELECT
       order_id_edw,
       item_id_ns,
-      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,    
+      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
       SUM(total_quantity) AS quantity_received,
       SUM(rate) AS rate_received,
@@ -86,7 +85,8 @@ FROM
     received.order_id_edw = detail.order_id_edw
     AND received.item_id_ns = detail.item_id_ns
   )
-  left outer join dim.product product on product.item_id_ns=detail.item_id_ns
-  where detail.record_type in ('vendorbill','itemreciept','purchaseorder')
+  LEFT OUTER JOIN dim.product product ON product.item_id_ns = detail.item_id_ns
+WHERE
+  detail.record_type IN ('vendorbill', 'itemreciept', 'purchaseorder')
 ORDER BY
   detail.order_id_edw
