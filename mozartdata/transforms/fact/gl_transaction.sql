@@ -51,7 +51,7 @@ use createdate converted instead of trandate
     inner join
       netsuite.accountingperiod ap
       on tran.postingperiod = ap.id
-    inner join
+    left join
       dim.gl_account ga
       on tal."ACCOUNT" = ga.account_id_edw
     left join
