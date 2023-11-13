@@ -15,7 +15,7 @@ with
     select
       concat(pm.posting_period_year,' - Actual') as budget_version
     , ga.account_number
-    , ga.account_id_ns
+    , ga.account_id_edw
     , gt.posting_period
     , date_trunc(week,gt.transaction_date) transaction_week
     , date_trunc(year,gt.transaction_date) transaction_year
@@ -31,7 +31,7 @@ with
       fact.gl_transaction gt
     inner join
       dim.gl_account ga
-      on ga.account_id_ns = gt.account_id_ns
+      on ga.account_id_edw = gt.account_id_edw
     inner join
       period_map pm
       on gt.posting_period = pm.posting_period
@@ -43,7 +43,7 @@ with
     group by
       concat(pm.posting_period_year,' - Actual')
     , ga.account_number
-    , ga.account_id_ns
+    , ga.account_id_edw
     , gt.posting_period
     , date_trunc(week,gt.transaction_date)
     , date_trunc(year,gt.transaction_date)
