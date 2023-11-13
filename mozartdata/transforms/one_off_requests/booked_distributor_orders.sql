@@ -30,10 +30,11 @@ inner join
 inner join
   netsuite.customer c
   on cnm.customer_internal_id_ns = c.id
+  and cnm.ns_primary_id_flag = true
 left join
   order_dates od
   on o.order_id_edw = od.order_id_edw
 where 
   o.model = 'Distribution'
-  and od.order_placed_date >= '2022-06-01'
+  and od.order_placed_date >= '2022-11-01'
 order by distributor, order_date_pst
