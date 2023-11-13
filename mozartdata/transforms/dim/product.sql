@@ -29,7 +29,8 @@ WITH assembly_aggregate AS(
     assembly_quantity is not null
 )
 SELECT
-  i.id as item_id_ns
+  i.id as product_id_edw
+, i.id as item_id_ns
 , i.itemid as sku
 , i.displayname as display_name
 , i.itemtype as item_type
