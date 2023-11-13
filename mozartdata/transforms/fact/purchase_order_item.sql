@@ -2,6 +2,7 @@ WITH
   ordered AS (
     SELECT
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
@@ -14,6 +15,7 @@ WITH
       record_type = 'purchaseorder'
     GROUP BY
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       order_item_id,
       plain_name
@@ -21,6 +23,7 @@ WITH
   billed AS (
     SELECT
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
@@ -33,6 +36,7 @@ WITH
       record_type = 'vendorbill'
     GROUP BY
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       order_item_id,
       plain_name
@@ -40,6 +44,7 @@ WITH
   received AS (
     SELECT
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
@@ -52,6 +57,7 @@ WITH
       record_type = 'itemreceipt'
     GROUP BY
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       order_item_id,
       plain_name
@@ -59,6 +65,7 @@ WITH
 SELECT DISTINCT
   detail.order_id_edw,
   CONCAT(detail.order_id_edw, '_', detail.item_id_ns) AS order_item_id,
+  detail.product_id_edw,
   detail.item_id_ns,
   detail.plain_name,
   product.family,
