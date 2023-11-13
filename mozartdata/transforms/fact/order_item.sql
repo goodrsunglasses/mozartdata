@@ -2,6 +2,7 @@ WITH
   booked AS (
     SELECT
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
@@ -14,6 +15,7 @@ WITH
       record_type = 'salesorder'
     GROUP BY
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       order_item_id,
       plain_name
@@ -21,6 +23,7 @@ WITH
   sold AS (
     SELECT
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
@@ -35,6 +38,7 @@ WITH
       record_type IN ('cashsale', 'invoice')
     GROUP BY
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       order_item_id,
       plain_name
@@ -42,6 +46,7 @@ WITH
   fulfilled AS (
     SELECT
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
@@ -54,6 +59,7 @@ WITH
       record_type = 'itemfulfillment'
     GROUP BY
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       order_item_id,
       plain_name
@@ -61,6 +67,7 @@ WITH
   refunded AS (
     SELECT
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
@@ -73,6 +80,7 @@ WITH
       record_type = 'cashrefund'
     GROUP BY
       order_id_edw,
+      product_id_edw,
       item_id_ns,
       order_item_id,
       plain_name
@@ -80,6 +88,7 @@ WITH
 SELECT DISTINCT
   detail.order_id_edw,
   CONCAT(detail.order_id_edw, '_', detail.item_id_ns) AS order_item_id,
+  detail.product_id_edw,
   detail.item_id_ns,
   detail.plain_name,
   quantity_booked,
