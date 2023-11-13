@@ -50,7 +50,7 @@ with
   select
     gb.budget_version
   , ga.account_number
-  , gb.account_id_ns
+  , gb.account_id_edw
   , gb.posting_period
   , gb.channel
   , gb.budget_amount
@@ -58,7 +58,7 @@ with
     fact.gl_budget gb
   inner join
     dim.gl_account ga
-    on ga.account_id_ns = gb.account_id_ns
+    on ga.account_id_edw = gb.account_id_edw
     and ga.account_number >= 4000 and ga.account_number < 5000
   ),
   ba_combined as 
