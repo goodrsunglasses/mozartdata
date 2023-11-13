@@ -79,7 +79,7 @@ WITH
   )
 SELECT
   order_level.order_id_edw,
-  order_level.name,
+  order_level.name vendor_name,
   order_level.vendor_id_ns,
   order_level.purchase_date,
   DATE(order_level.purchase_date) AS order_date_pst,
