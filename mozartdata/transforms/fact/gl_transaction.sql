@@ -22,6 +22,7 @@ use createdate converted instead of trandate
       concat(tal.transaction,'_',tal.transactionline) as transaction_line_id
     , tran.custbody_goodr_shopify_order order_id_edw
     , tran.tranid as transaction_id_ns
+    , tal."ACCOUNT" as account_id_edw
     , tal."ACCOUNT" as account_id_ns
     , channel.name as channel
     , tran.trandate as transaction_timestamp
@@ -38,8 +39,10 @@ use createdate converted instead of trandate
     , sum(coalesce(tal.amount,0)) as transaction_amount
     , sum(coalesce(tal.credit,0)) as  credit_amount
     , sum(coalesce(tal.debit,0)) as debit_amount
-    , sum(coalesce(tal.netamount,0)) as net_amount
-    , abs(sum(coalesce(tal.amount,0))) as transaction_amount_positive
+    , sum(coalesce(case 
+      when ga.normal_balance = 'Debit' then (coalesce(tal.debit,0)) - (coalesce(tal.credit,0))
+      when ga.normal_balance = 'Credit' then (coalesce(tal.credit,0)) - (coalesce(tal.debit,0))
+      end,0)) as net_amount
     from
       netsuite.transactionaccountingline tal
     inner join
@@ -48,6 +51,9 @@ use createdate converted instead of trandate
     inner join
       netsuite.accountingperiod ap
       on tran.postingperiod = ap.id
+    inner join
+      dim.gl_account ga
+      on tal."ACCOUNT" = ga.account_id_edw
     left join
       netsuite.transactionline tl
       on tran.id = tl.transaction
