@@ -6,6 +6,10 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS status_flag_edw,
+      MAX(orderline.is_exchange) over (
+        PARTITION BY
+          order_id_edw
+      ) AS is_exchange,
       FIRST_VALUE(transaction_timestamp_pst) OVER (
         PARTITION BY
           order_id_edw
@@ -39,7 +43,6 @@ WITH
       channel,
       customer_id_ns,
       email,
-      is_exchange,
       customer_category AS b2b_d2c,
       model
     FROM
@@ -222,5 +225,6 @@ FROM
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
 WHERE
   order_level.booked_date >= '2022-01-01T00:00:00Z'
+  and order_level.order_id_edw = 'G2628793'
 ORDER BY
   order_level.booked_date desc
