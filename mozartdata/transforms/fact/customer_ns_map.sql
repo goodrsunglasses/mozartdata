@@ -59,7 +59,7 @@ SELECT
   CASE
     WHEN MIN(rn) = 1 THEN TRUE
     ELSE FALSE
-  END AS ns_primary_id_flag
+  END AS primary_id_flag
 FROM
   customer_category
   LEFT OUTER JOIN dim.customer customers ON (
