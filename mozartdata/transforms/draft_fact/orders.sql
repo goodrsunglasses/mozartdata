@@ -1,45 +1,50 @@
 WITH
-  priority AS (
+  order_level AS (
     SELECT DISTINCT
       order_id_edw,
       MAX(status_flag_edw) over (
         PARTITION BY
           order_id_edw
       ) AS status_flag_edw,
-      FIRST_VALUE(transaction_id_ns) OVER (
+      FIRST_VALUE(transaction_timestamp_pst) OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          CASE
+            WHEN record_type = 'salesorder' THEN 1
+            ELSE 2
+          END,
+          transaction_timestamp_pst asc
+      ) AS booked_date,
+      FIRST_VALUE(transaction_timestamp_pst) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
           CASE
             WHEN record_type = 'cashsale' THEN 1
-            WHEN record_type = 'invoice' THEN 2
-            WHEN record_type = 'salesorder' THEN 3
-            ELSE 4
+            ELSE 2
           END,
-          transaction_timestamp_pst ASC
-      ) AS id
-    FROM
-      fact.order_line
-  ),
-  order_level AS (
-    SELECT DISTINCT
-      priority.order_id_edw,
-      priority.id,
+          transaction_timestamp_pst asc
+      ) AS sold_date,
+      FIRST_VALUE(transaction_timestamp_pst) OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          CASE
+            WHEN record_type = 'itemfulfillment' THEN 1
+            ELSE 2
+          END,
+          transaction_timestamp_pst asc
+      ) AS fulfillment_date,
       channel,
       customer_id_ns,
       email,
       is_exchange,
-      priority.status_flag_edw,
-      transaction_timestamp_pst,
       customer_category AS b2b_d2c,
       model
     FROM
-      priority
-      LEFT OUTER JOIN fact.order_line orderline ON (
-        orderline.transaction_id_ns = priority.id
-        AND orderline.order_id_edw = priority.order_id_edw
-      )
-    left outer join dim.channel category on category.name = orderline.channel 
+      fact.order_line orderline
+      LEFT OUTER JOIN dim.channel category ON category.name = orderline.channel
   ),
   aggregates AS (
     SELECT
@@ -173,8 +178,12 @@ SELECT
   order_level.order_id_edw,
   order_level.channel,
   customer_id_edw,
-  order_level.transaction_timestamp_pst AS order_timestamp_pst,
-  DATE(order_level.transaction_timestamp_pst) AS order_date_pst,
+  order_level.booked_date,
+  DATE(order_level.sold_date) AS booked_date_pst,
+  order_level.sold_date,
+  DATE(order_level.sold_date) AS sold_date_pst,
+  order_level.fulfillment_date,
+  DATE(order_level.sold_date) AS fulfillment_date_pst,
   order_level.is_exchange,
   order_level.status_flag_edw,
   CASE
@@ -210,8 +219,8 @@ FROM
     LOWER(customer.email) = LOWER(order_level.email)
     AND customer.customer_category = order_level.b2b_d2c
   )
-  LEFT OUTER JOIN refund_aggregates  refund ON refund.order_id_edw = order_level.order_id_edw
+  LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
 WHERE
-  order_level.transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
+  order_level.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY
-  order_level.transaction_timestamp_pst desc
+  order_level.booked_date desc
