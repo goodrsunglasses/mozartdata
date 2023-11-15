@@ -125,4 +125,4 @@ GROUP BY
   item_type
 
 ORDER BY
-  transaction_id_ns asc
+  transaction_id_ns desc
