@@ -225,6 +225,5 @@ FROM
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
 WHERE
   order_level.booked_date >= '2022-01-01T00:00:00Z'
-  and order_level.order_id_edw = 'G2628793'
 ORDER BY
   order_level.booked_date desc
