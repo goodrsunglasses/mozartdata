@@ -30,7 +30,7 @@ SELECT DISTINCT
 FROM
   fact.order_item_detail item_detail
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
-  LEFT OUTER JOIN netsuite.customrecord_cseg7 channel ON tran.cseg7 = channel.id
+  left outer join dim.channel channel on channel.channel_id_ns = tran.cseg7
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
 WHERE
   record_type IN (
