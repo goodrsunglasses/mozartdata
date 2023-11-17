@@ -32,7 +32,9 @@ SELECT
   SUM(rate) * total_quantity rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
-  tranline.location
+  tranline.location,
+  tranline.createdfrom,
+  tranline.createdpo
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -78,6 +80,8 @@ WHERE
   )
 GROUP BY
   order_id_edw,
+  createdfrom,
+  createdpo,
   transaction_id_ns,
   order_item_detail_id,
   product_id_edw,
@@ -122,7 +126,9 @@ SELECT
   SUM(rate) rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
-  NULL AS location
+  NULL AS location,
+  tranline.createdfrom,
+  tranline.createdpo
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -145,9 +151,11 @@ WHERE
 GROUP BY
   order_id_edw,
   transaction_id_ns,
+  createdfrom,
   order_item_detail_id,
   product_id_edw,
   item_id_ns,
+  createdpo,
   transaction_timestamp_pst,
   transaction_date_pst,
   record_type,
