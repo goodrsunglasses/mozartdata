@@ -69,8 +69,11 @@ WHERE
       AND accountinglinetype IN ('INCOME') THEN TRUE
       WHEN record_type = 'vendorbill'
       AND tranline.expenseaccount = 113 THEN TRUE --Bills dont have accountinglinetype
-      WHEN recordtype IN ('purchaseorder', 'itemreceipt')
+      WHEN recordtype = 'purchaseorder'
       AND accountinglinetype IN ('INCOME', 'ASSET') THEN TRUE
+      WHEN recordtype = 'itemreceipt'
+      AND accountinglinetype IN ('INCOME', 'ASSET')
+      AND iscogs = 'F' THEN TRUE
       WHEN recordtype = 'cashrefund'
       AND accountinglinetype IN ('INCOME', 'PAYMENT') THEN TRUE
       WHEN recordtype = 'itemfulfillment'
