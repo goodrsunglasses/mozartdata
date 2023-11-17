@@ -20,4 +20,3 @@ FROM fact.order_item oi
   join dim.product p on oi.product_id_edw = p.product_id_edw
 WHERE channel = 'Specialty'
 order by o.order_date_pst desc
-limit 300000
