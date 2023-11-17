@@ -31,7 +31,7 @@ WITH
       SUM(rate) AS rate_billed,
       SUM(net_amount) AS amount_billed
     FROM
-      draft_fact.order_item_detail
+      fact.order_item_detail
     WHERE
       record_type = 'vendorbill'
     GROUP BY
@@ -52,7 +52,7 @@ WITH
       SUM(rate) AS rate_received,
       SUM(net_amount) AS amount_received
     FROM
-      draft_fact.order_item_detail
+      fact.order_item_detail
     WHERE
       record_type = 'itemreceipt'
     GROUP BY
@@ -79,7 +79,7 @@ SELECT DISTINCT
   amount_billed,
   amount_received
 FROM
-  draft_fact.order_item_detail detail
+  fact.order_item_detail detail
   LEFT OUTER JOIN ordered ON (
     ordered.order_id_edw = detail.order_id_edw
     AND ordered.item_id_ns = detail.item_id_ns
