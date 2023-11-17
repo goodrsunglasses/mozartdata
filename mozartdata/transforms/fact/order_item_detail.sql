@@ -1,20 +1,35 @@
---note, leaving closed or otherwise odd transaction statuses as they can be later filtered out or operated on
---CS,INV,SO,IF
 SELECT
-  tran.custbody_goodr_shopify_order AS order_id_edw,
+  REPLACE(
+    COALESCE(
+      tran.custbody_goodr_shopify_order,
+      tran.custbody_goodr_po_number
+    ),
+    ' ',
+    ''
+  ) AS order_id_edw,
   tran.id AS transaction_id_ns,
-  CONCAT(order_id_edw,'_', tran.id,'_', item) AS order_item_detail_id,
-  case when tranline.itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment') then tranline.item end as product_id_edw,
-  tranline.item as item_id_ns,
+  CONCAT(order_id_edw, '_', tran.id, '_', item) AS order_item_detail_id,
+  CASE
+    WHEN tranline.itemtype IN (
+      'InvtPart',
+      'Assembly',
+      'OthCharge',
+      'NonInvtPart',
+      'Payment'
+    ) THEN tranline.item
+  END AS product_id_edw,
+  tranline.item AS item_id_ns,
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_timestamp_pst,
-  date(CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)) AS transaction_date_pst,
-  tran.recordtype as record_type,
+  DATE(
+    CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)
+  ) AS transaction_date_pst,
+  tran.recordtype AS record_type,
   transtatus.fullname AS full_status,
-  tranline.itemtype as item_type,
+  tranline.itemtype AS item_type,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  SUM(- netamount) as net_amount,
+  SUM(ABS(netamount)) AS net_amount,
   SUM(ABS(quantity)) AS total_quantity,
-  SUM(rate)*total_quantity rate,
+  SUM(rate) * total_quantity rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
   tranline.location
@@ -32,7 +47,10 @@ WHERE
     'cashsale',
     'salesorder',
     'itemfulfillment',
-    'cashrefund'
+    'cashrefund',
+    'purchaseorder',
+    'itemreceipt',
+    'vendorbill'
   )
   AND tranline.itemtype IN (
     'InvtPart',
@@ -47,6 +65,10 @@ WHERE
     CASE
       WHEN recordtype IN ('invoice', 'cashsale', 'salesorder')
       AND accountinglinetype IN ('INCOME') THEN TRUE
+      WHEN record_type = 'vendorbill'
+      AND tranline.expenseaccount = 113 THEN TRUE --Bills dont have accountinglinetype
+      WHEN recordtype IN ('purchaseorder', 'itemreceipt')
+      AND accountinglinetype IN ('INCOME', 'ASSET') THEN TRUE
       WHEN recordtype = 'cashrefund'
       AND accountinglinetype IN ('INCOME', 'PAYMENT') THEN TRUE
       WHEN recordtype = 'itemfulfillment'
@@ -67,20 +89,29 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location
-  
-  --Shipping and Tax
+  -- Shipping and Tax
 UNION ALL
 SELECT
   tran.custbody_goodr_shopify_order AS order_id_edw,
   tran.id AS transaction_id_ns,
-  CONCAT(order_id_edw,'_', tran.id,'_', item) AS order_item_detail_id,
-  case when tranline.itemtype in ('InvtPart','Assembly','OthCharge','NonInvtPart','Payment') then tranline.item end as product_id_edw,
-  tranline.item as item_id_ns,
+  CONCAT(order_id_edw, '_', tran.id, '_', item) AS order_item_detail_id,
+  CASE
+    WHEN tranline.itemtype IN (
+      'InvtPart',
+      'Assembly',
+      'OthCharge',
+      'NonInvtPart',
+      'Payment'
+    ) THEN tranline.item
+  END AS product_id_edw,
+  tranline.item AS item_id_ns,
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_timestamp_pst,
-  date(CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)) AS transaction_date_pst,
-  tran.recordtype as record_type,
+  DATE(
+    CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)
+  ) AS transaction_date_pst,
+  tran.recordtype AS record_type,
   transtatus.fullname AS full_status,
-  tranline.itemtype as item_type,
+  tranline.itemtype AS item_type,
   CASE
     WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
     WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
@@ -91,7 +122,7 @@ SELECT
   SUM(rate) rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
-  null as location
+  NULL AS location
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -123,6 +154,5 @@ GROUP BY
   full_status,
   plain_name,
   item_type
-
 ORDER BY
-  transaction_id_ns desc
+  transaction_id_ns asc
