@@ -10,7 +10,7 @@ WITH
       SUM(rate) AS rate_ordered,
       SUM(net_amount) AS amount_ordered
     FROM
-      draft_fact.order_item_detail
+      fact.order_item_detail
     WHERE
       record_type = 'purchaseorder'
     GROUP BY
