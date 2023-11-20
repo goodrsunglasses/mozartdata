@@ -83,7 +83,6 @@ WHERE
 GROUP BY
   order_id_edw,
   createdfrom,
-  createdpo,
   transaction_id_ns,
   order_item_detail_id,
   product_id_edw,
@@ -156,7 +155,6 @@ GROUP BY
   order_item_detail_id,
   product_id_edw,
   item_id_ns,
-  createdpo,
   transaction_timestamp_pst,
   transaction_date_pst,
   record_type,
