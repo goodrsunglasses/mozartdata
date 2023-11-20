@@ -79,7 +79,6 @@ WHERE
   )
 GROUP BY
   order_id_edw,
-  createdfrom,
   transaction_id_ns,
   order_item_detail_id,
   product_id_edw,
@@ -125,7 +124,8 @@ SELECT
   SUM(rate) rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
-  NULL AS location
+  NULL AS location,
+  tranline.createdfrom
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -147,7 +147,7 @@ WHERE
   AND order_id_edw IS NOT NULL
 GROUP BY
   order_id_edw,
-  createdfrom,
+  tranline.createdfrom,
   transaction_id_ns,
   order_item_detail_id,
   product_id_edw,
