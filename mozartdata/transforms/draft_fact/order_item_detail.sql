@@ -33,8 +33,7 @@ SELECT
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
   tranline.location,
-  tranline.createdfrom,
-  tranline.createdpo
+  tranline.createdfrom
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -130,8 +129,7 @@ SELECT
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
   NULL AS location,
-  tranline.createdfrom,
-  tranline.createdpo
+  tranline.createdfrom
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
