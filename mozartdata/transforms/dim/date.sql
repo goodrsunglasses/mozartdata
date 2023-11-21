@@ -13,6 +13,13 @@ SELECT MY_DATE as date_timestamp
     , DATE(DATE_TRUNC(week,MY_DATE)) as week_start_date
     , DATE(DATEADD('DAY', 6 - DAYOFWEEK(MY_DATE), MY_DATE)) AS week_end_date
     , WEEKOFYEAR(MY_DATE) as week_of_year
+    , CASE
+      WHEN month = MONTH(DATE_TRUNC('MONTH', week_start_date)) THEN 
+        LEAST(DATEDIFF(DAY, week_start_date, LAST_DAY(week_start_date)),7)
+      ELSE
+        LEAST(7 - DATEDIFF(DAY, week_start_date, LAST_DAY(week_start_date)),7)
+    END AS week_days_in_current_month
+    , case when week_days_in_current_month > 7 then 0 else 7 - week_days_in_current_month end as week_days_in_other_month
     , DAYOFYEAR(MY_DATE) as day_of_year
     , CONCAT(MONTH(MY_DATE), '-', DAY(MY_DATE)) as day_month
     , google_sheets.sales_seasons.season as sales_season
