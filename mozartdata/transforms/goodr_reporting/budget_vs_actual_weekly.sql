@@ -100,7 +100,6 @@ with
     new_year ny
     on a.week_of_year = ny.week_of_year
     and a.posting_period_month = ny.month
-  where channel = 'Amazon'
   group by
       channel
   , transaction_year
