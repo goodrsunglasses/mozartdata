@@ -22,7 +22,7 @@ with
     FROM
       dim.date
     WHERE
-      year = '2023'
+      year = '2024'
   )
   
   
@@ -92,8 +92,8 @@ with
       LEAST(7 - DATEDIFF(DAY, transaction_week, LAST_DAY(transaction_week)),7)
   END AS days_in_current_month_2022
   , case when days_in_current_month_2022 > 7 then 0 else 7 - days_in_current_month_2022 end as days_in_other_month_2022
-  , ny.week_days_in_current_month as days_in_current_month_2023
-  , ny.week_days_in_other_month as days_in_other_month_2023
+  , ny.week_days_in_current_month as days_in_current_month_2024
+  , ny.week_days_in_other_month as days_in_other_month_2024
   FROM
     actuals a
   LEFT JOIN
