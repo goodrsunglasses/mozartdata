@@ -79,7 +79,9 @@ SELECT
 , p.collection
 , p.family
 , p.sku
-, p.class
+, p.merchandise_class
+, p.merchandise_department
+, p.merchandise_division
 , ld.earliest_sale
 , coalesce(ts.launch_product_sales,0) launch_product_sales
 , coalesce(ts.launch_product_quantity,0) launch_product_quantity
