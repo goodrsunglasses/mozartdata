@@ -42,6 +42,10 @@ use createdate converted instead of trandate
     , sum(coalesce(case 
       when ga.normal_balance = 'Debit' then (coalesce(tal.debit,0)) - (coalesce(tal.credit,0))
       when ga.normal_balance = 'Credit' then (coalesce(tal.credit,0)) - (coalesce(tal.debit,0))
+      end,0)) as positive_amount
+    , sum(coalesce(case 
+      when ga.account_category in ('Assets','Expenses') then (coalesce(tal.debit,0)) - (coalesce(tal.credit,0))
+      when ga.account_category in ('Liabilities','Equity','Revenue') then (coalesce(tal.credit,0)) - (coalesce(tal.debit,0))
       end,0)) as net_amount
     from
       netsuite.transactionaccountingline tal
