@@ -24,16 +24,13 @@ use createdate converted instead of trandate
     , tran.tranid as transaction_id_ns
     , tal."ACCOUNT" as account_id_edw
     , tal."ACCOUNT" as account_id_ns
+    , ga.account_number
     , channel.name as channel
     , tran.trandate as transaction_timestamp
     , date(tran.trandate) as transaction_date
     , CONVERT_TIMEZONE('America/Los_Angeles', tran.trandate) AS transaction_timestamp_pst
     , date(CONVERT_TIMEZONE('America/Los_Angeles', tran.trandate)) as transaction_date_pst
     , CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) as date_posted_pst
-    -- , case 
-    --   when channel.name = 'Amazon' then tran.trandate
-    --   else CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) 
-    --   end as date_gl
     , case when tal.posting = 'T' then true else false end posting_flag
     , ap.periodname as posting_period
     , sum(coalesce(tal.amount,0)) as transaction_amount
@@ -75,6 +72,7 @@ use createdate converted instead of trandate
     , tran.custbody_goodr_shopify_order
     , tran.tranid
     , tal."ACCOUNT"
+    , ga.account_number
     , channel.name
     , tran.trandate
     , pe.eventdate
