@@ -1,5 +1,6 @@
 SELECT
   bl."ACCOUNT" as account_id_edw,
+  ga.account_number,
   category.name AS budget_version,
   cseg7.name as channel,
   bl.period as period_id_ns,
