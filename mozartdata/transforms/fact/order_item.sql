@@ -89,6 +89,7 @@ SELECT DISTINCT
   detail.order_id_edw,
   CONCAT(detail.order_id_edw, '_', detail.item_id_ns) AS order_item_id,
   detail.product_id_edw,
+  p.sku,
   detail.item_id_ns,
   detail.plain_name,
   quantity_booked,
@@ -107,6 +108,8 @@ SELECT DISTINCT
   sold.cost_estimate AS cost_estimate
 FROM
   fact.order_item_detail detail
+  LEFT OUTER JOIN dim.product p ON
+    p.product_id_edw = detail.item_id_ns
   LEFT OUTER JOIN booked ON (
     booked.order_id_edw = detail.order_id_edw
     AND booked.item_id_ns = detail.item_id_ns
