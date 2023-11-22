@@ -5,4 +5,5 @@ FROM
 WHERE
   quantity_ordered != quantity_billed
   OR quantity_ordered != quantity_received
+  OR quantity_billed != quantity_received
   OR amount_ordered != amount_billed
