@@ -68,8 +68,11 @@ WHERE
       AND accountinglinetype IN ('INCOME') THEN TRUE
       WHEN record_type = 'vendorbill'
       AND tranline.expenseaccount = 113 THEN TRUE --Bills dont have accountinglinetype
-      WHEN recordtype IN ('purchaseorder', 'itemreceipt')
+      WHEN recordtype = 'purchaseorder'
       AND accountinglinetype IN ('INCOME', 'ASSET') THEN TRUE
+      WHEN recordtype = 'itemreceipt'
+      AND accountinglinetype IN ('INCOME', 'ASSET')
+      AND iscogs = 'F' THEN TRUE
       WHEN recordtype = 'cashrefund'
       AND accountinglinetype IN ('INCOME', 'PAYMENT') THEN TRUE
       WHEN recordtype = 'itemfulfillment'
@@ -79,6 +82,7 @@ WHERE
   )
 GROUP BY
   order_id_edw,
+  createdfrom,
   transaction_id_ns,
   order_item_detail_id,
   product_id_edw,
@@ -89,8 +93,7 @@ GROUP BY
   full_status,
   plain_name,
   item_type,
-  tranline.location,
-  tranline.createdfrom
+  tranline.location
   -- Shipping and Tax
 UNION ALL
 SELECT
@@ -147,8 +150,8 @@ WHERE
   AND order_id_edw IS NOT NULL
 GROUP BY
   order_id_edw,
-  tranline.createdfrom,
   transaction_id_ns,
+  createdfrom,
   order_item_detail_id,
   product_id_edw,
   item_id_ns,
