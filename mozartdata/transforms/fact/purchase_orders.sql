@@ -71,7 +71,13 @@ WITH
           WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_billed
           ELSE 0
         END
-      ) AS amount_billed
+      ) AS amount_billed,
+  SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_received
+          ELSE 0
+        END
+      ) AS amount_received
     FROM
       fact.purchase_order_item
     GROUP BY
@@ -91,7 +97,8 @@ SELECT
   rate_ordered,
   rate_billed,
   amount_ordered,
-  amount_billed
+  amount_billed,
+  amount_received
 FROM
   order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
