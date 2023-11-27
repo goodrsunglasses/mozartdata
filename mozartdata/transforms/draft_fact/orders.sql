@@ -1,27 +1,28 @@
 WITH
-  parent_transaction AS (
-    SELECT DISTINCT
-      order_id_edw,
-      FIRST_VALUE(transaction_id_ns) OVER (
-        PARTITION BY
-          order_id_edw
-        ORDER BY
-          CASE
-            WHEN record_type = 'salesorder'
-            AND createdfrom IS NULL THEN 1
-            WHEN record_type IN ('cashsale', 'invoice')
-            AND createdfrom IS NULL THEN 2
-            ELSE 3
-          END,
-          transaction_timestamp_pst ASC
-      ) AS id
+  parent_information AS (
+    SELECT
+      order_id_edw order_id,
+      transaction_id_ns AS parent_id,
+      orderline.channel,
+      orderline.email,
+      orderline.customer_id_ns,
+      customer_category AS b2b_d2c,
+      model
     FROM
       fact.order_line orderline
       LEFT OUTER JOIN dim.channel category ON category.name = orderline.channel
+    WHERE
+      parent_transaction = TRUE
   ),
   order_level AS (
     SELECT DISTINCT
-      order_id_edw,
+      parent_information.order_id order_id_edw,
+      parent_information.parent_id,
+      parent_information.channel,
+      parent_information.email,
+      parent_information.customer_id_ns,
+      parent_information.b2b_d2c,
+      parent_information.model,
       MAX(status_flag_edw) over (
         PARTITION BY
           order_id_edw
@@ -35,7 +36,8 @@ WITH
           order_id_edw
         ORDER BY
           CASE
-            WHEN record_type = 'salesorder' THEN 1
+            WHEN record_type = 'salesorder'
+            AND transaction_id_ns = parent_id THEN 1
             ELSE 2
           END,
           transaction_timestamp_pst asc
@@ -45,7 +47,8 @@ WITH
           order_id_edw
         ORDER BY
           CASE
-            WHEN record_type = 'cashsale' THEN 1
+            WHEN record_type IN ('cashsale', 'invoice')
+            AND createdfrom = parent_id THEN 1
             ELSE 2
           END,
           transaction_timestamp_pst asc
@@ -55,19 +58,15 @@ WITH
           order_id_edw
         ORDER BY
           CASE
-            WHEN record_type = 'itemfulfillment' THEN 1
+            WHEN record_type = 'itemfulfillment'
+            AND createdfrom = parent_id THEN 1
             ELSE 2
           END,
           transaction_timestamp_pst asc
-      ) AS fulfillment_date,
-      channel,
-      customer_id_ns,
-      email,
-      customer_category AS b2b_d2c,
-      model
+      ) AS fulfillment_date
     FROM
-      fact.order_line orderline
-      LEFT OUTER JOIN dim.channel category ON category.name = orderline.channel
+      parent_information
+      LEFT OUTER JOIN fact.order_line orderline ON orderline.order_id_edw = parent_information.order_id
   ),
   aggregates AS (
     SELECT
@@ -245,5 +244,6 @@ FROM
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
 WHERE
   order_level.booked_date >= '2022-01-01T00:00:00Z'
+  order_level.order_id_edw
 ORDER BY
   order_level.booked_date desc
