@@ -4,6 +4,6 @@ SELECT
   ns_name,
   channel_id,
   channel_name,
-  reporting_name,
+  reporting_name
 FROM
   google_sheets.locations
