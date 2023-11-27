@@ -1,9 +1,10 @@
 SELECT
-  id AS goodr_id,
-  ns_loc_id,
-  ns_name,
-  channel_id,
-  channel_name,
-  reporting_name
+  id,
+  fullname,
+  name,
+  usebins,
+  makeinventoryavailable,
+  makeinventoryavailablestore,
+  isinactive
 FROM
-  google_sheets.locations
+  netsuite.location
