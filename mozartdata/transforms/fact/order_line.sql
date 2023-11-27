@@ -26,7 +26,8 @@ SELECT DISTINCT
       '%Not Deposited'
     ) THEN TRUE
     ELSE FALSE
-  END AS status_flag_edw
+  END AS status_flag_edw,
+  item_detail.createdfrom
 FROM
   fact.order_item_detail item_detail
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
