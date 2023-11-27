@@ -1,1 +1,10 @@
- 
+SELECT
+  id,
+  fullname,
+  name,
+  usebins,
+  makeinventoryavailable,
+  makeinventoryavailablestore,
+  isinactive
+FROM
+  netsuite.location
