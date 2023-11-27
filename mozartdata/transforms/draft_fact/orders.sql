@@ -1,4 +1,24 @@
 WITH
+  parent_transaction AS (
+    SELECT DISTINCT
+      order_id_edw,
+      FIRST_VALUE(transaction_id_ns) OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          CASE
+            WHEN record_type = 'salesorder'
+            AND createdfrom IS NULL THEN 1
+            WHEN record_type IN ('cashsale', 'invoice')
+            AND createdfrom IS NULL THEN 2
+            ELSE 3
+          END,
+          transaction_timestamp_pst ASC
+      ) AS id
+    FROM
+      fact.order_line orderline
+      LEFT OUTER JOIN dim.channel category ON category.name = orderline.channel
+  ),
   order_level AS (
     SELECT DISTINCT
       order_id_edw,
