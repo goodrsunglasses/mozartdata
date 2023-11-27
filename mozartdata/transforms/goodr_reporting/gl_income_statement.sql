@@ -12,11 +12,10 @@ select
 , concat(ga.account_number,' - ',ga.account_full_name) account_with_name
 , gt.posting_period
 , gt.channel
-, sum(gt.amount_transaction) amount_transaction
-, sum(gt.amount_net) amount_net
-, sum(gt.amount_credit) amount_credit
-, sum(gt.amount_debit) amount_debit
-, sum(gt.amount_transaction_positive) amount_transaction_positive
+, sum(gt.transaction_amount) transaction_amount
+, sum(gt.net_amount) net_amount
+, sum(gt.credit_amount) credit_amount
+, sum(gt.debit_amount) debit_amount
 from
   fact.gl_transaction gt
 inner join
