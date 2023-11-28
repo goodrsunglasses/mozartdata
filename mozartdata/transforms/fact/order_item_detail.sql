@@ -97,7 +97,14 @@ GROUP BY
   -- Shipping and Tax
 UNION ALL
 SELECT
-  tran.custbody_goodr_shopify_order AS order_id_edw,
+    REPLACE(
+    COALESCE(
+      tran.custbody_goodr_shopify_order,
+      tran.custbody_goodr_po_number
+    ),
+    ' ',
+    ''
+  ) AS order_id_edw,
   tran.id AS transaction_id_ns,
   CONCAT(order_id_edw, '_', tran.id, '_', item) AS order_item_detail_id,
   CASE
