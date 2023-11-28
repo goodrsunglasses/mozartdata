@@ -18,5 +18,3 @@ left join
 left join
   dim.location l
   on dp.location = l.location_id_ns
-where
-  itemdemandplan = 614
