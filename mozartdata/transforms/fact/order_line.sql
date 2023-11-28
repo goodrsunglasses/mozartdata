@@ -48,6 +48,7 @@ SELECT DISTINCT
     ELSE FALSE
   END AS status_flag_edw,
   item_detail.createdfrom,
+  parent_id,
   CASE
     WHEN parent_id IS NOT NULL THEN TRUE
     ELSE FALSE
