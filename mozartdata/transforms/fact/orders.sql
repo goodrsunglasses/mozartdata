@@ -1,45 +1,72 @@
 WITH
-  priority AS (
+  parent_information AS (
+    SELECT
+      order_id_edw order_id,
+      transaction_id_ns AS parent_id,
+      orderline.channel,
+      orderline.email,
+      orderline.customer_id_ns,
+      customer_category AS b2b_d2c,
+      model
+    FROM
+      fact.order_line orderline
+      LEFT OUTER JOIN dim.channel category ON category.name = orderline.channel
+    WHERE
+      parent_transaction = TRUE
+  ),
+  order_level AS (
     SELECT DISTINCT
-      order_id_edw,
+      parent_information.order_id order_id_edw,
+      parent_information.parent_id,
+      parent_information.channel,
+      parent_information.email,
+      parent_information.customer_id_ns,
+      parent_information.b2b_d2c,
+      parent_information.model,
       MAX(status_flag_edw) over (
         PARTITION BY
           order_id_edw
       ) AS status_flag_edw,
-      FIRST_VALUE(transaction_id_ns) OVER (
+      MAX(orderline.is_exchange) over (
+        PARTITION BY
+          order_id_edw
+      ) AS is_exchange,
+      FIRST_VALUE(transaction_timestamp_pst) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
           CASE
-            WHEN record_type = 'cashsale' THEN 1
-            WHEN record_type = 'invoice' THEN 2
-            WHEN record_type = 'salesorder' THEN 3
-            ELSE 4
+            WHEN record_type = 'salesorder'
+            AND transaction_id_ns = parent_id THEN 1
+            ELSE 2
           END,
-          transaction_timestamp_pst ASC
-      ) AS id
+          transaction_timestamp_pst asc
+      ) AS booked_date,
+      FIRST_VALUE(transaction_timestamp_pst) OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          CASE
+            WHEN record_type IN ('cashsale', 'invoice')
+            AND createdfrom = parent_id THEN 1
+            ELSE 2
+          END,
+          transaction_timestamp_pst asc
+      ) AS sold_date,
+      FIRST_VALUE(transaction_timestamp_pst) OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          CASE
+            WHEN record_type = 'itemfulfillment'
+            AND createdfrom = parent_id THEN 1
+            ELSE 2
+          END,
+          transaction_timestamp_pst asc
+      ) AS fulfillment_date
     FROM
-      fact.order_line
-  ),
-  order_level AS (
-    SELECT DISTINCT
-      priority.order_id_edw,
-      priority.id,
-      channel,
-      customer_id_ns,
-      email,
-      is_exchange,
-      priority.status_flag_edw,
-      transaction_timestamp_pst,
-      customer_category AS b2b_d2c,
-      model
-    FROM
-      priority
-      LEFT OUTER JOIN fact.order_line orderline ON (
-        orderline.transaction_id_ns = priority.id
-        AND orderline.order_id_edw = priority.order_id_edw
-      )
-    left outer join dim.channel category on category.name = orderline.channel 
+      parent_information
+      LEFT OUTER JOIN fact.order_line orderline ON orderline.order_id_edw = parent_information.order_id
   ),
   aggregates AS (
     SELECT
@@ -173,8 +200,12 @@ SELECT
   order_level.order_id_edw,
   order_level.channel,
   customer_id_edw,
-  order_level.transaction_timestamp_pst AS order_timestamp_pst,
-  DATE(order_level.transaction_timestamp_pst) AS order_date_pst,
+  order_level.booked_date,
+  DATE(order_level.sold_date) AS booked_date_pst,
+  order_level.sold_date,
+  DATE(order_level.sold_date) AS sold_date_pst,
+  order_level.fulfillment_date,
+  DATE(order_level.sold_date) AS fulfillment_date_pst,
   order_level.is_exchange,
   order_level.status_flag_edw,
   CASE
@@ -210,8 +241,8 @@ FROM
     LOWER(customer.email) = LOWER(order_level.email)
     AND customer.customer_category = order_level.b2b_d2c
   )
-  LEFT OUTER JOIN refund_aggregates  refund ON refund.order_id_edw = order_level.order_id_edw
+  LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
 WHERE
-  order_level.transaction_timestamp_pst >= '2022-01-01T00:00:00Z'
+  order_level.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY
-  order_level.transaction_timestamp_pst desc
+  order_level.booked_date desc
