@@ -7,5 +7,7 @@ select
 from 
   fact.demand_plan dp
 group by
-  location
+  forecast_created_date
+, forecast_month
+, location
 , sku
