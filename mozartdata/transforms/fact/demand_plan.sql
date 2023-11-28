@@ -4,7 +4,7 @@ select
 , p.product_id_edw
 , l.name as location
 , p.sku
-, date(dp.projectionstartdate) as forecast_created_date
+, date(dp.projectionstartdate) as demand_plan_created_date
 , date(date_trunc(month,dd.startdate)) as forecast_month
 , dd.quantity
 from 
@@ -18,3 +18,5 @@ left join
 left join
   dim.location l
   on dp.location = l.location_id_ns
+where
+  itemdemandplan = 614
