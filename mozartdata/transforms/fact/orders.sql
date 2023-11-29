@@ -42,7 +42,13 @@ WITH
           END,
           transaction_timestamp_pst asc
       ) AS booked_date,
-      FIRST_VALUE(transaction_timestamp_pst) OVER (
+      FIRST_VALUE(
+        CASE
+          WHEN record_type IN ('cashsale', 'invoice')
+          AND createdfrom = parent_id THEN transaction_timestamp_pst
+          ELSE NULL
+        END
+      ) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -53,7 +59,13 @@ WITH
           END,
           transaction_timestamp_pst asc
       ) AS sold_date,
-      FIRST_VALUE(transaction_timestamp_pst) OVER (
+      FIRST_VALUE(
+        CASE
+          WHEN record_type = 'itemfulfillment'
+          AND createdfrom = parent_id THEN transaction_timestamp_pst
+          ELSE NULL
+        END
+      ) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -201,11 +213,11 @@ SELECT
   order_level.channel,
   customer_id_edw,
   order_level.booked_date,
-  DATE(order_level.sold_date) AS booked_date_pst,
+  DATE(order_level.booked_date) AS booked_date_pst,
   order_level.sold_date,
   DATE(order_level.sold_date) AS sold_date_pst,
   order_level.fulfillment_date,
-  DATE(order_level.sold_date) AS fulfillment_date_pst,
+  DATE(order_level.fulfillment_date) AS fulfillment_date_pst,
   order_level.is_exchange,
   order_level.status_flag_edw,
   CASE
