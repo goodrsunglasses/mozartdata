@@ -4,11 +4,16 @@ SELECT
   o.sold_date,
   p.merchandise_class,
   p.merchandise_department,
-  p.merchandise_division
+  p.merchandise_division,
+  o.customer_id_edw,
+  cnm.customer_id_ns,
+  cs.customer_id_shopify
   
 FROM fact.order_item oi
 JOIN fact.orders o on o.order_id_edw = oi.order_id_edw
 JOIN dim.product p on p.sku = oi.sku
+JOIN fact.customer_ns_map cnm on cnm.customer_id_edw = o.customer_id_edw
+JOIN fact.customer_shopify_map cs on cs.customer_id_edw = o.customer_id_edw
 WHERE 
   o.channel = 'Specialty'
   and o.sold_date > '2022-06-01'
