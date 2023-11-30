@@ -7,7 +7,8 @@ SELECT
   p.merchandise_division,
   o.customer_id_edw,
   cnm.customer_id_ns,
-  cs.customer_id_shopify
+  cs.customer_id_shopify,
+  cs.full_name
   
 FROM fact.order_item oi
 JOIN fact.orders o on o.order_id_edw = oi.order_id_edw
