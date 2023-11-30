@@ -27,7 +27,7 @@ grid_days as
     SELECT
       oi.order_id_edw
     , ld.item_id_ns
-    , o.sold_date_pst
+    , o.sold_date
     , ld.display_name
     , ld.collection
     , ld.family
@@ -51,13 +51,13 @@ grid_days as
     , ld.collection
     , ld.family
     , ld.earliest_sale
-    , o.sold_date_pst
+    , o.sold_date
   ),
   total_sales as
   (
     SELECT
       lo.item_id_ns,
-      (o.sold_date_pst - lo.earliest_sale) as days_since_launch,
+      (o.sold_date - lo.earliest_sale) as days_since_launch,
       sum(lo.launch_product_sales) as launch_product_sales,
       sum(lo.launch_product_quantity) as launch_product_quantity,
       SUM(o.amount_sold) total_sales,
@@ -68,7 +68,7 @@ grid_days as
       inner join
         launch_orders lo
       on o.order_id_edw = lo.order_id_edw
-    WHERE  o.sold_date_pst >= '2023-01-01' 
+    WHERE  o.sold_date >= '2023-01-01' 
     group by lo.item_id_ns, days_since_launch
   )
 
