@@ -5,8 +5,8 @@ select
 , l.name as location
 , p.sku
 , date(dp.projectionstartdate) as demand_plan_created_date
-, date(date_trunc(month,dd.startdate)) as forecast_month
-, dd.quantity
+, date(date_trunc(month,dd.startdate)) as month
+, dd.quantity as quantity
 from 
   netsuite.itemdemandplan dp
 inner join
