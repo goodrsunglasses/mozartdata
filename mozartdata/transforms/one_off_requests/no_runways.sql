@@ -17,9 +17,13 @@ order by o.customer_id_edw
   )
 
 SELECT 
-  c.customer_id_edw
+  c.customer_id_edw,
+  ca.company
 from fact.customer c 
 join dim.customer dc on c.customer_id_edw = dc.customer_id_edw
+JOIN fact.customer_shopify_map cs on cs.customer_id_edw = c.customer_id_edw
 left join cte_runways r on r.customer_id_edw = c.customer_id_edw
+LEFT JOIN specialty_shopify.customer_address ca on cs.customer_id_shopify = ca.customer_id and ca.is_default = 'true'
+
 
 where c.first_order_date < '2023-09-01' and r.customer_id_edw is null and dc.customer_category = 'B2B'
