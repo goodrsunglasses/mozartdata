@@ -10,11 +10,17 @@ WITH
     HAVING
       assembly_quantity IS NOT NULL
   )
-SELECT
+SELECT DISTINCT
   i.id AS product_id_edw,
   i.id AS item_id_ns,
-  d2c.id AS d2c_id_shopify,
-  b2b.id AS b2b_id_shopify,
+  FIRST_VALUE(d2c.id) over (
+    ORDER BY
+      d2c.created_at asc
+  ) AS d2c_id_shopify,
+  FIRST_VALUE(b2b.id) over (
+    ORDER BY
+      b2b.created_at asc
+  ) AS b2b_id_shopify,
   i.itemid AS sku,
   i.displayname AS display_name,
   i.itemtype AS item_type,
