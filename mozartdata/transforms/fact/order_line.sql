@@ -48,6 +48,7 @@ SELECT DISTINCT
     ELSE FALSE
   END AS status_flag_edw,
   item_detail.createdfrom,
+  tran.custbody_boomi_orderid,
   CASE
     WHEN parent_id IS NOT NULL THEN TRUE
     ELSE FALSE
