@@ -13,6 +13,7 @@ WITH
 SELECT DISTINCT
   i.id AS product_id_edw,
   i.id AS item_id_ns,
+  stord.id AS item_id_stord,
   FIRST_VALUE(d2c.id) over (
     PARTITION BY
       d2c.sku,
@@ -97,6 +98,10 @@ FROM
   LEFT JOIN specialty_shopify.product_variant b2b ON (
     b2b.sku = i.itemid
     AND b2b.barcode = i.upccode
+  )
+  LEFT JOIN stord.stord_products_8589936822 stord ON (
+    stord.sku = i.itemid
+    AND stord.upc = i.upccode
   )
 WHERE
   itemtype IN (
