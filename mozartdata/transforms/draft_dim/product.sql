@@ -14,10 +14,16 @@ SELECT DISTINCT
   i.id AS product_id_edw,
   i.id AS item_id_ns,
   FIRST_VALUE(d2c.id) over (
+    PARTITION BY
+      d2c.sku,
+      d2c.barcode
     ORDER BY
       d2c.created_at asc
   ) AS d2c_id_shopify,
   FIRST_VALUE(b2b.id) over (
+    PARTITION BY
+      b2b.sku,
+      b2b.barcode
     ORDER BY
       b2b.created_at asc
   ) AS b2b_id_shopify,
