@@ -2,7 +2,7 @@ SELECT
   orderline.order_id_edw,
   orderline.transaction_id_ns,
   stord.order_id stord_id,
-  shipstation.orderid shipstation_id,
+  shipstation.orderkey shipstation_id,
   d2c.id d2c_shopify_id,
   b2b.id b2b_shopify_id
 FROM
