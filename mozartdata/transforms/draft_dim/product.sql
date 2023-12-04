@@ -78,8 +78,8 @@ FROM
   LEFT JOIN netsuite.customlist894 family ON i.custitem4 = family.id
   LEFT JOIN netsuite.customlist896 stage ON i.custitem6 = stage.id
   LEFT JOIN assembly_aggregate agg ON i.id = agg.parentitem
-  left join shopify.product_variant d2c on d2c.barcode=i.upccode
-  left join specialty_shopify.product_variant b2b on b2b.barcode=i.upccode
+  left join shopify.product_variant d2c on d2c.sku=i.itemid
+  left join specialty_shopify.product_variant b2b on b2b.sku=i.itemid
 WHERE
   itemtype IN (
     'InvtPart',
