@@ -4,4 +4,4 @@ SELECT
   shipmentid
 FROM
   shipstation_portable.shipstation_shipments_8589936627 shipstation
-left outer join
+  LEFT OUTER JOIN netsuite.trackingnumber
