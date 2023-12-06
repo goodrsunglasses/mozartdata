@@ -30,6 +30,8 @@ WITH
   aggregates AS (
     SELECT
       order_id_edw,
+      AVG(unit_rate_ordered) AS avg_unit_rate_ordered,
+      AVG(unit_rate_billed) AS avg_unit_rate_billed,
       SUM(
         CASE
           WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_ordered
@@ -72,7 +74,7 @@ WITH
           ELSE 0
         END
       ) AS amount_billed,
-  SUM(
+      SUM(
         CASE
           WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_received
           ELSE 0
@@ -91,6 +93,8 @@ SELECT
   DATE(order_level.purchase_date) AS order_date_pst,
   order_level.fulfillment_date,
   DATE(order_level.fulfillment_date) AS fulfillment_date_pst,
+  avg_unit_rate_ordered,
+  avg_unit_rate_billed,
   quantity_ordered,
   quantity_billed,
   quantity_received,
