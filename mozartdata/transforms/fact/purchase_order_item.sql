@@ -8,6 +8,7 @@ WITH
       plain_name,
       SUM(total_quantity) AS quantity_ordered,
       SUM(rate) AS rate_ordered,
+      unit_rate AS unit_rate_ordered,
       SUM(net_amount) AS amount_ordered
     FROM
       fact.order_item_detail
@@ -18,7 +19,8 @@ WITH
       product_id_edw,
       item_id_ns,
       order_item_id,
-      plain_name
+      plain_name,
+      unit_rate
   ),
   billed AS (
     SELECT
@@ -29,6 +31,7 @@ WITH
       plain_name,
       SUM(total_quantity) AS quantity_billed,
       SUM(rate) AS rate_billed,
+      unit_rate AS unit_rate_billed,
       SUM(net_amount) AS amount_billed
     FROM
       fact.order_item_detail
@@ -39,7 +42,8 @@ WITH
       product_id_edw,
       item_id_ns,
       order_item_id,
-      plain_name
+      plain_name,
+      unit_rate
   ),
   received AS (
     SELECT
@@ -73,6 +77,8 @@ SELECT DISTINCT
   quantity_ordered,
   quantity_billed,
   quantity_received,
+  unit_rate_ordered,
+  unit_rate_billed,
   rate_ordered,
   rate_billed,
   rate_received,
@@ -81,8 +87,7 @@ SELECT DISTINCT
   amount_received
 FROM
   fact.order_item_detail detail
-  LEFT OUTER JOIN dim.product p ON
-    p.product_id_edw = detail.item_id_ns
+  LEFT OUTER JOIN dim.product p ON p.product_id_edw = detail.item_id_ns
   LEFT OUTER JOIN ordered ON (
     ordered.order_id_edw = detail.order_id_edw
     AND ordered.item_id_ns = detail.item_id_ns
