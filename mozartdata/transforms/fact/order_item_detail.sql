@@ -81,7 +81,6 @@ WHERE
       ELSE FALSE
     END
   )
-  and order_item_detail_id = 'AVGO-JAN262022-10K-1_5694940_3175'
 GROUP BY
   order_id_edw,
   createdfrom,
