@@ -29,6 +29,7 @@ SELECT
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(ABS(netamount)) AS net_amount,
   SUM(ABS(quantity)) AS total_quantity,
+  rate as unit_rate,
   SUM(rate) * total_quantity rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
@@ -93,7 +94,8 @@ GROUP BY
   full_status,
   plain_name,
   item_type,
-  tranline.location
+  tranline.location,
+  rate
   -- Shipping and Tax
 UNION ALL
 SELECT
@@ -131,6 +133,7 @@ SELECT
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(- netamount) net_amount,
   SUM(ABS(quantity)) AS total_quantity,
+  rate,
   SUM(rate) rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
@@ -167,6 +170,7 @@ GROUP BY
   record_type,
   full_status,
   plain_name,
-  item_type
+  item_type,
+  rate
 ORDER BY
   transaction_id_ns asc
