@@ -29,7 +29,7 @@ SELECT
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(ABS(netamount)) AS net_amount,
   SUM(ABS(quantity)) AS total_quantity,
-  rate as unit_rate,
+  sum(rate) as unit_rate,
   SUM(rate) * total_quantity rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
@@ -81,6 +81,7 @@ WHERE
       ELSE FALSE
     END
   )
+  and order_item_detail_id = 'AVGO-JAN262022-10K-1_5694940_3175'
 GROUP BY
   order_id_edw,
   createdfrom,
@@ -94,8 +95,7 @@ GROUP BY
   full_status,
   plain_name,
   item_type,
-  tranline.location,
-  rate
+  tranline.location
   -- Shipping and Tax
 UNION ALL
 SELECT
@@ -133,7 +133,7 @@ SELECT
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(- netamount) net_amount,
   SUM(ABS(quantity)) AS total_quantity,
-  rate,
+  sum(rate) as unit_rate,
   SUM(rate) rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
@@ -170,7 +170,6 @@ GROUP BY
   record_type,
   full_status,
   plain_name,
-  item_type,
-  rate
+  item_type
 ORDER BY
   transaction_id_ns asc
