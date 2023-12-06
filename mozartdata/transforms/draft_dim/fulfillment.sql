@@ -40,9 +40,17 @@ WITH
   -- , netsuite AS ()
 SELECT
   edw_fulfillments.fulfillment_id_edw,
-  shipstation_id,
-  stord_id
+  COALESCE(to_char(shipstation_id), stord_id) source_system_id,
+  MAX(
+    CASE
+      WHEN shipstation_id IS NULL THEN 'Stord'
+      ELSE 'Shipstation'
+    END
+  ) source_system
 FROM
   edw_fulfillments
   LEFT OUTER JOIN shipstation ON shipstation.fulfillment_id_edw = edw_fulfillments.fulfillment_id_edw
   LEFT OUTER JOIN stord ON stord.fulfillment_id_edw = edw_fulfillments.fulfillment_id_edw
+GROUP BY
+  edw_fulfillments.fulfillment_id_edw,
+  source_system_id
