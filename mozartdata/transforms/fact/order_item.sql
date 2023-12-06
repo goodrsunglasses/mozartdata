@@ -6,7 +6,6 @@ WITH
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
-      unit_rate AS unit_rate_booked,
       SUM(total_quantity) AS quantity_booked,
       SUM(rate) AS rate_booked,
       SUM(net_amount) AS amount_booked
@@ -19,8 +18,7 @@ WITH
       product_id_edw,
       item_id_ns,
       order_item_id,
-      plain_name,
-      unit_rate
+      plain_name
   ),
   sold AS (
     SELECT
@@ -98,7 +96,6 @@ SELECT DISTINCT
   quantity_sold,
   quantity_fulfilled,
   quantity_refunded,
-  unit_rate_booked,
   rate_booked,
   rate_sold,
   rate_fulfilled,
