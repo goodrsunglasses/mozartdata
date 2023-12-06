@@ -1,22 +1,48 @@
 WITH
-  trackings AS (
+  edw_fulfillments AS (
+    SELECT DISTINCT
+      fulfillment_id_edw
+    FROM
+      (
+        SELECT
+          ordernumber AS order_id_edw,
+          trackingnumber,
+          CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw
+        FROM
+          shipstation_portable.shipstation_shipments_8589936627 shipstation
+        UNION
+        SELECT
+          order_number AS order_id_edw,
+          tracking_number AS trackingnumber,
+          CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw
+        FROM
+          stord.stord_shipment_confirmations_8589936822
+      )
+  ),
+  shipstation AS (
     SELECT
-      ordernumber,
-      trackingnumber, fulfillment_id_edw,
-  servicecode,
-      createdate,
-      shipmentid shipstation_id
+      ordernumber AS order_id_edw,
+      trackingnumber,
+      CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw,
+      shipmentid AS shipstation_id
     FROM
       shipstation_portable.shipstation_shipments_8589936627 shipstation
-      -- LEFT OUTER JOIN netsuite.trackingnumber
-  where fulfillment_id_edw = '9400111899223006804337'
+  ),
+  stord AS (
+    SELECT
+      order_number AS order_id_edw,
+      tracking_number AS trackingnumber,
+      CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw,
+      shipment_confirmation_id AS stord_id
+    FROM
+      stord.stord_shipment_confirmations_8589936822
   )
+  -- , netsuite AS ()
 SELECT
-  fulfillment_id_edw,
-  COUNT(fulfillment_id_edw) counter
+  edw_fulfillments.fulfillment_id_edw,
+  shipstation_id,
+  stord_id
 FROM
-  trackings
-GROUP BY
-  fulfillment_id_edw
-HAVING
-  counter > 1
+  edw_fulfillments
+  LEFT OUTER JOIN shipstation ON shipstation.fulfillment_id_edw = edw_fulfillments.fulfillment_id_edw
+  LEFT OUTER JOIN stord ON stord.fulfillment_id_edw = edw_fulfillments.fulfillment_id_edw
