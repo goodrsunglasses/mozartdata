@@ -31,7 +31,7 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS is_exchange,
-      FIRST_VALUE(transaction_event_date) OVER (
+      FIRST_VALUE(transaction_date) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -40,12 +40,12 @@ WITH
             AND transaction_id_ns = parent_id THEN 1
             ELSE 2
           END,
-          transaction_timestamp_pst asc
+          transaction_created_timestamp_pst asc
       ) AS booked_date,
       FIRST_VALUE(
         CASE
           WHEN record_type IN ('cashsale', 'invoice')
-          AND createdfrom = parent_id THEN transaction_event_date
+          AND parent_transaction_id = parent_id THEN transaction_date
           ELSE NULL
         END
       ) OVER (
@@ -54,15 +54,15 @@ WITH
         ORDER BY
           CASE
             WHEN record_type IN ('cashsale', 'invoice')
-            AND createdfrom = parent_id THEN 1
+            AND parent_transaction_id = parent_id THEN 1
             ELSE 2
           END,
-          transaction_timestamp_pst asc
+          transaction_created_timestamp_pst asc
       ) AS sold_date,
       FIRST_VALUE(
         CASE
           WHEN record_type = 'itemfulfillment'
-          AND createdfrom = parent_id THEN transaction_event_date
+          AND parent_transaction_id = parent_id THEN transaction_date
           ELSE NULL
         END
       ) OVER (
@@ -71,10 +71,10 @@ WITH
         ORDER BY
           CASE
             WHEN record_type = 'itemfulfillment'
-            AND createdfrom = parent_id THEN 1
+            AND parent_transaction_id = parent_id THEN 1
             ELSE 2
           END,
-          transaction_timestamp_pst desc
+          transaction_created_timestamp_pst desc
       ) AS fulfillment_date
     FROM
       parent_information
