@@ -19,10 +19,10 @@ SELECT
     ) THEN tranline.item
   END AS product_id_edw,
   tranline.item AS item_id_ns,
-  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_timestamp_pst,
+  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_created_timestamp_pst,
   DATE(
     CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)
-  ) AS transaction_date_pst,
+  ) AS transaction_created_date_pst,
   tran.recordtype AS record_type,
   transtatus.fullname AS full_status,
   tranline.itemtype AS item_type,
@@ -88,8 +88,8 @@ GROUP BY
   order_item_detail_id,
   product_id_edw,
   item_id_ns,
-  transaction_timestamp_pst,
-  transaction_date_pst,
+  transaction_created_timestamp_pst,
+  transaction_created_date_pst,
   record_type,
   full_status,
   plain_name,
