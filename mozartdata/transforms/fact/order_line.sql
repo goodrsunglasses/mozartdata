@@ -13,7 +13,7 @@ WITH
             AND createdfrom IS NULL THEN 2
             ELSE 3
           END,
-          transaction_timestamp_pst ASC
+          transaction_created_timestamp_pst ASC
       ) AS parent_id
     FROM
       fact.order_item_detail
@@ -36,8 +36,8 @@ SELECT DISTINCT
     WHEN memo LIKE '%RMA%' THEN TRUE
     ELSE FALSE
   END AS is_exchange,
-  transaction_timestamp_pst,
-  DATE(tran.trandate) AS transaction_event_date,
+  transaction_created_timestamp_pst,
+  DATE(tran.trandate) AS transaction_date,
   CASE
     WHEN full_status LIKE ANY(
       '%Closed',
