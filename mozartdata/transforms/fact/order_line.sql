@@ -22,8 +22,10 @@ SELECT DISTINCT
   CONCAT(item_detail.order_id_edw, '_', transaction_id_ns) AS order_line_id,
   item_detail.order_id_edw,
   item_detail.transaction_id_ns,
+  tran.tranid as transaction_number_ns,
   item_detail.record_type,
   channel.name AS channel,
+  tran.saleschannel as inventory_bucket,
   entity AS customer_id_ns,
   customer.email,
   CASE
@@ -47,7 +49,9 @@ SELECT DISTINCT
     ) THEN TRUE
     ELSE FALSE
   END AS status_flag_edw,
-  item_detail.createdfrom,
+  tran.startdate as shipping_window_start_date,
+  tran.enddate as shipping_window_end_date,
+  item_detail.createdfrom as parent_transaction_id,
   TRY_TO_NUMBER(tran.custbody_boomi_orderid) shopify_id,
   CASE
     WHEN parent_id IS NOT NULL THEN TRUE
