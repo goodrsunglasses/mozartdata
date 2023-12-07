@@ -49,8 +49,8 @@ SELECT DISTINCT
     ) THEN TRUE
     ELSE FALSE
   END AS status_flag_edw,
-  tran.startdate as shipping_window_start_date,
-  tran.enddate as shipping_window_end_date,
+  date(tran.startdate) as shipping_window_start_date,
+  date(tran.enddate) as shipping_window_end_date,
   item_detail.createdfrom as parent_transaction_id,
   TRY_TO_NUMBER(tran.custbody_boomi_orderid) shopify_id,
   CASE
