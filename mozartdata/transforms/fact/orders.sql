@@ -75,7 +75,19 @@ WITH
             ELSE 2
           END,
           transaction_created_timestamp_pst desc
-      ) AS fulfillment_date
+      ) AS fulfillment_date,
+      FIRST_VALUE(shipping_window_start_date) IGNORE NULLS OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          shipping_window_start_date desc
+      ) AS shipping_window_start_date,
+      FIRST_VALUE(shipping_window_end_date) IGNORE NULLS OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          shipping_window_end_date desc
+      ) AS shipping_window_end_date
     FROM
       parent_information
       LEFT OUTER JOIN fact.order_line orderline ON orderline.order_id_edw = parent_information.order_id
@@ -215,6 +227,8 @@ SELECT
   order_level.booked_date,
   order_level.sold_date,
   order_level.fulfillment_date,
+  order_level.shipping_window_start_date,
+  order_level.shipping_window_end_date,
   order_level.is_exchange,
   order_level.status_flag_edw,
   CASE
