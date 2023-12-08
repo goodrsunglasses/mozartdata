@@ -31,7 +31,7 @@ with cte_ship_start as
 
   FROM
   fact.order_line ol
-  LEFT JOIN dim.date d on ol.shipping_window_start_date = d.date
+  LEFT JOIN dim.date d on ol.shipping_window_end_date = d.date
 
   WHERE
   ol.channel = 'Key Account'
