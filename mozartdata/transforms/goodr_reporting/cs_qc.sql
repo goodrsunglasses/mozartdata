@@ -34,7 +34,7 @@ FROM
 WHERE
   channel = 'Customer Service'
   and 
-  transaction_timestamp_pst >= CURRENT_DATE()-7
+  transaction_created_timestamp_pst >= CURRENT_DATE()-7
 GROUP BY
   order_id_edw,
   reason
@@ -80,7 +80,7 @@ FROM
   LEFT OUTER JOIN netsuite.employee emp ON tran.createdby = emp.id
 WHERE
   channel = 'Customer Service'
-  AND transaction_timestamp_pst >= CURRENT_DATE()-7
+  AND transaction_created_timestamp_pst >= CURRENT_DATE()-7
   AND LOWER(order_id_edw) NOT LIKE '%cs-%'
   AND order_id_edw NOT LIKE '%SD-%'
   AND order_id_edw NOT LIKE '%CI-%'
