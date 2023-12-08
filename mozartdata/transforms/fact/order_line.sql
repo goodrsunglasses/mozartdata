@@ -22,10 +22,10 @@ SELECT DISTINCT
   CONCAT(item_detail.order_id_edw, '_', transaction_id_ns) AS order_line_id,
   item_detail.order_id_edw,
   item_detail.transaction_id_ns,
-  tran.tranid as transaction_number_ns,
+  tran.tranid AS transaction_number_ns,
   item_detail.record_type,
   channel.name AS channel,
-  tran.saleschannel as inventory_bucket,
+  tran.saleschannel AS inventory_bucket,
   entity AS customer_id_ns,
   customer.email,
   CASE
@@ -49,14 +49,19 @@ SELECT DISTINCT
     ) THEN TRUE
     ELSE FALSE
   END AS status_flag_edw,
-  date(tran.startdate) as shipping_window_start_date,
-  date(tran.enddate) as shipping_window_end_date,
-  item_detail.createdfrom as parent_transaction_id,
+  DATE(tran.startdate) AS shipping_window_start_date,
+  DATE(tran.enddate) AS shipping_window_end_date,
+  item_detail.createdfrom AS parent_transaction_id,
   TRY_TO_NUMBER(tran.custbody_boomi_orderid) shopify_id,
   CASE
     WHEN parent_id IS NOT NULL THEN TRUE
     ELSE FALSE
-  END AS parent_transaction
+  END AS parent_transaction,
+  SUM(total_quantity) over (
+    PARTITION BY
+      item_detail.order_id_edw,
+      transaction_id_ns
+  ) agg_qty
 FROM
   fact.order_item_detail item_detail
   LEFT OUTER JOIN parent_transaction ON item_detail.transaction_id_ns = parent_transaction.parent_id
