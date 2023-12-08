@@ -57,11 +57,11 @@ SELECT
   cnm.customer_id_ns
   
 FROM
-  fact.order_line ol
-LEFT JOIN fact.customer_ns_map cnm on cnm.customer_internal_id_ns = ol.customer_id_ns
-LEFT JOIN cte_ship_start cte_ss on cte_ss.order_id_edw = ol.order_id_edw
-LEFT JOIN cte_ship_end cte_se on cte_se.order_id_edw = ol.order_id_edw
-LEFT JOIN fact.orders o on ol.order_id_edw = o.order_id_edw
+  fact.orders o
+LEFT JOIN fact.customer_ns_map cnm on cnm.customer_id_edw = o.customer_id_edw
+LEFT JOIN cte_ship_start cte_ss on cte_ss.order_id_edw = o.order_id_edw
+LEFT JOIN cte_ship_end cte_se on cte_se.order_id_edw = o.order_id_edw
+LEFT JOIN fact.order_line ol on ol.order_id_edw = o.order_id_edw
 
 WHERE
   ol.channel = 'Key Account'
