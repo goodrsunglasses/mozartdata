@@ -69,8 +69,8 @@ FROM
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN dim.channel channel ON channel.channel_id_ns = tran.cseg7
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
-  left outer join netsuite.trackingnumbermap map on map.transaction = item_detail.transaction_id_ns
-  left outer join netsuite.trackingnumber number on number.id = map.trackingnumber
+  LEFT OUTER JOIN netsuite.trackingnumbermap map ON map.transaction = item_detail.transaction_id_ns
+  LEFT OUTER JOIN netsuite.trackingnumber number ON number.id = map.trackingnumber
 WHERE
   record_type IN (
     'cashsale',
