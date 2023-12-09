@@ -9,7 +9,7 @@ SELECT
   shipto:COUNTRY::STRING AS country,
   shipto:STATE::STRING AS state,
   shipto:CITY::STRING AS city,
-  items.shipmentid AS shipment_id,
+  TO_CHAR(items.shipmentid) AS shipment_id,
   flattened_items.value:PRODUCTID::STRING AS item_id,
   product_id_edw,
   flattened_items.value:QUANTITY::INTEGER AS quantity
