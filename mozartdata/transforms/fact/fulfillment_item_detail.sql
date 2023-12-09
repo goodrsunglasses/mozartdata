@@ -20,8 +20,8 @@
 --   LEFT OUTER JOIN dim.product product ON product.item_id_shipstation = flattened_items.value:PRODUCTID::INTEGER
 -- WHERE
 --   source_system = 'Shipstation'
-  --Stord
-UNION ALL
+--   --Stord
+-- UNION ALL
 SELECT
   fulfillment_id_edw,
   orders.order_number AS order_id_edw,
