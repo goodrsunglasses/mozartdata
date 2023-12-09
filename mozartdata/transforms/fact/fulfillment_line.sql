@@ -1,1 +1,1 @@
- 
+select fulfillment_id_edw from dim.fulfillment
