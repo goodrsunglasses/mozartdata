@@ -1,7 +1,8 @@
 WITH
   edw_fulfillments AS (
     SELECT DISTINCT
-      fulfillment_id_edw
+      fulfillment_id_edw,
+      order_id_edw
     FROM
       (
         SELECT
@@ -53,6 +54,7 @@ WITH
   )
 SELECT
   edw_fulfillments.fulfillment_id_edw,
+  edw_fulfillments.order_id_edw,
   COALESCE(TO_CHAR(shipstation_id), stord_id) source_system_id,
   MAX(
     CASE
@@ -66,4 +68,5 @@ FROM
   LEFT OUTER JOIN stord ON stord.fulfillment_id_edw = edw_fulfillments.fulfillment_id_edw
 GROUP BY
   edw_fulfillments.fulfillment_id_edw,
+  edw_fulfillments.order_id_edw,
   source_system_id
