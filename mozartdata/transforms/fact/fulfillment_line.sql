@@ -1,8 +1,4 @@
 SELECT
-  *
-FROM
-  (
-    SELECT
       fulfillment_id_edw,
       carriercode,
       servicecode,
@@ -37,5 +33,3 @@ FROM
       LEFT OUTER JOIN stord.stord_sales_orders_8589936822 orders ON orders.order_id = stord.order_id
     WHERE
       source_system = 'Stord'
-  )
-where ordernumber = 'G2689695'
