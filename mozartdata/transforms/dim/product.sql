@@ -47,6 +47,7 @@ SELECT DISTINCT
     ORDER BY
       b2b.created_at asc
   ) AS b2b_id_shopify,
+  shipstation.productid AS item_id_shipstation,
   i.itemid AS sku,
   i.displayname AS display_name,
   i.itemtype AS item_type,
@@ -122,6 +123,7 @@ FROM
     stord.sku = i.itemid
     AND stord.upc = i.upccode
   )
+  LEFT JOIN shipstation_portable.shipstation_products_8589936627 shipstation ON shipstation.sku = i.itemid
 WHERE
   itemtype IN (
     'InvtPart',
