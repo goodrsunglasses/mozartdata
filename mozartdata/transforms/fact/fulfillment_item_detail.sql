@@ -1,27 +1,27 @@
--- SELECT
---   fulfillment_id_edw,
---   items.ordernumber AS order_id_edw,
---   carriercode AS carrier,
---   servicecode AS carrier_service,
---   shipdate,
---   shipmentcost AS shipment_cost,
---   voided,
---   shipto:COUNTRY::STRING AS country,
---   shipto:STATE::STRING AS state,
---   shipto:CITY::STRING AS city,
---   items.shipmentid AS shipment_id,
---   flattened_items.value:PRODUCTID::INTEGER AS item_id,
---   product_id_edw,
---   flattened_items.value:QUANTITY::INTEGER AS quantity
--- FROM
---   dim.fulfillment fulfill
---   LEFT OUTER JOIN shipstation_portable.shipstation_shipment_items_8589936627 items ON TO_CHAR(items.shipmentid) = fulfill.source_system_id
---   CROSS JOIN LATERAL FLATTEN(input => items.shipmentitems) AS flattened_items
---   LEFT OUTER JOIN dim.product product ON product.item_id_shipstation = flattened_items.value:PRODUCTID::INTEGER
--- WHERE
---   source_system = 'Shipstation'
---   --Stord
--- UNION ALL
+SELECT
+  fulfillment_id_edw,
+  items.ordernumber AS order_id_edw,
+  carriercode AS carrier,
+  servicecode AS carrier_service,
+  shipdate,
+  shipmentcost AS shipment_cost,
+  voided,
+  shipto:COUNTRY::STRING AS country,
+  shipto:STATE::STRING AS state,
+  shipto:CITY::STRING AS city,
+  items.shipmentid AS shipment_id,
+  flattened_items.value:PRODUCTID::STRING AS item_id,
+  product_id_edw,
+  flattened_items.value:QUANTITY::INTEGER AS quantity
+FROM
+  dim.fulfillment fulfill
+  LEFT OUTER JOIN shipstation_portable.shipstation_shipment_items_8589936627 items ON TO_CHAR(items.shipmentid) = fulfill.source_system_id
+  CROSS JOIN LATERAL FLATTEN(input => items.shipmentitems) AS flattened_items
+  LEFT OUTER JOIN dim.product product ON product.item_id_shipstation = flattened_items.value:PRODUCTID::INTEGER
+WHERE
+  source_system = 'Shipstation'
+  --Stord
+UNION ALL
 SELECT
   fulfillment_id_edw,
   orders.order_number AS order_id_edw,
