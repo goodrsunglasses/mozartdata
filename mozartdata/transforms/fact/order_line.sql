@@ -62,7 +62,7 @@ SELECT DISTINCT
       item_detail.order_id_edw,
       transaction_id_ns
   ) agg_qty,
-  number.trackingnumber
+  number.trackingnumber tracking_number
 FROM
   fact.order_item_detail item_detail
   LEFT OUTER JOIN parent_transaction ON item_detail.transaction_id_ns = parent_transaction.parent_id
