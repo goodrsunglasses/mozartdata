@@ -23,6 +23,7 @@ SELECT DISTINCT
   item_detail.order_id_edw,
   item_detail.transaction_id_ns,
   tran.tranid AS transaction_number_ns,
+  full_status AS transaction_status_ns,
   item_detail.record_type,
   channel.name AS channel,
   tran.saleschannel AS inventory_bucket,
