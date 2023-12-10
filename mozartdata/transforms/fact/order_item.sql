@@ -8,8 +8,7 @@ WITH
       plain_name,
       SUM(total_quantity) AS quantity_booked,
       SUM(rate) AS rate_booked,
-      SUM(net_amount) AS amount_booked,
-      location AS location_booked
+      SUM(net_amount) AS amount_booked
     FROM
       fact.order_item_detail
     WHERE
@@ -19,8 +18,7 @@ WITH
       product_id_edw,
       item_id_ns,
       order_item_id,
-      plain_name,
-      location
+      plain_name
   ),
   sold AS (
     SELECT
@@ -33,8 +31,7 @@ WITH
       SUM(rate) AS rate_sold,
       SUM(net_amount) AS amount_sold,
       SUM(gross_profit_estimate) AS gross_profit_estimate,
-      SUM(ABS(cost_estimate)) AS cost_estimate,
-      location AS location_sold
+      SUM(ABS(cost_estimate)) AS cost_estimate
     FROM
       fact.order_item_detail
     WHERE
@@ -44,8 +41,7 @@ WITH
       product_id_edw,
       item_id_ns,
       order_item_id,
-      plain_name,
-      location
+      plain_name
   ),
   fulfilled AS (
     SELECT
@@ -56,8 +52,7 @@ WITH
       plain_name,
       SUM(total_quantity) AS quantity_fulfilled,
       SUM(rate) AS rate_fulfilled,
-      SUM(net_amount) AS amount_fulfilled,
-      location AS location_fulfilled
+      SUM(net_amount) AS amount_fulfilled
     FROM
       fact.order_item_detail
     WHERE
@@ -67,8 +62,7 @@ WITH
       product_id_edw,
       item_id_ns,
       order_item_id,
-      plain_name,
-      location
+      plain_name
   ),
   refunded AS (
     SELECT
@@ -110,9 +104,6 @@ SELECT DISTINCT
   amount_sold,
   amount_fulfilled,
   amount_refunded,
-  location_booked,
-  location_sold,
-  location_fulfilled,
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
