@@ -100,3 +100,4 @@ FROM
   final_step
 WHERE
   duplicate_flag_final = TRUE
+order by order_id_edw
