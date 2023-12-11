@@ -1,42 +1,102 @@
---Super Basic draft
 WITH
   tracking_map AS (
     SELECT
-      order_id_edw,
-      transaction_id_ns,
-      number.trackingnumber,
-      product_id_edw,
-      record_type,
-      total_quantity
+      tran.custbody_goodr_shopify_order order_id_edw,
+      tran.id ns_id,
+      number.trackingnumber tracking,
+      tran.recordtype record_type,
+      SUM(quantity) total_quantity
     FROM
-      fact.order_item_detail detail
-      LEFT OUTER JOIN netsuite.trackingnumbermap map ON map.transaction = detail.transaction_id_ns
+      netsuite.transaction tran
+      LEFT OUTER JOIN netsuite.transactionline line ON tran.id = line.transaction
+      LEFT OUTER JOIN netsuite.trackingnumbermap map ON map.transaction = tran.id
       LEFT OUTER JOIN netsuite.trackingnumber number ON number.id = map.trackingnumber
     WHERE
-      record_type = 'itemfulfillment'
+      recordtype = 'itemfulfillment'
+      AND tracking IS NOT NULL
+      AND itemtype IN (
+        'InvtPart',
+        'Assembly',
+        'OthCharge',
+        'NonInvtPart',
+        'Payment'
+      )
+      AND (
+        CASE
+          WHEN recordtype = 'itemfulfillment'
+          AND accountinglinetype IN ('COGS') THEN TRUE
+          ELSE FALSE
+        END
+      )
+    GROUP BY
+      order_id_edw,
+      ns_id,
+      tracking,
+      record_type
   ),
-  duplicate_tracking_ifs AS (
+  step_1 AS (
     SELECT
       *,
       CASE
         WHEN COUNT(*) OVER (
           PARTITION BY
             ORDER_ID_EDW,
-            TRACKINGNUMBER,
+            TRACKING,
             record_type,
-            PRODUCT_ID_EDW,
             TOTAL_QUANTITY
         ) > 1 THEN TRUE
         ELSE FALSE
       END AS duplicate_flag
     FROM
       tracking_map
+  ),
+  individual_items AS (
+    SELECT
+      order_id_edw,
+      ns_id,
+      tracking,
+      record_type,
+      item,
+      quantity
+    FROM
+      step_1
+      LEFT OUTER JOIN netsuite.transactionline line ON line.transaction = step_1.ns_id
+    WHERE
+      duplicate_flag = TRUE
+      AND itemtype IN (
+        'InvtPart',
+        'Assembly',
+        'OthCharge',
+        'NonInvtPart',
+        'Payment'
+      )
+      AND (
+        CASE
+          WHEN record_type = 'itemfulfillment'
+          AND accountinglinetype IN ('COGS') THEN TRUE
+          ELSE FALSE
+        END
+      )
+  ),
+  final_step AS (
+    SELECT
+      *,
+      CASE
+        WHEN COUNT(*) OVER (
+          PARTITION BY
+            ORDER_ID_EDW,
+            TRACKING,
+            item,
+            quantity
+        ) > 1 THEN TRUE
+        ELSE FALSE
+      END AS duplicate_flag_final
+    FROM
+      individual_items
   )
-SELECT DISTINCT
-  order_id_edw,
-  transaction_id_ns,
-  duplicate_flag
+SELECT
+  *
 FROM
-  duplicate_tracking_ifs
+  final_step
 WHERE
-  duplicate_flag = TRUE
+  duplicate_flag_final = TRUE
