@@ -2,7 +2,7 @@ WITH
   order_level AS (
     SELECT DISTINCT
       order_id_edw,
-      FIRST_VALUE(transaction_timestamp_pst) OVER (
+      FIRST_VALUE(transaction_created_timestamp_pst) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -10,9 +10,9 @@ WITH
             WHEN record_type = 'purchaseorder' THEN 1
             ELSE 2
           END,
-          transaction_timestamp_pst asc
+          transaction_created_timestamp_pst asc
       ) AS purchase_date,
-      FIRST_VALUE(transaction_timestamp_pst) OVER (
+      FIRST_VALUE(transaction_created_timestamp_pst) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -20,7 +20,7 @@ WITH
             WHEN record_type = 'itemreceipt' THEN 1
             ELSE 2
           END,
-          transaction_timestamp_pst asc
+          transaction_created_timestamp_pst asc
       ) AS fulfillment_date,
       vendor_id_ns,
       name
