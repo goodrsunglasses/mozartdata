@@ -211,11 +211,11 @@ WITH
   refund_aggregates AS (
     SELECT DISTINCT
       order_id_edw,
-      FIRST_VALUE(transaction_timestamp_pst) over (
+      FIRST_VALUE(transaction_created_timestamp_pst) over (
         PARTITION BY
           order_id_edw
         ORDER BY
-          transaction_timestamp_pst asc
+          transaction_created_timestamp_pst asc
       ) AS refund_timestamp_pst
     FROM
       fact.refund
