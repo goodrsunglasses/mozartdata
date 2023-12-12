@@ -5,7 +5,7 @@ SELECT
   p.collection,
   MIN(p.d2c_launch_date) AS earliest_d2c_launch_date,
   MIN(p.b2b_launch_date) AS earliest_b2b_launch_date,
-  MIN(o.sold_date) AS earliest_sale,
+  MIN(o.sold_date) AS earliest_d2c_sale,
   o.channel
 FROM
   dim.product p
