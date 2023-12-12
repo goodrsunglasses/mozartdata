@@ -4,6 +4,7 @@ SELECT
   p.family,
   p.collection,
   MIN(p.d2c_launch_date) AS earliest_d2c_launch_date,
+  MIN(p.b2b_launch_date) AS earliest_b2b_launch date,
   MIN(o.sold_date) AS earliest_sale,
   o.channel
 FROM
