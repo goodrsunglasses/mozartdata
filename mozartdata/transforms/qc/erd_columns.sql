@@ -1,5 +1,5 @@
 SELECT
-  lower(column_name)
+  lower(column_name) as ORDER_ITEM_DETAIL
 FROM
   information_schema.columns
 WHERE
