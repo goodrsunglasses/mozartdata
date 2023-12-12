@@ -6,6 +6,7 @@ WITH
       orderline.channel,
       orderline.email,
       orderline.customer_id_ns,
+      orderline.location,
       customer_category AS b2b_d2c,
       model
     FROM
@@ -21,6 +22,7 @@ WITH
       parent_information.channel,
       parent_information.email,
       parent_information.customer_id_ns,
+  parent_information.location,
       parent_information.b2b_d2c,
       parent_information.model,
       MAX(status_flag_edw) over (
@@ -224,6 +226,7 @@ SELECT
   order_level.order_id_edw,
   order_level.channel,
   customer_id_edw,
+  location.name location,
   order_level.booked_date,
   order_level.sold_date,
   order_level.fulfillment_date,
@@ -265,6 +268,7 @@ FROM
     AND customer.customer_category = order_level.b2b_d2c
   )
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
+  left outer join dim.location location on location.location_id_ns = order_level.location
 WHERE
   order_level.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY
