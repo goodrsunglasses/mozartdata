@@ -63,7 +63,14 @@ SELECT DISTINCT
       item_detail.order_id_edw,
       transaction_id_ns
   ) agg_qty,
-  number.trackingnumber tracking_number
+  number.trackingnumber tracking_number,
+  FIRST_VALUE(item_detail.location IGNORE NULLS) over (
+    PARTITION BY
+      item_detail.order_id_edw,
+      transaction_id_ns
+    ORDER BY
+      product_id_edw
+  ) location
 FROM
   fact.order_item_detail item_detail
   LEFT OUTER JOIN parent_transaction ON item_detail.transaction_id_ns = parent_transaction.parent_id
