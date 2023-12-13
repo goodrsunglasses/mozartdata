@@ -18,7 +18,7 @@ pe = paymentevent
 createdate convert to America/Los_Angeles
 use createdate converted instead of trandate
 */
-    select
+  select
       concat(tal.transaction,'_',tal.transactionline) as transaction_line_id
     , tran.custbody_goodr_shopify_order order_id_edw
     , tran.tranid as transaction_id_ns
@@ -44,6 +44,7 @@ use createdate converted instead of trandate
       when ga.account_category in ('Assets','Expenses') then (coalesce(tal.debit,0)) - (coalesce(tal.credit,0))
       when ga.account_category in ('Liabilities','Equity','Revenues') then (coalesce(tal.credit,0)) - (coalesce(tal.debit,0))
       end,0)) as net_amount
+    , tl.createdfrom
     from
       netsuite.transactionaccountingline tal
     inner join
@@ -78,3 +79,4 @@ use createdate converted instead of trandate
     , pe.eventdate
     , ap.periodname
     , case when tal.posting = 'T' then true else false end
+    , createdfrom
