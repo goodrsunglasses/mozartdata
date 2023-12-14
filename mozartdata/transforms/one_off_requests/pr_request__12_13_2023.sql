@@ -19,3 +19,5 @@ WHERE
   AND created_from_date BETWEEN '2023-11-23' AND '2023-11-30'
   AND posting_period = 'Dec 2023'
   AND account_number_display_name_hierarchy IS NOT NULL
+ORDER BY
+  transaction_id_ns
