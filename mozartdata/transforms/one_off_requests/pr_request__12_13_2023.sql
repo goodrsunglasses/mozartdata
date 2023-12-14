@@ -1,5 +1,6 @@
 SELECT
   gltran.order_id_edw,
+  gltran.channel,
   gltran.transaction_id_ns,
   line.transaction_number_ns AS created_from_transaction,
   line.transaction_date created_from_date,
