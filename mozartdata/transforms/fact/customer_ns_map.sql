@@ -4,6 +4,8 @@ WITH
       cust.id,
       cust.entityid,
       cust.email,
+      cust.altname,
+      cust.companyname,
       cust.isperson,
       channel.name AS channel,
       ROW_NUMBER() over (
@@ -33,6 +35,8 @@ SELECT
   entityid AS customer_id_ns,
   isperson AS is_person_flag,
   customer_category.email,
+  altname AS customer_name,
+  companyname AS company_name,
   CASE
     WHEN id IN (
       12489,
@@ -72,6 +76,8 @@ GROUP BY
   customer_id_edw,
   id,
   entityid,
+  altname,
+  companyname,
   isperson,
   CASE
     WHEN id IN (
