@@ -1,9 +1,10 @@
 SELECT
-  lower(column_name) as ORDER_ITEM_DETAIL
+  table_schema,
+  table_name,
+  lower(column_name) column_name
 FROM
   information_schema.columns
 WHERE
-  table_name = 'ORDER_ITEM_DETAIL'
-  AND table_schema = 'FACT'
+  table_schema in ('FACT','DIM')
 ORDER BY
-  ordinal_position asc
+  table_schema,table_name, ordinal_position
