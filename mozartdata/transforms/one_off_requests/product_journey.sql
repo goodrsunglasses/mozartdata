@@ -110,6 +110,10 @@ SELECT
         WHEN cs.cumulative_sold >= 0.9 * ple.total_quantity_ordered THEN DATEDIFF(day, least(ple.first_d2c_order_date,ple.first_b2b_order_date), cs.sold_date)
         ELSE NULL
     END) AS days_to_90_percent
+,  min(CASE 
+        WHEN cs.cumulative_sold >= 1 * ple.total_quantity_ordered THEN DATEDIFF(day, least(ple.first_d2c_order_date,ple.first_b2b_order_date), cs.sold_date)
+        ELSE NULL
+    END) AS days_to_sold_out
 FROM cumulative_sales cs
 INNER JOIN
     product_list_expanded ple
@@ -121,6 +125,7 @@ SELECT
   ple.*
 , dt.days_to_50_percent
 , days_to_90_percent
+, days_to_sold_out
 FROM
   product_list_expanded ple
 left join
