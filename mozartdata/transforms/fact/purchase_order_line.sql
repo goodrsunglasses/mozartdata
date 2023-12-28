@@ -7,6 +7,7 @@ SELECT DISTINCT
   entity AS vendor_id_ns,
   vendors.name,
   transaction_created_timestamp_pst,
+  DATE(tran.trandate) AS transaction_date,
   CASE
     WHEN full_status LIKE ANY(
       '%Closed',
