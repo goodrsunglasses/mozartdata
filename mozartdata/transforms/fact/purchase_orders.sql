@@ -2,7 +2,7 @@ WITH
   order_level AS (
     SELECT DISTINCT
       order_id_edw,
-      FIRST_VALUE(transaction_created_timestamp_pst) OVER (
+      FIRST_VALUE(transaction_date) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -12,7 +12,7 @@ WITH
           END,
           transaction_created_timestamp_pst asc
       ) AS purchase_date,
-      FIRST_VALUE(transaction_created_timestamp_pst) OVER (
+      FIRST_VALUE(transaction_date) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
