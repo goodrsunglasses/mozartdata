@@ -18,7 +18,8 @@ WITH
       p.sku IN (
       'G00288-OG-GD7-RF' --We Struck Goldschlaeger
       , 'G00229-OG-IB2-RF' --Bingo! Dino DNA
-)  
+      )or 
+    date_trunc(year, p.d2c_launch_date) = '2023-01-01'
   ),
   po as
   (
