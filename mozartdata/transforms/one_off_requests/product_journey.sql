@@ -20,8 +20,8 @@ WITH
       , 'G00229-OG-IB2-RF' --Bingo! Dino DNA
       )
   /* all 2023 launches */
-  or 
-    date_trunc(year, p.d2c_launch_date) = '2023-01-01'
+  -- or 
+  --   date_trunc(year, p.d2c_launch_date) = '2023-01-01'
   /* remove this bit */
   ),
   po as
@@ -166,67 +166,3 @@ FROM
 left join
   days_to dt
   on ple.product_id_edw = dt.product_id_edw
-
-/*
-select distinct * from cumulative_sales where product_id_edw = 3634 order by sold_date
-SELECT 
-  ple.*
-, dt.days_to_50_percent
-, days_to_90_percent
-, days_to_sold_out
-FROM
-  product_list_expanded ple
-left join
-  days_to dt
-  on ple.product_id_edw = dt.product_id_edw
-WHERE
-ple.product_id_edw = 3634
-
-    SELECT 
-      oi.product_id_edw,
-      o.sold_date,
-      sum(oi.quantity_sold)
-      --SUM(oi.quantity_sold) OVER (PARTITION BY oi.product_id_edw ORDER BY o.sold_date) AS cumulative_sold
-    from
-      fact.order_item oi
-    inner join
-      fact.orders o
-    on oi.order_id_edw = o.order_id_edw
-    where oi.product_id_edw = 3634
-group by       
-oi.product_id_edw,
-      o.sold_date
-    ORDER BY 
-      oi.product_id_edw
-    , o.sold_date
-
-
-----------------
- SELECT
-    product_id_edw,
-    sold_date,
-    quantity_sold,
-    SUM(quantity_sold) OVER (PARTITION BY product_id_edw ORDER BY sold_date rows between unbounded preceding and current row) AS cumulative_sold
-  FROM
-    (
-    SELECT 
-      oi.product_id_edw,
-      o.sold_date,
-      sum(oi.quantity_sold) as quantity_sold
-    from
-      fact.order_item oi
-    inner join
-      fact.orders o
-    on oi.order_id_edw = o.order_id_edw
-where product_id_edw = 3634
-  group by 
-        oi.product_id_edw,
-      o.sold_date
- ORDER BY 
-      product_id_edw
-    , sold_date
-  )
-    ORDER BY 
-      product_id_edw
-    , sold_date
-*/
