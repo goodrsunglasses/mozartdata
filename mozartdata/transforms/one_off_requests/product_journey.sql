@@ -61,21 +61,35 @@ WITH
   ),
   cumulative_sales as
   (
+   SELECT
+    product_id_edw,
+    sold_date,
+    quantity_sold,
+    SUM(quantity_sold) OVER (PARTITION BY product_id_edw ORDER BY sold_date rows between unbounded preceding and current row) AS cumulative_sold
+  FROM
+    (
     SELECT 
       oi.product_id_edw,
       o.sold_date,
-      SUM(oi.quantity_sold) OVER (PARTITION BY oi.product_id_edw ORDER BY o.sold_date) AS cumulative_sold
+      sum(oi.quantity_sold) as quantity_sold
     from
       fact.order_item oi
     inner join
-      product_list pl
-      on oi.product_id_edw = oi.product_id_edw
-    inner join
       fact.orders o
     on oi.order_id_edw = o.order_id_edw
+    inner join
+      product_list pl
+    on pl.product_id_edw = oi.product_id_edw
+  group by 
+        oi.product_id_edw,
+      o.sold_date
+ ORDER BY 
+      product_id_edw
+    , sold_date
+  )
     ORDER BY 
-      oi.product_id_edw
-    , o.sold_date
+      product_id_edw
+    , sold_date 
   ),
   product_list_expanded as
   (
@@ -103,28 +117,58 @@ left join
   on o.product_id_edw = pl.product_id_edw
 ),
   days_to as
-  (
+(
 SELECT
- cs.product_id_edw
-,  min(CASE 
-        WHEN cs.cumulative_sold >= 0.5 * ple.total_quantity_ordered THEN DATEDIFF(day, least(coalesce(ple.first_d2c_order_date,current_date()),coalesce(ple.first_b2b_order_date,current_date())), cs.sold_date)
-        ELSE NULL
-    END)  AS days_to_50_percent
-,  min(CASE 
-        WHEN cs.cumulative_sold >= 0.9 * ple.total_quantity_ordered THEN DATEDIFF(day, least(ple.first_d2c_order_date,ple.first_b2b_order_date), cs.sold_date)
-        ELSE NULL
-    END) AS days_to_90_percent
-,  min(CASE 
-        WHEN cs.cumulative_sold >= 1 * ple.total_quantity_ordered THEN DATEDIFF(day, least(ple.first_d2c_order_date,ple.first_b2b_order_date), cs.sold_date)
-        ELSE NULL
-    END) AS days_to_sold_out
-FROM cumulative_sales cs
-INNER JOIN
-    product_list_expanded ple
-    on cs.product_id_edw = ple.product_id_edw
-group by
-cs.product_id_edw)
+  product_id_edw
+  , case when count(days_to_10_percent) = 0 then null else min(days_to_10_percent) end days_to_10_percent
+  , case when count(days_to_50_percent) = 0 then null else min(days_to_50_percent) end days_to_50_percent
+  , case when count(days_to_90_percent) = 0 then null else min(days_to_90_percent) end days_to_90_percent
+  , case when count(days_to_sold_out) = 0 then null else min(days_to_sold_out) end days_to_sold_out
+FROM
+  (
+  SELECT
+   cs.product_id_edw
+  , cs.cumulative_sold
+  , cs.sold_date
+  , total_quantity_ordered
+  ,    CASE 
+          WHEN cs.cumulative_sold >= 0.1 * ple.total_quantity_ordered THEN DATEDIFF(day, ple.earliest_sale, cs.sold_date)
+          ELSE NULL
+      END  AS days_to_10_percent
+  ,  CASE 
+          WHEN cs.cumulative_sold >= 0.5 * ple.total_quantity_ordered THEN DATEDIFF(day, ple.earliest_sale, cs.sold_date)
+          ELSE NULL
+      END  AS days_to_50_percent
+  ,  CASE 
+          WHEN cs.cumulative_sold >= 0.9 * ple.total_quantity_ordered THEN DATEDIFF(day, ple.earliest_sale, cs.sold_date)
+          ELSE NULL
+      END AS days_to_90_percent
+  ,  CASE 
+          WHEN cs.cumulative_sold >= 1 * ple.total_quantity_ordered THEN DATEDIFF(day, ple.earliest_sale, cs.sold_date)
+          ELSE NULL
+      END AS days_to_sold_out
+  FROM cumulative_sales cs
+  INNER JOIN
+      product_list_expanded ple
+      on cs.product_id_edw = ple.product_id_edw
+  )
+  group by
+  product_id_edw
+  )
+SELECT 
+  ple.*
+, dt.days_to_10_percent
+, dt.days_to_50_percent
+, days_to_90_percent
+, days_to_sold_out
+FROM
+  product_list_expanded ple
+left join
+  days_to dt
+  on ple.product_id_edw = dt.product_id_edw
 
+/*
+select distinct * from cumulative_sales where product_id_edw = 3634 order by sold_date
 SELECT 
   ple.*
 , dt.days_to_50_percent
@@ -135,3 +179,54 @@ FROM
 left join
   days_to dt
   on ple.product_id_edw = dt.product_id_edw
+WHERE
+ple.product_id_edw = 3634
+
+    SELECT 
+      oi.product_id_edw,
+      o.sold_date,
+      sum(oi.quantity_sold)
+      --SUM(oi.quantity_sold) OVER (PARTITION BY oi.product_id_edw ORDER BY o.sold_date) AS cumulative_sold
+    from
+      fact.order_item oi
+    inner join
+      fact.orders o
+    on oi.order_id_edw = o.order_id_edw
+    where oi.product_id_edw = 3634
+group by       
+oi.product_id_edw,
+      o.sold_date
+    ORDER BY 
+      oi.product_id_edw
+    , o.sold_date
+
+
+----------------
+ SELECT
+    product_id_edw,
+    sold_date,
+    quantity_sold,
+    SUM(quantity_sold) OVER (PARTITION BY product_id_edw ORDER BY sold_date rows between unbounded preceding and current row) AS cumulative_sold
+  FROM
+    (
+    SELECT 
+      oi.product_id_edw,
+      o.sold_date,
+      sum(oi.quantity_sold) as quantity_sold
+    from
+      fact.order_item oi
+    inner join
+      fact.orders o
+    on oi.order_id_edw = o.order_id_edw
+where product_id_edw = 3634
+  group by 
+        oi.product_id_edw,
+      o.sold_date
+ ORDER BY 
+      product_id_edw
+    , sold_date
+  )
+    ORDER BY 
+      product_id_edw
+    , sold_date
+*/
