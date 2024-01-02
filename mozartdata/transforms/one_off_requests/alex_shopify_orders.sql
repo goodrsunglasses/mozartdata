@@ -23,4 +23,4 @@ FROM
  left outer join shopify.order_tag tag on tag.order_id = shop.id
  left outer join shopify.transaction tran on tran.order_id = shop.id
 WHERE
-  shop.created_at >= '2023-01-01T00:00:00Z' and shop.name = 'G2619952' and tag = 'Buy with Prime'
+  shop.created_at >= '2023-01-01T00:00:00Z' and item.plain_name not in ('Tax','Shipping')
