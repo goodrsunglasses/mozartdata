@@ -12,7 +12,8 @@ SELECT
   quantity_booked salesorder_quantity,
   amount_booked salesorder_netamount,
   quantity_backordered,
-  quantity_invoiced
+  quantity_invoiced,
+  loc.name location
 FROM
   shopify."ORDER" shop
   LEFT OUTER JOIN dim.orders orders ON orders.d2c_shopify_id = shop.id
@@ -22,5 +23,7 @@ FROM
   left outer join fact.order_item_detail detail on (detail.item_id_ns = item.item_id_ns and detail.transaction_id_ns = line.transaction_id_ns)
  left outer join shopify.order_tag tag on tag.order_id = shop.id
  left outer join shopify.transaction tran on tran.order_id = shop.id
+  left outer join netsuite.transactionline tranline on (tranline.transaction = line.transaction_id_ns and tranline.item=item.item_id_ns)
+  left outer join dim.location loc on loc.location_id_ns = tranline.location
 WHERE
-  shop.created_at >= '2023-01-01T00:00:00Z' and item.plain_name not in ('Tax','Shipping')
+  shop.created_at >= CURRENT_DATE()-30 and item.plain_name not in ('Tax','Shipping')
