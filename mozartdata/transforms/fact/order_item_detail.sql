@@ -29,6 +29,8 @@ SELECT
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(ABS(netamount)) AS net_amount,
   SUM(ABS(quantity)) AS total_quantity,
+  sum(ABS(quantitybilled)) quantity_invoiced,
+  sum(ABS(quantitybackordered)) quantity_backordered,
   sum(rate) as unit_rate,
   SUM(rate) * total_quantity rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
