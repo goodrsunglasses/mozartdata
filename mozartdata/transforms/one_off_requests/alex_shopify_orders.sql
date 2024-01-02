@@ -2,6 +2,7 @@ SELECT
   shop.id shopify_id,
   shop.name order_number,
   tag.value tag,
+  tran.authorization,
   shop.financial_status,
   shop.fulfillment_status,
   stord.status stord_status,
@@ -20,5 +21,6 @@ FROM
   left outer join fact.order_item item on item.order_id_edw = shop.name
   left outer join fact.order_item_detail detail on (detail.item_id_ns = item.item_id_ns and detail.transaction_id_ns = line.transaction_id_ns)
  left outer join shopify.order_tag tag on tag.order_id = shop.id
+ left outer join shopify.transaction tran on tran.order_id = shop.id
 WHERE
   shop.created_at >= '2023-01-01T00:00:00Z' and shop.name = 'G2619952' and tag = 'Buy with Prime'
