@@ -134,6 +134,8 @@ SELECT
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(- netamount) net_amount,
   SUM(ABS(quantity)) AS total_quantity,
+  null as quantity_invoiced,
+  null as quantity_backordered,
   sum(rate) as unit_rate,
   SUM(rate) rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
