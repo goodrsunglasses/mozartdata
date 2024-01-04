@@ -19,28 +19,28 @@ WITH
       fact.order_item_detail
   )
 SELECT DISTINCT
-  CONCAT(item_detail.order_id_edw, '_', transaction_id_ns) AS order_line_id,
+  CONCAT(item_detail.order_id_edw, '_', item_detail.transaction_id_ns) AS order_line_id,
   item_detail.order_id_edw,
   item_detail.transaction_id_ns,
   tran.tranid AS transaction_number_ns,
-  full_status AS transaction_status_ns,
+  item_detail.full_status AS transaction_status_ns,
   item_detail.record_type,
   channel.name AS channel,
   tran.saleschannel AS inventory_bucket,
   entity AS customer_id_ns,
   customer.email,
   CASE
-    WHEN record_type = 'cashrefund' THEN TRUE
+    WHEN item_detail.record_type = 'cashrefund' THEN TRUE
     ELSE FALSE
   END AS has_refund,
   CASE
     WHEN memo LIKE '%RMA%' THEN TRUE
     ELSE FALSE
   END AS is_exchange,
-  transaction_created_timestamp_pst,
+  item_detail.transaction_created_timestamp_pst,
   DATE(tran.trandate) AS transaction_date,
   CASE
-    WHEN full_status LIKE ANY(
+    WHEN item_detail.full_status LIKE ANY(
       '%Closed',
       '%Voided',
       '%Undefined',
@@ -58,21 +58,22 @@ SELECT DISTINCT
     WHEN parent_id IS NOT NULL THEN TRUE
     ELSE FALSE
   END AS parent_transaction,
-  SUM(total_quantity) over (
+  SUM(inv_part.total_quantity) over (
     PARTITION BY
-      item_detail.order_id_edw,
-      transaction_id_ns
-  ) agg_qty,
+      inv_part.order_id_edw,
+      inv_part.transaction_id_ns
+  ) order_line_quantity,
   number.trackingnumber tracking_number,
   FIRST_VALUE(item_detail.location IGNORE NULLS) over (
     PARTITION BY
       item_detail.order_id_edw,
-      transaction_id_ns
+      item_detail.transaction_id_ns
     ORDER BY
-      product_id_edw
+      item_detail.product_id_edw
   ) location
 FROM
   fact.order_item_detail item_detail
+  INNER JOIN fact.order_item_detail inv_part on item_detail.order_item_detail_id = inv_part.order_item_detail_id and inv_part.item_type = 'InvtPart'
   LEFT OUTER JOIN parent_transaction ON item_detail.transaction_id_ns = parent_transaction.parent_id
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN dim.channel channel ON channel.channel_id_ns = tran.cseg7
@@ -80,7 +81,7 @@ FROM
   LEFT OUTER JOIN netsuite.trackingnumbermap map ON map.transaction = item_detail.transaction_id_ns
   LEFT OUTER JOIN netsuite.trackingnumber number ON number.id = map.trackingnumber
 WHERE
-  record_type IN (
+  item_detail.record_type IN (
     'cashsale',
     'itemfulfillment',
     'salesorder',
