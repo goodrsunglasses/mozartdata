@@ -1,1 +1,1 @@
- 
+select order_id_edw,count(distinct case when record_type = 'salesorder' thne 1 else 0 end ) as so_count from fact.order_item_detail
