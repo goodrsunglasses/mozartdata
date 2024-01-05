@@ -103,3 +103,4 @@ left join
 order by
   gp.item_id_ns
 , days
+---
