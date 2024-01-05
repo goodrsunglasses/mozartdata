@@ -1,24 +1,17 @@
-with orders as
+with dec_orders as
   (
-SELECT
-  o.order_id_edw
-, o.channel
-, o.booked_date
-, o.sold_date
-, o.fulfillment_date
-, o.amount_sold
+SELECT DISTINCT
+  gt.order_id_edw
 FROM
-  fact.orders o
-left join
   fact.gl_transaction gt
-  on gt.order_id_edw = o.order_id_edw
 WHERE
-   date_trunc(month,date(o.sold_date)) = '2023-12-01'
-and (date_trunc(month,date(o.fulfillment_date)) is null or date_trunc(month,date(o.fulfillment_date)) = '2024-01-01')
+   gt.posting_period = 'Dec 2023'
+  and gt.posting_flag = true
+  and gt.account_number like '4%'
 )
 
 SELECT distinct
-  ol.order_id_edw
+  do.order_id_edw
 , o.channel
 , ol.transaction_number_ns
 , ol.transaction_id_ns
@@ -30,7 +23,10 @@ SELECT distinct
 , gt.posting_period
 , gt.posting_flag
 FROM
-  orders o
+  dec_orders do
+inner join
+  fact.orders o
+  on do.order_id_edw = o.order_id_edw
 inner join
   fact.order_line ol
   on o.order_id_edw = ol.order_id_edw
@@ -44,6 +40,5 @@ where
   posting_flag = true
   --and ol.order_id_edw=  'G2789041'
   and gt.account_number like '4%'
-  and net
 order by 
-  ol.order_id_edw
+  do.order_id_edw
