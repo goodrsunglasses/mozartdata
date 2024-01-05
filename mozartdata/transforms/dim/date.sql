@@ -5,6 +5,8 @@ WITH CTE_MY_DATE AS (
 SELECT MY_DATE as date_timestamp
     , date(MY_DATE) as date
     , TO_CHAR(MY_DATE, 'YYYYMMDD')::int as date_int
+    , TO_VARCHAR(MY_DATE::DATE,'YYYYMM') as yrmo
+    , concat(YEAR(MY_DATE),'Q',QUARTER(MY_DATE)) as yrq
     , YEAR(MY_DATE) as year
     , MONTH(MY_DATE) as month
     , MONTHNAME(MY_DATE) as month_name   
