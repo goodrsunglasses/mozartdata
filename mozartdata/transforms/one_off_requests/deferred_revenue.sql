@@ -84,5 +84,3 @@ left join
 --   and gt.account_number like '4%'
 order by 
   do.order_id_edw
-
-select * from fact.gl_transaction where transaction_id_ns = 16817569
