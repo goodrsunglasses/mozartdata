@@ -3,10 +3,12 @@ with dec_orders as
 SELECT
   gt.channel
 , gt.order_id_edw
-, gt.transaction_id_ns
+, gt.transaction_number_ns
 , gt.account_number
 , gt.net_amount
 , ol.record_type
+, gt.posting_period
+, gt.transaction_date
 FROM
   fact.gl_transaction gt
 left join
@@ -38,7 +40,9 @@ SELECT
   do.order_id_edw
 , do.channel
 , do.record_type
-, do.transaction_id_ns
+, do.transaction_number_ns 
+, do.transaction_date revenue_transaction_date
+, do.posting_period revenue_posting_period
 , do.account_number
 , do.net_amount
 , case when do.channel in ('Amazon','Amazon Prime','Cabana') then o.booked_date else o.fulfillment_date end fulfillment_date
