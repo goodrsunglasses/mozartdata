@@ -20,7 +20,7 @@ use createdate converted instead of trandate
 */
   select
       concat(tal.transaction,'_',tal.transactionline) as transaction_line_id
-    , tran.custbody_goodr_shopify_order order_id_edw
+      REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ','') as order_id_edw
     , tran.id as transaction_id_ns
     , tran.tranid as transaction_number_ns
     , tal."ACCOUNT" as account_id_edw
