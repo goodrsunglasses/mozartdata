@@ -1,5 +1,4 @@
 /*
-THIS TRANSFORM IS IN PROGRESS, DO NOT USE YET
 purpose: 
 One row per customer and category (B2B, D2C). ie. one row per MD5
 This transform creates a staging table which creates customer_id_edw for every customer in our various source systems (NetSuite, Shopify...)
@@ -22,6 +21,8 @@ custbody_goodr_shopify_order = order_num (this is the shopify order number, and 
 The "ns" CTE pulls emails and customer categories based on order channel in netsuite. The channels come from dim.orders and the classification has been approved. 
 A single customer MAY be in multiple categories. ex. someone who works for a specialty store also uses their work email to place an order on goodr.com
 
+id = 1836849 is the generic D2C Customer. This is a catchall goodr.com customer only to be used when needing to mass import CSVs of SOs from Shopify
+
 aliases: 
 t = netsuite.transaction
 c = netsuite.customer
@@ -32,7 +33,7 @@ with ns as
   (
 SELECT distinct
   lower(case when c.id= 1836849 then t.email else c.email end) email
-, customer_category
+, category.customer_category
 FROM
   netsuite.transaction t
 inner join
