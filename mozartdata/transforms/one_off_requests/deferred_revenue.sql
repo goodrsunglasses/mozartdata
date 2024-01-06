@@ -15,7 +15,7 @@ left join
   fact.order_line ol
   on gt.transaction_id_ns = ol.transaction_id_ns
 WHERE
-   gt.posting_period = 'Dec 2023'
+   gt.posting_period = 'Dec 2023' --change period as needed
   and gt.posting_flag = true
   and gt.account_number like '4%'
 ),
