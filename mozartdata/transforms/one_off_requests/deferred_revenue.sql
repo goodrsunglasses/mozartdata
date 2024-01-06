@@ -1,3 +1,9 @@
+/*
+This query is meant to find all transactions that occur in December but aren't fulfilled until the following month, thus per accounting standards we need to defer the revenue for those 
+sales until the following year. 
+
+*/
+--Pull in december orders which generate revenue accounts 4****.
 with dec_orders as
   (
 SELECT
@@ -19,6 +25,7 @@ WHERE
   and gt.posting_flag = true
   and gt.account_number like '4%'
 ),
+  --find the earliest item fulfillment for the orders which generated revenue in december.
   if as
   (
     SELECT     
@@ -45,18 +52,9 @@ SELECT
 , do.posting_period revenue_posting_period
 , do.account_number
 , do.net_amount
-, case when do.channel in ('Amazon','Amazon Prime','Cabana') then o.booked_date else o.fulfillment_date end fulfillment_date
+  --we don't have insight into amazon/amazon prime shipping. so we recognize revenue at sale. Cabana is literal cash sales so there is no item fulfillment
+, case when do.channel in ('Amazon','Amazon Prime','Cabana') then o.booked_date else o.fulfillment_date end fulfillment_date 
 , case when do.channel in ('Amazon','Amazon Prime','Cabana') then d.posting_period else if.posting_period end if_posting_period 
--- , o.channel
--- , ol.transaction_number_ns
--- , ol.transaction_id_ns
--- , ol.record_type
--- , gt.transaction_date
--- , gt.account_number
--- , ga.account_full_name
--- , gt.net_amount
--- , gt.posting_period
--- , gt.posting_flag
 FROM
   dec_orders do
 left join
@@ -69,18 +67,5 @@ left join
 left join
   dim.date d
   on d.date = o.booked_date
--- inner join
---   fact.order_line ol
---   on o.order_id_edw = ol.order_id_edw
--- Left join
---   fact.gl_transaction gt
---   on ol.transaction_id_ns = gt.transaction_id_ns
--- left join
---   dim.gl_account ga
---   on gt.account_id_edw = ga.account_id_edw
--- where
---   posting_flag = true
---   --and ol.order_id_edw=  'G2789041'
---   and gt.account_number like '4%'
 order by 
   do.order_id_edw
