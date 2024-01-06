@@ -81,4 +81,5 @@ use createdate converted instead of trandate
     , pe.eventdate
     , ap.periodname
     , case when tal.posting = 'T' then true else false end
-    , createdfrom
+    , createdfrom as parent_transaction_id_ns
+    ,
