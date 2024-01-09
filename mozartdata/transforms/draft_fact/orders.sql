@@ -22,7 +22,7 @@ WITH
       parent_information.channel,
       parent_information.email,
       parent_information.customer_id_ns,
-  parent_information.location,
+      parent_information.location,
       parent_information.b2b_d2c,
       parent_information.model,
       MAX(status_flag_edw) over (
@@ -229,7 +229,7 @@ SELECT
   location.name location,
   order_level.booked_date,
   order_level.sold_date,
-  order_level.fulfillment_date,
+  order_level.fulfillment_date as fulfillment_date_ns ,
   order_level.shipping_window_start_date,
   order_level.shipping_window_end_date,
   order_level.is_exchange,
@@ -244,7 +244,7 @@ SELECT
   order_level.model,
   quantity_booked,
   quantity_sold,
-  quantity_fulfilled,
+  quantity_fulfilled as quantity_fulfilled_ns,
   quantity_refunded,
   rate_booked,
   rate_sold,
@@ -268,8 +268,9 @@ FROM
     AND customer.customer_category = order_level.b2b_d2c
   )
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
-  left outer join dim.location location on location.location_id_ns = order_level.location
+  LEFT OUTER JOIN dim.location location ON location.location_id_ns = order_level.location
 WHERE
   order_level.booked_date >= '2022-01-01T00:00:00Z'
+  AND order_level.order_id_edw = 'SG-CHIMAR2022'
 ORDER BY
   order_level.booked_date desc
