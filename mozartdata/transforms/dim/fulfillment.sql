@@ -59,20 +59,20 @@ WITH
     FROM
       stord.stord_shipment_confirmations_8589936822
   ),
-  netsuite AS (
-    SELECT
-      order_id_edw,
-      record_type,
-      transaction_number_ns,
-      transaction_created_timestamp_pst createddate,
-      number.trackingnumber,
-      map.transaction,
-      CONCAT(order_id_edw, '_', number.trackingnumber) AS fulfillment_id_edw
-    FROM
-      netsuite.trackingnumber number
-      LEFT OUTER JOIN netsuite.trackingnumbermap map ON number.id = map.trackingnumber
-      LEFT OUTER JOIN fact.order_line line ON line.transaction_id_ns = map.transaction
-  )
+  -- netsuite AS (
+  --   SELECT
+  --     order_id_edw,
+  --     record_type,
+  --     transaction_number_ns,
+  --     transaction_created_timestamp_pst createddate,
+  --     number.trackingnumber,
+  --     map.transaction,
+  --     CONCAT(order_id_edw, '_', number.trackingnumber) AS fulfillment_id_edw
+  --   FROM
+  --     netsuite.trackingnumber number
+  --     LEFT OUTER JOIN netsuite.trackingnumbermap map ON number.id = map.trackingnumber
+  --     LEFT OUTER JOIN fact.order_line line ON line.transaction_id_ns = map.transaction
+  -- )
 SELECT
   edw_fulfillments.fulfillment_id_edw,
   edw_fulfillments.order_id_edw,
