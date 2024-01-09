@@ -6,6 +6,7 @@ WITH
       orderline.channel,
       orderline.email,
       orderline.customer_id_ns,
+      orderline.location,
       customer_category AS b2b_d2c,
       model
     FROM
@@ -21,6 +22,7 @@ WITH
       parent_information.channel,
       parent_information.email,
       parent_information.customer_id_ns,
+  parent_information.location,
       parent_information.b2b_d2c,
       parent_information.model,
       MAX(status_flag_edw) over (
@@ -31,7 +33,7 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS is_exchange,
-      FIRST_VALUE(transaction_timestamp_pst) OVER (
+      FIRST_VALUE(transaction_date) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
@@ -40,30 +42,54 @@ WITH
             AND transaction_id_ns = parent_id THEN 1
             ELSE 2
           END,
-          transaction_timestamp_pst asc
+          transaction_created_timestamp_pst asc
       ) AS booked_date,
-      FIRST_VALUE(transaction_timestamp_pst) OVER (
+      FIRST_VALUE(
+        CASE
+          WHEN record_type IN ('cashsale', 'invoice')
+          AND parent_transaction_id = parent_id THEN transaction_date
+          ELSE NULL
+        END
+      ) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
           CASE
             WHEN record_type IN ('cashsale', 'invoice')
-            AND createdfrom = parent_id THEN 1
+            AND parent_transaction_id = parent_id THEN 1
             ELSE 2
           END,
-          transaction_timestamp_pst asc
+          transaction_created_timestamp_pst asc
       ) AS sold_date,
-      FIRST_VALUE(transaction_timestamp_pst) OVER (
+      FIRST_VALUE(
+        CASE
+          WHEN record_type = 'itemfulfillment'
+          AND parent_transaction_id = parent_id THEN transaction_date
+          ELSE NULL
+        END
+      ) OVER (
         PARTITION BY
           order_id_edw
         ORDER BY
           CASE
             WHEN record_type = 'itemfulfillment'
-            AND createdfrom = parent_id THEN 1
+            AND parent_transaction_id = parent_id THEN 1
             ELSE 2
           END,
-          transaction_timestamp_pst asc
-      ) AS fulfillment_date
+          transaction_created_timestamp_pst desc
+      ) AS fulfillment_date,
+      FIRST_VALUE(shipping_window_start_date) IGNORE NULLS OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          shipping_window_start_date desc
+      ) AS shipping_window_start_date,
+      FIRST_VALUE(shipping_window_end_date) IGNORE NULLS OVER (
+        PARTITION BY
+          order_id_edw
+        ORDER BY
+          shipping_window_end_date desc
+      ) AS shipping_window_end_date
     FROM
       parent_information
       LEFT OUTER JOIN fact.order_line orderline ON orderline.order_id_edw = parent_information.order_id
@@ -187,11 +213,11 @@ WITH
   refund_aggregates AS (
     SELECT DISTINCT
       order_id_edw,
-      FIRST_VALUE(transaction_timestamp_pst) over (
+      FIRST_VALUE(transaction_created_timestamp_pst) over (
         PARTITION BY
           order_id_edw
         ORDER BY
-          transaction_timestamp_pst asc
+          transaction_created_timestamp_pst asc
       ) AS refund_timestamp_pst
     FROM
       fact.refund
@@ -200,12 +226,12 @@ SELECT
   order_level.order_id_edw,
   order_level.channel,
   customer_id_edw,
+  location.name location,
   order_level.booked_date,
-  DATE(order_level.sold_date) AS booked_date_pst,
   order_level.sold_date,
-  DATE(order_level.sold_date) AS sold_date_pst,
   order_level.fulfillment_date,
-  DATE(order_level.sold_date) AS fulfillment_date_pst,
+  order_level.shipping_window_start_date,
+  order_level.shipping_window_end_date,
   order_level.is_exchange,
   order_level.status_flag_edw,
   CASE
@@ -242,6 +268,7 @@ FROM
     AND customer.customer_category = order_level.b2b_d2c
   )
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
+  left outer join dim.location location on location.location_id_ns = order_level.location
 WHERE
   order_level.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY
