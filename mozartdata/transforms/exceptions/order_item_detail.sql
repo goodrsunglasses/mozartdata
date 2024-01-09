@@ -29,8 +29,6 @@ WITH
       ) AS cashrefund_count
     FROM
       staging.order_item_detail
-    WHERE
-      order_id_edw IN ('SG-CHIMAR2022', 'CS-LST-SD-G2501679')
     GROUP BY
       order_id_edw
     HAVING
