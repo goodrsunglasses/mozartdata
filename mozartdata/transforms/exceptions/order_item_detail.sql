@@ -67,9 +67,9 @@ WITH
       ) AS parent_id,
       CASE
         WHEN createdfrom IS NULL
-        AND transaction_id_ns != parent_id THEN FALSE
-        WHEN createdfrom != parent_id THEN FALSE
-        ELSE TRUE
+        AND transaction_id_ns != parent_id THEN TRUE
+        WHEN createdfrom != parent_id THEN TRUE
+        ELSE FALSE
       END AS dupe_flag
     FROM
       first_pass
@@ -83,4 +83,4 @@ SELECT --Here I'll have it select the original full list, then join with it depe
   so_dupes.dupe_flag
 FROM
   first_pass
-  LEFT OUTER JOIN so_dupes on so_dupes.order_id_edw = first_pass.order_id_edw
+  LEFT OUTER JOIN so_dupes ON so_dupes.order_id_edw = first_pass.order_id_edw
