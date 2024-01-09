@@ -58,7 +58,8 @@ WITH
       shipment_confirmation_id AS stord_id
     FROM
       stord.stord_shipment_confirmations_8589936822
-  ),
+  )
+  -- ,
   -- netsuite AS (
   --   SELECT
   --     order_id_edw,
