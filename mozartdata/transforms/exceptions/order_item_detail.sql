@@ -46,6 +46,29 @@ WITH
     WHERE
       itemfulfillment_count > 1
   ),
+  inv_dupes AS ( --Selecting all the Inv dupes for quantity related checks
+    SELECT
+      first_pass.order_id_edw,
+      transaction_id_ns,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Shipping', 'Tax') THEN total_quantity
+          ELSE 0
+        END
+      ) invoice_qty,
+      CASE
+        WHEN invoice_qty = 0 THEN TRUE
+        ELSE FALSE
+      END AS dupe_flag
+    FROM
+      first_pass
+      LEFT OUTER JOIN staging.order_item_detail detail ON detail.order_id_edw = first_pass.order_id_edw
+    WHERE
+      invoice_count > 1
+    GROUP BY
+      first_pass.order_id_edw,
+      transaction_id_ns
+  ),
   so_dupes AS ( -- Selecting all the SO Dupes for parent_transaction related sorting
     SELECT DISTINCT
       first_pass.order_id_edw,
@@ -75,10 +98,20 @@ WITH
     WHERE
       salesorder_count > 1
   )
-SELECT --Here I'll have it select the original full list, then join with it depending on what CTE it came from and have there be a final boolean that will determine if te transaction_id_ns should be excluded
+  --Here I'll have it select the original full list, then join with it depending on what CTE it came from and have there be a final boolean that will determine if te transaction_id_ns should be excluded
+SELECT DISTINCT --Had to add a distinct as adding in the secondary CTE join made a shitload of duplicates combined with the case when, you can see this if you remove the distinct and filter for 'CS-DENVERGOV070722'
   first_pass.*,
-  so_dupes.transaction_id_ns,
-  so_dupes.dupe_flag
+  CASE
+    WHEN so_dupes.dupe_flag THEN so_dupes.transaction_id_ns
+    WHEN inv_dupes.dupe_flag THEN inv_dupes.transaction_id_ns
+    ELSE NULL
+  END AS transaction_id_ns,
+  CASE
+    WHEN so_dupes.dupe_flag THEN so_dupes.dupe_flag
+    WHEN inv_dupes.dupe_flag THEN inv_dupes.dupe_flag
+    ELSE FALSE
+  END AS dupe_flag
 FROM
   first_pass
   LEFT OUTER JOIN so_dupes ON so_dupes.order_id_edw = first_pass.order_id_edw
+  LEFT OUTER JOIN inv_dupes ON inv_dupes.order_id_edw = first_pass.order_id_edw
