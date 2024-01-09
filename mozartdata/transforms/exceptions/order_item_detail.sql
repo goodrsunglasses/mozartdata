@@ -70,7 +70,7 @@ WITH
         AND transaction_id_ns != parent_id THEN FALSE
         WHEN createdfrom != parent_id THEN FALSE
         ELSE TRUE
-      END AS dupe_weeder
+      END AS dupe_flag
     FROM
       first_pass
       LEFT OUTER JOIN staging.order_item_detail detail ON detail.order_id_edw = first_pass.order_id_edw
@@ -80,7 +80,7 @@ WITH
 SELECT --Here I'll have it select the original full list, then join with it depending on what CTE it came from and have there be a final boolean that will determine if te transaction_id_ns should be excluded
   first_pass.*,
   so_dupes.transaction_id_ns,
-  so_dupes.dupe_weeder
+  so_dupes.dupe_flag
 FROM
   first_pass
   LEFT OUTER JOIN so_dupes on so_dupes.order_id_edw = first_pass.order_id_edw
