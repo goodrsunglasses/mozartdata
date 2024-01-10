@@ -115,3 +115,5 @@ FROM
   first_pass
   LEFT OUTER JOIN so_dupes ON so_dupes.order_id_edw = first_pass.order_id_edw
   LEFT OUTER JOIN inv_dupes ON inv_dupes.order_id_edw = first_pass.order_id_edw
+ORDER BY
+  order_id_edw
