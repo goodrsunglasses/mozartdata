@@ -83,10 +83,14 @@ SELECT DISTINCT
   i.custitem_goodr_ip_height AS ip_height_in,
   i.custitem_goodr_hts_code_item AS hts_code,
   i.CUSTITEM1 AS country_of_origin,
+  CASE WHEN i.custitem_stord_item = 'T' THEN TRUE ELSE FALSE END AS stord_item_flag,
+  CASE WHEN i.custitem14 = 'T' THEN TRUE ELSE FALSE END AS distributor_portal_item_flag,
+  CASE WHEN i.custitem25 = 'T' THEN TRUE ELSE FALSE END AS key_account_prebook_item_flag,
+  CASE WHEN i.custitem27 = 'T' THEN TRUE ELSE FALSE END AS replenish_flag,
   CASE
     WHEN i.custitemmozard_gp_flag = 'T' THEN TRUE
     ELSE FALSE
-  END free_shit_flag,
+  END AS free_shit_flag,
   assembly_quantity,
   CAST(
     CASE
