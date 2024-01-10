@@ -9,6 +9,10 @@ SELECT DISTINCT
   country,
   state,
   city,
-  shipment_id
+  shipment_id,
+  SUM(quantity) over (
+    PARTITION BY
+      fulfillment_id_edw
+  ) AS total_quantity
 FROM
   fact.fulfillment_item_detail
