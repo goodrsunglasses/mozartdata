@@ -31,7 +31,8 @@ with
     , ga.account_id_ns
     , gt.posting_period
     , gt.channel
-    , sum(gt.credit_amount)-sum(gt.debit_amount) amount
+    , gt.department
+    , sum(gt.net_amount) amount
     -- , sum(gt.amount_debit) amount_debit
     -- , sum(gt.amount_transaction_positive) amount_transaction_positive
     from
@@ -51,9 +52,8 @@ with
       concat(pm.posting_period_year,' - Actual')  
     , ga.account_number
     , ga.account_id_ns
-    -- , ga.account_full_name
-    -- , concat(ga.account_number,' - ',ga.account_full_name)
     , gt.channel
+    , gt.department
     , gt.posting_period
   ),
   budget as
@@ -64,6 +64,7 @@ with
   , gb.account_id_edw
   , gb.posting_period
   , gb.channel
+  , gb.department
   , gb.budget_amount
   FROM
     fact.gl_budget gb
