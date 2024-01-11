@@ -59,7 +59,7 @@ with
   budget as
   (
   select
-    concat(left(gb.budget_version,4),' forecast') as budget_version
+    concat(left(gb.budget_version,4),' Forecast') as budget_version
   , ga.account_number
   , gb.account_id_edw
   , gb.posting_period
