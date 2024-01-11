@@ -5,9 +5,10 @@ SELECT
   
   
 
-from fact.gl_transaction
-where transaction_date >= '2024-01-01'
-  and posting_flag = true
-  and account_number >= 4000 and account_number < 50000
-group by 1 ,2
+from fact.gl_transaction gl
+where gl.transaction_date = '2024-01-01'
+  and gl.posting_flag = true
+  and gl.account_number >= 4000 and gl.account_number < 5000
+group by   DATE(transaction_date),
+  channel
 order by 1,2
