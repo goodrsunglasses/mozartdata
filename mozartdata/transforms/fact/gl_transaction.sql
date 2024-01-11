@@ -46,6 +46,8 @@ use createdate converted instead of trandate
       when ga.account_category in ('Liabilities','Equity','Revenues') then (coalesce(tal.credit,0)) - (coalesce(tal.debit,0))
       end,0)) as net_amount
     , tl.createdfrom as parent_transaction_id_ns
+    , tl.department as department_id_ns
+    , d.name as department
     from
       netsuite.transactionaccountingline tal
     inner join
@@ -67,6 +69,9 @@ use createdate converted instead of trandate
     left join
       netsuite.paymentevent pe
       on pe.doc = tran.id
+    left join
+      netsuite.department d
+      on tl.department = d.id
     where
         date(tran.trandate) >= '2022-01-01' --limit the row count
     group by
@@ -82,3 +87,5 @@ use createdate converted instead of trandate
     , ap.periodname
     , case when tal.posting = 'T' then true else false end
     , createdfrom
+    , tl.department
+    , d.name
