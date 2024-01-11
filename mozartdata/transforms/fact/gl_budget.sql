@@ -3,6 +3,8 @@ SELECT
   ga.account_number,
   category.name AS budget_version,
   cseg7.name as channel,
+  bl.department as department_id_ns,
+  d.name as department,
   bl.period as period_id_ns,
   ap.periodname as posting_period,
   SUM(bl.amount) AS budget_amount
@@ -20,6 +22,9 @@ FROM
   left join
     netsuite.accountingperiod ap
     on bl.period = ap.id
+  left join
+    netsuite.department d
+    on d.id = bl.department
 GROUP BY
   bl."ACCOUNT",
   ga.account_display_name,
@@ -27,4 +32,6 @@ GROUP BY
   category.name,
  cseg7.name,
   bl.period,
-  ap.periodname
+  ap.periodname,
+  bl.department,
+  d.name
