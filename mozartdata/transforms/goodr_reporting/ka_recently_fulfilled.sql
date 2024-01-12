@@ -1,5 +1,8 @@
 SELECT
-  ol.*,
+  ol.order_id_edw,
+  ol.transaction_number_ns,
+  ol.transaction_created_timestamp_pst,
+  ol.transaction_date,
   c.customer_id_ns as ns_customer_id,
   c.customer_name
 FROM
