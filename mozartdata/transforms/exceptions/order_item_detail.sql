@@ -108,7 +108,7 @@ SELECT DISTINCT --Had to add a distinct as adding in the secondary CTE join made
     WHEN inv_dupes.dupe_flag is not null THEN inv_dupes.transaction_id_ns
     ELSE NULL
   END AS transaction_id_ns,
-  CASE
+  CASE--boolean switch that basically goes through each CTE, and if the given transaction had a true to it then display that cte's dupe flag, or else move on
     WHEN so_dupes.dupe_flag THEN so_dupes.dupe_flag
     WHEN inv_dupes.dupe_flag THEN inv_dupes.dupe_flag
     ELSE FALSE
