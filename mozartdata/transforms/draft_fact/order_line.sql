@@ -1,5 +1,9 @@
 SELECT DISTINCT
-  CONCAT(item_detail.order_id_edw, '_', item_detail.transaction_id_ns) AS order_line_id,
+  CONCAT(
+    item_detail.order_id_edw,
+    '_',
+    item_detail.transaction_id_ns
+  ) AS order_line_id,
   item_detail.order_id_edw,
   item_detail.transaction_id_ns,
   tran.tranid AS transaction_number_ns,
@@ -46,10 +50,16 @@ SELECT DISTINCT
       item_detail.transaction_id_ns
     ORDER BY
       item_detail.product_id_edw
-  ) location
+  ) location,
+  CASE
+    WHEN parent_transaction_id IS NULL
+    AND record_type IN ('salesorder', 'cashsale') THEN TRUE
+    ELSE FALSE
+  END AS parent_transaction
 FROM
   draft_fact.order_item_detail item_detail
-  INNER JOIN fact.order_item_detail inv_part on item_detail.order_item_detail_id = inv_part.order_item_detail_id and inv_part.item_type = 'InvtPart'
+  INNER JOIN fact.order_item_detail inv_part ON item_detail.order_item_detail_id = inv_part.order_item_detail_id
+  AND inv_part.item_type = 'InvtPart'
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN dim.channel channel ON channel.channel_id_ns = tran.cseg7
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
