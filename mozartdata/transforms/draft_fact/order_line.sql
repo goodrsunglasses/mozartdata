@@ -53,7 +53,7 @@ SELECT DISTINCT
   ) location,
   CASE
     WHEN parent_transaction_id IS NULL
-    AND record_type IN ('salesorder', 'cashsale') THEN TRUE
+    AND item_detail.record_type IN ('salesorder', 'cashsale') THEN TRUE
     ELSE FALSE
   END AS parent_transaction
 FROM
