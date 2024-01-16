@@ -8,3 +8,4 @@ FROM
 WHERE
   booked_date BETWEEN '2023-01-01' AND '2024-01-01'
   AND channel = 'Key Account'
+  and order_id_edw like 'PB%'
