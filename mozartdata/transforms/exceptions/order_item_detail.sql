@@ -40,9 +40,11 @@ WITH
   ),
   if_dupes AS ( --Selecting all the IF dupes for tracking related checks
     SELECT
-      *
+      first_pass.order_id_edw,
+  transaction_id_ns
     FROM
       first_pass
+  LEFT OUTER JOIN staging.order_item_detail detail ON detail.order_id_edw = first_pass.order_id_edw
     WHERE
       itemfulfillment_count > 1
   ),
@@ -102,8 +104,8 @@ WITH
 SELECT DISTINCT --Had to add a distinct as adding in the secondary CTE join made a shitload of duplicates combined with the case when, you can see this if you remove the distinct and filter for 'CS-DENVERGOV070722'
   first_pass.*,
   CASE
-    WHEN so_dupes.dupe_flag THEN so_dupes.transaction_id_ns
-    WHEN inv_dupes.dupe_flag THEN inv_dupes.transaction_id_ns
+    WHEN so_dupes.dupe_flag is not null  THEN so_dupes.transaction_id_ns
+    WHEN inv_dupes.dupe_flag is not null THEN inv_dupes.transaction_id_ns
     ELSE NULL
   END AS transaction_id_ns,
   CASE
@@ -116,4 +118,4 @@ FROM
   LEFT OUTER JOIN so_dupes ON so_dupes.order_id_edw = first_pass.order_id_edw
   LEFT OUTER JOIN inv_dupes ON inv_dupes.order_id_edw = first_pass.order_id_edw
 ORDER BY
-  order_id_edw
+  order_id_edw,dupe_flag
