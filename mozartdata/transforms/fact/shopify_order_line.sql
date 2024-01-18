@@ -1,6 +1,6 @@
 SELECT distinct
-  d2c_shop.name,
-  d2c_shop.id,
+  d2c_shop.name order_id_edw,
+  d2c_shop.id shopify_id,
   d2c_shop.email,
   d2c_shop.subtotal_price,
   d2c_shop.total_tax,
