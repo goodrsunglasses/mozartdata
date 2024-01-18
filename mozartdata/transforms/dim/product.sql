@@ -115,6 +115,7 @@ FROM
   LEFT JOIN netsuite.customlist894 family ON i.custitem4 = family.id
   LEFT JOIN netsuite.customlist896 stage ON i.custitem6 = stage.id
   LEFT JOIN assembly_aggregate agg ON i.id = agg.parentitem
+  --USED VARIANT BECAUSE SHOPIFY.PRODUCT DOESN'T HAVE SKU AND UPC
   LEFT JOIN shopify.product_variant d2c ON (
     d2c.sku = i.itemid
     AND d2c.barcode = i.upccode
