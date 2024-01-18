@@ -1,7 +1,7 @@
 SELECT DISTINCT
   d2c_shop.name order_id_edw,
   d2c_shop.id shopify_id,
-  id as order_line_id,
+  line.id as order_line_id,
   product_id_edw,
   line.name,
   line.price,
