@@ -52,8 +52,8 @@ SELECT DISTINCT
   TRY_TO_NUMBER(tran.custbody_boomi_orderid) shopify_id,
   SUM(inv_part.total_quantity) over (
     PARTITION BY
-      item_detail.order_id_edw,
-      item_detail.transaction_id_ns
+      inv_part.order_id_edw,
+      inv_part.transaction_id_ns
   ) order_line_quantity,
   la.net_amount as order_line_amount,
   number.trackingnumber tracking_number,
