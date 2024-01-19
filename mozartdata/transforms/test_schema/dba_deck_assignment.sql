@@ -9,3 +9,7 @@ select * from shopify.customer limit 100;
 select * from shopify.order_line order by order_id desc limit 100
 
 select * from shopify.product
+
+select * from shopify.product_variant 
+
+select * from netsuite.item
