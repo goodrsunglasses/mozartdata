@@ -10,4 +10,4 @@ FROM
 WHERE
   value IS NOT NULL
 ORDER BY
-  index
+  order_id_edw
