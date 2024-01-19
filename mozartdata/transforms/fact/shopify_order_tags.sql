@@ -1,6 +1,6 @@
 SELECT
   name AS order_id_edw,
-  id AS shopify_id,
+  id AS order_id_shopify,
   tags.index,
   tags.value
 FROM
