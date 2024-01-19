@@ -1,3 +1,15 @@
+with line_amount as 
+  (
+    select
+      gt.transaction_id_ns
+    , sum(gt.net_amount) net_amount
+    from
+      fact.gl_transaction gt
+    where
+      gt.account_number between 4000 and 4999
+    group by
+      gt.transaction_id_ns
+  )
 SELECT DISTINCT
   CONCAT(
     item_detail.order_id_edw,
@@ -40,14 +52,10 @@ SELECT DISTINCT
   TRY_TO_NUMBER(tran.custbody_boomi_orderid) shopify_id,
   SUM(inv_part.total_quantity) over (
     PARTITION BY
-      inv_part.order_id_edw,
-      inv_part.transaction_id_ns
+      item_detail.order_id_edw,
+      item_detail.transaction_id_ns
   ) order_line_quantity,
-  SUM(gt.net_amount) over (
-    PARTITION BY
-      gt.order_id_edw,
-      gt.transaction_id_ns
-  ) order_line_amount,
+  la.net_amount as order_line_amount,
   number.trackingnumber tracking_number,
   FIRST_VALUE(item_detail.location IGNORE NULLS) over (
     PARTITION BY
@@ -70,7 +78,7 @@ FROM
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
   LEFT OUTER JOIN netsuite.trackingnumbermap map ON map.transaction = item_detail.transaction_id_ns
   LEFT OUTER JOIN netsuite.trackingnumber number ON number.id = map.trackingnumber
-  LEFT OUTER JOIN fact.gl_transaction gt on item_detail.transaction_id_ns = gt.transaction_id_ns and gt.account_number between 4000 and 4999
+  LEFT OUTER JOIN line_amount la on item_detail.transaction_id_ns = la.transaction_id_ns
 WHERE
   item_detail.record_type IN (
     'cashsale',
