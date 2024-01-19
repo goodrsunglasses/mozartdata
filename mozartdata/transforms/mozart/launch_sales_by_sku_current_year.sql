@@ -71,8 +71,11 @@ grid_days as
     WHERE  o.sold_date >= '2024-01-01' 
     group by lo.item_id_ns, days_since_launch
   )
+SELECT 
+  *, dateadd(day,days, earliest_sale) as txn_date
 
-SELECT
+  FROM 
+(SELECT
   gp.item_id_ns
 , gp.days
 , p.display_name
@@ -102,5 +105,5 @@ left join
   and gp.days = ts.days_since_launch 
 order by
   gp.item_id_ns
-, days
+, days)
 ---
