@@ -47,6 +47,7 @@ use createdate converted instead of trandate
       end,0)) as net_amount
     , tl.createdfrom as parent_transaction_id_ns
     , tl.department as department_id_ns
+    , tl.item as item_id_ns
     , d.name as department
     from
       netsuite.transactionaccountingline tal
@@ -88,4 +89,5 @@ use createdate converted instead of trandate
     , case when tal.posting = 'T' then true else false end
     , createdfrom
     , tl.department
+    , tl.item
     , d.name
