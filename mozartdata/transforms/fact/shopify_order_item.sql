@@ -1,6 +1,6 @@
 SELECT 
   d2c_shop.name order_id_edw,
-  d2c_shop.id shopify_id,
+  d2c_shop.id order_id_shopify,
   line.id as order_line_id,
   product_id_edw,
   line.name,
