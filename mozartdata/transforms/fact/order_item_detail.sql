@@ -79,7 +79,7 @@ WHERE
     'Payment'
   )
   AND tranline.mainline = 'F'
-  AND order_id_edw = 'G2700764'
+  AND order_id_edw IS NOT NULL
   AND (
     CASE
       WHEN recordtype IN ('invoice', 'cashsale', 'salesorder')
@@ -176,7 +176,7 @@ WHERE
   )
   AND tranline.itemtype IN ('ShipItem', 'TaxItem')
   AND tranline.mainline = 'F'
-  AND order_id_edw = 'G2700764'
+  AND order_id_edw IS NOT NULL
 GROUP BY
   order_id_edw,
   transaction_id_ns,
