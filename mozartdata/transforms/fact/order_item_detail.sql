@@ -1,3 +1,17 @@
+with net_amount as 
+  (
+    select
+      gt.transaction_id_ns
+    , gt.item_id_ns
+    , sum(gt.net_amount) net_amount
+    from
+      fact.gl_transaction gt
+    where
+      gt.account_number between 4000 and 4999
+    group by
+      gt.transaction_id_ns
+    , gt.item_id_ns
+  )
 SELECT
   REPLACE(
     COALESCE(
@@ -27,7 +41,7 @@ SELECT
   transtatus.fullname AS full_status,
   tranline.itemtype AS item_type,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  SUM(ABS(netamount)) AS net_amount,
+  na.net_amount AS net_amount,
   SUM(ABS(quantity)) AS total_quantity,
   sum(ABS(quantitybilled)) quantity_invoiced,
   sum(ABS(quantitybackordered)) quantity_backordered,
@@ -44,6 +58,7 @@ FROM
     tran.status = transtatus.id
     AND tran.type = transtatus.trantype
   )
+  LEFT OUTER JOIN net_amount na ON na.transaction_id_ns = tran.id and na.item_id_ns = tranline.item
   LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
 WHERE
   recordtype IN (
@@ -64,7 +79,7 @@ WHERE
     'Payment'
   )
   AND tranline.mainline = 'F'
-  AND order_id_edw IS NOT NULL
+  AND order_id_edw = 'G2700764'
   AND (
     CASE
       WHEN recordtype IN ('invoice', 'cashsale', 'salesorder')
@@ -86,17 +101,18 @@ WHERE
 GROUP BY
   order_id_edw,
   createdfrom,
-  transaction_id_ns,
+  tran.id,
   order_item_detail_id,
   product_id_edw,
-  item_id_ns,
+  tranline.item,
   transaction_created_timestamp_pst,
   transaction_created_date_pst,
   record_type,
   full_status,
   plain_name,
   item_type,
-  tranline.location
+  tranline.location,
+  na.net_amount
   -- Shipping and Tax
 UNION ALL
 SELECT
@@ -160,7 +176,7 @@ WHERE
   )
   AND tranline.itemtype IN ('ShipItem', 'TaxItem')
   AND tranline.mainline = 'F'
-  AND order_id_edw IS NOT NULL
+  AND order_id_edw = 'G2700764'
 GROUP BY
   order_id_edw,
   transaction_id_ns,
