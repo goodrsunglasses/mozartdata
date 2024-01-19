@@ -68,6 +68,8 @@ SELECT DISTINCT
   templefinish.name AS finish_temple,
   lenscolor.name AS color_lens_finish,
   i.custitem24 AS lens_type,
+  design.name AS design_tier,
+  artwork.name AS frame_artwork,
   i.custitem7 AS d2c_launch_timestamp,
   DATE(i.custitem7) AS d2c_launch_date,
   i.custitem16 AS b2b_launch_timestamp,
@@ -114,6 +116,8 @@ FROM
   LEFT JOIN netsuite.customlist_psgss_merc_division division ON i.custitem_psgss_merc_division = division.id
   LEFT JOIN netsuite.customlist894 family ON i.custitem4 = family.id
   LEFT JOIN netsuite.customlist896 stage ON i.custitem6 = stage.id
+  LEFT JOIN netsuite.customlist987 design ON i.custitem17 = design.id
+  LEFT JOIN netsuite.customlist1271 artwork ON i.custitem30 = artwork.id
   LEFT JOIN assembly_aggregate agg ON i.id = agg.parentitem
   --USED VARIANT BECAUSE SHOPIFY.PRODUCT DOESN'T HAVE SKU AND UPC
   LEFT JOIN shopify.product_variant d2c ON (
