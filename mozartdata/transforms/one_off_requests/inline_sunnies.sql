@@ -1,5 +1,5 @@
 --dim.product where family = 'INLINE' and merchandise_department = 'SUNGLASSES'
-with customer_orders
+with customer_orders as
 (
   SELECT
     o.order_id_edw
@@ -11,13 +11,17 @@ with customer_orders
   WHERE
     o.channel = 'Goodr.com'
 ),
-sunnies as
+baskets as
 (
   SELECT
     oi.order_id_edw
   , p.sku
   , p.display_name
-  , sum(oi.quantity_sold)
+  , p.family
+  , p.merchandise_class
+  , p.design_tier
+  , sum(oi.quantity_booked) quantity_booked
+  , sum(oi.quantity_sold) quantity_sold
   FROM
     fact.order_item oi
   INNER JOIN
@@ -29,11 +33,64 @@ sunnies as
   WHERE
     p.merchandise_department = 'SUNGLASSES'
   and o.channel = 'Goodr.com'
+  and oi.order_id_edw like 'G%'
   GROUP BY
     oi.order_id_edw
   , p.sku
-  , p.name
+  , p.display_name
+  , p.merchandise_class
+  , p.family
+  , p.design_tier
   ORDER BY
     oi.order_id_edw
-  
+),
+baskets_agg as
+(
+  SELECT
+    b1.order_id_edw
+  , b1.sku
+  , b1.display_name
+  , b1.merchandise_class
+  , b1.family
+  , b1.design_tier
+  , b1.quantity_booked sku_quantity_booked
+  , b1.quantity_booked+sum(coalesce(b2.quantity_booked,0)) as order_quantity_booked
+  , sum(coalesce(b2.quantity_booked,0)) total_other_quantity_booked
+  , sum(case when b2.family = 'INLINE' then b2.quantity_booked else 0 end) inline_quantity --LICENSING LIMITED EDITION
+  , sum(case when b2.family = 'LICENSING' then b2.quantity_booked else 0 end) licensing_quantity
+  , sum(case when b2.family = 'LIMITED EDITION' then b2.quantity_booked else 0 end) limited_edition_quantity
+  , sum(case when b2.design_tier = 'STYLED' then b2.quantity_booked else 0 end) styled_quantity
+  , sum(case when b2.design_tier = 'WILD' then b2.quantity_booked else 0 end) wild_quantity
+  , sum(case when b2.design_tier = 'MILD' then b2.quantity_booked else 0 end) mild_quantity
+  , sum(case when b2.merchandise_class = 'VRGS' then b2.quantity_booked else 0 end) vrgs_quantity
+  , sum(case when b2.merchandise_class = 'OGS' then b2.quantity_booked else 0 end) ogs_quantity
+  , sum(case when b2.merchandise_class = 'CIRCLE GS' then b2.quantity_booked else 0 end) circlegs_quantity
+  , sum(case when b2.merchandise_class = 'RUNWAYS' then b2.quantity_booked else 0 end) runways_quantity
+  , sum(case when b2.merchandise_class = 'SNOW G' then b2.quantity_booked else 0 end) snowgs_quantity
+  , sum(case when b2.merchandise_class = 'WRAP GS' then b2.quantity_booked else 0 end) wrapgs_quantity
+  , sum(case when b2.merchandise_class = 'PHGS' then b2.quantity_booked else 0 end) phgs_quantity
+  , sum(case when b2.merchandise_class = 'BFGS' then b2.quantity_booked else 0 end) bfgs_quantity
+  , sum(case when b2.merchandise_class = 'MACH GS' then b2.quantity_booked else 0 end) machgs_quantity
+  , sum(case when b2.merchandise_class = 'LFGS' then b2.quantity_booked else 0 end) lfgs_quantity
+  from
+    baskets b1
+  left join
+    baskets b2
+    on b1.order_id_edw = b2.order_id_edw
+    and b1.sku != b2.sku
+  group by
+    b1.order_id_edw
+  , b1.sku
+  , b1.display_name
+  , b1.merchandise_class
+  , b1.family
+  , b1.design_tier
+  , b1.quantity_booked
 )
+
+SELECT
+  *
+from 
+  baskets_agg
+order by 
+  order_id_edw
