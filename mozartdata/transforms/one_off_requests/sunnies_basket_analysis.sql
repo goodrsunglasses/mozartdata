@@ -9,7 +9,7 @@ with customer_orders as
   FROM
     fact.orders o
   WHERE
-    o.channel = 'Goodr.com' and o.order_id_edw like 'G%'
+    o.channel = 'Goodr.com'
   and o.customer_id_edw is not null
 ),
 baskets as
@@ -34,7 +34,7 @@ baskets as
   WHERE
     p.merchandise_department = 'SUNGLASSES'
   and o.channel = 'Goodr.com'
-  and oi.order_id_edw like 'G%'
+  -- and oi.order_id_edw like 'G%'
   GROUP BY
     oi.order_id_edw
   , p.sku
