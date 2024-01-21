@@ -1,7 +1,7 @@
-SELECT 
+SELECT
   d2c_shop.name order_id_edw,
   d2c_shop.id order_id_shopify,
-  line.id as order_line_id,
+  line.id AS order_line_id,
   product_id_edw,
   line.name,
   line.price,
@@ -13,3 +13,19 @@ FROM
   shopify."ORDER" d2c_shop
   LEFT OUTER JOIN shopify.order_line line ON line.order_id = d2c_shop.id
   LEFT OUTER JOIN dim.product product ON product.d2c_id_shopify = line.variant_id
+UNION ALL
+SELECT
+  b2b_shop.name order_id_edw,
+  b2b_shop.id order_id_shopify,
+  line.id AS order_line_id,
+  product_id_edw,
+  line.name,
+  line.price,
+  line.quantity,
+  line.sku,
+  line.fulfillable_quantity,
+  line.fulfillment_status
+FROM
+  specialty_shopify."ORDER" b2b_shop
+  LEFT OUTER JOIN specialty_shopify.order_line line ON line.order_id = b2b_shop.id
+  LEFT OUTER JOIN dim.product product ON product.b2b_id_shopify = line.variant_id
