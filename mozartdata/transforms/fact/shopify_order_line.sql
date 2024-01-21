@@ -19,4 +19,25 @@ SELECT distinct
 FROM
   shopify."ORDER" d2c_shop
   LEFT OUTER JOIN shopify.order_line line ON line.order_id = d2c_shop.id
-  -- left outer join shopify.order_tag tag on tag.order_id=d2c_shop.id
+  union all 
+SELECT distinct
+  b2b_shop.name order_id_edw,
+  b2b_shop.id order_id_shopify,
+  b2b_shop.email,
+  b2b_shop.subtotal_price,
+  b2b_shop.total_tax,
+  b2b_shop.created_at,
+  b2b_shop.financial_status,
+  b2b_shop.fulfillment_status,
+  b2b_shop.total_line_items_price,
+  b2b_shop.cart_token,
+  b2b_shop.token,
+  b2b_shop.checkout_token,
+  b2b_shop.checkout_id,
+  SUM(quantity) over (
+    PARTITION BY
+      order_id
+  ) total_quantity
+FROM
+  specialty_shopify."ORDER" b2b_shop
+  LEFT OUTER JOIN specialty_shopify.order_line line ON line.order_id = b2b_shop.id
