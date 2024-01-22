@@ -27,4 +27,4 @@ FROM
   orders
   LEFT OUTER JOIN fact.shopify_order_line shopify ON shopify.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN fact.fulfillment_line fulfill ON fulfill.order_id_edw = orders.order_id_edw
---remove fulfilment
+--remove fulfilment its the wrong table (too many shipment ids)
