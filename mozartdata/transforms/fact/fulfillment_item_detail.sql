@@ -1,6 +1,7 @@
 SELECT
   fulfillment_id_edw,
   items.ordernumber AS order_id_edw,
+  'Shipstation' AS source,
   carriercode AS carrier,
   servicecode AS carrier_service,
   shipdate,
@@ -25,6 +26,7 @@ UNION ALL
 SELECT
   fulfillment_id_edw,
   orders.order_number AS order_id_edw,
+  'Stord' AS source,
   stord.carrier_name,
   stord.carrier_service_method,
   stord.shipped_at,
