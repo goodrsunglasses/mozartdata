@@ -2,12 +2,13 @@ SELECT
   d2c_shop.name order_id_edw,
   d2c_shop.id order_id_shopify,
   line.id AS order_line_id,
-  product_id_edw,
-  line.name,
-  line.price,
-  line.quantity,
+  product.product_id_edw,
   line.sku,
-  line.fulfillable_quantity,
+  line.name,
+  line.price as rate,
+  line.quantity as quantity_booked,
+  line.quantity - line.fulfillable_quantity as quantity_sold,
+  line.fulfillable_quantity as quantity_unfulfilled,
   line.fulfillment_status
 FROM
   shopify."ORDER" d2c_shop
@@ -18,12 +19,13 @@ SELECT
   b2b_shop.name order_id_edw,
   b2b_shop.id order_id_shopify,
   line.id AS order_line_id,
-  product_id_edw,
-  line.name,
-  line.price,
-  line.quantity,
+  product.product_id_edw,
   line.sku,
-  line.fulfillable_quantity,
+  line.name,
+  line.price as rate,
+  line.quantity as quantity_booked,
+  line.quantity - line.fulfillable_quantity as quantity_sold,
+  line.fulfillable_quantity as quantity_unfulfilled,
   line.fulfillment_status
 FROM
   specialty_shopify."ORDER" b2b_shop
