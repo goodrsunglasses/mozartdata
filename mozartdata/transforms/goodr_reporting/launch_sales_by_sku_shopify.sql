@@ -17,7 +17,7 @@ grid_days as
     inner join
       goodr_reporting.launch_date_vs_earliest_sale ld
       on p.item_id_ns = ld.item_id_ns
-      and earliest_d2c_sale >= '2023-01-01'
+      -- and earliest_d2c_sale >= '2023-01-01'
     inner join
       grid_days d
     on 1=1
@@ -35,11 +35,11 @@ grid_days as
     , sum(oi.amount_sold) launch_product_sales
     , sum(oi.quantity_sold) launch_product_quantity
     from
-      fact.order_item oi
+      fact.shopify_order_item oi
     inner join
       goodr_reporting.launch_date_vs_earliest_sale ld
       on ld.item_id_ns = oi.item_id_ns
-      and ld.earliest_d2c_sale >= '2023-01-01'
+      -- and ld.earliest_d2c_sale >= '2023-01-01'
     inner join
       fact.orders o
       on oi.order_id_edw = o.order_id_edw
@@ -68,7 +68,7 @@ grid_days as
       inner join
         launch_orders lo
       on o.order_id_edw = lo.order_id_edw
-    WHERE  o.sold_date >= '2023-01-01' 
+    -- WHERE  o.sold_date >= '2023-01-01' 
     group by lo.item_id_ns, days_since_launch
   )
 
