@@ -75,8 +75,8 @@ SELECT DISTINCT
   END AS parent_transaction,
   SUM(
     CASE
-      WHEN item_detail.item_type != 'InvtPart' THEN 0
-      ELSE item_detail.total_quantity
+      WHEN item_detail.item_type = 'InvtPart' THEN item_detail.total_quantity
+      ELSE 0
     END
   ) over (
     PARTITION BY
