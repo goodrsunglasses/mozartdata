@@ -11,6 +11,7 @@ with customer_orders as
   WHERE
     o.channel = 'Goodr.com'
   and o.customer_id_edw is not null
+  and o.order_id_edw like 'G%'
 ),
 baskets as
 (
@@ -34,7 +35,7 @@ baskets as
   WHERE
     p.merchandise_department = 'SUNGLASSES'
   and o.channel = 'Goodr.com'
-  -- and oi.order_id_edw like 'G%'
+  and oi.order_id_edw like 'G%'
   GROUP BY
     oi.order_id_edw
   , p.sku
