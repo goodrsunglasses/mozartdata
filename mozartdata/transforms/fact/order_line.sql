@@ -73,10 +73,15 @@ SELECT DISTINCT
     WHEN parent_id IS NOT NULL THEN TRUE
     ELSE FALSE
   END AS parent_transaction,
-  SUM(inv_part.total_quantity) over (
+  SUM(
+    CASE
+      WHEN item_detail.item_type != 'InvtPart' THEN 0
+      ELSE item_detail.total_quantity
+    END
+  ) over (
     PARTITION BY
-      inv_part.order_id_edw,
-      inv_part.transaction_id_ns
+      item_detail.order_id_edw,
+      item_detail.transaction_id_ns
   ) order_line_quantity,
   la.net_amount AS order_line_amount,
   number.trackingnumber tracking_number,
@@ -89,8 +94,6 @@ SELECT DISTINCT
   ) location
 FROM
   fact.order_item_detail item_detail
-  LEFT OUTER JOIN fact.order_item_detail inv_part ON item_detail.order_item_detail_id = inv_part.order_item_detail_id
-  AND inv_part.item_type = 'InvtPart'
   LEFT OUTER JOIN parent_transaction ON item_detail.transaction_id_ns = parent_transaction.parent_id
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN dim.channel channel ON channel.channel_id_ns = tran.cseg7
