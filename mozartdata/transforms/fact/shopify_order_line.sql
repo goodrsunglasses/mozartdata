@@ -1,6 +1,7 @@
-SELECT distinct
+SELECT DISTINCT
   d2c_shop.name order_id_edw,
   d2c_shop.id order_id_shopify,
+  'Goodr.com' AS store,
   d2c_shop.email,
   d2c_shop.subtotal_price,
   d2c_shop.total_tax,
@@ -19,10 +20,11 @@ SELECT distinct
 FROM
   shopify."ORDER" d2c_shop
   LEFT OUTER JOIN shopify.order_line line ON line.order_id = d2c_shop.id
-  union all 
-SELECT distinct
+UNION ALL
+SELECT DISTINCT
   b2b_shop.name order_id_edw,
   b2b_shop.id order_id_shopify,
+  'Specialty' AS store,
   b2b_shop.email,
   b2b_shop.subtotal_price,
   b2b_shop.total_tax,
