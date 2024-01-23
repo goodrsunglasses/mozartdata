@@ -21,10 +21,10 @@ SELECT
   orders.order_id_edw,
   shopify.order_id_shopify,
   shopify.store,
-  fulfill.shipment_id,
-  fulfill.source
+  stord.order_id stord_id,
+  shipstation.orderkey shipstation_id
 FROM
   orders
   LEFT OUTER JOIN fact.shopify_order_line shopify ON shopify.order_id_edw = orders.order_id_edw
-  LEFT OUTER JOIN fact.fulfillment_line fulfill ON fulfill.order_id_edw = orders.order_id_edw
---remove fulfilment its the wrong table (too many shipment ids)
+  LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord ON stord.order_number = orders.order_id_edw
+  LEFT OUTER JOIN shipstation_portable.shipstation_orders_8589936627 shipstation ON shipstation.ordernumber = orders.order_id_edw
