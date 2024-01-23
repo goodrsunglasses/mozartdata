@@ -29,9 +29,9 @@ SELECT
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(ABS(netamount)) AS net_amount,
   SUM(ABS(quantity)) AS total_quantity,
-  sum(ABS(quantitybilled)) quantity_invoiced,
-  sum(ABS(quantitybackordered)) quantity_backordered,
-  sum(rate) as unit_rate,
+  SUM(ABS(quantitybilled)) quantity_invoiced,
+  SUM(ABS(quantitybackordered)) quantity_backordered,
+  SUM(rate) AS unit_rate,
   SUM(rate) * total_quantity rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
@@ -54,7 +54,8 @@ WHERE
     'cashrefund',
     'purchaseorder',
     'itemreceipt',
-    'vendorbill'
+    'vendorbill',
+    'estimate'
   )
   AND tranline.itemtype IN (
     'InvtPart',
@@ -67,7 +68,7 @@ WHERE
   AND order_id_edw IS NOT NULL
   AND (
     CASE
-      WHEN recordtype IN ('invoice', 'cashsale', 'salesorder')
+      WHEN recordtype IN ('invoice', 'cashsale', 'salesorder', 'estimate')
       AND accountinglinetype IN ('INCOME') THEN TRUE
       WHEN record_type = 'vendorbill'
       AND tranline.expenseaccount = 113 THEN TRUE --Bills dont have accountinglinetype
@@ -100,7 +101,7 @@ GROUP BY
   -- Shipping and Tax
 UNION ALL
 SELECT
-    REPLACE(
+  REPLACE(
     COALESCE(
       tran.custbody_goodr_shopify_order,
       tran.custbody_goodr_po_number
@@ -134,9 +135,9 @@ SELECT
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   SUM(- netamount) net_amount,
   SUM(ABS(quantity)) AS total_quantity,
-  null as quantity_invoiced,
-  null as quantity_backordered,
-  sum(rate) as unit_rate,
+  NULL AS quantity_invoiced,
+  NULL AS quantity_backordered,
+  SUM(rate) AS unit_rate,
   SUM(rate) rate,
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
