@@ -10,6 +10,8 @@ SELECT
   line.quantity as quantity_booked,
   line.quantity - line.fulfillable_quantity as quantity_sold,
   line.fulfillable_quantity as quantity_unfulfilled,
+  line.price * line.quantity as amount_booked,
+  line.price * (line.quantity - line.fulfillable_quantity) as amount_sold,
   line.fulfillment_status
 FROM
   shopify."ORDER" d2c_shop
@@ -28,6 +30,8 @@ SELECT
   line.quantity as quantity_booked,
   line.quantity - line.fulfillable_quantity as quantity_sold,
   line.fulfillable_quantity as quantity_unfulfilled,
+  line.price * line.quantity as amount_booked,
+  line.price * (line.quantity - line.fulfillable_quantity) as amount_sold,
   line.fulfillment_status
 FROM
   specialty_shopify."ORDER" b2b_shop
