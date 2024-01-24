@@ -19,8 +19,8 @@ UNION ALL
 SELECT
   b2b_shop.name order_id_edw,
   b2b_shop.id order_id_shopify,
-  line.id AS order_line_id,
   'Specialty' AS store,
+  line.id AS order_line_id,
   product.product_id_edw,
   line.sku,
   line.name,
