@@ -1,5 +1,4 @@
 /*
-THIS TRANSFORM IS IN DRAFT, DO NOT JOIN TO THIS TRANSFORM OR USE IT FOR ANY REPORTING UNTIL IT IS CERTIFIED.
 purpose:
 One row per GL account.
 This transform creates a GL account dimension that transforms Netsuites Account table into Goodr's EDW.
