@@ -12,10 +12,11 @@ WITH
       order_id_edw IN (
         'PB-ST63168/SM',
         '113-7256776-6975450',
-        'G2361579','SO1746720'
+        'G2361579',
+        'SO1746720'
       )
   ),
-  ranking AS (--rank them for later concatination as well as counting the total amount per order_id_edw for when there is only one
+  ranking AS ( --rank them for later concatination as well as counting the total amount per order_id_edw for when there is only one
     SELECT
       order_id_edw,
       record_type,
@@ -47,21 +48,36 @@ WITH
 SELECT --finally concatenate based on the logic of all sales orders first, then cashsales/invoices, then Purchaseorders
   order_id_edw,
   record_type,
-  transaction_id_ns as parent_id,
+  transaction_id_ns AS parent_id,
   CASE
-    WHEN MAX(record_type = 'salesorder') OVER (
+    WHEN MAX(
+      CASE
+        WHEN record_type = 'salesorder'
+        AND RANK = 1 THEN 1
+        ELSE 0
+      END
+    ) OVER (
       PARTITION BY
-        order_id_edw
+        order_id_edw,
+        transaction_id_ns
     ) = 1
     AND cnt > 1 THEN CONCAT(order_id_edw, '#', RANK)
-    WHEN MAX(record_type IN ('cashsale', 'invoice')) OVER (
+    WHEN MAX(
+      CASE
+        WHEN record_type IN ('cashsale', 'invoice')
+        AND RANK = 1 THEN 1
+        ELSE 0
+      END
+    ) OVER (
       PARTITION BY
-        order_id_edw
+        order_id_edw,
+        transaction_id_ns
     ) = 1
     AND cnt > 1 THEN CONCAT(order_id_edw, '#', RANK)
-      WHEN MAX(record_type ='purchaseorder') OVER (
+    WHEN MAX(record_type = 'purchaseorder') OVER (
       PARTITION BY
-        order_id_edw
+        order_id_edw,
+        transaction_id_ns
     ) = 1
     AND cnt > 1 THEN CONCAT(order_id_edw, '#', RANK)
     ELSE order_id_edw
