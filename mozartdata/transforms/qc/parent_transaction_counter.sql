@@ -68,3 +68,4 @@ GROUP BY
   order_id_edw
 HAVING
   agg_sum > 1
+limit 400
