@@ -1,5 +1,7 @@
 SELECT
-  order_id_edw,
+  first_agg.order_id_edw,
+  channel,
+  transaction_date,
   SUM(
     salesorder_count + cashsale_count + invoice_count + purchaseorder_count
   ) agg_sum
@@ -55,7 +57,8 @@ FROM
     FROM
       staging.order_item_detail
     WHERE
-      createdfrom IS NULL and transaction_created_date_pst > '2022-01-01'
+      createdfrom IS NULL
+      AND transaction_created_date_pst > '2022-01-01'
     GROUP BY
       order_id_edw
     HAVING
@@ -63,9 +66,13 @@ FROM
       OR cashsale_count = 1
       OR invoice_count = 1
       OR purchaseorder_count = 1
-  )
+  ) first_agg
+  LEFT OUTER JOIN fact.order_line line ON line.order_id_edw = first_agg.order_id_edw
 GROUP BY
-  order_id_edw
+  first_agg.order_id_edw,
+  channel,
+  transaction_date
 HAVING
   agg_sum > 1
-limit 400
+LIMIT
+  400
