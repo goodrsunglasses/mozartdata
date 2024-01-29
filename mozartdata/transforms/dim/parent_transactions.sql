@@ -26,7 +26,11 @@ WITH
           order_id_edw
         ORDER BY
           transaction_created_timestamp_pst
-      ) AS RANK
+      ) AS RANK,
+      COUNT(*) OVER (
+        PARTITION BY
+          order_id_edw
+      ) AS cnt
     FROM
       distinct_order_lines
     WHERE
@@ -45,35 +49,18 @@ SELECT
   record_type,
   transaction_id_ns,
   transaction_created_timestamp_pst,
- CASE
-        WHEN MAX(record_type = 'salesorder') OVER (PARTITION BY order_id_edw) = 1
-            THEN CONCAT(order_id_edw, '#', rank)
-        WHEN MAX(record_type IN ('cashsale', 'invoice')) OVER (PARTITION BY order_id_edw) = 1
-            THEN CONCAT(order_id_edw, '#', rank)
-        ELSE CAST(transaction_id_ns AS VARCHAR)
-    END as custom_id
-
+  CASE
+    WHEN MAX(record_type = 'salesorder') OVER (
+      PARTITION BY
+        order_id_edw
+    ) = 1
+    AND cnt > 1 THEN CONCAT(order_id_edw, '#', RANK)
+    WHEN MAX(record_type IN ('cashsale', 'invoice')) OVER (
+      PARTITION BY
+        order_id_edw
+    ) = 1
+    AND cnt > 1 THEN CONCAT(order_id_edw, '#', RANK)
+    ELSE order_id_edw
+  END AS custom_id
 FROM
   ranking
-  --//////////////////////////////////////////////ARCHIVE ZONE //////////////////////////////////////////////////////////////////////////////////////
-  -- first_pass AS (
-  --     SELECT 
-  --       order_id_edw,
-  --       COUNT(
-  --         DISTINCT CASE
-  --           WHEN createdfrom IS NULL THEN transaction_id_ns
-  --         END
-  --       ) over (
-  --         PARTITION BY
-  --           order_id_edw
-  --       ) AS potention_parents
-  --     FROM
-  --       staging.order_item_detail
-  --     WHERE
-  --       createdfrom IS NULL
-  --       AND order_id_edw IN (
-  --         'PB-ST63168/SM',
-  --         '113-7256776-6975450',
-  --         'G2361579'
-  --       )
-  --   )
