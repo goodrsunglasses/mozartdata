@@ -12,7 +12,7 @@ WITH
       order_id_edw IN (
         'PB-ST63168/SM',
         '113-7256776-6975450',
-        'G2361579'
+        'G2361579','SO1746720'
       )
   ),
   ranking AS (--rank them for later concatination as well as counting the total amount per order_id_edw for when there is only one
