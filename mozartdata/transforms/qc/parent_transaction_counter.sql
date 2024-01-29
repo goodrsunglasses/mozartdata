@@ -55,7 +55,7 @@ FROM
     FROM
       staging.order_item_detail
     WHERE
-      createdfrom IS NULL
+      createdfrom IS NULL and transaction_created_date_pst > '2022-01-01'
     GROUP BY
       order_id_edw
     HAVING
