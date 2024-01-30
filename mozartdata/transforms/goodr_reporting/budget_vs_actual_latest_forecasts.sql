@@ -32,6 +32,7 @@ with
     , gt.posting_period
     , gt.channel
     , gt.department
+    , gt.department_id_ns
     , sum(gt.net_amount) amount
     -- , sum(gt.amount_debit) amount_debit
     -- , sum(gt.amount_transaction_positive) amount_transaction_positive
@@ -54,6 +55,7 @@ with
     , ga.account_id_ns
     , gt.channel
     , gt.department
+    , gt.department_id_ns
     , gt.posting_period
   ),
   budget as
@@ -65,6 +67,7 @@ with
   , gb.posting_period
   , gb.channel
   , gb.department
+  , gb.department_id_ns
   , gb.budget_amount
   FROM
     fact.gl_budget gb
