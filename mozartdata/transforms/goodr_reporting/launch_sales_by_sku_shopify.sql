@@ -38,7 +38,7 @@ grid_days as
       fact.shopify_order_item oi
     inner join
       goodr_reporting.launch_date_vs_earliest_sale ld
-      on ld.item_id_ns = oi.item_id_ns
+      on ld.product_id_edw = oi.product_id_edw
       -- and ld.earliest_d2c_sale >= '2023-01-01'
     inner join
       fact.orders o
