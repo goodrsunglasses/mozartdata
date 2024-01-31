@@ -10,13 +10,13 @@ grid_days as
 , grid_product as
   (
     select
-      p.item_id_ns
+      p.product_id_edw
     , d.days
     from
       dim.product p
     inner join
       goodr_reporting.launch_date_vs_earliest_sale_shopify ld
-      on p.item_id_ns = ld.item_id_ns
+      on p.product_id_edw = ld.product_id_edw
       -- and earliest_d2c_sale >= '2023-01-01'
     inner join
       grid_days d
@@ -25,8 +25,8 @@ grid_days as
 ,  launch_orders as
   (
     SELECT
-      oi.order_id_edw
-    , ld.item_id_ns
+      oi.order_id_shopify
+    , ld.product_id_edw
     , o.sold_date
     , ld.display_name
     , ld.collection
@@ -41,12 +41,11 @@ grid_days as
       on ld.product_id_edw = oi.product_id_edw
       -- and ld.earliest_d2c_sale >= '2023-01-01'
     inner join
-      fact.orders o
-      on oi.order_id_edw = o.order_id_edw
-      and o.channel = 'Goodr.com'
+      fact.shopify_order_line o
+      on oi.order_id_shopify = o.order_id_shopify
     group by
-      oi.order_id_edw
-    , ld.item_id_ns
+      oi.order_id_shopify
+    , ld.product_id_edw
     , ld.display_name
     , ld.collection
     , ld.family
@@ -56,24 +55,24 @@ grid_days as
   total_sales as
   (
     SELECT
-      lo.item_id_ns,
+      lo.product_id_edw,
       (o.sold_date - lo.earliest_d2c_sale) as days_since_launch,
       sum(lo.launch_product_sales) as launch_product_sales,
       sum(lo.launch_product_quantity) as launch_product_quantity,
       SUM(o.amount_sold) total_sales,
       SUM(o.quantity_sold) total_quantity,
-      COUNT(DISTINCT o.order_id_edw) as orders_containing_launch
+      COUNT(DISTINCT o.order_id_shopify) as orders_containing_launch
     FROM
-     fact.orders o 
+     fact.shopify_order_line o 
       inner join
         launch_orders lo
-      on o.order_id_edw = lo.order_id_edw
+      on o.order_id_shopify = lo.order_id_shopify
     -- WHERE  o.sold_date >= '2023-01-01' 
-    group by lo.item_id_ns, days_since_launch
+    group by lo.product_id_edw, days_since_launch
   )
 
 SELECT
-  gp.item_id_ns
+  gp.product_id_edw
 , gp.days
 , p.display_name
 , p.collection
@@ -92,15 +91,15 @@ FROM
   grid_product gp
 inner join
   dim.product p
-  on gp.item_id_ns = p.item_id_ns
+  on gp.product_id_edw = p.product_id_edw
 inner join
   goodr_reporting.launch_date_vs_earliest_sale_shopify ld
-  on p.item_id_ns =ld.item_id_ns
+  on p.product_id_edw =ld.product_id_edw
 left join
   total_sales ts
-  on gp.item_id_ns = ts.item_id_ns
+  on gp.product_id_edw = ts.product_id_edw
   and gp.days = ts.days_since_launch 
 where merchandise_division = 'EYEWEAR'
 order by
-  gp.item_id_ns
+  gp.product_id_edw
 , days
