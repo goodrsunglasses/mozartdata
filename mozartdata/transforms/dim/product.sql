@@ -1,5 +1,4 @@
 /*
-THIS TRANSFORM IS IN DRAFT, DO NOT JOIN TO THIS TRANSFORM OR USE IT FOR ANY REPORTING UNTIL IT IS CERTIFIED.
 purpose:
 One row per product item.
 This transform creates a product list
@@ -33,20 +32,18 @@ SELECT DISTINCT
   i.id AS product_id_edw,
   i.id AS item_id_ns,
   stord.id AS item_id_stord,
-  FIRST_VALUE(d2c.id) over (
+  FIRST_VALUE(d2c.product_id) over (
     PARTITION BY
-      d2c.sku,
-      d2c.barcode
+      d2c.sku
     ORDER BY
       d2c.created_at asc
-  ) AS d2c_id_shopify,
-  FIRST_VALUE(b2b.id) over (
+  ) AS product_id_d2c_shopify,
+  FIRST_VALUE(b2b.product_id) over (
     PARTITION BY
-      b2b.sku,
-      b2b.barcode
+      b2b.sku
     ORDER BY
       b2b.created_at asc
-  ) AS b2b_id_shopify,
+  ) AS product_id_b2b_shopify,
   shipstation.productid AS item_id_shipstation,
   i.itemid AS sku,
   i.displayname AS display_name,
@@ -122,11 +119,9 @@ FROM
   --USED VARIANT BECAUSE SHOPIFY.PRODUCT DOESN'T HAVE SKU AND UPC
   LEFT JOIN shopify.product_variant d2c ON (
     d2c.sku = i.itemid
-    AND d2c.barcode = i.upccode
   )
   LEFT JOIN specialty_shopify.product_variant b2b ON (
     b2b.sku = i.itemid
-    AND b2b.barcode = i.upccode
   )
   LEFT JOIN stord.stord_products_8589936822 stord ON (
     stord.sku = i.itemid
