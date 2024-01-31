@@ -15,7 +15,7 @@ grid_days as
     from
       dim.product p
     inner join
-      goodr_reporting.launch_date_vs_earliest_sale ld
+      goodr_reporting.launch_date_vs_earliest_sale_shopify ld
       on p.item_id_ns = ld.item_id_ns
       -- and earliest_d2c_sale >= '2023-01-01'
     inner join
@@ -37,7 +37,7 @@ grid_days as
     from
       fact.shopify_order_item oi
     inner join
-      goodr_reporting.launch_date_vs_earliest_sale ld
+      goodr_reporting.launch_date_vs_earliest_sale_shopify ld
       on ld.product_id_edw = oi.product_id_edw
       -- and ld.earliest_d2c_sale >= '2023-01-01'
     inner join
@@ -94,7 +94,7 @@ inner join
   dim.product p
   on gp.item_id_ns = p.item_id_ns
 inner join
-  goodr_reporting.launch_date_vs_earliest_sale ld
+  goodr_reporting.launch_date_vs_earliest_sale_shopify ld
   on p.item_id_ns =ld.item_id_ns
 left join
   total_sales ts
