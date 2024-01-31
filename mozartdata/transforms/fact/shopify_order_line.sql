@@ -19,7 +19,7 @@ SELECT DISTINCT
   SUM(quantity) over (
     PARTITION BY
       order_id
-  ) order_line_quantity
+  ) quantity_sold
 FROM
   shopify."ORDER" d2c_shop
   LEFT OUTER JOIN shopify.order_line line ON line.order_id = d2c_shop.id
@@ -45,7 +45,7 @@ SELECT DISTINCT
   SUM(quantity) over (
     PARTITION BY
       order_id
-  ) order_line_quantity
+  ) quantity_sold
 FROM
   specialty_shopify."ORDER" b2b_shop
   LEFT OUTER JOIN specialty_shopify.order_line line ON line.order_id = b2b_shop.id
