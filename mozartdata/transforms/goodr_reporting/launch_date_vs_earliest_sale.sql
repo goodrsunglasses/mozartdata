@@ -3,6 +3,8 @@ SELECT
   p.display_name,
   p.family,
   p.collection,
+  p.product_id_edw,
+  p.product_id_d2c_shopify,
   MIN(p.d2c_launch_date) AS earliest_d2c_launch_date,
   MIN(p.b2b_launch_date) AS earliest_b2b_launch_date,
   MIN(o.sold_date) AS earliest_d2c_sale,
@@ -18,4 +20,6 @@ GROUP BY
   o.channel,
   p.family,
   p.collection,
-  p.display_name;
+  p.display_name,
+  p.product_id_edw,
+  p.product_id_d2c_shopify;
