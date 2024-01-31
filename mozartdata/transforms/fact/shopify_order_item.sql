@@ -16,7 +16,7 @@ SELECT
 FROM
   shopify."ORDER" d2c_shop
   LEFT OUTER JOIN shopify.order_line line ON line.order_id = d2c_shop.id
-  LEFT OUTER JOIN dim.product product ON product.d2c_id_shopify = line.variant_id
+  LEFT OUTER JOIN dim.product product ON product.product_id_d2c_shopify = line.product_id
 UNION ALL
 SELECT
   b2b_shop.name order_id_edw,
@@ -36,4 +36,4 @@ SELECT
 FROM
   specialty_shopify."ORDER" b2b_shop
   LEFT OUTER JOIN specialty_shopify.order_line line ON line.order_id = b2b_shop.id
-  LEFT OUTER JOIN dim.product product ON product.b2b_id_shopify = line.variant_id
+  LEFT OUTER JOIN dim.product product ON product.product_id_b2b_shopify = line.product_id
