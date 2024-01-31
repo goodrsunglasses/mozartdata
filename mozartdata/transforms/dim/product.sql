@@ -56,6 +56,7 @@ SELECT DISTINCT
   dept.name AS merchandise_department,
   division.name AS merchandise_division,
   i.upccode AS upc_code,
+  i.custitemold_upc_code AS old_upc_code,
   i.CUSTITEM18 AS lens_sku,
   i.vendorname AS vendor_name,
   i.custitem19 AS logo_sku,
