@@ -125,7 +125,8 @@ WITH
 SELECT 
   ud.order_id_edw,
   ud.transaction_id_ns,
-  p.custom_id
+  p.custom_id,
+  p.parent_id
 FROM
   unified_detail ud
   LEFT JOIN parent_transactions p ON ud.unified_order_id = p.parent_id
