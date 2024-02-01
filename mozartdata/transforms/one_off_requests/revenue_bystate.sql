@@ -1,3 +1,17 @@
+/*
+caveats to the code below:
+I was able to grab shipping state with the caveat that it was the shipping state associated with the record which had the GL activity. confusing wording.
+
+But let's say the Cash Sale has revenue GL impact, and the shipping state is CA. But the IF (which doesn't have revenue impact) has a shipping state of PA. 
+I would report CA. I haven't done an audit, but I would nope 99% of the time these are the same state. I've seen cases where the address is slightly different Street instead of St for example.
+
+With more time, I could grab the IF date (especially with some of the parent transaction work Kaden and I have been doing) if that's necessary.
+
+What I could NOT get is the location we shipped from. I can pull location from the order, but its' not perfect, since orders can be sourced from multiple DCs, 
+and we don't have a good way (today) to break down where each item was sourced from, and then associate that to it's portion of the GL impact. (oof :cold_sweat: thinking about it)
+
+*/
+
 with
   period_map as
   (
