@@ -1,5 +1,6 @@
 SELECT
   parents.custom_id as order_id_edw,
+  staging.order_id_edw as og_order_id_edw,
   staging.transaction_id_ns,
   order_item_detail_id,
   product_id_edw,
