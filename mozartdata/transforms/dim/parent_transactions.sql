@@ -1,7 +1,7 @@
 WITH
   distinct_order_lines AS ( --sanitize the data to just transaction level information from order_item_detail for later ranking
     SELECT DISTINCT
-      order_id_edw,
+      order_id_ns,
       transaction_id_ns,
       transaction_created_timestamp_pst,
       record_type,
@@ -11,13 +11,13 @@ WITH
   ),
   first_select AS ( --first select the applicable records based on the where clause then rank them based on transaction type
     SELECT
-      order_id_edw,
+      order_id_ns,
       record_type,
       transaction_id_ns,
       transaction_created_timestamp_pst,
       ROW_NUMBER() OVER (
         PARTITION BY
-          order_id_edw
+          order_id_ns
         ORDER BY
           CASE record_type
             WHEN 'salesorder' THEN 1
@@ -43,7 +43,7 @@ WITH
   ),
   parent_type AS ( --quickly select the rank 1, so the most applicable parent's type for later sorting
     SELECT
-      order_id_edw,
+      order_id_ns,
       record_type AS parent_type
     FROM
       first_select
@@ -52,29 +52,29 @@ WITH
   ),
   final_ranking AS ( --finally rerank everything only for the transaction types that are the same as the rank 1 that was previously gotten, this is to prevent there for example being multiple parents with different record types like in SO1746720
     SELECT
-      first_select.order_id_edw,
+      first_select.order_id_ns,
       parent_type,
       first_select.record_type,
       first_select.transaction_id_ns,
       ROW_NUMBER() OVER (
         PARTITION BY
-          first_select.order_id_edw
+          first_select.order_id_ns
         ORDER BY
           transaction_created_timestamp_pst
       ) AS final_rank,
       COUNT(*) OVER (
         PARTITION BY
-          first_select.order_id_edw
+          first_select.order_id_ns
       ) AS cnt
     FROM
       first_select
-      LEFT OUTER JOIN parent_type ON parent_type.order_id_edw = first_select.order_id_edw
+      LEFT OUTER JOIN parent_type ON parent_type.order_id_ns = first_select.order_id_ns
     WHERE
       record_type = parent_type
   ),
   parents_ids AS (
     SELECT --finally concatenate the ones with a count>1 in the previous lists and give them new order_id_edw's with a # in them
-      fr.order_id_edw,
+      fr.order_id_ns,
       fr.record_type AS parent_record_type,
       fr.transaction_id_ns AS parent_id,
       fr.record_type,
@@ -86,9 +86,9 @@ WITH
           END
         ) OVER (
           PARTITION BY
-            fr.order_id_edw
+            fr.order_id_ns
         ) = 1
-        AND cnt > 1 THEN CONCAT(fr.order_id_edw, '#', final_rank)
+        AND cnt > 1 THEN CONCAT(fr.order_id_ns, '#', final_rank)
         WHEN MAX(
           CASE
             WHEN fr.record_type IN ('cashsale', 'invoice') THEN 1
@@ -96,22 +96,22 @@ WITH
           END
         ) OVER (
           PARTITION BY
-            fr.order_id_edw
+            fr.order_id_ns
         ) = 1
-        AND cnt > 1 THEN CONCAT(fr.order_id_edw, '#', final_rank)
+        AND cnt > 1 THEN CONCAT(fr.order_id_ns, '#', final_rank)
         WHEN MAX(fr.record_type = 'purchaseorder') OVER (
           PARTITION BY
-            fr.order_id_edw
+            fr.order_id_ns
         ) = 1
-        AND cnt > 1 THEN CONCAT(fr.order_id_edw, '#', final_rank)
-        ELSE fr.order_id_edw
-      END AS custom_id
+        AND cnt > 1 THEN CONCAT(fr.order_id_ns, '#', final_rank)
+        ELSE fr.order_id_ns
+      END AS order_id_edw
     FROM
       final_ranking fr
   ),
   distinct_order AS (
     SELECT DISTINCT
-      order_id_edw,
+      order_id_ns,
       transaction_id_ns,
       createdfrom,
       record_type
@@ -120,27 +120,27 @@ WITH
   ),
   children AS (
     SELECT
-      fr.order_id_edw,
+      fr.order_id_ns,
       fr.record_type AS parent_record_type,
       fr.parent_id AS parent_id,
       od.transaction_id_ns,
       od.record_type,
-      fr.custom_id
+      fr.order_id_edw
     FROM
       parents_ids fr
-      inner JOIN distinct_order od ON (fr.parent_id = od.createdfrom and fr.order_id_edw = od.order_id_edw)
+      inner JOIN distinct_order od ON (fr.parent_id = od.createdfrom and fr.order_id_ns = od.order_id_ns)
   ),
   parents AS (
     SELECT
-      fr.order_id_edw,
+      fr.order_id_ns,
       fr.record_type AS parent_record_type,
       fr.parent_id AS parent_id,
       od.transaction_id_ns,
       od.record_type,
-      fr.custom_id
+      fr.order_id_edw
     FROM
       parents_ids fr
-      inner JOIN distinct_order od ON (fr.parent_id = od.transaction_id_ns and fr.order_id_edw = od.order_id_edw)
+      inner JOIN distinct_order od ON (fr.parent_id = od.transaction_id_ns and fr.order_id_ns = od.order_id_ns)
   )
 SELECT
   *
