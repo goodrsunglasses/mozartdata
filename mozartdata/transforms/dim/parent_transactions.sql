@@ -74,36 +74,41 @@ WITH
       record_type = parent_type
   )
   SELECT --finally concatenate the ones with a count>1 in the previous lists and give them new order_id_edw's with a # in them
-    order_id_edw,
-    record_type,
-    transaction_id_ns AS parent_id,
+    fr.order_id_edw,
+    fr.record_type AS parent_record_type,
+    fr.transaction_id_ns AS parent_id,
+    od.transaction_id_ns,
+    od.record_type,
     CASE
       WHEN MAX(
         CASE
-          WHEN record_type = 'salesorder' THEN 1
+          WHEN  fr.record_type = 'salesorder' THEN 1
           ELSE 0
         END
       ) OVER (
         PARTITION BY
-          order_id_edw
+          fr.order_id_edw
       ) = 1
-      AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
+      AND cnt > 1 THEN CONCAT(fr.order_id_edw, '#', final_rank)
       WHEN MAX(
         CASE
-          WHEN record_type IN ('cashsale', 'invoice') THEN 1
+          WHEN  fr.record_type IN ('cashsale', 'invoice') THEN 1
           ELSE 0
         END
       ) OVER (
         PARTITION BY
-          order_id_edw
+          fr.order_id_edw
       ) = 1
-      AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
-      WHEN MAX(record_type = 'purchaseorder') OVER (
+      AND cnt > 1 THEN CONCAT(fr.order_id_edw, '#', final_rank)
+      WHEN MAX( fr.record_type = 'purchaseorder') OVER (
         PARTITION BY
-          order_id_edw
+          fr.order_id_edw
       ) = 1
-      AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
-      ELSE order_id_edw
+      AND cnt > 1 THEN CONCAT(fr.order_id_edw, '#', final_rank)
+      ELSE fr.order_id_edw
     END AS custom_id
   FROM
-    final_ranking
+    final_ranking fr
+  left join
+    staging.order_item_detail od
+  on (fr.transaction_id_ns = od.createdfrom or fr.transaction_id_ns = od.transaction_id_ns)
