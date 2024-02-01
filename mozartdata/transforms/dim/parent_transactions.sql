@@ -111,6 +111,7 @@ WITH
   ),
   distinct_order AS (
     SELECT DISTINCT
+      order_id_edw,
       transaction_id_ns,
       createdfrom,
       record_type
@@ -127,7 +128,7 @@ WITH
       fr.custom_id
     FROM
       parents_ids fr
-      inner JOIN distinct_order od ON (fr.parent_id = od.createdfrom)
+      inner JOIN distinct_order od ON (fr.parent_id = od.createdfrom and fr.order_id_edw = od.order_id_edw)
   ),
   parents AS (
     SELECT
@@ -139,7 +140,7 @@ WITH
       fr.custom_id
     FROM
       parents_ids fr
-      inner JOIN distinct_order od ON (fr.parent_id = od.transaction_id_ns)
+      inner JOIN distinct_order od ON (fr.parent_id = od.transaction_id_ns and fr.order_id_edw = od.order_id_edw)
   )
 SELECT
   *
