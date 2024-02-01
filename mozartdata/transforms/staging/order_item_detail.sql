@@ -6,9 +6,9 @@ SELECT
     ),
     ' ',
     ''
-  ) AS order_id_edw,
+  ) AS order_id_ns,
   tran.id AS transaction_id_ns,
-  CONCAT(order_id_edw, '_', tran.id, '_', item) AS order_item_detail_id,
+  CONCAT(order_id_ns, '_', tran.id, '_', item) AS order_item_detail_id,
   CASE
     WHEN tranline.itemtype IN (
       'InvtPart',
@@ -65,7 +65,7 @@ WHERE
     'Payment'
   )
   AND tranline.mainline = 'F'
-  AND order_id_edw IS NOT NULL
+  AND order_id_ns IS NOT NULL
   AND (
     CASE
       WHEN recordtype IN ('invoice', 'cashsale', 'salesorder', 'estimate')
@@ -85,7 +85,7 @@ WHERE
     END
   )
 GROUP BY
-  order_id_edw,
+  order_id_ns,
   createdfrom,
   transaction_id_ns,
   order_item_detail_id,
@@ -108,9 +108,9 @@ SELECT
     ),
     ' ',
     ''
-  ) AS order_id_edw,
+  ) AS order_id_ns,
   tran.id AS transaction_id_ns,
-  CONCAT(order_id_edw, '_', tran.id, '_', item) AS order_item_detail_id,
+  CONCAT(order_id_ns, '_', tran.id, '_', item) AS order_item_detail_id,
   CASE
     WHEN tranline.itemtype IN (
       'InvtPart',
@@ -161,9 +161,9 @@ WHERE
   )
   AND tranline.itemtype IN ('ShipItem', 'TaxItem')
   AND tranline.mainline = 'F'
-  AND order_id_edw IS NOT NULL
+  AND order_id_ns IS NOT NULL
 GROUP BY
-  order_id_edw,
+  order_id_ns,
   transaction_id_ns,
   createdfrom,
   order_item_detail_id,
