@@ -127,7 +127,7 @@ WITH
       fr.custom_id
     FROM
       parents_ids fr
-      LEFT JOIN distinct_order od ON (fr.parent_id = od.createdfrom)
+      inner JOIN distinct_order od ON (fr.parent_id = od.createdfrom)
   ),
   parents AS (
     SELECT
@@ -139,7 +139,7 @@ WITH
       fr.custom_id
     FROM
       parents_ids fr
-      LEFT JOIN distinct_order od ON (fr.parent_id = od.transaction_id_ns)
+      inner JOIN distinct_order od ON (fr.parent_id = od.transaction_id_ns)
   )
 SELECT
   *
