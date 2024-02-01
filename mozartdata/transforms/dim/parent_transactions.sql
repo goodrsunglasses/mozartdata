@@ -72,38 +72,48 @@ WITH
       LEFT OUTER JOIN parent_type ON parent_type.order_id_edw = first_select.order_id_edw
     WHERE
       record_type = parent_type
+  ),
+  parent_transactions AS (
+    SELECT --finally concatenate the ones with a count>1 in the previous lists and give them new order_id_edw's with a # in them
+      order_id_edw,
+      record_type,
+      transaction_id_ns AS parent_id,
+      CASE
+        WHEN MAX(
+          CASE
+            WHEN record_type = 'salesorder' THEN 1
+            ELSE 0
+          END
+        ) OVER (
+          PARTITION BY
+            order_id_edw
+        ) = 1
+        AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
+        WHEN MAX(
+          CASE
+            WHEN record_type IN ('cashsale', 'invoice') THEN 1
+            ELSE 0
+          END
+        ) OVER (
+          PARTITION BY
+            order_id_edw
+        ) = 1
+        AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
+        WHEN MAX(record_type = 'purchaseorder') OVER (
+          PARTITION BY
+            order_id_edw
+        ) = 1
+        AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
+        ELSE order_id_edw
+      END AS custom_id
+    FROM
+      final_ranking
   )
-  SELECT --finally concatenate the ones with a count>1 in the previous lists and give them new order_id_edw's with a # in them
-    order_id_edw,
-    record_type,
-    transaction_id_ns AS parent_id,
-    CASE
-      WHEN MAX(
-        CASE
-          WHEN record_type = 'salesorder' THEN 1
-          ELSE 0
-        END
-      ) OVER (
-        PARTITION BY
-          order_id_edw
-      ) = 1
-      AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
-      WHEN MAX(
-        CASE
-          WHEN record_type IN ('cashsale', 'invoice') THEN 1
-          ELSE 0
-        END
-      ) OVER (
-        PARTITION BY
-          order_id_edw
-      ) = 1
-      AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
-      WHEN MAX(record_type = 'purchaseorder') OVER (
-        PARTITION BY
-          order_id_edw
-      ) = 1
-      AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
-      ELSE order_id_edw
-    END AS custom_id
-  FROM
-    final_ranking
+SELECT
+  COALESCE(detail.order_id_edw, parent.order_id_edw) AS order_id_edw,
+  COALESCE(detail.transaction_id_ns, parent.parent_id) AS transaction_id_ns
+FROM
+  parent_transactions parent
+  LEFT  JOIN staging.order_item_detail detail ON parent.parent_id = detail.createdfrom
+WHERE
+  parent.order_id_edw = '017731'
