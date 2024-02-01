@@ -24,7 +24,7 @@ SELECT
   exceptions.dupe_flag
 FROM
   dim.parent_transactions parents
-  left outer join staging.order_item_detail staging on staging.order_id_edw = parents.order_id_edw
+  left outer join staging.order_item_detail staging on staging.transaction_id_ns = parents.transaction_id_ns
   LEFT OUTER JOIN exceptions.order_item_detail exceptions ON exceptions.transaction_id_ns = staging.transaction_id_ns
 WHERE
   (
