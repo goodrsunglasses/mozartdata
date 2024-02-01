@@ -11,35 +11,41 @@ WITH
   ),
   first_select AS ( --first select the applicable records based on the where clause then rank them based on transaction type
     SELECT
-      order_id_ns,
-      record_type,
-      transaction_id_ns,
-      transaction_created_timestamp_pst,
+      ol1.order_id_ns,
+      ol1.record_type,
+      ol1.transaction_id_ns,
+      ol1.transaction_created_timestamp_pst,
       ROW_NUMBER() OVER (
         PARTITION BY
-          order_id_ns
+          ol1.order_id_ns
         ORDER BY
-          CASE record_type
+          CASE ol1.record_type
             WHEN 'salesorder' THEN 1
             WHEN 'cashsale' THEN 2
             WHEN 'invoice' THEN 2
             WHEN 'purchaseorder' THEN 3
             ELSE 4
           END,
-          transaction_created_timestamp_pst
+          ol1.transaction_created_timestamp_pst
       ) AS RANK
     FROM
-      distinct_order_lines
+      distinct_order_lines ol1
+    LEFT OUTER JOIN
+      distinct_order_lines ol2
+    ON ol2.createdfrom = ol1.transaction_id_ns
+    AND ol1.record_type = 'purchaseorder'
     WHERE
-      (record_type = 'salesorder')
+      (ol1.record_type = 'salesorder')
       OR (
         (
-          record_type = 'cashsale'
-          OR record_type = 'invoice'
+          ol1.record_type = 'cashsale'
+          OR ol1.record_type = 'invoice'
         )
-        AND createdfrom IS NULL
+        AND ol1.createdfrom IS NULL
       )
-      OR (record_type = 'purchaseorder' and createdfrom is null)
+      OR (
+          (ol1.record_type = 'purchaseorder' and ol1.createdfrom is null)
+          OR (ol1.record_type = 'purchaseorder' and ol2.order_id_ns != ol1.order_id_ns and ol1.createdfrom is not null))
   ),
   parent_type AS ( --quickly select the rank 1, so the most applicable parent's type for later sorting
     SELECT
