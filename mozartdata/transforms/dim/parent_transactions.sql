@@ -32,7 +32,7 @@ WITH
       distinct_order_lines ol1
     LEFT OUTER JOIN
       distinct_order_lines ol2
-    ON ol2.createdfrom = ol1.transaction_id_ns
+    ON ol2.transaction_id_ns = ol1.createdfrom
     AND ol1.record_type = 'purchaseorder'
     WHERE
       (ol1.record_type = 'salesorder')
@@ -44,8 +44,9 @@ WITH
         AND ol1.createdfrom IS NULL
       )
       OR (
-          (ol1.record_type = 'purchaseorder' and ol1.createdfrom is null)
-          OR (ol1.record_type = 'purchaseorder' and ol2.order_id_ns != ol1.order_id_ns and ol1.createdfrom is not null))
+          (ol1.record_type = 'purchaseorder' AND ol1.createdfrom is null)
+          OR (ol1.record_type = 'purchaseorder' AND ol2.order_id_ns != ol1.order_id_ns AND ol1.createdfrom is not null)
+        )
   ),
   parent_type AS ( --quickly select the rank 1, so the most applicable parent's type for later sorting
     SELECT
