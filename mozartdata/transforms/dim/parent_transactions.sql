@@ -9,13 +9,6 @@ WITH
       createdfrom
     FROM
       staging.order_item_detail
-    WHERE
-      order_id_edw IN (
-        'PB-ST63168/SM',
-        '113-7256776-6975450',
-        'G2361579',
-        'SO1746720'
-      )
   ),
   first_select AS ( --first select the applicable records based on the where clause then rank them based on transaction type
     SELECT
