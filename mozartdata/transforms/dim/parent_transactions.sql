@@ -11,41 +11,41 @@ WITH
   ),
   first_select AS ( --first select the applicable records based on the where clause then rank them based on transaction type
     SELECT
-      ol1.order_id_ns,
-      ol1.record_type,
-      ol1.transaction_id_ns,
-      ol1.transaction_created_timestamp_pst,
+      ol.order_id_ns,
+      ol.record_type,
+      ol.transaction_id_ns,
+      ol.transaction_created_timestamp_pst,
       ROW_NUMBER() OVER (
         PARTITION BY
-          ol1.order_id_ns
+          ol.order_id_ns
         ORDER BY
-          CASE ol1.record_type
+          CASE ol.record_type
             WHEN 'salesorder' THEN 1
             WHEN 'cashsale' THEN 2
             WHEN 'invoice' THEN 2
             WHEN 'purchaseorder' THEN 3
             ELSE 4
           END,
-          ol1.transaction_created_timestamp_pst
+          ol.transaction_created_timestamp_pst
       ) AS RANK
     FROM
-      distinct_order_lines ol1
+      distinct_order_lines ol
     LEFT OUTER JOIN
-      distinct_order_lines ol2
-    ON ol2.transaction_id_ns = ol1.createdfrom
-    AND ol1.record_type = 'purchaseorder'
+      distinct_order_lines po_parent
+    ON po_parent.transaction_id_ns = ol.createdfrom
+    AND ol.record_type = 'purchaseorder'
     WHERE
-      (ol1.record_type = 'salesorder')
+      (ol.record_type = 'salesorder')
       OR (
         (
-          ol1.record_type = 'cashsale'
-          OR ol1.record_type = 'invoice'
+          ol.record_type = 'cashsale'
+          OR ol.record_type = 'invoice'
         )
-        AND ol1.createdfrom IS NULL
+        AND ol.createdfrom IS NULL
       )
       OR (
-          (ol1.record_type = 'purchaseorder' AND ol1.createdfrom is null)
-          OR (ol1.record_type = 'purchaseorder' AND ol2.order_id_ns != ol1.order_id_ns AND ol1.createdfrom is not null)
+          (ol.record_type = 'purchaseorder' AND ol.createdfrom is null)
+          OR (ol.record_type = 'purchaseorder' AND po_parent.order_id_ns != ol.order_id_ns AND ol.createdfrom is not null)
         )
   ),
   parent_type AS ( --quickly select the rank 1, so the most applicable parent's type for later sorting
