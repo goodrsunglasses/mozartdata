@@ -30,10 +30,8 @@ WITH
       ) AS RANK
     FROM
       distinct_order_lines ol
-    LEFT OUTER JOIN
-      distinct_order_lines po_parent
-    ON po_parent.transaction_id_ns = ol.createdfrom
-    AND ol.record_type = 'purchaseorder'
+      LEFT OUTER JOIN distinct_order_lines po_parent ON po_parent.transaction_id_ns = ol.createdfrom
+      AND ol.record_type = 'purchaseorder'
     WHERE
       (ol.record_type = 'salesorder')
       OR (
@@ -44,9 +42,16 @@ WITH
         AND ol.createdfrom IS NULL
       )
       OR (
-          (ol.record_type = 'purchaseorder' AND ol.createdfrom is null)
-          OR (ol.record_type = 'purchaseorder' AND po_parent.order_id_ns != ol.order_id_ns AND ol.createdfrom is not null)
+        (
+          ol.record_type = 'purchaseorder'
+          AND ol.createdfrom IS NULL
         )
+        OR (
+          ol.record_type = 'purchaseorder'
+          AND po_parent.order_id_ns != ol.order_id_ns
+          AND ol.createdfrom IS NOT NULL
+        )
+      )
   ),
   parent_type AS ( --quickly select the rank 1, so the most applicable parent's type for later sorting
     SELECT
@@ -135,7 +140,10 @@ WITH
       fr.order_id_edw
     FROM
       parents_ids fr
-      inner JOIN distinct_order od ON (fr.parent_id = od.createdfrom and fr.order_id_ns = od.order_id_ns)
+      INNER JOIN distinct_order od ON (
+        fr.parent_id = od.createdfrom
+        AND fr.order_id_ns = od.order_id_ns
+      )
   ),
   parents AS (
     SELECT
@@ -147,7 +155,10 @@ WITH
       fr.order_id_edw
     FROM
       parents_ids fr
-      inner JOIN distinct_order od ON (fr.parent_id = od.transaction_id_ns and fr.order_id_ns = od.order_id_ns)
+      INNER JOIN distinct_order od ON (
+        fr.parent_id = od.transaction_id_ns
+        AND fr.order_id_ns = od.order_id_ns
+      )
   )
 SELECT
   *
