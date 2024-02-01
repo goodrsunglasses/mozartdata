@@ -1,4 +1,3 @@
---This table went through a shitload of iterations and can definitly be more efficient in its line count but it has such stringent logic that breaking it up into multiple CTE's made the most sense
 WITH
   distinct_order_lines AS ( --sanitize the data to just transaction level information from order_item_detail for later ranking
     SELECT DISTINCT
@@ -73,62 +72,81 @@ WITH
     WHERE
       record_type = parent_type
   ),
-  parent_transactions AS (
+  parents_ids AS (
     SELECT --finally concatenate the ones with a count>1 in the previous lists and give them new order_id_edw's with a # in them
-      order_id_edw,
-      record_type,
-      transaction_id_ns AS parent_id,
+      fr.order_id_edw,
+      fr.record_type AS parent_record_type,
+      fr.transaction_id_ns AS parent_id,
+      fr.record_type,
       CASE
         WHEN MAX(
           CASE
-            WHEN record_type = 'salesorder' THEN 1
+            WHEN fr.record_type = 'salesorder' THEN 1
             ELSE 0
           END
         ) OVER (
           PARTITION BY
-            order_id_edw
+            fr.order_id_edw
         ) = 1
-        AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
+        AND cnt > 1 THEN CONCAT(fr.order_id_edw, '#', final_rank)
         WHEN MAX(
           CASE
-            WHEN record_type IN ('cashsale', 'invoice') THEN 1
+            WHEN fr.record_type IN ('cashsale', 'invoice') THEN 1
             ELSE 0
           END
         ) OVER (
           PARTITION BY
-            order_id_edw
+            fr.order_id_edw
         ) = 1
-        AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
-        WHEN MAX(record_type = 'purchaseorder') OVER (
+        AND cnt > 1 THEN CONCAT(fr.order_id_edw, '#', final_rank)
+        WHEN MAX(fr.record_type = 'purchaseorder') OVER (
           PARTITION BY
-            order_id_edw
+            fr.order_id_edw
         ) = 1
-        AND cnt > 1 THEN CONCAT(order_id_edw, '#', final_rank)
-        ELSE order_id_edw
+        AND cnt > 1 THEN CONCAT(fr.order_id_edw, '#', final_rank)
+        ELSE fr.order_id_edw
       END AS custom_id
     FROM
-      final_ranking
+      final_ranking fr
   ),
-  unified_detail AS (
+  distinct_order AS (
     SELECT DISTINCT
-      CASE
-        WHEN d.createdfrom IS NULL THEN d.transaction_id_ns
-        ELSE d.createdfrom
-      END AS unified_order_id,
-      d.order_id_edw,
-      d.transaction_id_ns,
-      d.record_type,
-      d.createdfrom
+      transaction_id_ns,
+      createdfrom,
+      record_type
     FROM
-      staging.order_item_detail d
+      staging.order_item_detail
+  ),
+  children AS (
+    SELECT
+      fr.order_id_edw,
+      fr.record_type AS parent_record_type,
+      fr.parent_id AS parent_id,
+      od.transaction_id_ns,
+      od.record_type,
+      fr.custom_id
+    FROM
+      parents_ids fr
+      LEFT JOIN distinct_order od ON (fr.parent_id = od.createdfrom)
+  ),
+  parents AS (
+    SELECT
+      fr.order_id_edw,
+      fr.record_type AS parent_record_type,
+      fr.parent_id AS parent_id,
+      od.transaction_id_ns,
+      od.record_type,
+      fr.custom_id
+    FROM
+      parents_ids fr
+      LEFT JOIN distinct_order od ON (fr.parent_id = od.transaction_id_ns)
   )
-SELECT 
-  ud.order_id_edw,
-  ud.transaction_id_ns,
-  p.custom_id,
-  p.parent_id
+SELECT
+  *
 FROM
-  unified_detail ud
-  LEFT JOIN parent_transactions p ON ud.unified_order_id = p.parent_id
-WHERE
-  ud.order_id_edw = '017731'
+  children
+UNION ALL
+SELECT
+  *
+FROM
+  parents
