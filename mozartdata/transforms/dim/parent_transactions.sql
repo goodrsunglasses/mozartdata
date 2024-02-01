@@ -108,12 +108,26 @@ WITH
       END AS custom_id
     FROM
       final_ranking
+  ),
+  unified_detail AS (
+    SELECT DISTINCT
+      CASE
+        WHEN d.createdfrom IS NULL THEN d.transaction_id_ns
+        ELSE d.createdfrom
+      END AS unified_order_id,
+      d.order_id_edw,
+      d.transaction_id_ns,
+      d.record_type,
+      d.createdfrom
+    FROM
+      staging.order_item_detail d
   )
-SELECT
-  COALESCE(detail.order_id_edw, parent.order_id_edw) AS order_id_edw,
-  COALESCE(detail.transaction_id_ns, parent.parent_id) AS transaction_id_ns
+SELECT 
+  ud.order_id_edw,
+  ud.transaction_id_ns,
+  p.custom_id
 FROM
-  parent_transactions parent
-  LEFT  JOIN staging.order_item_detail detail ON parent.parent_id = detail.createdfrom
+  unified_detail ud
+  LEFT JOIN parent_transactions p ON ud.unified_order_id = p.parent_id
 WHERE
-  parent.order_id_edw = '017731'
+  ud.order_id_edw = '017731'
