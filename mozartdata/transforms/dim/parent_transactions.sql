@@ -39,7 +39,7 @@ WITH
         )
         AND createdfrom IS NULL
       )
-      OR (record_type = 'purchaseorder')
+      OR (record_type = 'purchaseorder' and created_from is null)
   ),
   parent_type AS ( --quickly select the rank 1, so the most applicable parent's type for later sorting
     SELECT
