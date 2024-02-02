@@ -12,54 +12,63 @@ and we don't have a good way (today) to break down where each item was sourced f
 
 */
 
-with
-  period_map as
+with orders as
   (
-    select distinct
-      ap.periodname as posting_period
-    , try_to_date(posting_period,'Mon YYYY') posting_period_date
-    , MONTH(TO_DATE(posting_period,'Mon YYYY')) posting_period_month
-    , YEAR(TO_DATE(posting_period,'Mon YYYY')) posting_period_year
-    from
-      netsuite.accountingperiod ap
-    WHERE
-      try_to_date(posting_period,'Mon YYYY') is not null
-
-  ),
-  actual as
-  (
-    select
-      concat(pm.posting_period_year,' - Actual') as budget_version
-    , ga.account_number
-    , ga.account_id_ns
-    , gt.posting_period
-    , gt.channel
-    , sum(gt.credit_amount)-sum(gt.debit_amount) amount
-    -- , sum(gt.amount_debit) amount_debit
-    -- , sum(gt.amount_transaction_positive) amount_transaction_positive
-    from
-      fact.gl_transaction gt
-    inner join
-      dim.gl_account ga
-      on ga.account_id_ns = gt.account_id_ns
-    inner join
-      period_map pm
-      on gt.posting_period = pm.posting_period
-      and pm.posting_period_year >= '2021'
-    where
-      --gt.posting_period  in ('Jan 2023','Feb 2023','Mar 2023','Apr 2023','May 2023','Jun 2023','Jul 2023','Aug 2023','Sep 2023')
-      posting_flag = true
-    and ga.account_number >= 4000 and ga.account_number < 5000
-    group by
-      concat(pm.posting_period_year,' - Actual')  
-    , ga.account_number
-    , ga.account_id_ns
-    -- , ga.account_full_name
-    -- , concat(ga.account_number,' - ',ga.account_full_name)
-    , gt.channel
-    , gt.posting_period
+SELECT
+ gt.order_id_edw  
+, gt.transaction_id_ns
+, gt.transaction_number_ns
+, o.location
+, gt.channel
+, ol.record_type
+, t.shippingaddress
+,  sum(gt.net_amount) net_amount
+FROM
+  fact.gl_transaction gt
+inner join
+  netsuite.transaction t
+  on t.id = gt.transaction_id_ns
+left join
+  fact.order_line ol
+  on gt.transaction_id_ns = ol.transaction_id_ns
+left join
+  fact.orders o
+  on ol.order_id_edw = o.order_id_edw
+left join
+  fact.purchase_orders po
+  on ol.order_id_edw = po.order_id_edw
+WHERE
+  gt.account_number between 4000 and 4999
+  and YEAR(TO_DATE(gt.posting_period,'Mon YYYY'))='2022'
+  and gt.posting_flag 
+group by
+ gt.order_id_edw  
+, gt.transaction_id_ns
+, gt.transaction_number_ns
+, o.location
+, gt.channel
+, ol.record_type
+, t.shippingaddress
   )
- SELECT
-    *
+  SELECT
+    o.*
+  , coalesce(isa.state, csa.state, cra.state, cria.state,'UNKNOWN') shipping_state
   FROM
-    actual a
+    orders o
+  left join
+    netsuite.invoiceshippingaddress isa
+    on isa.nkey = o.shippingaddress
+    and o.record_type = 'invoice'
+  left join
+    netsuite.cashsaleshippingaddress csa
+    on csa.nkey = o.shippingaddress
+    and o.record_type = 'cashsale'
+  left join
+    netsuite.cashsaleshippingaddress cra
+        on cra.nkey = o.shippingaddress
+    and o.record_type = 'cashrefund'
+    left join
+    netsuite.invoiceshippingaddress cria
+        on cria.nkey = o.shippingaddress
+    and o.record_type = 'cashrefund'
+    where net_amount != 0
