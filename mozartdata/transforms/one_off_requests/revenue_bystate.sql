@@ -10,6 +10,7 @@ With more time, I could grab the IF date (especially with some of the parent tra
 What I could NOT get is the location we shipped from. I can pull location from the order, but its' not perfect, since orders can be sourced from multiple DCs, 
 and we don't have a good way (today) to break down where each item was sourced from, and then associate that to it's portion of the GL impact. (oof :cold_sweat: thinking about it)
 
+Also note: you have to run this in snowflake in order to export. It is too many rows for mozart or sheet sync.
 */
 
 with orders as
