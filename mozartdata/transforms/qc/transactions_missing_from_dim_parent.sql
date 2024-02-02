@@ -1,6 +1,6 @@
 /*
 This is the list of transactions in NS which are not correctly associated as parent child
-As of 2/2/2024 There are 1,277 transactions out of 2,095,374. Of those 335
+As of 2/2/2024 There are 335 transactions out of 2,095,374. These do NOT include cash refunds, estimates (quotes), vendor bills or item receipts
 
 */
 SELECT distinct
