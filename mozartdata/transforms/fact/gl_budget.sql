@@ -25,6 +25,8 @@ FROM
   left join
     netsuite.department d
     on d.id = bl.department
+where
+  bl.date_deleted is null
 GROUP BY
   bl."ACCOUNT",
   ga.account_display_name,
