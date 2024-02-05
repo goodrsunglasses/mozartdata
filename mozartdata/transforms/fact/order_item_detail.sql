@@ -11,6 +11,20 @@ with net_amount as
     group by
       gt.transaction_id_ns
     , gt.item_id_ns
+  ),
+sales_tax as 
+  (
+    select
+      gt.transaction_id_ns
+    , gt.item_id_ns
+    , sum(gt.net_amount) net_amount
+    from
+      fact.gl_transaction gt
+    where
+      gt.account_number between 2200.01 and 2200.99
+    group by
+      gt.transaction_id_ns
+    , gt.item_id_ns
   )
 SELECT
   REPLACE(
@@ -148,7 +162,7 @@ SELECT
     WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
     ELSE NULL
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  SUM(- netamount) net_amount,
+  st.net_amount AS net_amount,
   SUM(ABS(quantity)) AS total_quantity,
   null as quantity_invoiced,
   null as quantity_backordered,
@@ -161,10 +175,12 @@ SELECT
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
+  
   LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
     tran.status = transtatus.id
     AND tran.type = transtatus.trantype
   )
+  LEFT OUTER JOIN sales_tax st ON st.transaction_id_ns = tran.id and st.item_id_ns = tranline.item
   LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
 WHERE
   recordtype IN (
@@ -179,16 +195,18 @@ WHERE
   AND order_id_edw IS NOT NULL
 GROUP BY
   order_id_edw,
-  transaction_id_ns,
   createdfrom,
+  tran.id,
   order_item_detail_id,
   product_id_edw,
-  item_id_ns,
+  tranline.item,
   transaction_created_timestamp_pst,
   transaction_created_date_pst,
   record_type,
   full_status,
   plain_name,
-  item_type
+  item_type,
+  tranline.location,
+  st.net_amount
 ORDER BY
   transaction_id_ns asc
