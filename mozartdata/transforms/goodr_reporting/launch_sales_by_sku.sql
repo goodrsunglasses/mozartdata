@@ -100,7 +100,7 @@ left join
   total_sales ts
   on gp.item_id_ns = ts.item_id_ns
   and gp.days = ts.days_since_launch 
-where merchandise_division = 'EYEWEAR'
+where p.merchandise_department = 'SUNGLASSES'
 order by
   gp.item_id_ns
 , days
