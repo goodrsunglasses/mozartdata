@@ -28,5 +28,6 @@ SELECT
 , c.send_strategy:METHOD:SEND_PAST_RECIPIENTS_IMMEDIATELY:boolean as sent_strategy_past_recipients_immediately_flag
 , c.tracking_options:IS_ADD_UTM:boolean as tracking_options_is_add_utm_flag
 , c.tracking_options:IS_TRACKING_CLICKS:boolean as tracking_options_is_tracking_clicks_flag
+, c.tracking_options:IS_TRACKING_OPENS:boolean as tracking_options_is_tracking_clicks_flag
 FROM
   klaviyo_portable.klaviyo_v2_campaigns_8589937320 c
