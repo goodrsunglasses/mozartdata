@@ -29,5 +29,4 @@ FROM
   LEFT OUTER JOIN fact.shopify_order_line shopify ON shopify.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord ON stord.order_number = orders.order_id_edw
   LEFT OUTER JOIN shipstation_portable.shipstation_orders_8589936627 shipstation ON shipstation.ordernumber = orders.order_id_edw
-  where orders.order_id_edw = 'G1499687'
   ) group by order_id_edw having counter>1
