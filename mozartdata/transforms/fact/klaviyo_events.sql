@@ -1,3 +1,7 @@
+/*
+conversion based on placed order
+*/
+select count(*) FROM(
 SELECT
   e.datetime as event_timestamp
 , date(e.datetime) as event_date
@@ -21,3 +25,11 @@ FROM
 LEFT JOIN
   klaviyo.metric km
   on ke.metric_id = km.id
+)
+where metric_name like 'Placed Order' and event_date = '2024-01-10' --3971 vs 3967
+
+select name, date(e.datetime), count(distinct person_id) from klaviyo.event e inner join klaviyo.metric m on e.metric_id = m.id where  m.name in ('Placed Order') and date(e.datetime) 
+select name, date(e.datetime), e.* from klaviyo.event e inner join klaviyo.metric m on e.metric_id = m.id where  m.name in ('Placed Order') and date(e.datetime) = '2024-01-10'
+  select * from klaviyo.campaign where id = ''
+
+select * from klaviyo.event
