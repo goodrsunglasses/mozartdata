@@ -4,7 +4,7 @@ do we use loyalty or swell?
 suppressions list is always null
 */
 SELECT
-  p.profile_id as profile_id_klayvio
+  p.profile_id as profile_id_klaviyo
 , p.created as profile_created_timestamp
 , date(p.created) as profile_created_date
 , p.email
@@ -41,4 +41,4 @@ SELECT
 , p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime as subscription_timestamp
 FROM
   klaviyo_portable.klaviyo_v2_profiles_8589937320 p
-order by profile_id_klayvio
+order by profile_id_klaviyo
