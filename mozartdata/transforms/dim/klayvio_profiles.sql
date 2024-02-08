@@ -26,9 +26,13 @@ SELECT
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"Expected Date Of Next Order"')::date as expected_next_order_date
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"First Purchase Date"')::date as first_purchase_date
 , p.subscriptions:EMAIL:MARKETING:CONSENT::varchar as subscription_consent
+, case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime end as unsubscribe_timestamp
+, case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then date(p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) end as unsubscribe_date
+, case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'SPAM_COMPLAINT' then p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime end as spam_complaint_timestamp
+, case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'SPAM_COMPLAINT' then date(p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) end as spam_complaint_date
 , p.subscriptions:EMAIL:MARKETING:CUSTOM_METHOD_DETAIL::varchar as subscription_custom_method_detail
 , p.subscriptions:EMAIL:MARKETING:DOUBLE_OPTIN::boolean as subscription_double_opt_in_flag
--- , p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS::varchar as subscription_suppression
+  -- , p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS::varchar as subscription_suppression
 -- , p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS:REASON::varchar as subscription_suppression_reason
 -- , p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS:TIMESTAMP::datetime as subscription_suppression_timestamp
 , p.subscriptions:EMAIL:MARKETING:LIST_SUPPRESSIONS::varchar as subscription_suppressions_list 
