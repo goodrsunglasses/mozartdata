@@ -3,13 +3,13 @@ options sto
 options throttled
 01HNT4X6WZZVYDZ98H544KDP34
 */
---Klayvio Portable (February 2024+)
+--klaviyo Portable (February 2024+)
 SELECT
-  c.campaign_id as campaign_id_klayvio
+  c.campaign_id as campaign_id_klaviyo
 , c.created_at as campaign_created_timestamp
 , date(c.created_at) as campaign_created_date
 , c.name as name
-, c.message as message_id_klayvio
+, c.message as message_id_klaviyo
 , c.status
 , c.scheduled_at as scheduled_timestamp
 , date(c.scheduled_at) as scheduled_date
@@ -28,13 +28,13 @@ SELECT
 FROM
   klaviyo_portable.klaviyo_v2_campaigns_8589937320 c  
 UNION ALL
---Klayvio Fivetran (July 2023 - January 2024)
+--klaviyo Fivetran (July 2023 - January 2024)
 SELECT
-  ck.id as campaign_id_klayvio
+  ck.id as campaign_id_klaviyo
 , to_timestamp_ntz(ck.created) as campaign_created_timestamp
 , date(ck.created) as campaign_created_date
 , ck.name as name
-, ck.email_template_id as message_id_klayvio
+, ck.email_template_id as message_id_klaviyo
 , ck.status
 , to_timestamp_ntz(ck.send_time) as scheduled_timestamp
 , date(ck.send_time) as scheduled_date
