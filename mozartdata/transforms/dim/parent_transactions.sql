@@ -46,10 +46,17 @@ WITH
           ol.record_type = 'purchaseorder'
           AND ol.createdfrom IS NULL
         )
-        OR (
+        OR 
+        ( --
           ol.record_type = 'purchaseorder'
           AND po_parent.order_id_ns != ol.order_id_ns
           AND ol.createdfrom IS NOT NULL
+        )
+        OR 
+        (
+          ol.record_type = 'purchaseorder'
+          AND po_parent.order_id_ns = ol.order_id_ns
+          AND po_parent.record_type ='salesorder'
         )
       )
   ),
