@@ -67,7 +67,7 @@ WITH
       record_type = parent_type
   ),
   transaction_tree AS (
-    -- Anchor member: Select initial transactions that are parents (created_by is NULL)
+    -- Anchor member: Select initial transactions that are parents (present in final_ranking)
     SELECT
       final_ranking.order_id_ns,
       final_ranking.transaction_id_ns,
