@@ -34,11 +34,12 @@ SELECT
   order_id_ns,
   COUNT_IF(depth = 0) AS parent_count, -- Count parents
   COUNT_IF(depth = 1) AS child_count, -- Count children
-  COUNT_IF(depth = 2) AS grandchild_count -- Count grandchildren
+  COUNT_IF(depth = 2) AS grandchild_count, -- Count grandchildren
+  COUNT_IF(depth = 3) AS great_grandchildren_count -- Count grandchildren
 FROM
   transaction_tree
 WHERE
-  order_id_ns = '113-7256776-6975450'
+  order_id_ns in ('113-7256776-6975450','INT-2PURE091622-6.6K-1','CS-DENVERGOV070722')
 GROUP BY
   order_id_ns
 ORDER BY
