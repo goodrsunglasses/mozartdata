@@ -58,50 +58,50 @@ WITH
       parent_ranking.order_id_ns,
       parent_ranking.transaction_id_ns,
       parent_ranking.record_type,
+  createdfrom,
       parent_type
     FROM
       parent_ranking
       LEFT OUTER JOIN parent_type ON parent_type.order_id_ns = parent_ranking.order_id_ns
     WHERE
       record_type = parent_type
+  ),
+  transaction_tree AS (
+    -- Anchor member: Select initial transactions that are parents (created_by is NULL)
+    SELECT
+      final_ranking.order_id_ns,
+      final_ranking.transaction_id_ns,
+      final_ranking.createdfrom,
+      0 AS depth -- Initialize the path array with the transaction_id
+    FROM
+      final_ranking
+    UNION ALL
+    -- Recursive member: Join to find child transactions
+    SELECT
+      order_ids_2.order_id_ns,
+      order_ids_2.transaction_id_ns,
+      order_ids_2.createdfrom,
+      tt.depth + 1 AS depth
+    FROM
+      order_ids order_ids_2
+      JOIN transaction_tree tt ON order_ids_2.createdfrom = tt.transaction_id_ns
+  ),
+  counter AS (
+    SELECT
+      order_id_ns,
+      COUNT_IF(depth = 0) AS parent_count, -- Count parents
+      COUNT_IF(depth = 1) AS child_count, -- Count children
+      COUNT_IF(depth = 2) AS grandchild_count, -- Count grandchildren
+      COUNT_IF(depth = 3) AS great_grandchildren_count -- Count grandchildren
+    FROM
+      transaction_tree
+    WHERE
+      order_id_ns IN (
+        '113-7256776-6975450',
+        'INT-2PURE091622-6.6K-1',
+        'CS-DENVERGOV070722','PB-ST63168/SM'
+      )
+    GROUP BY
+      order_id_ns
   )
-  -- transaction_tree AS (
-  --   -- Anchor member: Select initial transactions that are parents (created_by is NULL)
-  --   SELECT
-  --     order_ids.order_id_ns,
-  --     order_ids.transaction_id_ns,
-  --     order_ids.createdfrom,
-  --     0 AS depth -- Initialize the path array with the transaction_id
-  --   FROM
-  --     order_ids
-  --   WHERE
-  --     order_ids.createdfrom IS NULL
-  --   UNION ALL
-  --   -- Recursive member: Join to find child transactions
-  --   SELECT
-  --     order_ids_2.order_id_ns,
-  --     order_ids_2.transaction_id_ns,
-  --     order_ids_2.createdfrom,
-  --     tt.depth + 1 AS depth
-  --   FROM
-  --     order_ids order_ids_2
-  --     JOIN transaction_tree tt ON order_ids_2.createdfrom = tt.transaction_id_ns
-  -- ),
-  -- counter AS (
-  --   SELECT
-  --     order_id_ns,
-  --     COUNT_IF(depth = 0) AS parent_count, -- Count parents
-  --     COUNT_IF(depth = 1) AS child_count, -- Count children
-  --     COUNT_IF(depth = 2) AS grandchild_count, -- Count grandchildren
-  --     COUNT_IF(depth = 3) AS great_grandchildren_count -- Count grandchildren
-  --   FROM
-  --     transaction_tree
-  --   WHERE
-  --     order_id_ns IN (
-  --       '113-7256776-6975450',
-  --       'INT-2PURE091622-6.6K-1',
-  --       'CS-DENVERGOV070722'
-  --     )
-  --   GROUP BY
-  --     order_id_ns
-  -- )
+select * from counter
