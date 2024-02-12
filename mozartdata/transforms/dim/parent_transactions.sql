@@ -125,4 +125,4 @@ SELECT
 FROM
   transaction_tree
 WHERE
-  transaction_tree.order_id_ns IN ('CS-LST-SD-G2501679', 'PB-ST63168/SM', 'G2361579')
+  transaction_tree.order_id_ns IN ('CS-LST-SD-G2501679', 'PB-ST63168/SM', 'G2361579','INT-2PURE091622-6.6K-1')
