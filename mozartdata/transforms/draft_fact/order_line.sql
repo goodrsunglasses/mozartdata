@@ -1,13 +1,13 @@
-with line_amount as 
-  (
-    select
-      gt.transaction_id_ns
-    , sum(gt.net_amount) net_amount
-    from
+WITH
+  line_amount AS (
+    SELECT
+      gt.transaction_id_ns,
+      SUM(gt.net_amount) net_amount
+    FROM
       fact.gl_transaction gt
-    where
-      gt.account_number between 4000 and 4999
-    group by
+    WHERE
+      gt.account_number BETWEEN 4000 AND 4999
+    GROUP BY
       gt.transaction_id_ns
   )
 SELECT DISTINCT
@@ -48,14 +48,19 @@ SELECT DISTINCT
   END AS status_flag_edw,
   DATE(tran.startdate) AS shipping_window_start_date,
   DATE(tran.enddate) AS shipping_window_end_date,
-  item_detail.createdfrom AS parent_transaction_id,
+  item_detail.createdfrom,
   TRY_TO_NUMBER(tran.custbody_boomi_orderid) shopify_id,
-  SUM(inv_part.total_quantity) over (
+  SUM(
+    CASE
+      WHEN item_detail.item_type = 'InvtPart' THEN item_detail.total_quantity
+      ELSE 0
+    END
+  ) over (
     PARTITION BY
-      inv_part.order_id_edw,
-      inv_part.transaction_id_ns
+      item_detail.order_id_edw,
+      item_detail.transaction_id_ns
   ) order_line_quantity,
-  la.net_amount as order_line_amount,
+  la.net_amount AS order_line_amount,
   number.trackingnumber tracking_number,
   FIRST_VALUE(item_detail.location IGNORE NULLS) over (
     PARTITION BY
@@ -63,22 +68,15 @@ SELECT DISTINCT
       item_detail.transaction_id_ns
     ORDER BY
       item_detail.product_id_edw
-  ) location,
-  CASE
-    WHEN parent_transaction_id IS NULL
-    AND item_detail.record_type IN ('salesorder', 'cashsale') THEN TRUE
-    ELSE FALSE
-  END AS parent_transaction
+  ) location
 FROM
-  draft_fact.order_item_detail item_detail
-  INNER JOIN fact.order_item_detail inv_part ON item_detail.order_item_detail_id = inv_part.order_item_detail_id
-  AND inv_part.item_type = 'InvtPart'
+  fact.order_item_detail item_detail
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN dim.channel channel ON channel.channel_id_ns = tran.cseg7
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
   LEFT OUTER JOIN netsuite.trackingnumbermap map ON map.transaction = item_detail.transaction_id_ns
   LEFT OUTER JOIN netsuite.trackingnumber number ON number.id = map.trackingnumber
-  LEFT OUTER JOIN line_amount la on item_detail.transaction_id_ns = la.transaction_id_ns
+  LEFT OUTER JOIN line_amount la ON item_detail.transaction_id_ns = la.transaction_id_ns
 WHERE
   item_detail.record_type IN (
     'cashsale',
