@@ -1,9 +1,10 @@
 SELECT
-  COUNT(order_item_detail_id) counter, -- replace with what ever field you want to count
-  order_item_detail_id
+  COUNT(order_id_edw) counter, -- replace with what ever field you want to count
+  order_id_edw
 FROM
-  staging.order_item_detail-- replace with what ever table you want it from
+  dim.orders-- replace with what ever table you want it from
 GROUP BY
- order_item_detail_id
+ order_id_edw
+
 HAVING
   counter > 1
