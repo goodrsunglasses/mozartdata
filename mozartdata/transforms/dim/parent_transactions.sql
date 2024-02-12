@@ -76,10 +76,15 @@ WITH
     -- Anchor member: Select initial transactions that are parents (present in final_ranking)
     SELECT
       final_ranking.order_id_ns,
+      COUNT(*) OVER (
+        PARTITION BY
+          order_id_ns
+      ) AS occurence,
       final_ranking.transaction_id_ns,
       final_ranking.createdfrom,
       ARRAY_CONSTRUCT(transaction_id_ns) AS path,
       label AS parent_label,
+      order_id_ns || '#' || label AS labeled_order_id_ns,
       0 AS depth -- Initialize the path array with the transaction_id
     FROM
       final_ranking
@@ -87,10 +92,12 @@ WITH
     -- Recursive member: Join to find child transactions
     SELECT
       order_ids_2.order_id_ns,
+      tt.occurence,
       order_ids_2.transaction_id_ns,
       order_ids_2.createdfrom,
       ARRAY_APPEND(tt.path, order_ids_2.transaction_id_ns),
       tt.parent_label,
+      tt.labeled_order_id_ns,
       tt.depth + 1 AS depth
     FROM
       order_ids order_ids_2
@@ -99,7 +106,6 @@ WITH
   counter AS (
     SELECT
       order_id_ns,
-   order_id_ns || '#' || parent_label AS labeled_order_id_ns,
       ARRAY_AGG(path) AS transaction_paths,
       COUNT_IF(depth = 0) AS parent_count, -- Count parents
       COUNT_IF(depth = 1) AS child_count, -- Count children
@@ -108,11 +114,15 @@ WITH
     FROM
       transaction_tree
     GROUP BY
-      order_id_ns,parent_label
+      order_id_ns,
+      parent_label
   )
 SELECT
-  *
+  CASE
+    WHEN occurence > 1 THEN labeled_order_id_ns
+    ELSE order_id_ns
+  END AS order_id_edw, transaction_id_ns
 FROM
-  counter
+  transaction_tree
 WHERE
-  order_id_ns = 'CS-LST-SD-G2501679'
+  transaction_tree.order_id_ns IN ('CS-LST-SD-G2501679', 'PB-ST63168/SM', 'G2361579')
