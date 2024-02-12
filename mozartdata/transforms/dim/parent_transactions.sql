@@ -120,9 +120,18 @@ WITH
 SELECT
   CASE
     WHEN occurence > 1 THEN labeled_order_id_ns
-    ELSE order_id_ns
-  END AS order_id_edw, transaction_id_ns
+    ELSE transaction_tree.order_id_ns
+  END AS order_id_edw,
+  transaction_tree.transaction_id_ns,
+  record_type
 FROM
   transaction_tree
+  LEFT OUTER JOIN order_ids ON order_ids.order_id_ns = transaction_tree.order_id_ns
 WHERE
-  transaction_tree.order_id_ns IN ('CS-LST-SD-G2501679', 'PB-ST63168/SM', 'G2361579','INT-2PURE091622-6.6K-1')
+  transaction_tree.order_id_ns IN (
+    'CS-LST-SD-G2501679',
+    'PB-ST63168/SM',
+    'G2361579',
+    'INT-2PURE091622-6.6K-1',
+    'SO1124140'
+  )
