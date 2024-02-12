@@ -127,11 +127,3 @@ SELECT
 FROM
   transaction_tree
   LEFT OUTER JOIN order_ids ON order_ids.transaction_id_ns = transaction_tree.transaction_id_ns
-WHERE
-  transaction_tree.order_id_ns IN (
-    'CS-LST-SD-G2501679',
-    'PB-ST63168/SM',
-    'G2361579',
-    'INT-2PURE091622-6.6K-1',
-    'SO1124140'
-  )
