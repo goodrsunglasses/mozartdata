@@ -108,7 +108,7 @@ WITH
       order_ids order_ids_2
       JOIN transaction_tree tt ON order_ids_2.createdfrom = tt.transaction_id_ns
   ),
-  counter AS (
+  counter AS ( --cte thats gonna be used later for the complicated parent->children->grandchildren trees
     SELECT
       order_id_ns,
       ARRAY_AGG(path) AS transaction_paths,
