@@ -1,13 +1,18 @@
 WITH
   order_ids AS ( --all order_id_ns's and their requisite transaction_id_ns's for dual usage later on (parent logic and child logic)
-    SELECT DISTINCT
+    SELECT
       order_id_ns,
       transaction_id_ns,
-      createdfrom,
       record_type,
-      transaction_created_timestamp_pst
+      transaction_created_timestamp_pst,
+      MAX(createdfrom) createdfrom
     FROM
       staging.order_item_detail
+    GROUP BY
+      order_id_ns,
+      transaction_id_ns,
+      record_type,
+      transaction_created_timestamp_pst
   ),
   parent_ranking AS (
     SELECT
@@ -118,12 +123,6 @@ WITH
       parent_label
   )
 SELECT
-  CASE
-    WHEN occurence > 1 THEN labeled_order_id_ns
-    ELSE transaction_tree.order_id_ns
-  END AS order_id_edw,
-  transaction_tree.transaction_id_ns,
-  record_type
+  *
 FROM
   transaction_tree
-  LEFT OUTER JOIN order_ids ON order_ids.transaction_id_ns = transaction_tree.transaction_id_ns
