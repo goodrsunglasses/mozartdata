@@ -58,7 +58,13 @@ WITH
       parent_ranking.order_id_ns,
       parent_ranking.transaction_id_ns,
       parent_ranking.record_type,
-  createdfrom,
+      createdfrom,
+      ROW_NUMBER() OVER (
+        PARTITION BY
+          parent_ranking.order_id_ns
+        ORDER BY
+          parent_ranking.transaction_id_ns
+      ) AS label,
       parent_type
     FROM
       parent_ranking
@@ -72,6 +78,8 @@ WITH
       final_ranking.order_id_ns,
       final_ranking.transaction_id_ns,
       final_ranking.createdfrom,
+      ARRAY_CONSTRUCT(transaction_id_ns) AS path,
+      label AS parent_label,
       0 AS depth -- Initialize the path array with the transaction_id
     FROM
       final_ranking
@@ -81,6 +89,8 @@ WITH
       order_ids_2.order_id_ns,
       order_ids_2.transaction_id_ns,
       order_ids_2.createdfrom,
+      ARRAY_APPEND(tt.path, order_ids_2.transaction_id_ns),
+      tt.parent_label,
       tt.depth + 1 AS depth
     FROM
       order_ids order_ids_2
@@ -89,19 +99,20 @@ WITH
   counter AS (
     SELECT
       order_id_ns,
+   order_id_ns || '#' || parent_label AS labeled_order_id_ns,
+      ARRAY_AGG(path) AS transaction_paths,
       COUNT_IF(depth = 0) AS parent_count, -- Count parents
       COUNT_IF(depth = 1) AS child_count, -- Count children
       COUNT_IF(depth = 2) AS grandchild_count, -- Count grandchildren
       COUNT_IF(depth = 3) AS great_grandchildren_count -- Count grandchildren
     FROM
       transaction_tree
-    WHERE
-      order_id_ns IN (
-        '113-7256776-6975450',
-        'INT-2PURE091622-6.6K-1',
-        'CS-DENVERGOV070722','PB-ST63168/SM'
-      )
     GROUP BY
-      order_id_ns
+      order_id_ns,parent_label
   )
-select * from counter
+SELECT
+  *
+FROM
+  counter
+WHERE
+  order_id_ns = 'CS-LST-SD-G2501679'
