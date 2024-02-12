@@ -10,7 +10,7 @@ WITH
       SUM(rate) AS rate_booked,
       SUM(net_amount) AS amount_booked
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
       record_type = 'salesorder'
     GROUP BY
@@ -33,7 +33,7 @@ WITH
       SUM(gross_profit_estimate) AS gross_profit_estimate,
       SUM(ABS(cost_estimate)) AS cost_estimate
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
       record_type IN ('cashsale', 'invoice')
     GROUP BY
@@ -54,7 +54,7 @@ WITH
       SUM(rate) AS rate_fulfilled,
       SUM(net_amount) AS amount_fulfilled
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
       record_type = 'itemfulfillment'
     GROUP BY
@@ -75,7 +75,7 @@ WITH
       SUM(rate) AS rate_refunded,
       SUM(ABS(net_amount)) AS amount_refunded
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
       record_type = 'cashrefund'
     GROUP BY
@@ -107,7 +107,7 @@ SELECT DISTINCT
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
-  fact.order_item_detail detail
+      draft_fact.order_item_detail detail
   LEFT OUTER JOIN dim.product p ON p.product_id_edw = detail.item_id_ns
   LEFT OUTER JOIN booked ON (
     booked.order_id_edw = detail.order_id_edw
