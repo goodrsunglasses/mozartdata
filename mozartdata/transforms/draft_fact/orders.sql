@@ -14,7 +14,8 @@ WITH
       LEFT OUTER JOIN dim.channel category ON category.name = orderline.channel
     WHERE
       is_parent = TRUE
-  ),
+  )
+  ,
   order_level AS (
     SELECT DISTINCT
       parent_information.order_id order_id_edw,
@@ -33,51 +34,51 @@ WITH
         PARTITION BY
           order_id_edw
       ) AS is_exchange,
-      FIRST_VALUE(transaction_date) OVER (
-        PARTITION BY
-          order_id_edw
-        ORDER BY
-          CASE
-            WHEN record_type = 'salesorder'
-            AND transaction_id_ns = parent_id THEN 1
-            ELSE 2
-          END,
-          transaction_created_timestamp_pst asc
-      ) AS booked_date,
-      FIRST_VALUE(
-        CASE
-          WHEN record_type IN ('cashsale', 'invoice')
-          AND parent_transaction_id = parent_id THEN transaction_date
-          ELSE NULL
-        END
-      ) OVER (
-        PARTITION BY
-          order_id_edw
-        ORDER BY
-          CASE
-            WHEN record_type IN ('cashsale', 'invoice')
-            AND parent_transaction_id = parent_id THEN 1
-            ELSE 2
-          END,
-          transaction_created_timestamp_pst asc
-      ) AS sold_date,
-      FIRST_VALUE(
-        CASE
-          WHEN record_type = 'itemfulfillment'
-          AND parent_transaction_id = parent_id THEN transaction_date
-          ELSE NULL
-        END
-      ) OVER (
-        PARTITION BY
-          order_id_edw
-        ORDER BY
-          CASE
-            WHEN record_type = 'itemfulfillment'
-            AND parent_transaction_id = parent_id THEN 1
-            ELSE 2
-          END,
-          transaction_created_timestamp_pst desc
-      ) AS fulfillment_date,
+      -- FIRST_VALUE(transaction_date) OVER (
+      --   PARTITION BY
+      --     order_id_edw
+      --   ORDER BY
+      --     CASE
+      --       WHEN record_type = 'salesorder'
+      --       AND transaction_id_ns = parent_id THEN 1
+      --       ELSE 2
+      --     END,
+      --     transaction_created_timestamp_pst asc
+      -- ) AS booked_date,
+      -- FIRST_VALUE(
+      --   CASE
+      --     WHEN record_type IN ('cashsale', 'invoice')
+      --     AND parent_transaction_id = parent_id THEN transaction_date
+      --     ELSE NULL
+      --   END
+      -- ) OVER (
+      --   PARTITION BY
+      --     order_id_edw
+      --   ORDER BY
+      --     CASE
+      --       WHEN record_type IN ('cashsale', 'invoice')
+      --       AND parent_transaction_id = parent_id THEN 1
+      --       ELSE 2
+      --     END,
+      --     transaction_created_timestamp_pst asc
+      -- ) AS sold_date,
+      -- FIRST_VALUE(
+      --   CASE
+      --     WHEN record_type = 'itemfulfillment'
+      --     AND parent_transaction_id = parent_id THEN transaction_date
+      --     ELSE NULL
+      --   END
+      -- ) OVER (
+      --   PARTITION BY
+      --     order_id_edw
+      --   ORDER BY
+      --     CASE
+      --       WHEN record_type = 'itemfulfillment'
+      --       AND parent_transaction_id = parent_id THEN 1
+      --       ELSE 2
+      --     END,
+      --     transaction_created_timestamp_pst desc
+      -- ) AS fulfillment_date,
       FIRST_VALUE(shipping_window_start_date) IGNORE NULLS OVER (
         PARTITION BY
           order_id_edw
@@ -92,7 +93,7 @@ WITH
       ) AS shipping_window_end_date
     FROM
       parent_information
-      LEFT OUTER JOIN  draft_fact..order_line orderline ON orderline.order_id_edw = parent_information.order_id
+      LEFT OUTER JOIN  draft_fact.order_line orderline ON orderline.order_id_edw = parent_information.order_id
   ),
   aggregates AS (
     SELECT
@@ -227,9 +228,9 @@ SELECT
   order_level.channel,
   customer_id_edw,
   location.name location,
-  order_level.booked_date,
-  order_level.sold_date,
-  order_level.fulfillment_date AS fulfillment_date_ns,
+  -- order_level.booked_date,
+  -- order_level.sold_date,
+  -- order_level.fulfillment_date AS fulfillment_date_ns,
   order_level.shipping_window_start_date,
   order_level.shipping_window_end_date,
   order_level.is_exchange,
@@ -269,7 +270,7 @@ FROM
   )
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
   LEFT OUTER JOIN dim.location location ON location.location_id_ns = order_level.location
-WHERE
-  order_level.booked_date >= '2022-01-01T00:00:00Z'
-ORDER BY
-  order_level.booked_date desc
+-- WHERE
+--   order_level.booked_date >= '2022-01-01T00:00:00Z'
+-- ORDER BY
+--   order_level.booked_date desc
