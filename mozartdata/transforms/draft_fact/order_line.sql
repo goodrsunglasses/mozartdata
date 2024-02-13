@@ -18,6 +18,7 @@ SELECT DISTINCT
   ) AS order_line_id,
   item_detail.order_id_edw,
   item_detail.transaction_id_ns,
+  item_detail.is_parent,
   tran.tranid AS transaction_number_ns,
   item_detail.full_status AS transaction_status_ns,
   item_detail.record_type,
