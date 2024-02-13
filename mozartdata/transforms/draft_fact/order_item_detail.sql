@@ -2,6 +2,7 @@ SELECT
   parents.order_id_edw,
   staging.order_id_ns ,
   staging.transaction_id_ns,
+  parents.is_parent,
   order_item_detail_id,
   product_id_edw,
   item_id_ns,
