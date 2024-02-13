@@ -9,8 +9,6 @@ WITH
           order_id_edw
         FROM
           draft_fact.order_item_detail
-        WHERE
-          transaction_created_timestamp_pst >= '2022-01-01T00:00:00Z'
         UNION ALL
         SELECT DISTINCT
           order_id_edw
