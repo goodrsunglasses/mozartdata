@@ -127,8 +127,14 @@ SELECT
     WHEN occurence > 1 THEN labeled_order_id_ns
     ELSE transaction_tree.order_id_ns
   END AS order_id_edw,
+  CASE
+    WHEN depth = 0 THEN TRUE
+    ELSE FALSE
+  END AS is_parent,
   transaction_tree.transaction_id_ns,
   record_type
 FROM
   transaction_tree
   LEFT OUTER JOIN order_ids ON order_ids.transaction_id_ns = transaction_tree.transaction_id_ns
+ORDER BY
+  transaction_tree.order_id_ns
