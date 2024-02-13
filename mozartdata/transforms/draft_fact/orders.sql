@@ -10,10 +10,10 @@ WITH
       customer_category AS b2b_d2c,
       model
     FROM
-      fact.order_line orderline
+      draft_fact.order_line orderline
       LEFT OUTER JOIN dim.channel category ON category.name = orderline.channel
     WHERE
-      parent_transaction = TRUE
+      is_parent = TRUE
   ),
   order_level AS (
     SELECT DISTINCT
@@ -92,7 +92,7 @@ WITH
       ) AS shipping_window_end_date
     FROM
       parent_information
-      LEFT OUTER JOIN fact.order_line orderline ON orderline.order_id_edw = parent_information.order_id
+      LEFT OUTER JOIN  draft_fact..order_line orderline ON orderline.order_id_edw = parent_information.order_id
   ),
   aggregates AS (
     SELECT
@@ -206,7 +206,7 @@ WITH
         END
       ) AS shipping_refunded
     FROM
-      fact.order_item
+       draft_fact.order_item
     GROUP BY
       order_id_edw
   ),
@@ -229,7 +229,7 @@ SELECT
   location.name location,
   order_level.booked_date,
   order_level.sold_date,
-  order_level.fulfillment_date as fulfillment_date_ns ,
+  order_level.fulfillment_date AS fulfillment_date_ns,
   order_level.shipping_window_start_date,
   order_level.shipping_window_end_date,
   order_level.is_exchange,
@@ -244,7 +244,7 @@ SELECT
   order_level.model,
   quantity_booked,
   quantity_sold,
-  quantity_fulfilled as quantity_fulfilled_ns,
+  quantity_fulfilled AS quantity_fulfilled_ns,
   quantity_refunded,
   rate_booked,
   rate_sold,
@@ -271,6 +271,5 @@ FROM
   LEFT OUTER JOIN dim.location location ON location.location_id_ns = order_level.location
 WHERE
   order_level.booked_date >= '2022-01-01T00:00:00Z'
-  AND order_level.order_id_edw = 'SG-CHIMAR2022'
 ORDER BY
   order_level.booked_date desc
