@@ -15,13 +15,22 @@ WITH
         FROM
           fact.shopify_order_line
       )
+  ),
+  parents AS ( -- select just the parents from fact order line to join after, this is a cte because filtering the entire query for just parent = true ignores the ones that dont come from NS
+    SELECT
+      order_id_edw,
+      transaction_id_ns
+    FROM
+      draft_fact.order_line
+  WHERE
+ is_parent = TRUE
   )
   --Joined to the staged (often unioned) fact tables then provided a source column just in case since an order can be sourced from multiple shopify stores, and shipments from shipstation/stord
 SELECT
   orders.order_id_edw,
   shopify.order_id_shopify,
   shopify.store,
-  line.transaction_id_ns,
+  parents.transaction_id_ns,
   stord.order_id stord_id,
   ARRAY_AGG(shipstation.orderkey) shipstation_id
 FROM
@@ -29,9 +38,8 @@ FROM
   LEFT OUTER JOIN fact.shopify_order_line shopify ON shopify.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord ON stord.order_number = orders.order_id_edw
   LEFT OUTER JOIN shipstation_portable.shipstation_orders_8589936627 shipstation ON shipstation.ordernumber = orders.order_id_edw
-  LEFT OUTER JOIN draft_fact.order_line line ON line.order_id_edw = orders.order_id_edw
-WHERE
-  line.is_parent = TRUE
+  LEFT OUTER JOIN parents on parents.order_id_edw =orders.order_id_edw
+
 GROUP BY
   orders.order_id_edw,
   shopify.order_id_shopify,
