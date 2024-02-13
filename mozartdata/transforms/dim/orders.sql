@@ -23,6 +23,7 @@ SELECT
   orders.order_id_edw,
   shopify.order_id_shopify,
   shopify.store,
+  line.transaction_id_ns,
   stord.order_id stord_id,
   ARRAY_AGG(shipstation.orderkey) shipstation_id
 FROM
@@ -30,8 +31,12 @@ FROM
   LEFT OUTER JOIN fact.shopify_order_line shopify ON shopify.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord ON stord.order_number = orders.order_id_edw
   LEFT OUTER JOIN shipstation_portable.shipstation_orders_8589936627 shipstation ON shipstation.ordernumber = orders.order_id_edw
+  LEFT OUTER JOIN draft_fact.order_line line ON line.order_id_edw = orders.order_id_edw
+WHERE
+  line.is_parent = TRUE
 GROUP BY
   orders.order_id_edw,
   shopify.order_id_shopify,
   shopify.store,
+  transaction_id_ns,
   stord_id
