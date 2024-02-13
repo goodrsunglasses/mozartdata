@@ -1,5 +1,5 @@
 WITH
-  netsuite_info AS (
+  netsuite_info AS (--first grab the netsuite info from dim.orders which implicitly should only have parent transactions from NS.
     SELECT
       orders.order_id_edw,
       orders.transaction_id_ns parent_id,
@@ -16,7 +16,7 @@ WITH
     WHERE
       orders.transaction_id_ns IS NOT NULL
   ),
-  shopify_info AS (
+  shopify_info AS (--Grab any and all shopify info from this CTE
     SELECT
       orders.order_id_edw,
       order_created_date_pst,
@@ -25,7 +25,7 @@ WITH
       dim.orders orders
       LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
   ),
-  aggregate_netsuite AS (
+  aggregate_netsuite AS (--aggregates the order level information from netsuite, this could definitely have been wrapped in the prior CTE but breaking it out made it more clear
     SELECT DISTINCT
       ns_parent.order_id_edw,
       ns_parent.parent_id,
