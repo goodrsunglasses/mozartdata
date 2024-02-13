@@ -16,6 +16,15 @@ WITH
     WHERE
       orders.transaction_id_ns IS NOT NULL
   ),
+  shopify_info AS (
+    SELECT
+      orders.order_id_edw,
+      order_created_date_pst,
+      quantity_sold AS total_quantity_shopify
+    FROM
+      dim.orders orders
+      LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
+  ),
   aggregate_netsuite AS (
     SELECT DISTINCT
       ns_parent.order_id_edw,
@@ -219,10 +228,11 @@ WITH
       fact.refund
   )
 SELECT
-  aggregate_netsuite.order_id_edw,
+  orders.order_id_edw,
   aggregate_netsuite.channel,
   customer_id_edw,
   location.name location,
+  shopify_info.order_created_date_pst booked_date_shopify,
   aggregate_netsuite.booked_date,
   aggregate_netsuite.sold_date,
   aggregate_netsuite.fulfillment_date AS fulfillment_date_ns,
@@ -238,6 +248,7 @@ SELECT
   DATE(refund_timestamp_pst) AS refund_date_pst,
   b2b_d2c,
   aggregate_netsuite.model,
+  shopify_info.total_quantity_shopify,
   quantity_booked,
   quantity_sold,
   quantity_fulfilled AS quantity_fulfilled_ns,
@@ -257,7 +268,9 @@ SELECT
   shipping_sold,
   shipping_refunded
 FROM
-  aggregate_netsuite
+  dim.orders orders
+  LEFT OUTER JOIN aggregate_netsuite ON aggregate_netsuite.order_id_edw = orders.order_id_edw
+  LEFT OUTER JOIN shopify_info ON shopify_info.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = aggregate_netsuite.order_id_edw
   LEFT OUTER JOIN dim.customer customer ON (
     LOWER(customer.email) = LOWER(aggregate_netsuite.email)
@@ -265,7 +278,7 @@ FROM
   )
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = aggregate_netsuite.order_id_edw
   LEFT OUTER JOIN dim.location location ON location.location_id_ns = aggregate_netsuite.location
-  WHERE
-    aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
-  ORDER BY
-    aggregate_netsuite.booked_date desc
+WHERE
+  aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
+ORDER BY
+  aggregate_netsuite.booked_date desc
