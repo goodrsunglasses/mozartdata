@@ -20,14 +20,7 @@ SELECT
   gross_profit_estimate,
   cost_estimate,
   location,
-  createdfrom,
-  exceptions.dupe_flag
+  createdfrom
 FROM
   dim.parent_transactions parents
   left outer join staging.order_item_detail staging on staging.transaction_id_ns = parents.transaction_id_ns
-  LEFT OUTER JOIN exceptions.order_item_detail exceptions ON exceptions.transaction_id_ns = staging.transaction_id_ns
-WHERE
-  (
-    dupe_flag IS NULL
-    OR dupe_flag = FALSE
-  )
