@@ -5,6 +5,7 @@ conversion based on placed order
 SELECT
   e.datetime as event_timestamp
 , date(e.datetime) as event_date
+, e.event_id as event_id_klaviyo
 , e.metric_id as metric_id_klaviyo
 , m.name as metric_name
 , e.profile_id as profile_id_klaviyo
@@ -24,6 +25,7 @@ UNION ALL
 SELECT
   to_timestamp_ntz(ke.datetime) as event_timestamp
 , date(ke.datetime) as event_date
+, ke.id as event_id_klaviyo
 , ke.metric_id as metric_id_klaviyo
 , km.name as metric_name
 , ke.person_id as profile_id_klaviyo -->need to change this to a profile instead of person
