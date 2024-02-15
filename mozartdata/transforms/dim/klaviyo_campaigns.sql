@@ -7,7 +7,9 @@ options throttled
 SELECT
   c.campaign_id as campaign_id_klaviyo
 , c.created_at as created_timestamp
+, CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.created_at) as created_timestamp_pst
 , date(c.created_at) as created_date
+, date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.created_at)) as created_date_pst
 , c.name as name
 , c.message as message_id_klaviyo
 , c.status
@@ -27,6 +29,8 @@ SELECT
 , c.tracking_options:IS_TRACKING_OPENS:boolean as tracking_options_is_tracking_opens_flag
 , c.updated_at as last_updated_timestamp
 , date(c.updated_at) as last_updated_date
+, CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at) as last_updated_timestamp_pst
+, date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at)) as last_updated_date_pst
 FROM
   klaviyo_portable.klaviyo_v2_campaigns_8589937320 c  
 -- UNION ALL
