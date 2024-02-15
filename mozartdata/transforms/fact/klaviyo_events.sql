@@ -21,23 +21,23 @@ FROM
 LEFT JOIN
   klaviyo_portable.klaviyo_v2_metrics_8589937320 m
   on e.metric_id = m.metric_id
-UNION ALL
-SELECT
-  to_timestamp_ntz(ke.datetime) as event_timestamp
-, date(ke.datetime) as event_date
-, ke.id as event_id_klaviyo
-, ke.metric_id as metric_id_klaviyo
-, km.name as metric_name
-, ke.person_id as profile_id_klaviyo -->need to change this to a profile instead of person
-, ke.campaign_id as campaign_id_klaviyo
-, ke.property_event_id as order_id_shopify
-, ke.property_value
-, ke.property_total_discounts
-, ke.property_shipping_rate
-, ke.property_source_name
-, ke.property_item_count
-FROM
-  klaviyo.event ke
-LEFT JOIN
-  klaviyo.metric km
-  on ke.metric_id = km.id
+-- UNION ALL
+-- SELECT
+--   to_timestamp_ntz(ke.datetime) as event_timestamp
+-- , date(ke.datetime) as event_date
+-- , ke.id as event_id_klaviyo
+-- , ke.metric_id as metric_id_klaviyo
+-- , km.name as metric_name
+-- , ke.person_id as profile_id_klaviyo -->need to change this to a profile instead of person
+-- , ke.campaign_id as campaign_id_klaviyo
+-- , ke.property_event_id as order_id_shopify
+-- , ke.property_value
+-- , ke.property_total_discounts
+-- , ke.property_shipping_rate
+-- , ke.property_source_name
+-- , ke.property_item_count
+-- FROM
+--   klaviyo.event ke
+-- LEFT JOIN
+--   klaviyo.metric km
+--   on ke.metric_id = km.id
