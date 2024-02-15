@@ -127,6 +127,7 @@ SELECT
     WHEN occurence > 1 THEN labeled_order_id_ns
     ELSE transaction_tree.order_id_ns
   END AS order_id_edw,
+  transaction_tree.order_id_ns,
   CASE
     WHEN depth = 0 THEN TRUE
     ELSE FALSE
