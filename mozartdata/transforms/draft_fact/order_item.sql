@@ -87,6 +87,7 @@ WITH
   )
 SELECT DISTINCT
   detail.order_id_edw,
+  detail.order_id_ns,
   CONCAT(detail.order_id_edw, '_', detail.item_id_ns) AS order_item_id,
   detail.product_id_edw,
   detail.item_id_ns,
