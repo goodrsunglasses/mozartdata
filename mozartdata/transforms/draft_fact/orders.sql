@@ -229,6 +229,7 @@ WITH
   )
 SELECT
   orders.order_id_edw,
+  orders.order_id_ns,
   aggregate_netsuite.channel,
   customer_id_edw,
   location.name location,
