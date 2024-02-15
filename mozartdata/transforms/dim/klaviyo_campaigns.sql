@@ -6,8 +6,8 @@ options throttled
 --klaviyo Portable (February 2024+)
 SELECT
   c.campaign_id as campaign_id_klaviyo
-, c.created_at as campaign_created_timestamp
-, date(c.created_at) as campaign_created_date
+, c.created_at as created_timestamp
+, date(c.created_at) as created_date
 , c.name as name
 , c.message as message_id_klaviyo
 , c.status
