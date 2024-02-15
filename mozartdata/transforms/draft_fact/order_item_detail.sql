@@ -1,5 +1,6 @@
 SELECT
   parents.order_id_edw,
+  parents.order_id_ns,
   staging.order_id_ns ,
   staging.transaction_id_ns,
   parents.is_parent,
