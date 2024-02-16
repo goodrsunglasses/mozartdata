@@ -1,8 +1,8 @@
 SELECT 
-  f.created as flow_created_timestamp
-, date(f.created) as flow_created_date
-, convert_timezone('UTC', 'America/Los_Angeles', f.created) as flow_created_timestamp_pst
-, date(convert_timezone('UTC', 'America/Los_Angeles', f.created)) as flow_created_date_pst
+  f.created as created_timestamp
+, date(f.created) as created_date
+, convert_timezone('UTC', 'America/Los_Angeles', f.created) as created_timestamp_pst
+, date(convert_timezone('UTC', 'America/Los_Angeles', f.created)) as created_date_pst
 , f.flow_id as flow_id_klayvio
 , f.name
 , f.status
