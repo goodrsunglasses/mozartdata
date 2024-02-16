@@ -1,5 +1,5 @@
 SELECT
-  o.id,
+  o.id order_id,
   o.created_at,
   SUM(quantity) total_quantity,
   d.code,
