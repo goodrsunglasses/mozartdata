@@ -22,11 +22,11 @@ SELECT
 , c.send_strategy:METHOD::varchar as send_strategy_method
 --, c.send_strategy:METHOD:DATETIME:timestamp as send_strategy_timestamp
 --, c.send_strategy:METHOD:DATETIME:date as send_strategy_date
-, c.send_strategy:METHOD:IS_LOCAL:boolean as send_strategy_is_local_flag
-, c.send_strategy:METHOD:SEND_PAST_RECIPIENTS_IMMEDIATELY:boolean as sent_strategy_past_recipients_immediately_flag
-, c.tracking_options:IS_ADD_UTM:boolean as tracking_options_is_add_utm_flag
-, c.tracking_options:IS_TRACKING_CLICKS:boolean as tracking_options_is_tracking_clicks_flag
-, c.tracking_options:IS_TRACKING_OPENS:boolean as tracking_options_is_tracking_opens_flag
+, c.send_strategy:METHOD:IS_LOCAL::boolean as send_strategy_is_local_flag
+, c.send_strategy:METHOD:SEND_PAST_RECIPIENTS_IMMEDIATELY::boolean as sent_strategy_past_recipients_immediately_flag
+, c.tracking_options:IS_ADD_UTM::boolean as tracking_options_is_add_utm_flag
+, c.tracking_options:IS_TRACKING_CLICKS::boolean as tracking_options_is_tracking_clicks_flag
+, c.tracking_options:IS_TRACKING_OPENS::boolean as tracking_options_is_tracking_opens_flag
 , c.updated_at as last_updated_timestamp
 , date(c.updated_at) as last_updated_date
 , CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at) as last_updated_timestamp_pst
