@@ -4,7 +4,9 @@ conversion based on placed order
 
 SELECT
   e.datetime as event_timestamp
+, convert_timezone('UTC', 'America/Los_Angeles', e.datetime) as event_timestamp_pst
 , date(e.datetime) as event_date
+, date(convert_timezone('UTC', 'America/Los_Angeles', e.datetime)) as event_date_pst
 , e.event_id as event_id_klaviyo
 , e.metric_id as metric_id_klaviyo
 , m.name as metric_name
