@@ -1,6 +1,8 @@
 SELECT 
-  l.created as list_created_timestamp
-, date(l.created) as list_created_date
+  l.created as created_timestamp
+, date(l.created) as created_date
+, CONVERT_TIMEZONE('UTC','America/Los_Angeles', l.created) as created_timestamp_pst
+, date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', l.created)) as created_date_pst
 , l.list_id as list_id_klaviyo
 , l.name
 , l.opt_in_process
