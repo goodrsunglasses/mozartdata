@@ -7,8 +7,8 @@ options throttled
 SELECT
   c.campaign_id as campaign_id_klaviyo
 , c.created_at as created_timestamp
-, CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.created_at) as created_timestamp_pst
 , date(c.created_at) as created_date
+, CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.created_at) as created_timestamp_pst
 , date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.created_at)) as created_date_pst
 , c.name as name
 , c.message as message_id_klaviyo
@@ -17,6 +17,8 @@ SELECT
 , date(c.scheduled_at) as scheduled_date
 , c.send_time as send_timestamp
 , date(c.send_time) as send_date
+, case when c.send_strategy:OPTIONS_STATIC:IS_LOCAL::boolean then c.send_time else CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.send_time) end as send_timestamp_pst
+, case when c.send_strategy:OPTIONS_STATIC:IS_LOCAL::boolean then date(c.send_time) else date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.send_time)) end as send_date_pst
 , c.send_options:IGNORE_UNSUBSCRIBES::boolean as ignore_unsubscribes_flag
 , c.send_options:USE_SMART_SENDING::boolean as use_smart_sending_flag
 , c.send_strategy:METHOD::varchar as send_strategy_method
