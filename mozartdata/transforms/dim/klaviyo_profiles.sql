@@ -5,8 +5,10 @@ suppressions list is always null
 */
 SELECT
   p.profile_id as profile_id_klaviyo
-, p.created as profile_created_timestamp
-, date(p.created) as profile_created_date
+, p.created as created_timestamp
+, date(p.created) as created_date
+, convert_timezone('UTC', 'America/Los_Angeles', p.created) as created_timestamp_pst
+, date(convert_timezone('UTC', 'America/Los_Angeles', p.created)) as created_date_pst
 , p.email
 , p.first_name
 , p.last_name
