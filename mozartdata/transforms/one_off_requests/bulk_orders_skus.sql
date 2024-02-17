@@ -3,6 +3,15 @@ WITH
     SELECT
       o.id order_id,
       o.created_at,
+      CASE 
+        when o.created_at between '2023-03-01' and '2023-04-01' then 'March'
+        when o.created_at between '2023-04-01' and '2023-05-01' then 'April'
+        when o.created_at between '2023-05-01' and '2023-06-01' then 'May'
+        when o.created_at between '2023-06-01' and '2023-07-01' then 'June'
+        when o.created_at between '2023-07-01' and '2023-08-01' then 'July'
+        when o.created_at between '2023-08-01' and '2023-09-01' then 'August'
+        ELSE 'other'
+      END as order_month,
       SUM(quantity) total_quantity,
       d.code,
       d.type,
@@ -31,7 +40,7 @@ WITH
   )
 SELECT
   o.id order_id,
-  b.created_at,
+  b.order_month,
   ol.id,
   ol.name,
   ol.quantity sku_quantity,
