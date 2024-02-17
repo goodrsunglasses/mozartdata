@@ -31,9 +31,13 @@ WITH
   )
 SELECT
   o.id order_id,
+  b.created_at,
   ol.id,
   ol.name,
-  ol.quantity sku_quantity
+  ol.quantity sku_quantity,
+  b.code promo_code,
+  b.type promo_type,
+  b.quantity_label
 FROM shopify.order_line ol
 LEFT JOIN shopify."ORDER" o ON o.id = ol.order_id
 INNER JOIN cte_bulk_orders b ON o.id = b.order_id
