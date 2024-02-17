@@ -14,7 +14,7 @@ WITH
       LEFT OUTER JOIN draft_fact.order_line line ON line.transaction_id_ns = orders.transaction_id_ns
       LEFT OUTER JOIN dim.channel category ON category.name = line.channel
     WHERE
-      orders.transaction_id_ns IS NOT NULL
+      orders.transaction_id_ns IS NOT NULL -- no need for checking if its a parent as the only transaction_id_ns's that are in dim.orders are parents
   ),
   shopify_info AS (--Grab any and all shopify info from this CTE
     SELECT
