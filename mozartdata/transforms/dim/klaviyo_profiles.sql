@@ -59,5 +59,9 @@ SELECT
 , date(p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) as subscription_date
 , convert_timezone(p.location:TIMEZONE::varchar,'America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) as subscription_timestamp_pst
 , date(convert_timezone(p.location:TIMEZONE::varchar,'America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime)) as subscription_date_pst
+, p.updated as updated_timestamp
+, date(p.updated) as updated_date
+, convert_timezone('UTC','America/Los_Angeles',p.updated) as updated_timestamp_pst
+, date(convert_timezone('UTC','America/Los_Angeles',p.updated)) as updated_date_pst
 FROM
   klaviyo_portable.klaviyo_v2_profiles_8589937320 p
