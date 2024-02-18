@@ -55,10 +55,10 @@ SELECT
 , p.subscriptions:EMAIL:MARKETING:LIST_SUPPRESSIONS::varchar as subscription_suppressions_list 
 , p.subscriptions:EMAIL:MARKETING:METHOD::varchar as subscription_method
 , p.subscriptions:EMAIL:MARKETING:METHOD_DETAIL::varchar as subscription_method_detail
-, p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime as subscription_timestamp
-, date(p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) as subscription_date
-, convert_timezone(p.location:TIMEZONE::varchar,'America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) as subscription_timestamp_pst
-, date(convert_timezone(p.location:TIMEZONE::varchar,'America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime)) as subscription_date_pst
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"$consent_timestamp"')::datetime as subscription_timestamp
+, date(JSON_EXTRACT_PATH_TEXT(p.properties,'"$consent_timestamp"')::datetime) as subscription_date
+, convert_timezone('UTC','America/Los_Angeles',JSON_EXTRACT_PATH_TEXT(p.properties,'"$consent_timestamp"')::datetime) as subscription_timestamp_pst
+, date(convert_timezone('UTC','America/Los_Angeles',JSON_EXTRACT_PATH_TEXT(p.properties,'"$consent_timestamp"')::datetime)) as subscription_date_pst
 , p.updated as updated_timestamp
 , date(p.updated) as updated_date
 , convert_timezone('UTC','America/Los_Angeles',p.updated) as updated_timestamp_pst
