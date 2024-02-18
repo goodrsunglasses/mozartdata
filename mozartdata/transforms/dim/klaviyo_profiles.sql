@@ -25,8 +25,21 @@ SELECT
 , p.phone_number
 , p._organization as company
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"Accepts Marketing"')::boolean as accepts_marketing_flag
-, JSON_EXTRACT_PATH_TEXT(p.properties,'"Expected Date Of Next Order"')::date as expected_next_order_date
+, nullif(JSON_EXTRACT_PATH_TEXT(p.properties,'"Expected Date Of Next Order"'),'*n/a*')::date as expected_next_order_date
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"First Purchase Date"')::date as first_purchase_date
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"MailChimp Rating"')::integer as mailchimp_rating
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"loyalty_opt_in"')::boolean as loyalty_opt_in
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"loyalty_opt_in_date"')::date as loyalty_opt_in_date
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_has_account"')::boolean as swell_has_account
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_credit_balance"')::varchar as swell_credit_balance
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_is_affiliate"')::boolean as swell_is_affiliate
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_point_balance"')::integer as swell_point_balance
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_points_earned"')::integer as swell_points_earned
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_points_expire_at"')::varchar as swell_points_expire_at
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_referral_discount_code"')::varchar as swell_referral_discount_code
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_referral_link"')::varchar as swell_referral_link
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_vip_tier_ends_at"')::varchar as swell_vip_tier_ends_at
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_vip_tier_name"')::varchar as swell_vip_tier_name
 , p.subscriptions:EMAIL:MARKETING:CONSENT::varchar as subscription_consent
 , case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime end as unsubscribe_timestamp
 , case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then date(p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) end as unsubscribe_date
@@ -43,4 +56,6 @@ SELECT
 , p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime as subscription_timestamp
 FROM
   klaviyo_portable.klaviyo_v2_profiles_8589937320 p
-order by profile_id_klaviyo
+-- WHERE
+--   email = 'jliang23@gmail.com'
+-- order by profile_id_klaviyo
