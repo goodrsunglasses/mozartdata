@@ -43,6 +43,8 @@ SELECT
 , p.subscriptions:EMAIL:MARKETING:CONSENT::varchar as subscription_consent
 , case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime end as unsubscribe_timestamp
 , case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then date(p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) end as unsubscribe_date
+, case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then convert_timezone(p.location:TIMEZONE::varchar,'America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) end as unsubscribe_timestamp_pst
+, case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then date(convert_timezone(p.location:TIMEZONE::varchar,'America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime)) end as unsubscribe_date_pst
 , case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'SPAM_COMPLAINT' then p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime end as spam_complaint_timestamp
 , case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'SPAM_COMPLAINT' then date(p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) end as spam_complaint_date
 , p.subscriptions:EMAIL:MARKETING:CUSTOM_METHOD_DETAIL::varchar as subscription_custom_method_detail
@@ -54,8 +56,8 @@ SELECT
 , p.subscriptions:EMAIL:MARKETING:METHOD::varchar as subscription_method
 , p.subscriptions:EMAIL:MARKETING:METHOD_DETAIL::varchar as subscription_method_detail
 , p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime as subscription_timestamp
+, date(p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) as subscription_date
+, convert_timezone(p.location:TIMEZONE::varchar,'America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) as subscription_timestamp_pst
+, date(convert_timezone(p.location:TIMEZONE::varchar,'America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime)) as subscription_date_pst
 FROM
   klaviyo_portable.klaviyo_v2_profiles_8589937320 p
--- WHERE
---   email = 'jliang23@gmail.com'
--- order by profile_id_klaviyo
