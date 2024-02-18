@@ -41,6 +41,12 @@ SELECT
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_vip_tier_ends_at"')::varchar as swell_vip_tier_ends_at
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_vip_tier_name"')::varchar as swell_vip_tier_name
 , p.subscriptions:EMAIL:MARKETING:CONSENT::varchar as subscription_consent
+, p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS[0].REASON::varchar as supression_reason
+, p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS[0].TIMESTAMP::datetime as suppression_timestamp
+, date(p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS[0].TIMESTAMP::datetime) as suppression_date
+, convert_timezone('UTC','America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS[0].TIMESTAMP::datetime) as suppression_timestamp_pst
+, date(convert_timezone('UTC','America/Los_Angeles',date(p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS[0].TIMESTAMP::datetime))) as suppression_date_pst
+, case when p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS[0].REASON::varchar is not null then true else false end supression_flag
 , case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime end as unsubscribe_timestamp
 , case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then date(p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) end as unsubscribe_date
 , case when p.subscriptions:EMAIL:MARKETING:METHOD::varchar = 'EMAIL_UNSUBSCRIBE' then convert_timezone(p.location:TIMEZONE::varchar,'America/Los_Angeles',p.subscriptions:EMAIL:MARKETING:TIMESTAMP::datetime) end as unsubscribe_timestamp_pst
