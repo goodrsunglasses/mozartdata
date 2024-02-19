@@ -29,10 +29,10 @@ SELECT
 , c.tracking_options:IS_ADD_UTM::boolean as tracking_options_is_add_utm_flag
 , c.tracking_options:IS_TRACKING_CLICKS::boolean as tracking_options_is_tracking_clicks_flag
 , c.tracking_options:IS_TRACKING_OPENS::boolean as tracking_options_is_tracking_opens_flag
-, c.updated_at as last_updated_timestamp
-, date(c.updated_at) as last_updated_date
-, CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at) as last_updated_timestamp_pst
-, date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at)) as last_updated_date_pst
+, c.updated_at as updated_timestamp
+, date(c.updated_at) as updated_date
+, CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at) as updated_timestamp_pst
+, date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at)) as updated_date_pst
 FROM
   klaviyo_portable.klaviyo_v2_campaigns_8589937320 c  
 -- UNION ALL
