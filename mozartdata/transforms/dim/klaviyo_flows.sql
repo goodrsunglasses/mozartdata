@@ -3,7 +3,7 @@ SELECT
 , date(f.created) as created_date
 , convert_timezone('UTC', 'America/Los_Angeles', f.created) as created_timestamp_pst
 , date(convert_timezone('UTC', 'America/Los_Angeles', f.created)) as created_date_pst
-, f.flow_id as flow_id_klayvio
+, f.flow_id as flow_id_klaviyo
 , f.name
 , f.status
 , f.trigger_type
