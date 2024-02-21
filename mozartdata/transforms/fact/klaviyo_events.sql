@@ -24,7 +24,7 @@ SELECT
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Email Domai"')::varchar as email_domain
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"machine_open"')::boolean as machine_open_flag
 FROM
-  klaviyo_portable.klaviyo_v2_events_8589937320 e
+  staging.klaviyo_events e
 LEFT JOIN
   klaviyo_portable.klaviyo_v2_metrics_8589937320 m
   on e.metric_id = m.metric_id
