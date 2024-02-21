@@ -35,9 +35,9 @@ SELECT
 , ca.name as campaign_name
 , audience_id
 , type
-, l.list_id_klaviyo
+, l.list_id as list_id_klaviyo
 , l.name as list_name
-, s.segment_id_klaviyo
+, s.segment_id as segment_id_klaviyo
 , s.name as segment_name
 FROM
   combined c
