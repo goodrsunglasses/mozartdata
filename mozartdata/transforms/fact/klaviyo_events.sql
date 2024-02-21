@@ -11,13 +11,18 @@ SELECT
 , e.metric_id as metric_id_klaviyo
 , m.name as metric_name
 , e.profile_id as profile_id_klaviyo
-, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$message"')::varchar as campaign_id_klaviyo
-, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"event_id"')::varchar as order_id_shopify
-, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"value"')::varchar as property_value
-, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"total_discounts"')::varchar as property_total_discounts
-, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"shipping_rate"')::varchar as property_shipping_rate
-, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"source_name"')::varchar as property_source_name
-, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"item_count"')::varchar as property_item_count
+, e.event_properties
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$flow"')::varchar as flow_id_klaviyo
+, case when JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$flow"')::varchar is null then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$message"')::varchar end as campaign_id_klaviyo
+, case when JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$flow"')::varchar is not null then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$message"')::varchar end as flow_message_id_klaviyo
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Campaign Name"')::varchar as email_name
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Subject"')::varchar as subject
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Client Name"')::varchar as client_name
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Client OS"')::varchar as client_os
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Client OS Family"')::varchar asclient_os_family
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Client Type"')::varchar as client_type
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Email Domai"')::varchar as email_domain
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"machine_open"')::boolean as machine_open_flag
 FROM
   klaviyo_portable.klaviyo_v2_events_8589937320 e
 LEFT JOIN
