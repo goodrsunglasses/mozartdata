@@ -32,12 +32,18 @@ FROM
 )
 SELECT
   campaign_id_klaviyo
+, ca.name as campaign_name
 , audience_id
 , type
 , l.list_id
+, l.name as list_name
 , s.segment_id
+, s.name as segment_name
 FROM
   combined c
+LEFT JOIN
+  klaviyo_portable.klaviyo_v2_campaigns_8589937320 ca
+  on c.campaign_id_klaviyo = ca.campaign_id
 LEFT JOIN
   klaviyo_portable.klaviyo_v2_lists_8589937320 l
   on audience_id = l.list_id
