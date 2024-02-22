@@ -46,7 +46,6 @@ WITH
       )
       OR (
         record_type = 'purchaseorder'
-        AND createdfrom IS NULL -- the idea here is that all the PO's that have no SO creating them are considered, while the PO's that are children of SO's are implicitly considered later
       )
   ),
   parent_type AS ( --quickly select the rank 1, so the most applicable parent's type for later sorting
