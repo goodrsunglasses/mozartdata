@@ -44,9 +44,7 @@ WITH
         )
         AND createdfrom IS NULL
       )
-      OR (
-        record_type = 'purchaseorder'
-      )
+      OR (record_type = 'purchaseorder')
   ),
   parent_type AS ( --quickly select the rank 1, so the most applicable parent's type for later sorting
     SELECT
@@ -106,6 +104,8 @@ WITH
     FROM
       order_ids order_ids_2
       JOIN transaction_tree tt ON order_ids_2.createdfrom = tt.transaction_id_ns
+    WHERE
+      record_type != 'purchaseorder'
   ),
   counter AS ( --cte thats gonna be used later for the complicated parent->children->grandchildren trees
     SELECT
