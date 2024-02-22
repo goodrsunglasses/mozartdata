@@ -1,115 +1,165 @@
 WITH
   draft AS -- put the draft version or w/e of the table you wanna select in here if needed
   (
-    WITH
-      grid_days AS (
-        SELECT
-          ROW_NUMBER() over (
-            ORDER BY
-              SEQ4()
-          ) -1 AS days
-        FROM
-          TABLE (GENERATOR(ROWCOUNT => 91)) a
-        ORDER BY
-          days
-      ),
-      grid_product AS (
-        SELECT
-          p.item_id_ns,
-          d.days
-        FROM
-          dim.product p
-          INNER JOIN goodr_reporting.launch_date_vs_earliest_sale ld ON p.item_id_ns = ld.item_id_ns
-          AND earliest_d2c_sale >= '2023-01-01'
-          INNER JOIN grid_days d ON 1 = 1
-      ),
-      launch_orders AS (
-        SELECT
-          oi.order_id_edw,
-          ld.item_id_ns,
-          o.sold_date,
-          ld.display_name,
-          ld.collection,
-          ld.family,
-          ld.earliest_d2c_sale,
-          SUM(oi.amount_sold) launch_product_sales,
-          SUM(oi.quantity_sold) launch_product_quantity
-        FROM
-          draft_fact.order_item oi
-          INNER JOIN goodr_reporting.launch_date_vs_earliest_sale ld ON ld.item_id_ns = oi.item_id_ns
-          AND ld.earliest_d2c_sale >= '2023-01-01'
-          INNER JOIN draft_fact.orders o ON oi.order_id_edw = o.order_id_edw
-          AND o.channel = 'Goodr.com'
-        GROUP BY
-          oi.order_id_edw,
-          ld.item_id_ns,
-          ld.display_name,
-          ld.collection,
-          ld.family,
-          ld.earliest_d2c_sale,
-          o.sold_date
-      ),
-      total_sales AS (
-        SELECT
-          lo.item_id_ns,
-          (o.sold_date - lo.earliest_d2c_sale) AS days_since_launch,
-          SUM(lo.launch_product_sales) AS launch_product_sales,
-          SUM(lo.launch_product_quantity) AS launch_product_quantity,
-          SUM(o.amount_sold) total_sales,
-          SUM(o.quantity_sold) total_quantity,
-          COUNT(DISTINCT o.order_id_edw) AS orders_containing_launch
-        FROM
-          draft_fact.orders o
-          INNER JOIN launch_orders lo ON o.order_id_edw = lo.order_id_edw
-        WHERE
-          o.sold_date >= '2023-01-01'
-        GROUP BY
-          lo.item_id_ns,
-          days_since_launch
-      )
-    SELECT
-      gp.item_id_ns,
-      gp.days,
-      p.display_name,
-      p.collection,
-      p.family,
-      p.sku,
-      p.merchandise_class,
-      p.merchandise_department,
-      p.merchandise_division,
-      ld.earliest_d2c_sale AS earliest_sale,
-      COALESCE(ts.launch_product_sales, 0) launch_product_sales,
-      COALESCE(ts.launch_product_quantity, 0) launch_product_quantity,
-      COALESCE(ts.total_sales, 0) total_sales,
-      COALESCE(ts.total_quantity, 0) total_quantity,
-      COALESCE(ts.orders_containing_launch, 0) orders_containing_launch
-    FROM
-      grid_product gp
-      INNER JOIN dim.product p ON gp.item_id_ns = p.item_id_ns
-      INNER JOIN goodr_reporting.launch_date_vs_earliest_sale ld ON p.item_id_ns = ld.item_id_ns
-      LEFT JOIN total_sales ts ON gp.item_id_ns = ts.item_id_ns
-      AND gp.days = ts.days_since_launch
-    WHERE
-      p.merchandise_department = 'SUNGLASSES'
-    ORDER BY
-      gp.item_id_ns,
-      days
-      ---
+ --dim.product where family = 'INLINE' and merchandise_department = 'SUNGLASSES'
+with customer_orders as
+(
+  SELECT
+    o.order_id_edw
+  , o.customer_id_edw
+  , o.booked_date
+  , row_number() over (partition by o.customer_id_edw order by o.sold_date) customer_order_number
+  FROM
+    draft_fact.orders o
+  WHERE
+    o.channel = 'Goodr.com'
+  and o.customer_id_edw is not null
+  and o.order_id_edw like 'G%'
+),
+baskets as
+(
+  SELECT
+    oi.order_id_edw
+  , p.sku
+  , p.display_name
+  , p.family
+  , p.merchandise_class
+  , p.design_tier
+  , sum(oi.quantity_booked) quantity_booked
+  , sum(oi.quantity_sold) quantity_sold
+  FROM
+    draft_fact.order_item oi
+  INNER JOIN
+    draft_fact.orders o
+    on oi.order_id_edw = o.order_id_edw
+  INNER JOIN
+    dim.product p
+    on oi.product_id_edw = p.product_id_edw
+  WHERE
+    p.merchandise_department = 'SUNGLASSES'
+  and o.channel = 'Goodr.com'
+  and oi.order_id_edw like 'G%'
+  GROUP BY
+    oi.order_id_edw
+  , p.sku
+  , p.display_name
+  , p.merchandise_class
+  , p.family
+  , p.design_tier
+  ORDER BY
+    oi.order_id_edw
+),
+baskets_agg as
+(
+  SELECT
+    b1.order_id_edw
+  , b1.sku
+  , b1.display_name
+  , b1.merchandise_class
+  , b1.family
+  , b1.design_tier
+  , b1.quantity_booked sku_quantity_booked
+  , sum(coalesce(b2.quantity_booked,0)) other_quantity_booked
+  , b1.quantity_booked+sum(coalesce(b2.quantity_booked,0)) as total_order_quantity_booked
+  , sum(case when b2.family = 'INLINE' then b2.quantity_booked else 0 end) inline_quantity
+  , sum(case when b2.family = 'LICENSING' then b2.quantity_booked else 0 end) licensing_quantity
+  , sum(case when b2.family = 'LIMITED EDITION' then b2.quantity_booked else 0 end) limited_edition_quantity
+  , sum(case when b2.design_tier = 'STYLED' then b2.quantity_booked else 0 end) styled_quantity
+  , sum(case when b2.design_tier = 'WILD' then b2.quantity_booked else 0 end) wild_quantity
+  , sum(case when b2.design_tier = 'MILD' then b2.quantity_booked else 0 end) mild_quantity
+  , sum(case when b2.merchandise_class = 'VRGS' then b2.quantity_booked else 0 end) vrgs_quantity
+  , sum(case when b2.merchandise_class = 'OGS' then b2.quantity_booked else 0 end) ogs_quantity
+  , sum(case when b2.merchandise_class = 'CIRCLE GS' then b2.quantity_booked else 0 end) circlegs_quantity
+  , sum(case when b2.merchandise_class = 'RUNWAYS' then b2.quantity_booked else 0 end) runways_quantity
+  , sum(case when b2.merchandise_class = 'SNOW G' then b2.quantity_booked else 0 end) snowgs_quantity
+  , sum(case when b2.merchandise_class = 'WRAP GS' then b2.quantity_booked else 0 end) wrapgs_quantity
+  , sum(case when b2.merchandise_class = 'PHGS' then b2.quantity_booked else 0 end) phgs_quantity
+  , sum(case when b2.merchandise_class = 'BFGS' then b2.quantity_booked else 0 end) bfgs_quantity
+  , sum(case when b2.merchandise_class = 'MACH GS' then b2.quantity_booked else 0 end) machgs_quantity
+  , sum(case when b2.merchandise_class = 'LFGS' then b2.quantity_booked else 0 end) lfgs_quantity
+  , sum(case when b2.merchandise_class = 'POP GS' then b2.quantity_booked else 0 end) popgs_quantity
+  from
+    baskets b1
+  left join
+    baskets b2
+    on b1.order_id_edw = b2.order_id_edw
+    and b1.sku != b2.sku
+  group by
+    b1.order_id_edw
+  , b1.sku
+  , b1.display_name
+  , b1.merchandise_class
+  , b1.family
+  , b1.design_tier
+  , b1.quantity_booked
+)
+
+SELECT
+--   co.order_id_edw
+-- , co.customer_id_edw
+-- , booked_date
+-- , co.customer_order_number
+  ba.sku
+, ba.display_name
+, ba.merchandise_class
+, ba.family
+, ba.design_tier
+, sum(case when co.customer_order_number = 1 then sku_quantity_booked else 0 end) first_order_sku_quantity_booked
+, sum(case when co.customer_order_number = 2 then sku_quantity_booked else 0 end) second_order_sku_quantity_booked
+, sum(case when co.customer_order_number = 3 then sku_quantity_booked else 0 end) third_order_sku_quantity_booked
+, sum(case when co.customer_order_number > 3 then sku_quantity_booked else 0 end) three_plus_order_sku_quantity_booked
+, sum(ba.sku_quantity_booked) sku_quantity_booked
+, sum(ba.other_quantity_booked) other_quantity_booked
+, sum(ba.total_order_quantity_booked) total_order_quantity_booked
+, sum(ba.inline_quantity) inline_quantity
+, sum(ba.licensing_quantity) licensing_quantity
+, sum(ba.limited_edition_quantity) limited_edition_quantity
+, sum(ba.styled_quantity) styled_quantity
+, sum(ba.wild_quantity) wild_quantity
+, sum(ba.mild_quantity) mild_quantity
+, sum(ba.vrgs_quantity) vrgs_quantity
+, sum(ba.ogs_quantity) ogs_quantity
+, sum(ba.circlegs_quantity) circlegs_quantity
+, sum(ba.runways_quantity) runways_quantity
+, sum(ba.snowgs_quantity) snowgs_quantity
+, sum(ba.wrapgs_quantity) wrapgs_quantity
+, sum(ba.phgs_quantity) phgs_quantity
+, sum(ba.bfgs_quantity) bfgs_quantity
+, sum(ba.machgs_quantity) machgs_quantity
+, sum(ba.lfgs_quantity) lfgs_quantity
+, sum(ba.popgs_quantity) popgs_quantity
+from 
+  customer_orders co
+left join
+  baskets_agg ba
+  on co.order_id_edw = ba.order_id_edw
+group by
+--     co.order_id_edw
+-- , co.customer_id_edw
+-- , booked_date
+-- , co.customer_order_number
+ ba.sku
+, ba.display_name
+, ba.merchandise_class
+, ba.family
+, ba.design_tier
+order by 
+ba.sku
   )
 SELECT
   'Version 1 Only' AS source,
   v1.*
 FROM
-  goodr_reporting.launch_sales_by_sku v1
-  LEFT JOIN draft ON (v1.item_id_ns = draft.item_id_ns and v1.days = draft.days)
+one_off_requests.sunnies_basket_analysis v1
+  LEFT JOIN draft ON v1.sku = draft.sku
 WHERE
-  draft.item_id_ns IS NULL
+  draft.sku IS NULL
  union all 
   SELECT
   'Version 2 Only' AS source,
   draft.*
 FROM
   draft
-  LEFT JOIN goodr_reporting.launch_sales_by_sku v1 ON (v1.item_id_ns = draft.item_id_ns and v1.days = draft.days)
+  LEFT JOIN one_off_requests.sunnies_basket_analysis v1 ON v1.sku = draft.sku
 WHERE
-  v1.item_id_ns IS NULL
+  v1.sku IS NULL
