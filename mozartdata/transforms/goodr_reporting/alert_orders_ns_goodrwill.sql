@@ -8,3 +8,4 @@ FROM
 WHERE
   o.order_id_edw IS NULL
   and s.created_at > '2024-01-01'
+  and s.name <> 'EMP-8010' ---didnt sync, unwanted
