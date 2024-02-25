@@ -121,20 +121,63 @@ result: 128 rows
   only 1 item of concern
 select * from draft_fact.order_item where order_id_ns = '111-8775946-3401012'
 select * from fact.order_item where order_id_edw = '111-8775946-3401012' 
+
+nothing in fact that's missing from draft_fact
 */
 SELECT
-  new.*
+  old.*
 FROM
   fact.order_item old
-right JOIN
+left JOIN
   draft_fact.order_item new
   on old.order_item_id = concat(new.order_id_ns,'_',new.item_id_ns)
 WHERE
 old.order_item_id is null 
 -- concat(new.order_id_ns,'_',new.item_id_ns) is null
+/*
 
-select * from dim.orders where order_id_ns = '017973212'
-select * from draft_fact.order_item where order_id_ns = 'G1848481'
-select * from fact.order_item where order_id_edw = 'G1848481'
 
-select * from dim.parent_transactions where transaction_id_ns ='15706752'
+*/
+select
+'fact.order_item' as table_name
+,SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_booked
+          ELSE 0
+        END
+      ) AS quantity_booked,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_sold
+          ELSE 0
+        END
+      ) AS quantity_sold,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_fulfilled
+          ELSE 0
+        END) AS quantity_fulfilled
+from
+  fact.order_item
+UNION ALL
+  select
+'draft_fact.order_item' as table_name
+,SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_booked
+          ELSE 0
+        END
+      ) AS quantity_booked,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_sold
+          ELSE 0
+        END
+      ) AS quantity_sold,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_fulfilled
+          ELSE 0
+        END) AS quantity_fulfilled
+from
+  draft_fact.order_item
