@@ -111,3 +111,30 @@ left JOIN
 WHERE
   old.order_item_detail_id is null
 group by 1
+
+
+/*
+order_item
+check to see what's in fact that's missing from draft
+result: 128 rows 
+  mostly shipping other processing items.
+  only 1 item of concern
+select * from draft_fact.order_item where order_id_ns = '111-8775946-3401012'
+select * from fact.order_item where order_id_edw = '111-8775946-3401012' 
+*/
+SELECT
+  new.*
+FROM
+  fact.order_item old
+right JOIN
+  draft_fact.order_item new
+  on old.order_item_id = concat(new.order_id_ns,'_',new.item_id_ns)
+WHERE
+old.order_item_id is null 
+-- concat(new.order_id_ns,'_',new.item_id_ns) is null
+
+select * from dim.orders where order_id_ns = '017973212'
+select * from draft_fact.order_item where order_id_ns = 'G1848481'
+select * from fact.order_item where order_id_edw = 'G1848481'
+
+select * from dim.parent_transactions where transaction_id_ns ='15706752'
