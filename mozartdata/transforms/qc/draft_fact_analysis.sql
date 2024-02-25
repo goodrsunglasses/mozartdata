@@ -190,10 +190,9 @@ SELECT
   old.order_id_edw as order_id_edw_old
 , old.plain_name
 , old.product_id_edw
-, new.order_id_ns
-, new.order_id_edw  as order_id_edw_new
-, SUM(CASE WHEN old.plain_name NOT IN ('Tax', 'Shipping') THEN old.quantity_booked ELSE 0 END) quantity_booked_old
-, SUM(CASE WHEN new.plain_name NOT IN ('Tax', 'Shipping') THEN new.quantity_booked ELSE 0 END) quantity_booked_new
+-- , new.order_id_edw  as order_id_edw_new
+, SUM(CASE WHEN old.plain_name NOT IN ('Tax', 'Shipping') THEN old.quantity_sold ELSE 0 END) quantity_sold_old
+, SUM(CASE WHEN new.plain_name NOT IN ('Tax', 'Shipping') THEN new.quantity_sold ELSE 0 END) quantity_sold_new
 FROM
   fact.order_item old
 inner join
@@ -203,14 +202,20 @@ group by
  old.order_id_edw
 , old.plain_name
 , old.product_id_edw
-, new.order_id_ns
-, new.order_id_edw
+-- , new.order_id_edw
 having
-quantity_booked_old != quantity_booked_new
+quantity_sold_old != quantity_sold_new
 
 select 
 *
 FROM
 fact.order_item 
-where order_id_edw = 'SG-WMOpen1'
-and product_id_edw = 52
+where order_id_edw = 'SG-MASTERS2301'
+and product_id_edw in (150)
+
+select 
+*
+FROM
+draft_fact.order_item 
+where order_id_ns = 'SG-MASTERS2301'
+and product_id_edw in (150)
