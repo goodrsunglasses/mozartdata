@@ -132,10 +132,14 @@ left JOIN
   draft_fact.order_item new
   on old.order_item_id = concat(new.order_id_ns,'_',new.item_id_ns)
 WHERE
-old.order_item_id is null 
+concat(new.order_id_ns,'_',new.item_id_ns) is null 
 -- concat(new.order_id_ns,'_',new.item_id_ns) is null
 /*
-
+check quantities in order_item
+                         booked  sold   fulfilled
+fact.order_item      	9598826	9399682	8946135
+draft_fact.order_item	9615246	9415104	8962555
+diff                    16420   15422    16420
 
 */
 select
@@ -181,3 +185,32 @@ UNION ALL
         END) AS quantity_fulfilled
 from
   draft_fact.order_item
+
+SELECT
+  old.order_id_edw as order_id_edw_old
+, old.plain_name
+, old.product_id_edw
+, new.order_id_ns
+, new.order_id_edw  as order_id_edw_new
+, SUM(CASE WHEN old.plain_name NOT IN ('Tax', 'Shipping') THEN old.quantity_booked ELSE 0 END) quantity_booked_old
+, SUM(CASE WHEN new.plain_name NOT IN ('Tax', 'Shipping') THEN new.quantity_booked ELSE 0 END) quantity_booked_new
+FROM
+  fact.order_item old
+inner join
+  draft_fact.order_item new
+  on old.order_item_id = concat(new.order_id_ns,'_',new.item_id_ns)
+group by
+ old.order_id_edw
+, old.plain_name
+, old.product_id_edw
+, new.order_id_ns
+, new.order_id_edw
+having
+quantity_booked_old != quantity_booked_new
+
+select 
+*
+FROM
+fact.order_item 
+where order_id_edw = 'SG-WMOpen1'
+and product_id_edw = 52
