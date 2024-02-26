@@ -146,19 +146,19 @@ select
 'fact.order_item' as table_name
 ,SUM(
         CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_booked
+          WHEN plain_name NOT IN ('Tax', 'Shipping','Storage Fee') THEN quantity_booked
           ELSE 0
         END
       ) AS quantity_booked,
       SUM(
         CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_sold
+          WHEN plain_name NOT IN ('Tax', 'Shipping','Storage Fee') THEN quantity_sold
           ELSE 0
         END
       ) AS quantity_sold,
       SUM(
         CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_fulfilled
+          WHEN plain_name NOT IN ('Tax', 'Shipping','Storage Fee') THEN quantity_fulfilled
           ELSE 0
         END) AS quantity_fulfilled
 from
@@ -168,19 +168,19 @@ UNION ALL
 'draft_fact.order_item' as table_name
 ,SUM(
         CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_booked
+          WHEN plain_name NOT IN ('Tax', 'Shipping','Storage Fee') THEN quantity_booked
           ELSE 0
         END
       ) AS quantity_booked,
       SUM(
         CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_sold
+          WHEN plain_name NOT IN ('Tax', 'Shipping','Storage Fee') THEN quantity_sold
           ELSE 0
         END
       ) AS quantity_sold,
       SUM(
         CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_fulfilled
+          WHEN plain_name NOT IN ('Tax', 'Shipping','Storage Fee') THEN quantity_fulfilled
           ELSE 0
         END) AS quantity_fulfilled
 from
@@ -295,7 +295,8 @@ select
 , quantity_fulfilled
 FROM
 fact.order_item 
-where order_id_edw = 'G2828694'
+where true and order_id_edw = 'GG-1339'
+and plain_name not in ('Tax','Shipping')
 -- and product_id_edw in (150)
 union all
 select 
@@ -310,5 +311,47 @@ select
 , quantity_fulfilled
 FROM
 draft_fact.order_item 
-where order_id_ns = 'G2828694'
+where order_id_ns = 'GG-1339'
 -- and product_id_edw in (150)
+
+
+with a as(
+select 
+'fact' table_name
+, order_id_edw as order_id
+, sum(quantity_booked)
+, sum(quantity_sold) quantity_sold
+, sum(quantity_fulfilled)
+, sum(coalesce(quantity_booked,0)+coalesce(quantity_sold,0)+coalesce(quantity_fulfilled,0)) total
+FROM
+fact.order_item 
+where true --order_id_edw = 'G2828694'
+and plain_name not in ('Tax','Shipping')
+group by 1,2
+union all
+select 
+'draft_fact' table_name
+, order_id_ns as order_id
+, sum(quantity_booked)
+, sum(quantity_sold) quantity_sold
+, sum(quantity_fulfilled)
+, sum(coalesce(quantity_booked,0)+coalesce(quantity_sold,0)+coalesce(quantity_fulfilled,0)) total
+FROM
+draft_fact.order_item 
+where true --order_id_edw = 'G2828694'
+and plain_name not in ('Tax','Shipping')
+group by 1,2
+)
+SELECT
+  a.table_name
+, b.table_name as b_t
+, a.total
+, b.total as b_total
+, a.order_id
+FROM
+  a
+left join
+ a b
+on a.order_id = b.order_id
+and a.table_name = 'fact' and b.table_name = 'draft_fact'
+where a.quantity_sold != b.quantity_sold
