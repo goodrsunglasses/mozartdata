@@ -117,17 +117,17 @@ WHERE
 GROUP BY
   order_id_ns,
   createdfrom,
-  transaction_id_ns,
+  tran.id,
   order_item_detail_id,
   product_id_edw,
-  item_id_ns,
+  tranline.item,
   transaction_created_timestamp_pst,
   transaction_created_date_pst,
   record_type,
   full_status,
   plain_name,
   item_type,
-  tranline.location
+  tranline.location,
   na.net_amount
   -- Shipping and Tax
 UNION ALL
