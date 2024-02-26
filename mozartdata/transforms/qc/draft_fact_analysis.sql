@@ -186,36 +186,81 @@ UNION ALL
 from
   draft_fact.order_item
 
+/*
+compare order volumes. Some cases where the old order volume was 2x reality. the new version resolves this ex SG-48654 and bosleys. quantity sold was 24 should be 12.
+ -quantity_sold -> 32 orders where sold amout was 2x reality. fixed in new version
+- quantity_booked -> 0 rows
+- quantity_fulfilled -> 0 rows
+*/
+
+  
+with old as
+  (SELECT
+  a.order_id_edw
+  , a.plain_name
+  , a.product_id_edw
+  , a.order_item_id
+  -- , new.order_id_edw  as order_id_edw_new
+  , SUM(CASE WHEN a.plain_name NOT IN ('Tax', 'Shipping') THEN a.quantity_sold ELSE 0 END) quantity_sold
+  , SUM(CASE WHEN a.plain_name NOT IN ('Tax', 'Shipping') THEN a.quantity_booked ELSE 0 END) quantity_booked
+  , SUM(CASE WHEN a.plain_name NOT IN ('Tax', 'Shipping') THEN a.quantity_fulfilled ELSE 0 END) quantity_fulfilled
+  FROM
+    fact.order_item a
+  GROUP BY
+    a.order_id_edw
+  , a.plain_name
+  , a.product_id_edw
+  , a.order_item_id
+  )
+, new as
+  (SELECT
+    a.order_id_ns as order_id_edw
+  , concat(a.order_id_ns,'_',a.item_id_ns) as order_item_id
+  , a.plain_name
+  , a.product_id_edw
+  -- , new.order_id_edw  as order_id_edw_new
+  , SUM(CASE WHEN a.plain_name NOT IN ('Tax', 'Shipping') THEN a.quantity_sold ELSE 0 END) quantity_sold
+  , SUM(CASE WHEN a.plain_name NOT IN ('Tax', 'Shipping') THEN a.quantity_booked ELSE 0 END) quantity_booked
+  , SUM(CASE WHEN a.plain_name NOT IN ('Tax', 'Shipping') THEN a.quantity_fulfilled ELSE 0 END) quantity_fulfilled
+  FROM
+    draft_fact.order_item a
+    GROUP BY
+    a.order_id_ns
+  , concat(a.order_id_ns,'_',a.item_id_ns) 
+  , a.plain_name
+  , a.product_id_edw)
 SELECT
   old.order_id_edw as order_id_edw_old
 , old.plain_name
 , old.product_id_edw
+, old.order_item_id
 -- , new.order_id_edw  as order_id_edw_new
-, SUM(CASE WHEN old.plain_name NOT IN ('Tax', 'Shipping') THEN old.quantity_sold ELSE 0 END) quantity_sold_old
-, SUM(CASE WHEN new.plain_name NOT IN ('Tax', 'Shipping') THEN new.quantity_sold ELSE 0 END) quantity_sold_new
+, old.quantity_sold as quantity_sold_old
+, new.quantity_sold quantity_sold_new
+, old.quantity_booked as quantity_booked_old
+, new.quantity_booked as quantity_booked_new
+, old.quantity_fulfilled as quantity_fulfilled_old
+, new.quantity_fulfilled as quantity_fulfilled_new
 FROM
   fact.order_item old
 inner join
   draft_fact.order_item new
-  on old.order_item_id = concat(new.order_id_ns,'_',new.item_id_ns)
-group by
- old.order_id_edw
-, old.plain_name
-, old.product_id_edw
--- , new.order_id_edw
-having
-quantity_sold_old != quantity_sold_new
+  on old.order_item_id = new.order_item_id
+where
+quantity_fulfilled_old != quantity_fulfilled_new
+and old.plain_name not in ('Shipping','Tax')
 
+  
 select 
 *
 FROM
 fact.order_item 
-where order_id_edw = 'SG-MASTERS2301'
+where order_id_edw = 'SG-48654'
 and product_id_edw in (150)
 
 select 
 *
 FROM
 draft_fact.order_item 
-where order_id_ns = 'SG-MASTERS2301'
+where order_id_ns = 'SG-48654'
 and product_id_edw in (150)
