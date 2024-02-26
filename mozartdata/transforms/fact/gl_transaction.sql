@@ -19,7 +19,8 @@ use createdate converted instead of trandate
 */
   select
       concat(tal.transaction,'_',tal.transactionline) as transaction_line_id
-    , REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ','') as order_id_edw
+    , pt.order_id_edw
+    , COALESCE(pt.order_id_ns,REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ','')) as order_id_ns
     , tran.id as transaction_id_ns
     , tran.tranid as transaction_number_ns
     , tal."ACCOUNT" as account_id_edw
@@ -72,11 +73,15 @@ use createdate converted instead of trandate
     left join
       netsuite.department d
       on tl.department = d.id
+    left join
+      dim.parent_transactions pt
+      on tran.id = pt.transaction_id_ns
     where
         date(tran.trandate) >= '2022-01-01' --limit the row count
     group by
      concat(tal.transaction,'_',tal.transactionline)
-    , REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ','')
+    , pt.order_id_edw
+    , COALESCE(pt.order_id_ns,REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ',''))
     , tran.id
     , tran.tranid
     , tal."ACCOUNT"
