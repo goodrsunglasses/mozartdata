@@ -1,3 +1,32 @@
+with net_amount as 
+  (
+    select
+      gt.transaction_id_ns
+    , gt.item_id_ns
+    , sum(gt.net_amount) net_amount
+    from
+      fact.gl_transaction gt
+    where
+      gt.account_number between 4000 and 4999
+    group by
+      gt.transaction_id_ns
+    , gt.item_id_ns
+  ),
+sales_tax as 
+  (
+    select
+      gt.transaction_id_ns
+    , gt.item_id_ns
+    , sum(gt.net_amount) net_amount
+    from
+      fact.gl_transaction gt
+    where
+      gt.account_number between 2200.01 and 2200.99
+    group by
+      gt.transaction_id_ns
+    , gt.item_id_ns
+  )
+
 SELECT
   REPLACE(
     COALESCE(
@@ -27,7 +56,7 @@ SELECT
   transtatus.fullname AS full_status,
   tranline.itemtype AS item_type,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  SUM(ABS(netamount)) AS net_amount,
+  na.net_amount AS net_amount,
   SUM(ABS(quantity)) AS total_quantity,
   SUM(ABS(quantitybilled)) quantity_invoiced,
   SUM(ABS(quantitybackordered)) quantity_backordered,
@@ -44,6 +73,7 @@ FROM
     tran.status = transtatus.id
     AND tran.type = transtatus.trantype
   )
+  LEFT OUTER JOIN net_amount na ON na.transaction_id_ns = tran.id and na.item_id_ns = tranline.item
   LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
 WHERE
   recordtype IN (
@@ -98,6 +128,7 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location
+  na.net_amount
   -- Shipping and Tax
 UNION ALL
 SELECT
@@ -133,7 +164,7 @@ SELECT
     WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
     ELSE NULL
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  SUM(- netamount) net_amount,
+  st.net_amount as net_amount,
   SUM(ABS(quantity)) AS total_quantity,
   NULL AS quantity_invoiced,
   NULL AS quantity_backordered,
@@ -150,6 +181,7 @@ FROM
     tran.status = transtatus.id
     AND tran.type = transtatus.trantype
   )
+  LEFT OUTER JOIN sales_tax st ON st.transaction_id_ns = tran.id and st.item_id_ns = tranline.item
   LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
 WHERE
   recordtype IN (
@@ -164,16 +196,18 @@ WHERE
   AND order_id_ns IS NOT NULL
 GROUP BY
   order_id_ns,
-  transaction_id_ns,
   createdfrom,
+  tran.id,
   order_item_detail_id,
   product_id_edw,
-  item_id_ns,
+  tranline.item,
   transaction_created_timestamp_pst,
   transaction_created_date_pst,
   record_type,
   full_status,
   plain_name,
-  item_type
+  item_type,
+  tranline.location,
+  st.net_amount
 ORDER BY
   transaction_id_ns asc
