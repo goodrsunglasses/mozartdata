@@ -264,3 +264,51 @@ FROM
 draft_fact.order_item 
 where order_id_ns = 'SG-48654'
 and product_id_edw in (150)
+
+select 
+  o.order_id_edw
+, n.order_id_ns
+-- , o.plain_name
+, sum(o.quantity_booked) old
+, sum(n.quantity_booked) new
+FROM
+fact.order_item o
+left join
+  draft_fact.order_item n
+on o.order_id_edw = n.order_id_ns
+  where true and o.order_id_edw = 'G2828694'
+  and o.plain_name not in ('Tax','Shipping')
+  and n.plain_name not in ('Tax','Shipping')
+-- where n.order_id_ns is null
+group by 1,2
+having old!=new
+  
+select 
+'fact'
+, order_id_edw
+, order_item_id
+, product_id_edw
+, sku
+, plain_name
+, quantity_booked
+, quantity_sold
+, quantity_fulfilled
+FROM
+fact.order_item 
+where order_id_edw = 'G2828694'
+-- and product_id_edw in (150)
+union all
+select 
+'draft_fact'
+, order_id_edw
+, order_item_id
+, product_id_edw
+, sku
+, plain_name
+, quantity_booked
+, quantity_sold
+, quantity_fulfilled
+FROM
+draft_fact.order_item 
+where order_id_ns = 'G2828694'
+-- and product_id_edw in (150)
