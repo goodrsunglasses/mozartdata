@@ -8,7 +8,7 @@ WITH
         SELECT DISTINCT
           order_id_edw
         FROM
-          draft_fact.order_item_detail
+          fact.order_item_detail
         UNION ALL
         SELECT DISTINCT
           order_id_edw
@@ -22,7 +22,7 @@ WITH
       transaction_id_ns,
       order_id_ns
     FROM
-      draft_fact.order_line
+      fact.order_line
     WHERE
       is_parent = TRUE
   )
