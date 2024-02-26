@@ -87,6 +87,7 @@ WITH
   )
 SELECT DISTINCT
   detail.order_id_edw,
+  detail.order_id_ns,
   CONCAT(detail.order_id_edw, '_', detail.item_id_ns) AS order_item_id,
   detail.product_id_edw,
   detail.item_id_ns,
@@ -107,7 +108,7 @@ SELECT DISTINCT
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
-  fact.order_item_detail detail
+      fact.order_item_detail detail
   LEFT OUTER JOIN dim.product p ON p.product_id_edw = detail.item_id_ns
   LEFT OUTER JOIN booked ON (
     booked.order_id_edw = detail.order_id_edw
