@@ -9,25 +9,6 @@ WITH
       gt.account_number BETWEEN 4000 AND 4999
     GROUP BY
       gt.transaction_id_ns
-  ),
-  parent_transaction AS (
-    SELECT DISTINCT
-      order_id_edw,
-      FIRST_VALUE(transaction_id_ns) OVER (
-        PARTITION BY
-          order_id_edw
-        ORDER BY
-          CASE
-            WHEN record_type = 'salesorder'
-            AND createdfrom IS NULL THEN 1
-            WHEN record_type IN ('cashsale', 'invoice')
-            AND createdfrom IS NULL THEN 2
-            ELSE 3
-          END,
-          transaction_created_timestamp_pst ASC
-      ) AS parent_id
-    FROM
-      fact.order_item_detail
   )
 SELECT DISTINCT
   CONCAT(
@@ -36,7 +17,9 @@ SELECT DISTINCT
     item_detail.transaction_id_ns
   ) AS order_line_id,
   item_detail.order_id_edw,
+  item_detail.order_id_ns,
   item_detail.transaction_id_ns,
+  item_detail.is_parent,
   tran.tranid AS transaction_number_ns,
   item_detail.full_status AS transaction_status_ns,
   item_detail.record_type,
@@ -67,12 +50,8 @@ SELECT DISTINCT
   END AS status_flag_edw,
   DATE(tran.startdate) AS shipping_window_start_date,
   DATE(tran.enddate) AS shipping_window_end_date,
-  item_detail.createdfrom AS parent_transaction_id,
+  item_detail.createdfrom,
   TRY_TO_NUMBER(tran.custbody_boomi_orderid) shopify_id,
-  CASE
-    WHEN parent_id IS NOT NULL THEN TRUE
-    ELSE FALSE
-  END AS parent_transaction,
   SUM(
     CASE
       WHEN item_detail.item_type = 'InvtPart' THEN item_detail.total_quantity
@@ -94,7 +73,6 @@ SELECT DISTINCT
   ) location
 FROM
   fact.order_item_detail item_detail
-  LEFT OUTER JOIN parent_transaction ON item_detail.transaction_id_ns = parent_transaction.parent_id
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN dim.channel channel ON channel.channel_id_ns = tran.cseg7
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
