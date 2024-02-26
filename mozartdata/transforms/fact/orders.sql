@@ -1,98 +1,103 @@
 WITH
-  parent_information AS (
+  netsuite_info AS (--first grab the netsuite info from dim.orders which implicitly should only have parent transactions from NS.
     SELECT
-      order_id_edw order_id,
-      transaction_id_ns AS parent_id,
-      orderline.channel,
-      orderline.email,
-      orderline.customer_id_ns,
-      orderline.location,
+      orders.order_id_edw,
+      orders.transaction_id_ns parent_id,
+      line.channel,
+      line.email,
+      line.customer_id_ns,
+      line.location,
       customer_category AS b2b_d2c,
       model
     FROM
-      fact.order_line orderline
-      LEFT OUTER JOIN dim.channel category ON category.name = orderline.channel
+      dim.orders orders
+      LEFT OUTER JOIN fact.order_line line ON line.transaction_id_ns = orders.transaction_id_ns
+      LEFT OUTER JOIN dim.channel category ON category.name = line.channel
     WHERE
-      parent_transaction = TRUE
+      orders.transaction_id_ns IS NOT NULL -- no need for checking if its a parent as the only transaction_id_ns's that are in dim.orders are parents
   ),
-  order_level AS (
+  shopify_info AS (--Grab any and all shopify info from this CTE
+    SELECT
+      orders.order_id_edw,
+      order_created_date_pst,
+      quantity_sold AS total_quantity_shopify
+    FROM
+      dim.orders orders
+      LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
+  ),
+  aggregate_netsuite AS (--aggregates the order level information from netsuite, this could definitely have been wrapped in the prior CTE but breaking it out made it more clear
     SELECT DISTINCT
-      parent_information.order_id order_id_edw,
-      parent_information.parent_id,
-      parent_information.channel,
-      parent_information.email,
-      parent_information.customer_id_ns,
-  parent_information.location,
-      parent_information.b2b_d2c,
-      parent_information.model,
+      ns_parent.order_id_edw,
+      ns_parent.parent_id,
+      ns_parent.channel,
+      ns_parent.email,
+      ns_parent.customer_id_ns,
+      ns_parent.location,
+      ns_parent.b2b_d2c,
+      ns_parent.model,
       MAX(status_flag_edw) over (
         PARTITION BY
-          order_id_edw
+          orderline.order_id_edw
       ) AS status_flag_edw,
       MAX(orderline.is_exchange) over (
         PARTITION BY
-          order_id_edw
+          orderline.order_id_edw
       ) AS is_exchange,
       FIRST_VALUE(transaction_date) OVER (
         PARTITION BY
-          order_id_edw
+          orderline.order_id_edw
         ORDER BY
           CASE
-            WHEN record_type = 'salesorder'
-            AND transaction_id_ns = parent_id THEN 1
+            WHEN record_type = 'salesorder' THEN 1
             ELSE 2
           END,
           transaction_created_timestamp_pst asc
       ) AS booked_date,
       FIRST_VALUE(
         CASE
-          WHEN record_type IN ('cashsale', 'invoice')
-          AND parent_transaction_id = parent_id THEN transaction_date
+          WHEN record_type IN ('cashsale', 'invoice') THEN transaction_date
           ELSE NULL
         END
       ) OVER (
         PARTITION BY
-          order_id_edw
+          orderline.order_id_edw
         ORDER BY
           CASE
-            WHEN record_type IN ('cashsale', 'invoice')
-            AND parent_transaction_id = parent_id THEN 1
+            WHEN record_type IN ('cashsale', 'invoice') THEN 1
             ELSE 2
           END,
           transaction_created_timestamp_pst asc
       ) AS sold_date,
       FIRST_VALUE(
         CASE
-          WHEN record_type = 'itemfulfillment'
-          AND parent_transaction_id = parent_id THEN transaction_date
+          WHEN record_type = 'itemfulfillment' THEN transaction_date
           ELSE NULL
         END
       ) OVER (
         PARTITION BY
-          order_id_edw
+          orderline.order_id_edw
         ORDER BY
           CASE
-            WHEN record_type = 'itemfulfillment'
-            AND parent_transaction_id = parent_id THEN 1
+            WHEN record_type = 'itemfulfillment' THEN 1
             ELSE 2
           END,
           transaction_created_timestamp_pst desc
       ) AS fulfillment_date,
       FIRST_VALUE(shipping_window_start_date) IGNORE NULLS OVER (
         PARTITION BY
-          order_id_edw
+          orderline.order_id_edw
         ORDER BY
           shipping_window_start_date desc
       ) AS shipping_window_start_date,
       FIRST_VALUE(shipping_window_end_date) IGNORE NULLS OVER (
         PARTITION BY
-          order_id_edw
+          orderline.order_id_edw
         ORDER BY
           shipping_window_end_date desc
       ) AS shipping_window_end_date
     FROM
-      parent_information
-      LEFT OUTER JOIN fact.order_line orderline ON orderline.order_id_edw = parent_information.order_id
+      netsuite_info ns_parent
+      LEFT OUTER JOIN fact.order_line orderline ON orderline.order_id_edw = ns_parent.order_id_edw
   ),
   aggregates AS (
     SELECT
@@ -223,17 +228,19 @@ WITH
       fact.refund
   )
 SELECT
-  order_level.order_id_edw,
-  order_level.channel,
+  orders.order_id_edw,
+  orders.order_id_ns,
+  aggregate_netsuite.channel,
   customer_id_edw,
   location.name location,
-  order_level.booked_date,
-  order_level.sold_date,
-  order_level.fulfillment_date,
-  order_level.shipping_window_start_date,
-  order_level.shipping_window_end_date,
-  order_level.is_exchange,
-  order_level.status_flag_edw,
+  shopify_info.order_created_date_pst booked_date_shopify,
+  aggregate_netsuite.booked_date,
+  aggregate_netsuite.sold_date,
+  aggregate_netsuite.fulfillment_date AS fulfillment_date_ns,
+  aggregate_netsuite.shipping_window_start_date,
+  aggregate_netsuite.shipping_window_end_date,
+  aggregate_netsuite.is_exchange,
+  aggregate_netsuite.status_flag_edw,
   CASE
     WHEN refund.order_id_edw IS NOT NULL THEN TRUE
     ELSE FALSE
@@ -241,10 +248,11 @@ SELECT
   refund_timestamp_pst,
   DATE(refund_timestamp_pst) AS refund_date_pst,
   b2b_d2c,
-  order_level.model,
+  aggregate_netsuite.model,
+  shopify_info.total_quantity_shopify,
   quantity_booked,
   quantity_sold,
-  quantity_fulfilled,
+  quantity_fulfilled AS quantity_fulfilled_ns,
   quantity_refunded,
   rate_booked,
   rate_sold,
@@ -261,15 +269,17 @@ SELECT
   shipping_sold,
   shipping_refunded
 FROM
-  order_level
-  LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
+  dim.orders orders
+  LEFT OUTER JOIN aggregate_netsuite ON aggregate_netsuite.order_id_edw = orders.order_id_edw
+  LEFT OUTER JOIN shopify_info ON shopify_info.order_id_edw = orders.order_id_edw
+  LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = aggregate_netsuite.order_id_edw
   LEFT OUTER JOIN dim.customer customer ON (
-    LOWER(customer.email) = LOWER(order_level.email)
-    AND customer.customer_category = order_level.b2b_d2c
+    LOWER(customer.email) = LOWER(aggregate_netsuite.email)
+    AND customer.customer_category = aggregate_netsuite.b2b_d2c
   )
-  LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = order_level.order_id_edw
-  left outer join dim.location location on location.location_id_ns = order_level.location
+  LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = aggregate_netsuite.order_id_edw
+  LEFT OUTER JOIN dim.location location ON location.location_id_ns = aggregate_netsuite.location
 WHERE
-  order_level.booked_date >= '2022-01-01T00:00:00Z'
+  aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY
-  order_level.booked_date desc
+  aggregate_netsuite.booked_date desc
