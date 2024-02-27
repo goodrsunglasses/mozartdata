@@ -237,6 +237,7 @@ SELECT
   aggregate_netsuite.booked_date,
   aggregate_netsuite.sold_date,
   aggregate_netsuite.fulfillment_date AS fulfillment_date_ns,
+  aggregate_netsuite.fulfillment_date AS fulfillment_date,
   aggregate_netsuite.shipping_window_start_date,
   aggregate_netsuite.shipping_window_end_date,
   aggregate_netsuite.is_exchange,
