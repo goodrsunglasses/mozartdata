@@ -23,5 +23,5 @@ SELECT
   location,
   createdfrom
 FROM
-  dim.parent_transactions parents
+  draft_dim.parent_transactions parents
   left outer join staging.order_item_detail staging on staging.transaction_id_ns = parents.transaction_id_ns
