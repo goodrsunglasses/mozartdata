@@ -15,7 +15,7 @@ WITH
     WHERE
       is_parent = TRUE
   )
-SELECT
+SELECT --Later we will def join this to flexport and other systems that house PO info, but as of right now its future proofing
   po_numbers.order_id_edw,
   parents.transaction_id_ns,
   parents.order_id_ns
