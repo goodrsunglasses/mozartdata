@@ -73,12 +73,13 @@ with
   FROM
     budget b
   )
-  select distinct
+  select
     bc.budget_version
   , bc.account_number
   , bc.account_id_ns
   , bc.channel
   , bc.amount
+  , pm.posting_period
   , pm.posting_period_date
   , pm.posting_period_month
   , pm.posting_period_year
@@ -118,6 +119,7 @@ with
   , bc.account_id_ns
   , bc.channel
   , bc.amount
+  , pm.posting_period
   , pm.posting_period_date
   , pm.posting_period_month
   , pm.posting_period_year
