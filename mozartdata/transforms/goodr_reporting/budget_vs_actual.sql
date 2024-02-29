@@ -97,6 +97,7 @@ with
     , bc.account_id_ns
     , bc.channel
     , bc.amount
+    , pm.posting_period
     , pm.posting_period_date
     , pm.posting_period_month
     , pm.posting_period_year
