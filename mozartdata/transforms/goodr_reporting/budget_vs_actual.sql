@@ -73,13 +73,51 @@ with
   FROM
     budget b
   )
-  select
-    bc.*
+  select distinct
+    bc.budget_version
+  , bc.account_number
+  , bc.account_id_ns
+  , bc.channel
+  , bc.amount
   , pm.posting_period_date
   , pm.posting_period_month
   , pm.posting_period_year
+  --, sum(bc2.amount)over (partition by bc2.budget_version, bc2.account_id_ns, bc.channel, pm.posting_period_date) ytd
+  , sum(bc2.amount) ytd
   from
     ba_combined bc
   inner join
     period_map pm
     on pm.posting_period = bc.posting_period
+  left join
+  (
+    select
+      bc.budget_version
+    , bc.account_number
+    , bc.account_id_ns
+    , bc.channel
+    , bc.amount
+    , pm.posting_period_date
+    , pm.posting_period_month
+    , pm.posting_period_year
+    from
+      ba_combined bc
+    inner join
+      period_map pm
+      on pm.posting_period = bc.posting_period
+  ) bc2
+    on bc.budget_version = bc2.budget_version
+    and bc.account_id_ns = bc2.account_id_ns
+    and bc.channel = bc2.channel
+    and pm.posting_period_year = bc2.posting_period_year
+    and bc2.posting_period_date <= pm.posting_period_date
+  group by
+      bc.budget_version
+  , bc.account_number
+  , bc.account_id_ns
+  , bc.channel
+  , bc.amount
+  , pm.posting_period_date
+  , pm.posting_period_month
+  , pm.posting_period_year
+order by budget_version,account_number,channel,posting_period_date
