@@ -110,7 +110,7 @@ with
   ) bc2
     on bc.budget_version = bc2.budget_version
     and bc.account_id_ns = bc2.account_id_ns
-    and bc.channel = bc2.channel
+    and coalesce(bc.channel,'none') = coalesce(bc2.channel,'none')
     and pm.posting_period_year = bc2.posting_period_year
     and bc2.posting_period_date <= pm.posting_period_date
   group by
