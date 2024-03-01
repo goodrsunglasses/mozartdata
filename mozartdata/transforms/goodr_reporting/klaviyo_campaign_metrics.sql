@@ -1,10 +1,11 @@
-with campaigns as
+scheduled_datewith campaigns as
   (
 SELECT
   ke.campaign_id_klaviyo
 , kc.name as campaign_name
 , kc.send_date
 , kc.send_date_pst
+, kc.scheduled_date
 , sum(case when ke.metric_name in ('Received Email','Bounced Email') then 1 else 0 end) as email_sent
 , sum(case when ke.metric_name = 'Received Email' then 1 else 0 end) as email_delivered
 , sum(case when ke.metric_name = 'Bounced Email' then 1 else 0 end) as email_bounced
@@ -19,9 +20,14 @@ FROM
 INNER JOIN
   dim.klaviyo_campaigns kc
   on ke.campaign_id_klaviyo = kc.campaign_id_klaviyo
+WHERE
+  kc.name like 'D2C 2/16%'
 GROUP BY
   ke.campaign_id_klaviyo
 , kc.name
+, kc.send_date
+, kc.send_date_pst
+, kc.scheduled_date
 ),
 orders as
 (
@@ -69,3 +75,9 @@ fact.klaviyo_events ke
 group by
 ke.metric_name
 order by 1
+
+select
+*
+FROM
+klaviyo_portable.klaviyo_v2_campaigns_8589937320
+where name = 'D2C 2/16 St Patrick''s Day Launch'
