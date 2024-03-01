@@ -21,7 +21,8 @@ SELECT
   gross_profit_estimate,
   cost_estimate,
   location,
-  createdfrom
+  createdfrom,
+  staging.warranty_order_id_ns
 FROM
   dim.parent_transactions parents
   left outer join staging.order_item_detail staging on staging.transaction_id_ns = parents.transaction_id_ns
