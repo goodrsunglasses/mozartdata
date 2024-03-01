@@ -27,6 +27,7 @@ SELECT DISTINCT
   tran.saleschannel AS inventory_bucket,
   entity AS customer_id_ns,
   customer.email,
+  item_detail.warranty_order_id_ns,
   CASE
     WHEN item_detail.record_type = 'cashrefund' THEN TRUE
     ELSE FALSE
