@@ -65,7 +65,8 @@ SELECT
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
   tranline.location,
-  tranline.createdfrom
+  tranline.createdfrom,
+  tran.custbodywarranty_reference as warranty_order_id_ns
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -128,7 +129,8 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location,
-  na.net_amount
+  na.net_amount,
+  tran.custbodywarranty_reference
   -- Shipping and Tax
 UNION ALL
 SELECT
@@ -173,7 +175,8 @@ SELECT
   SUM(tranline.estgrossprofit) AS gross_profit_estimate,
   SUM(tranline.costestimate) AS cost_estimate,
   NULL AS location,
-  tranline.createdfrom
+  tranline.createdfrom,
+  tran.custbodywarranty_reference as warranty_order_id_ns
 FROM
   netsuite.transaction tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -208,6 +211,7 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location,
-  st.net_amount
+  st.net_amount,
+  tran.custbodywarranty_reference
 ORDER BY
   transaction_id_ns asc
