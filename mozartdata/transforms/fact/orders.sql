@@ -235,7 +235,7 @@ SELECT
   aggregate_netsuite.channel,
   customer_id_edw,
   location.name location,
-  orders.warranty_order_id_ns,
+  aggregate_netsuite.warranty_order_id_ns,
   shopify_info.order_created_date_pst booked_date_shopify,
   aggregate_netsuite.booked_date,
   aggregate_netsuite.sold_date,
