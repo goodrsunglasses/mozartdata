@@ -28,4 +28,4 @@ FROM
   LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns
   LEFT OUTER JOIN exceptions.order_item_detail exceptions ON exceptions.transaction_id_ns = parents.transaction_id_ns
 WHERE
-  dupe_flag = FALSE
+  exception_flag = FALSE
