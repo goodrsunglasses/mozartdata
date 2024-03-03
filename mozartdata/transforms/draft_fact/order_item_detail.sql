@@ -22,7 +22,7 @@ SELECT
   cost_estimate,
   location,
   createdfrom,
-  dupe_flag
+  exception_flag
 FROM
   dim.parent_transactions parents
   LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns
