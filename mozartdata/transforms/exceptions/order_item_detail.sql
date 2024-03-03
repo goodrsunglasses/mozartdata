@@ -52,10 +52,10 @@ SELECT DISTINCT --Had to add a distinct as adding in the secondary CTE join made
   CASE --boolean switch that basically goes through each CTE, and if the given transaction had a true to it then display that cte's dupe flag, or else move on
     WHEN inv_dupes.dupe_flag THEN inv_dupes.dupe_flag
     ELSE FALSE
-  END AS dupe_flag
+  END AS exception_flag
 FROM
   first_pass
   LEFT OUTER JOIN inv_dupes ON inv_dupes.order_id_ns = first_pass.order_id_ns
 ORDER BY
   order_id_ns,
-  dupe_flag
+  exception_flag
