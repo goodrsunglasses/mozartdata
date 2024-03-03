@@ -19,7 +19,7 @@ WITH
   --     itemfulfillment_count > 1
   -- )
 ,
-  inv_dupes AS ( --Selecting all the Inv dupes for quantity related checks
+  empty_invs AS ( --Selecting and computing invoices with a quantity of zero excluding shipping and taxes (confirmed to be excludeable by Alex)
     SELECT
       first_pass.order_id_ns,
       first_pass.transaction_id_ns,
@@ -32,7 +32,8 @@ WITH
       CASE
         WHEN invoice_qty = 0 THEN TRUE
         ELSE FALSE
-      END AS dupe_flag
+      END AS dupe_flag,
+    'Empty Invoice' as reason
     FROM
       first_pass
       LEFT OUTER JOIN staging.order_item_detail detail ON detail.transaction_id_ns = first_pass.transaction_id_ns
@@ -48,14 +49,15 @@ WITH
 SELECT DISTINCT --Had to add a distinct as adding in the secondary CTE join made a shitload of duplicates combined with the case when, you can see this if you remove the distinct and filter for 'CS-DENVERGOV070722'
   first_pass.order_id_ns,
   first_pass.record_type,
+  coalesce(empty_invs.reason,null) as reason,
   first_pass.transaction_id_ns,
   CASE --boolean switch that basically goes through each CTE, and if the given transaction had a true to it then display that cte's dupe flag, or else move on
-    WHEN inv_dupes.dupe_flag THEN inv_dupes.dupe_flag
+    WHEN empty_invs.dupe_flag THEN empty_invs.dupe_flag
     ELSE FALSE
   END AS exception_flag
 FROM
   first_pass
-  LEFT OUTER JOIN inv_dupes ON inv_dupes.order_id_ns = first_pass.order_id_ns
+  LEFT OUTER JOIN empty_invs ON empty_invs.transaction_id_ns = first_pass.transaction_id_ns
 ORDER BY
   order_id_ns,
   exception_flag
