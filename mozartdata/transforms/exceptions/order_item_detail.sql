@@ -1,11 +1,9 @@
 WITH
   first_pass AS (
-    SELECT DISTINCT
-      order_id_ns,
-      transaction_id_ns,
-      record_type
+    SELECT
+      *
     FROM
-      staging.order_item_detail
+      dim.parent_transactions
   )
   -- ,
   -- if_dupes AS ( --Selecting all the IF dupes for tracking related checks
@@ -33,7 +31,7 @@ WITH
         WHEN invoice_qty = 0 THEN TRUE
         ELSE FALSE
       END AS dupe_flag,
-    'Empty Invoice' as reason
+      'Empty Invoice' AS reason
     FROM
       first_pass
       LEFT OUTER JOIN staging.order_item_detail detail ON detail.transaction_id_ns = first_pass.transaction_id_ns
@@ -49,7 +47,7 @@ WITH
 SELECT DISTINCT --Had to add a distinct as adding in the secondary CTE join made a shitload of duplicates combined with the case when, you can see this if you remove the distinct and filter for 'CS-DENVERGOV070722'
   first_pass.order_id_ns,
   first_pass.record_type,
-  coalesce(empty_invs.reason,null) as reason,
+  COALESCE(empty_invs.reason, NULL) AS reason,
   first_pass.transaction_id_ns,
   CASE --boolean switch that basically goes through each CTE, and if the given transaction had a true to it then display that cte's dupe flag, or else move on
     WHEN empty_invs.dupe_flag THEN empty_invs.dupe_flag
