@@ -14,7 +14,7 @@ WITH
       record_type,
       transaction_created_timestamp_pst
   ),
-  parent_ranking AS (
+  parent_ranking AS (--parent ranking for just the orders type transactions
     SELECT
       order_id_ns,
       transaction_id_ns,
@@ -28,15 +28,14 @@ WITH
             WHEN 'salesorder' THEN 1
             WHEN 'cashsale' THEN 2
             WHEN 'invoice' THEN 2
-            WHEN 'purchaseorder' THEN 3
-            ELSE 4
+            ELSE 3
           END,
           transaction_created_timestamp_pst
       ) AS RANK
     FROM
       order_ids
     WHERE
-      (record_type = 'salesorder')
+      (record_type in ('salesorder','purchaseorder'))
       OR (
         (
           record_type = 'cashsale'
@@ -44,11 +43,8 @@ WITH
         )
         AND createdfrom IS NULL
       )
-      OR (
-        record_type = 'purchaseorder'
-        AND createdfrom IS NULL -- the idea here is that all the PO's that have no SO creating them are considered, while the PO's that are children of SO's are implicitly considered later
-      )
   ),
+  
   parent_type AS ( --quickly select the rank 1, so the most applicable parent's type for later sorting
     SELECT
       order_id_ns,
@@ -69,13 +65,13 @@ WITH
           parent_ranking.order_id_ns
         ORDER BY
           parent_ranking.transaction_id_ns
-      ) AS label,
+      ) AS label,--used to generate the #1,#2, etc later on, basically ranking 
       parent_type
     FROM
       parent_ranking
       LEFT OUTER JOIN parent_type ON parent_type.order_id_ns = parent_ranking.order_id_ns
     WHERE
-      record_type = parent_type
+      record_type = parent_type or record_type ='purchaseorder'
   ),
   transaction_tree AS (
     -- Anchor member: Select initial transactions that are parents (present in final_ranking)
@@ -107,6 +103,8 @@ WITH
     FROM
       order_ids order_ids_2
       JOIN transaction_tree tt ON order_ids_2.createdfrom = tt.transaction_id_ns
+    WHERE
+      record_type != 'purchaseorder'
   ),
   counter AS ( --cte thats gonna be used later for the complicated parent->children->grandchildren trees
     SELECT
