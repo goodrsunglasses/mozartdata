@@ -8,7 +8,7 @@ WITH
       line.vendor_id_ns
     FROM
       dim.purchase_orders
-      LEFT OUTER JOIN draft_fact.purchase_order_line line ON line.transaction_id_ns = purchase_orders.transaction_id_ns
+      LEFT OUTER JOIN fact.purchase_order_line line ON line.transaction_id_ns = purchase_orders.transaction_id_ns
   ),
   aggregate_netsuite AS (
     SELECT DISTINCT
@@ -37,7 +37,7 @@ WITH
       parent_info.name
     FROM
       parent_info
-      LEFT OUTER JOIN draft_fact.purchase_order_line line ON line.order_id_edw = parent_info.order_id_edw
+      LEFT OUTER JOIN fact.purchase_order_line line ON line.order_id_edw = parent_info.order_id_edw
   ),
   aggregates AS (
     SELECT
