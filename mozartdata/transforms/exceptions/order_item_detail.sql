@@ -42,9 +42,8 @@ WITH
       first_pass.transaction_id_ns
   ),
   full_closed AS (
-    SELECT distinct 
-      first_pass.order_id_ns,
-      
+    SELECT DISTINCT
+      first_pass.order_id_ns
     FROM
       first_pass
       LEFT OUTER JOIN staging.order_item_detail detail ON detail.transaction_id_ns = first_pass.transaction_id_ns
