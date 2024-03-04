@@ -3,7 +3,7 @@ WITH
     SELECT DISTINCT
       order_id_edw
     FROM
-      draft_fact.purchase_order_line
+      fact.purchase_order_line
   ),
   parents AS ( -- select just the parents from fact order line to join after, this is a cte because filtering the entire query for just parent = true ignores the ones that dont come from NS
     SELECT
@@ -11,7 +11,7 @@ WITH
       transaction_id_ns,
       order_id_ns
     FROM
-      draft_fact.purchase_order_line
+      fact.purchase_order_line
     WHERE
       is_parent = TRUE
   )
