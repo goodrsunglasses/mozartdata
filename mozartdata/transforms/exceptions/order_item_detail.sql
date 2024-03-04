@@ -40,9 +40,15 @@ WITH
     GROUP BY
       first_pass.order_id_ns,
       first_pass.transaction_id_ns
+  ),
+  full_closed AS (
+    SELECT distinct 
+      first_pass.order_id_ns,
+      
+    FROM
+      first_pass
+      LEFT OUTER JOIN staging.order_item_detail detail ON detail.transaction_id_ns = first_pass.transaction_id_ns
   )
-  -- , full_closed as (
-  -- )
   --Here I'll have it select the original full list, then join with it depending on what CTE it came from and have there be a final boolean that will determine if te transaction_id_ns should be excluded
 SELECT DISTINCT --Had to add a distinct as adding in the secondary CTE join made a shitload of duplicates combined with the case when, you can see this if you remove the distinct and filter for 'CS-DENVERGOV070722'
   first_pass.order_id_ns,
