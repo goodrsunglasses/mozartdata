@@ -1,10 +1,21 @@
 WITH
-  order_level AS (
+  parent_info AS ( --first grab the netsuite info from dim.purchaseorders which implicitly should only have parent transactions from NS.
+    SELECT
+      purchase_orders.order_id_edw,
+      purchase_orders.order_id_ns,
+      purchase_orders.transaction_id_ns,
+      line.name,
+      line.vendor_id_ns
+    FROM
+      dim.purchase_orders
+      LEFT OUTER JOIN draft_fact.purchase_order_line line ON line.transaction_id_ns = purchase_orders.transaction_id_ns
+  ),
+  aggregate_netsuite AS (
     SELECT DISTINCT
-      order_id_edw,
+      parent_info.order_id_edw,
       FIRST_VALUE(transaction_date) OVER (
         PARTITION BY
-          order_id_edw
+          parent_info.order_id_edw
         ORDER BY
           CASE
             WHEN record_type = 'purchaseorder' THEN 1
@@ -14,7 +25,7 @@ WITH
       ) AS purchase_date,
       FIRST_VALUE(transaction_date) OVER (
         PARTITION BY
-          order_id_edw
+          parent_info.order_id_edw
         ORDER BY
           CASE
             WHEN record_type = 'itemreceipt' THEN 1
@@ -22,10 +33,11 @@ WITH
           END,
           transaction_created_timestamp_pst asc
       ) AS fulfillment_date,
-      vendor_id_ns,
-      name
+      parent_info.vendor_id_ns,
+      parent_info.name
     FROM
-      fact.purchase_order_line
+      parent_info
+      LEFT OUTER JOIN draft_fact.purchase_order_line line ON line.order_id_edw = parent_info.order_id_edw
   ),
   aggregates AS (
     SELECT
@@ -104,5 +116,5 @@ SELECT
   amount_billed,
   amount_received
 FROM
-  order_level
+  aggregate_netsuite order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
