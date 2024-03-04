@@ -1,6 +1,6 @@
 SELECT
   parents.order_id_edw,
-  staging.order_id_ns ,
+  staging.order_id_ns,
   staging.transaction_id_ns,
   parents.is_parent,
   order_item_detail_id,
@@ -22,7 +22,10 @@ SELECT
   cost_estimate,
   location,
   createdfrom,
-  staging.warranty_order_id_ns
+  exception_flag
 FROM
   dim.parent_transactions parents
-  left outer join staging.order_item_detail staging on staging.transaction_id_ns = parents.transaction_id_ns
+  LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns
+  LEFT OUTER JOIN exceptions.order_item_detail exceptions ON exceptions.transaction_id_ns = parents.transaction_id_ns
+WHERE
+  exception_flag = FALSE
