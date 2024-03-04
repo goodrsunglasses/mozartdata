@@ -12,6 +12,7 @@ SELECT
 , m.name as metric_name
 , e.profile_id as profile_id_klaviyo
 , e.event_properties
+, case when m.name = 'Placed Order' then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$event_id"')::varchar else null end as order_id_shopify
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$flow"')::varchar as flow_id_klaviyo
 , case when JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$flow"')::varchar is null then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$message"')::varchar end as campaign_id_klaviyo
 , case when JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$flow"')::varchar is not null then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$message"')::varchar end as flow_message_id_klaviyo
@@ -23,6 +24,9 @@ SELECT
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Client Type"')::varchar as client_type
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Email Domai"')::varchar as email_domain
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"machine_open"')::boolean as machine_open_flag
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$extra"."current_total_price"')::varchar as total_amount
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$extra"."current_subtotal_price"')::varchar as subtotal_amount
+, JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$value"')::varchar as item_amount
 FROM
   staging.klaviyo_events e
 LEFT JOIN
