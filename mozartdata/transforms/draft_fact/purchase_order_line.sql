@@ -22,7 +22,7 @@ SELECT DISTINCT
     ELSE FALSE
   END AS status_flag_edw
 FROM
-  draft_fact.order_item_detail item_detail
+  fact.order_item_detail item_detail
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN dim.vendors vendors ON vendors.vendor_id_edw = tran.entity
 WHERE
