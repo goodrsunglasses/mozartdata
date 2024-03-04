@@ -22,6 +22,7 @@ SELECT
   cost_estimate,
   location,
   createdfrom,
+  staging.warranty_order_id_ns,
   exception_flag
 FROM
   dim.parent_transactions parents
