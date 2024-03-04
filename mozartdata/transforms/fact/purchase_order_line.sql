@@ -1,7 +1,9 @@
 SELECT DISTINCT
   CONCAT(order_id_edw, '_', transaction_id_ns) AS order_line_id,
   item_detail.order_id_edw,
+  item_detail.order_id_ns,
   item_detail.transaction_id_ns,
+  item_detail.is_parent,
   item_detail.record_type,
   entity AS vendor_id_edw,
   entity AS vendor_id_ns,
