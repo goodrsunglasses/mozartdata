@@ -36,7 +36,7 @@ with
     inner join
       period_map pm
       on gt.posting_period = pm.posting_period
-      and pm.posting_period_year = '2024'
+      and pm.posting_period_year in ('2024', '2023')
     where
       posting_flag = true
     and ga.account_number >= 4000 and ga.account_number < 5000
