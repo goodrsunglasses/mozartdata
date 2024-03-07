@@ -61,15 +61,9 @@ SELECT
 , a.campaign_name
 , a.flow_id_klaviyo
 , a.flow_name
-, count(distinct a.order_id_shopify) order_count
-, count(distinct a.profile_id_klaviyo) profile_count
-, sum(a.total_amount) total_amount
+, a.order_id_shopify 
+, a.profile_id_klaviyo 
+, a.total_amount 
+, case when a.rn = 1 then true else false end as klaviyo_attribution_flag 
 FROM
   attribution a
-WHERE
-  a.rn = 1
-group by
-  a.campaign_id_klaviyo
-, a.campaign_name
-, a.flow_id_klaviyo
-, a.flow_name
