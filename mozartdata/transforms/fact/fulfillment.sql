@@ -1,6 +1,7 @@
 SELECT DISTINCT
   line.fulfillment_id_edw,
   line.order_id_edw,
+  line.source,
   line.carrier,
   line.carrier_service,
   line.shipdate,
