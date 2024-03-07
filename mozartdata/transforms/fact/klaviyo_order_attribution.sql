@@ -73,6 +73,3 @@ group by
 , a.campaign_name
 , a.flow_id_klaviyo
 , a.flow_name
-ORDER BY
-  a.campaign_name
-, a.flow_name
