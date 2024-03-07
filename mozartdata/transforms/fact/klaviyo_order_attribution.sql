@@ -8,6 +8,7 @@ with orders as
   , ke.order_id_shopify
   , ke.profile_id_klaviyo
   , ke.total_amount
+  , ke.subtotal_amount
   FROM
     fact.klaviyo_events ke
   WHERE
@@ -63,7 +64,8 @@ SELECT
 , a.flow_name
 , a.order_id_shopify 
 , a.profile_id_klaviyo 
-, a.total_amount 
+, a.total_amount
+, a.subtotal_amount
 , case when a.rn = 1 then true else false end as klaviyo_attribution_flag 
 FROM
   attribution a
