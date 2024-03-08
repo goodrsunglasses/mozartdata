@@ -20,15 +20,14 @@ with campaigns as
   INNER JOIN
     dim.klaviyo_campaigns kc
     on ke.campaign_id_klaviyo = kc.campaign_id_klaviyo
-  WHERE
-    kc.name like 'D2C 2/16%'
   GROUP BY
     ke.campaign_id_klaviyo
   , kc.name
   , kc.send_date
   , kc.send_date_pst
   , kc.scheduled_date
-),
+)
+,
 campaign_profiles as
 (
   SELECT DISTINCT
@@ -43,41 +42,36 @@ campaign_profiles as
     on ke.campaign_id_klaviyo = kc.campaign_id_klaviyo
   WHERE
     ke.metric_name = 'Received Email'
-),
-orders as
+), orders as
 (
-SELECT
---   ke.event_date
--- , ke.profile_id_klaviyo
--- , ke.metric_name
-  cp.campaign_id_klaviyo
-, cp.campaign_name
-, count(ke.event_id_klaviyo) order_count
-, sum(ke.total_amount) total_amount
-, sum(ke.subtotal_amount) subtotal_amount
-FROM
-  fact.klaviyo_events ke
-LEFT JOIN
-  campaign_profiles cp
-  on ke.profile_id_klaviyo = cp.profile_id_klaviyo
-  and ke.event_date between cp.send_date and dateadd(day,5,cp.send_date)
-WHERE
-  ke.metric_name = 'Placed Order'
-GROUP BY
-  cp.campaign_id_klaviyo
-, cp.campaign_name
-  
+  SELECT
+    o.campaign_id_klaviyo
+  , o.campaign_name
+  , o.flow_id_klaviyo
+  , o.flow_name
+  , count(o.order_id_shopify) as order_count 
+  , count(distinct o.profile_id_klaviyo) as unique_profile_count  
+  , sum(o.total_amount) as total_amount
+  , sum(o.subtotal_amount) as subtotal_amount
+  FROM
+    fact.klaviyo_order_attribution o
+  WHERE
+    o.klaviyo_attribution_flag = true
+  GROUP BY
+      o.campaign_id_klaviyo
+  , o.campaign_name
+  , o.flow_id_klaviyo
+  , o.flow_name
 )
 SELECT
   c.*
-, o.order_count
-, o.total_amount
-, o.subtotal_amount
+, o.*
 FROM
   campaigns c
 left join
-  orders o
+  fact.klaviyo_order_attribution o
   on c.campaign_id_klaviyo = o.campaign_id_klaviyo
+  and o.klaviyo_order_attribution = true
 
 -- select
 -- *
