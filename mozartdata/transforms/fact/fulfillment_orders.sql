@@ -17,14 +17,21 @@
 --   orders.shipped_at,
 --   source_system
 -- UNION ALL
-SELECT distinct 
+
+SELECT
   ordernumber,
-  orderkey,
-  orderstatus,
-  shipdate,
-  'Shipstation' AS source_system
+  MD5(
+    LISTAGG(orderid, '_') WITHIN GROUP (
+      ORDER BY
+        orderid
+    )
+  ) AS hashed_orderid,
+  ARRAY_AGG(orderid) order_ids,
+  SUM(ordertotal) AS aggregate_total,
+  SUM(amountpaid) AS aggregate_paid,
+  SUM(shippingamount) AS aggregate_shipping_paid,
+  SUM(taxamount) aggregate_tax_paid
 FROM
   shipstation_portable.shipstation_orders_8589936627
-WHERE
-  ordernumber in  ('SG-CHIMAR2022','G1760109')
-order by ordernumber
+GROUP BY
+  ordernumber
