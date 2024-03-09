@@ -37,7 +37,7 @@ SELECT
       'Key Account CAN',
       'Specialty CAN'
     ) THEN 'Wholesale'
-    WHEN name IN ('Goodr.com', 'Goodr.com CAN','goodr.ca') THEN 'Website'
+    WHEN name IN ('Goodr.com', 'Goodr.com CAN','goodr.ca') THEN 'Digital'
     WHEN name IN ('Amazon', 'Amazon Prime','Prescription') THEN 'Partner'
     WHEN name IN ('Cabana') THEN 'Retail'
     WHEN name IN ('Global') THEN 'Distribution'
