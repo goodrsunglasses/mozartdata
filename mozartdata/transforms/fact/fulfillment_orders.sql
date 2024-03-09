@@ -1,3 +1,4 @@
+--The main idea behind this table is to provide a staging ground for normalizing the confliciting fulfillment system's order information, some more convenient information can be added but it should be done sparingly.
 SELECT
   orders.ordernumber order_id_edw,
   MD5(
@@ -26,6 +27,7 @@ FROM
 GROUP BY
   orders.ordernumber,
   orders.orderstatus
+--Union to Stord information
 UNION ALL
 SELECT
   orders.order_number order_id_edw,
