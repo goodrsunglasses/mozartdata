@@ -6,8 +6,8 @@ SELECT
       ORDER BY
         orders.orderid
     )
-  ) AS hashed_orderid,
-  FIRST_VALUE(orderstatus) OVER ( --Have to do this to find the first non-shipped order status, because shipping_status for SS represents an aggregate quantity
+  ) AS hashed_orderid,--This was the main reason for this table, due to improper Boomi syncs, Shipstation has duplicate order_id_edws, not one row per order number on their order table, so everything coming from shipstation on an order level needs to be aggregate.
+  FIRST_VALUE(orderstatus) OVER ( --Have to do this to find the first non-shipped order status, because shipping_status for SS represents an aggregate quantity, for stord its only one row per order
     PARTITION BY
       orders.ordernumber
     ORDER BY
@@ -29,7 +29,7 @@ GROUP BY
   orders.orderstatus
 --Union to Stord information
 UNION ALL
-SELECT
+SELECT--Stord is pretty much super straightforward
   orders.order_number order_id_edw,
   orders.order_id,
   orders.status,
