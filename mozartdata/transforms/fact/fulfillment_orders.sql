@@ -27,7 +27,7 @@ SELECT
     )
   ) AS hashed_orderid,
   ARRAY_AGG(orderid) order_ids,
-  SUM(ordertotal) AS aggregate_total,
+  SUM(ordertotal) AS aggregate_order_total,
   SUM(amountpaid) AS aggregate_paid,
   SUM(shippingamount) AS aggregate_shipping_paid,
   SUM(taxamount) aggregate_tax_paid
