@@ -16,7 +16,8 @@ SELECT
       'Amazon Prime',
       'Cabana',
       'Goodr.com CAN',
-      'Prescription'
+      'Prescription',
+      'goodr.ca'
     ) THEN 'D2C'
     WHEN name IN (
       'Goodrwill.com',
@@ -36,10 +37,20 @@ SELECT
       'Key Account CAN',
       'Specialty CAN'
     ) THEN 'Wholesale'
-    WHEN name IN ('Goodr.com', 'Goodr.com CAN') THEN 'Website'
-    WHEN name IN ('Amazon', 'Prescription') THEN 'Partner'
+    WHEN name IN ('Goodr.com', 'Goodr.com CAN','goodr.ca') THEN 'Website'
+    WHEN name IN ('Amazon', 'Amazon Prime','Prescription') THEN 'Partner'
     WHEN name IN ('Cabana') THEN 'Retail'
     WHEN name IN ('Global') THEN 'Distribution'
+    WHEN name IN (
+      'Goodrwill.com',
+      'Customer Service CAN',
+      'Marketing',
+      'Co-Brand',
+      'Donations',
+      'Goodrstock Giveaways',
+      'Content Giveaways',
+      'Customer Service'
+    ) THEN 'Indirect'
   END AS model
 FROM
   netsuite.customrecord_cseg7 channel
