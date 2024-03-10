@@ -72,13 +72,13 @@ SELECT
   , c.delivered_count
   , c.bounced_count
   , c.spam_complaint_count
+  , c.unsubscribed_count
   , c.opened_count
   , c.unique_opened_count
   , c.clicked_count
   , c.unique_clicked_count
-  , c.unsubscribed_count
   , o.order_count
-  , o.unique_profile_count
+  , o.unique_profile_count as unique_order_count
   , o.total_amount
   , o.subtotal_amount
   , case when c.delivered_count = 0 then 0 else c.unique_opened_count/c.delivered_count end as open_rate
