@@ -87,9 +87,11 @@ SELECT
   , case when o.order_count = 0 then 0 else o.total_amount/o.order_count end as aov 
 FROM
   campaigns c
-left join
+LEFT JOIN
   orders o
   on c.campaign_id_klaviyo = o.campaign_id_klaviyo
+WHERE
+  c.send_date >= '2024-01-01' --events data only goes back to 2024. So we don't want to pull in incomplete metrics for campaigns which started prior to 2024
 
 -- select
 -- *
