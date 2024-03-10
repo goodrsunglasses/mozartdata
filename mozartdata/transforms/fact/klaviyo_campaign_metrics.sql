@@ -6,15 +6,15 @@ with campaigns as
   , kc.send_date
   , kc.send_date_pst
   , kc.scheduled_date
-  , sum(case when ke.metric_name in ('Received Email','Bounced Email') then 1 else 0 end) as email_sent
-  , sum(case when ke.metric_name = 'Received Email' then 1 else 0 end) as email_delivered
-  , sum(case when ke.metric_name = 'Bounced Email' then 1 else 0 end) as email_bounced
-  , sum(case when ke.metric_name = 'Marked Email as Spam' then 1 else 0 end) as email_spam_complaint
-  , sum(case when ke.metric_name = 'Opened Email' then 1 else 0 end) as email_opened
-  , count(distinct case when ke.metric_name = 'Opened Email' then ke.profile_id_klaviyo end) unique_opened
-  , sum(case when ke.metric_name = 'Clicked Email' then 1 else 0 end) as email_clicked
-  , count(distinct case when ke.metric_name = 'Clicked Email' then ke.profile_id_klaviyo end) unique_clicked
-  , sum(case when ke.metric_name = 'Unsubscribed' then 1 else 0 end) as email_unsubscribed
+  , sum(case when ke.metric_name in ('Received Email','Bounced Email') then 1 else 0 end) as sent_count
+  , sum(case when ke.metric_name = 'Received Email' then 1 else 0 end) as delivered_count
+  , sum(case when ke.metric_name = 'Bounced Email' then 1 else 0 end) as bounced_count
+  , sum(case when ke.metric_name = 'Marked Email as Spam' then 1 else 0 end) as spam_complaint_count
+  , sum(case when ke.metric_name = 'Opened Email' then 1 else 0 end) as opened_count
+  , count(distinct case when ke.metric_name = 'Opened Email' then ke.profile_id_klaviyo end) unique_opened_count
+  , sum(case when ke.metric_name = 'Clicked Email' then 1 else 0 end) as clicked_count
+  , count(distinct case when ke.metric_name = 'Clicked Email' then ke.profile_id_klaviyo end) unique_clicked_count
+  , sum(case when ke.metric_name = 'Unsubscribed' then 1 else 0 end) as unsubscribed_count
   FROM
     fact.klaviyo_events ke
   INNER JOIN
@@ -64,14 +64,32 @@ campaign_profiles as
   , o.flow_name
 )
 SELECT
-  c.*
-, o.*
+    c.campaign_id_klaviyo
+  , c.campaign_name
+  , c.send_date
+  , c.scheduled_date
+  , c.sent_count
+  , c.delivered_count
+  , c.bounced_count
+  , c.spam_complaint_count
+  , c.opened_count
+  , c.unique_opened_count
+  , c.clicked_count
+  , c.unique_clicked_count
+  , c.unsubscribed_count
+  , o.order_count
+  , o.unique_profile_count
+  , o.total_amount
+  , o.subtotal_amount
+  , case when c.delivered_count = 0 then 0 else c.unique_opened_count/c.delivered_count end as open_rate
+  , case when c.delivered_count = 0 then 0 else c.unique_clicked_count/c.delivered_count end as click_rate
+  , case when c.delivered_count = 0 then 0 else o.unique_profile_count/c.delivered_count end as conversion_rate
+  , case when o.order_count = 0 then 0 else o.total_amount/o.order_count end as aov 
 FROM
   campaigns c
 left join
-  fact.klaviyo_order_attribution o
+  orders o
   on c.campaign_id_klaviyo = o.campaign_id_klaviyo
-  and o.klaviyo_order_attribution = true
 
 -- select
 -- *
