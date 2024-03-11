@@ -44,6 +44,18 @@ SELECT DISTINCT
     ORDER BY
       b2b.created_at asc
   ) AS product_id_b2b_shopify,
+    FIRST_VALUE(d2c.inventory_item_id) over (
+    PARTITION BY
+      d2c.sku
+    ORDER BY
+      d2c.created_at asc
+  ) AS inventory_item_id_d2c_shopify,
+      FIRST_VALUE(b2b.inventory_item_id) over (
+    PARTITION BY
+      b2b.sku
+    ORDER BY
+      b2b.created_at asc
+  ) AS inventory_item_id_b2b_shopify,
   shipstation.productid AS item_id_shipstation,
   i.itemid AS sku,
   i.displayname AS display_name,
