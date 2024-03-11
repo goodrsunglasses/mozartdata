@@ -26,22 +26,6 @@ with campaigns as
   , kc.send_date
   , kc.send_date_pst
   , kc.scheduled_date
-)
-,
-campaign_profiles as
-(
-  SELECT DISTINCT
-    ke.campaign_id_klaviyo
-  , kc.name as campaign_name 
-  , kc.send_date
-  , ke.profile_id_klaviyo
-  FROM
-    fact.klaviyo_events ke
-  INNER JOIN
-    dim.klaviyo_campaigns kc
-    on ke.campaign_id_klaviyo = kc.campaign_id_klaviyo
-  WHERE
-    ke.metric_name = 'Received Email'
 ), orders as
 (
   SELECT
@@ -91,8 +75,7 @@ LEFT JOIN
   orders o
   on c.campaign_id_klaviyo = o.campaign_id_klaviyo
 WHERE
-  c.send_date >= '2024-01-01' --events data only goes back to 2024. So we don't want to pull in incomplete metrics for campaigns which started prior to 2024
-
+  c.send_date >= '2024-01-01' or c.send_date is null--events data only goes back to 2024. So we don't want to pull in incomplete metrics for campaigns which started prior to 2024
 -- select
 -- *
 -- FROM
