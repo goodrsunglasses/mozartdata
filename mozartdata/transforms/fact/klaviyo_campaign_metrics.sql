@@ -76,8 +76,3 @@ LEFT JOIN
   on c.campaign_id_klaviyo = o.campaign_id_klaviyo
 WHERE
   c.send_date >= '2024-01-01' or c.send_date is null--events data only goes back to 2024. So we don't want to pull in incomplete metrics for campaigns which started prior to 2024
--- select
--- *
--- FROM
--- klaviyo_portable.klaviyo_v2_campaigns_8589937320
--- where name = 'D2C 2/16 St Patrick''s Day Launch'
