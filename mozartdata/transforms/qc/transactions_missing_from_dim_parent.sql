@@ -13,6 +13,7 @@ WITH
   )
 SELECT DISTINCT
   detail.order_id_ns,
+  detail.record_type,
   originals.transaction_id_ns original,
   parents.transaction_id_ns parented,
   detail.transaction_created_date_pst DATE
