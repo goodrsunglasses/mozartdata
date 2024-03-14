@@ -66,6 +66,8 @@ SELECT
 , a.profile_id_klaviyo 
 , a.total_amount
 , a.subtotal_amount
+, a.order_timestamp
+, a.order_date
 , case when a.rn = 1 then true else false end as klaviyo_attribution_flag 
 FROM
   attribution a
