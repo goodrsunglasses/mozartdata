@@ -56,7 +56,7 @@ with orders as
     emails e
     ON o.profile_id_klaviyo = e.profile_id_klaviyo
     AND e.event_timestamp < o.order_timestamp
-    AND datediff(day,send_timestamp,o.order_timestamp) <=4
+    AND DATEDIFF(second,send_timestamp,o.order_timestamp)/(60*60*24) <=4
 )
 SELECT
   a.campaign_id_klaviyo
