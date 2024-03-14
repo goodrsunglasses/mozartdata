@@ -24,6 +24,7 @@ with orders as
   , ke.metric_name
   , ke.campaign_id_klaviyo
   , c.name as campaign_name
+  , c.send_timestamp
   , ke.flow_id_klaviyo
   , f.name as flow_name
   FROM
@@ -55,7 +56,7 @@ with orders as
     emails e
     ON o.profile_id_klaviyo = e.profile_id_klaviyo
     AND e.event_timestamp < o.order_timestamp
-    AND datediff(day,e.event_timestamp,o.order_timestamp) <=4
+    AND datediff(day,send_timestamp,o.order_timestamp) <=4
 )
 SELECT
   a.campaign_id_klaviyo
