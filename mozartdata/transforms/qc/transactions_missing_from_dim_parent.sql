@@ -24,3 +24,4 @@ FROM
 WHERE
   parented IS NULL
   AND DATE >= '2024-01-01'
+and record_type!= 'estimate'
