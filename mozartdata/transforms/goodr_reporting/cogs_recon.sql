@@ -1,5 +1,5 @@
 WITH cte_tran_pp AS (
-  SELECT 
+  SELECT DISTINCT
     order_id_edw,
     gt.transaction_number_ns,
     gt.posting_period,
