@@ -2,12 +2,15 @@ WITH cte_tran_pp AS (
   SELECT 
     order_id_edw,
     gt.transaction_number_ns,
-    posting_period,
-    COUNT(DISTINCT posting_period) OVER (PARTITION BY order_id_edw) AS distinct_posting_periods
+    gt.posting_period,
+    month as posting_month,
+    COUNT(DISTINCT gt.posting_period) OVER (PARTITION BY order_id_edw) AS distinct_posting_periods
   FROM 
     fact.gl_transaction gt
+    left join dim.date date on gt.posting_period = date.posting_period
   where 
-    (posting_period like '%24' or posting_period in ( 'Dec 2023'))
+    gt.posting_period like '%24'
+    and (posting_month = month(current_date()) or posting_month = month(current_date())-1)
     and posting_flag = true
     and gt.transaction_number_ns not like 'CR%'
 ) 
