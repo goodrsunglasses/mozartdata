@@ -1,5 +1,5 @@
 SELECT
-  s.name,
+  DISTINCT(s.name),
   s.created_at,
   o.order_id_edw as fact_orders,
   t.custbody_boomi_externalid as netsuite
