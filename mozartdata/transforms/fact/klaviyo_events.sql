@@ -16,6 +16,9 @@ SELECT
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$flow"')::varchar as flow_id_klaviyo
 , case when JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$flow"')::varchar is null then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$message"')::varchar end as campaign_id_klaviyo
 , case when JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$flow"')::varchar is not null then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$message"')::varchar end as flow_message_id_klaviyo
+, case when metric_name = 'Placed Order' then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$attribution"."$attributed_event_id"')::varchar else null end as attributed_event_id_klaviyo
+, case when metric_name = 'Placed Order' then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$attribution"."$flow"')::varchar else null end as attributed_flow_id_klaviyo
+, case when metric_name = 'Placed Order' then JSON_EXTRACT_PATH_TEXT(e.event_properties,'$attribution.$campaign')::varchar else null end as attributed_campaign_id_klaviyo 
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Campaign Name"')::varchar as email_name
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Subject"')::varchar as subject
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"Client Name"')::varchar as client_name
@@ -32,6 +35,7 @@ FROM
 LEFT JOIN
   klaviyo_portable.klaviyo_v2_metrics_8589937320 m
   on e.metric_id = m.metric_id
+where metric_name = 'Placed Order'
 -- UNION ALL
 -- SELECT
 --   to_timestamp_ntz(ke.datetime) as event_timestamp
