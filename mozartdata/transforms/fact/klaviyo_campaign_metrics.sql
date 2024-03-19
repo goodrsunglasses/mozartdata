@@ -39,8 +39,6 @@ with campaigns as
   , sum(o.subtotal_amount) as subtotal_amount
   FROM
     fact.klaviyo_order_attribution o
-  WHERE
-    o.klaviyo_attribution_flag = true
   GROUP BY
       o.campaign_id_klaviyo
   , o.campaign_name
