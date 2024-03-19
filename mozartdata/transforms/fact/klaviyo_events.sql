@@ -33,7 +33,6 @@ FROM
 LEFT JOIN
   klaviyo_portable.klaviyo_v2_metrics_8589937320 m
   on e.metric_id = m.metric_id
-where metric_name = 'Placed Order'
 -- UNION ALL
 -- SELECT
 --   to_timestamp_ntz(ke.datetime) as event_timestamp
