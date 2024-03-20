@@ -24,6 +24,7 @@ WITH sales as
   -- , gt.account_number
   , gt.transaction_date
   , gt.posting_period
+  , gt.channel
   , sum(gt.net_amount) net_amount
   from
     fact.gl_transaction gt
@@ -38,6 +39,7 @@ WITH sales as
   , gt.order_id_ns
   , gt.transaction_number_ns
   , ol.record_type
+  , gt.channel
   -- , gt.account_number
   , gt.transaction_date
   , gt.posting_period
@@ -126,6 +128,7 @@ SELECT DISTINCT
   s.order_id_edw
 , s.order_id_ns
 , s.record_type
+, s.channel
 , s.transaction_number_ns sales_transaction_number
 , s.posting_period as sales_posting_period
 , s.net_amount as sales_amount
