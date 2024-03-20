@@ -1,1 +1,9 @@
- 
+SELECT
+  order_id_edw,
+  transaction_id_ns,
+  transaction_number_ns,
+  record_type,
+  full_status
+FROM
+  fact.order_line
+CURRENT_DATE()-7
