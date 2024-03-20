@@ -31,7 +31,63 @@ WITH sales as
     fact.order_line ol
     on gt.transaction_id_ns = ol.transaction_id_ns
   where
-    gt.account_number between 4000 and 4999
+    gt.account_number = 4000
+  and posting_flag
+  GROUP BY
+    gt.order_id_edw
+  , gt.order_id_ns
+  , gt.transaction_number_ns
+  , ol.record_type
+  -- , gt.account_number
+  , gt.transaction_date
+  , gt.posting_period
+),
+shipping as
+(
+  select
+    gt.order_id_edw
+  , gt.order_id_ns
+  , gt.transaction_number_ns
+  , ol.record_type
+  -- , gt.account_number
+  , gt.transaction_date
+  , gt.posting_period
+  , sum(gt.net_amount) net_amount
+  from
+    fact.gl_transaction gt
+  left join
+    fact.order_line ol
+    on gt.transaction_id_ns = ol.transaction_id_ns
+  where
+    gt.account_number = 4050
+  and posting_flag
+  GROUP BY
+    gt.order_id_edw
+  , gt.order_id_ns
+  , gt.transaction_number_ns
+  , ol.record_type
+  -- , gt.account_number
+  , gt.transaction_date
+  , gt.posting_period
+),
+refunds as
+(
+  select
+    gt.order_id_edw
+  , gt.order_id_ns
+  , gt.transaction_number_ns
+  , ol.record_type
+  -- , gt.account_number
+  , gt.transaction_date
+  , gt.posting_period
+  , sum(gt.net_amount) net_amount
+  from
+    fact.gl_transaction gt
+  left join
+    fact.order_line ol
+    on gt.transaction_id_ns = ol.transaction_id_ns
+  where
+    gt.account_number between 4100 and 4300
   and posting_flag
   GROUP BY
     gt.order_id_edw
@@ -72,12 +128,20 @@ SELECT DISTINCT
 , s.record_type
 , s.transaction_number_ns sales_transaction_number
 , s.posting_period as sales_posting_period
-, s.net_amount sales_amount
+, s.net_amount as sales_amount
+, ship.net_amount as  shipping_income_amount
+, r.net_amount refund_amount
 , c.transaction_number_ns cogs_transaction_number
 , c.posting_period cogs_posting_period
 , c.net_amount cogs_amount
 FROM
   sales s
+LEFT JOIN
+  shipping ship
+  ON s.order_id_edw = ship.order_id_edw
+LEFT JOIN
+  refunds r
+  ON s.order_id_edw = r.order_id_edw
 LEFT JOIN
   cogs c
   ON s.order_id_edw = c.order_id_edw
