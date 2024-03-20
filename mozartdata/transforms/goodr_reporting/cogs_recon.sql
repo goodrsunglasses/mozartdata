@@ -21,7 +21,7 @@ WITH sales as
   , gt.order_id_ns
   , gt.transaction_number_ns
   , ol.record_type
-  , gt.account_number
+  -- , gt.account_number
   , gt.transaction_date
   , gt.posting_period
   , sum(gt.net_amount) net_amount
@@ -38,7 +38,7 @@ WITH sales as
   , gt.order_id_ns
   , gt.transaction_number_ns
   , ol.record_type
-  , gt.account_number
+  -- , gt.account_number
   , gt.transaction_date
   , gt.posting_period
 ), cogs as
