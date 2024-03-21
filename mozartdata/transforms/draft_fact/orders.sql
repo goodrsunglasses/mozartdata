@@ -26,6 +26,16 @@ WITH
       dim.orders orders
       LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
   ),
+  
+  fulfillment_info AS (--Grab any and all shopify info from this CTE
+    SELECT
+      orders.order_id_edw,
+      order_created_date_pst,
+      quantity_sold AS total_quantity_shopify
+    FROM
+      dim.orders orders
+      LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
+  )
   aggregate_netsuite AS (--aggregates the order level information from netsuite, this could definitely have been wrapped in the prior CTE but breaking it out made it more clear
     SELECT DISTINCT
       ns_parent.order_id_edw,
