@@ -28,10 +28,15 @@ SELECT DISTINCT
     PARTITION BY
       orders.ordernumber
   ) order_ids,
+    ARRAY_AGG(fulfillment.fulfillment_id_edw) over (
+    PARTITION BY
+      orders.ordernumber
+  ) fulfillment_ids,
   'Shipstation' AS source_system
 FROM
   shipstation_portable.shipstation_orders_8589936627 orders
   LEFT OUTER JOIN shipstation_portable.shipstation_shipments_8589936627 shipments ON shipments.ordernumber = orders.ordernumber
+  left outer join dim.fulfillment fulfillment on fulfillment.order_id_edw = orders.ordernumber
 --Union to Stord information
 UNION ALL
 SELECT--Stord is pretty much super straightforward
@@ -40,12 +45,14 @@ SELECT--Stord is pretty much super straightforward
   orders.status,
   COUNT(DISTINCT shipment_confirmation_id) shipment_count,
   ARRAY_AGG(shipment_confirmation_id) shipment_ids,
+  array_agg(fulfillment.fulfillment_id_edw) fulfillment_ids,
   'Stord' AS source_system
 FROM
   stord.stord_sales_orders_8589936822 orders
   LEFT OUTER JOIN stord.stord_shipment_confirmations_8589936822 shipments ON shipments.order_id = orders.order_id
+    left outer join dim.fulfillment fulfillment on fulfillment.order_id_edw = orders.order_number
 GROUP BY
-  order_id_edw,
+  orders.order_number,
   orders.order_id,
   orders.status,
   source_system
