@@ -30,7 +30,7 @@ SELECT DISTINCT
   ) order_ids,
     ARRAY_AGG(fulfillment.fulfillment_id_edw) over (
     PARTITION BY
-      orders.ordernumber
+      fulfillment.order_id_edw
   ) fulfillment_ids,
   'Shipstation' AS source_system
 FROM
