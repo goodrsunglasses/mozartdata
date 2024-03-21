@@ -7,11 +7,12 @@ WITH
       line.email,
       line.customer_id_ns,
       line.location,
+      line.warranty_order_id_ns,
       customer_category AS b2b_d2c,
       model
     FROM
       dim.orders orders
-      LEFT OUTER JOIN draft_fact.order_line line ON line.transaction_id_ns = orders.transaction_id_ns
+      LEFT OUTER JOIN fact.order_line line ON line.transaction_id_ns = orders.transaction_id_ns
       LEFT OUTER JOIN dim.channel category ON category.name = line.channel
     WHERE
       orders.transaction_id_ns IS NOT NULL -- no need for checking if its a parent as the only transaction_id_ns's that are in dim.orders are parents
@@ -33,6 +34,7 @@ WITH
       ns_parent.email,
       ns_parent.customer_id_ns,
       ns_parent.location,
+      ns_parent.warranty_order_id_ns,
       ns_parent.b2b_d2c,
       ns_parent.model,
       MAX(status_flag_edw) over (
@@ -97,7 +99,7 @@ WITH
       ) AS shipping_window_end_date
     FROM
       netsuite_info ns_parent
-      LEFT OUTER JOIN draft_fact.order_line orderline ON orderline.order_id_edw = ns_parent.order_id_edw
+      LEFT OUTER JOIN fact.order_line orderline ON orderline.order_id_edw = ns_parent.order_id_edw
   ),
   aggregates AS (
     SELECT
@@ -211,7 +213,7 @@ WITH
         END
       ) AS shipping_refunded
     FROM
-      draft_fact.order_item
+      fact.order_item
     GROUP BY
       order_id_edw
   ),
@@ -233,10 +235,12 @@ SELECT
   aggregate_netsuite.channel,
   customer_id_edw,
   location.name location,
+  aggregate_netsuite.warranty_order_id_ns,
   shopify_info.order_created_date_pst booked_date_shopify,
   aggregate_netsuite.booked_date,
   aggregate_netsuite.sold_date,
   aggregate_netsuite.fulfillment_date AS fulfillment_date_ns,
+  aggregate_netsuite.fulfillment_date AS fulfillment_date,
   aggregate_netsuite.shipping_window_start_date,
   aggregate_netsuite.shipping_window_end_date,
   aggregate_netsuite.is_exchange,
