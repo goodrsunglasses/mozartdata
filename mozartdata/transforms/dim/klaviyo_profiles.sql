@@ -40,6 +40,7 @@ SELECT
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_referral_link"')::varchar as swell_referral_link
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_vip_tier_ends_at"')::varchar as swell_vip_tier_ends_at
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"swell_vip_tier_name"')::varchar as swell_vip_tier_name
+, JSON_EXTRACT_PATH_TEXT(p.properties,'"$source"')::varchar as source
 , p.subscriptions:EMAIL:MARKETING:CONSENT::varchar as subscription_consent
 , p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS[0].REASON::varchar as supression_reason
 , p.subscriptions:EMAIL:MARKETING:SUPPRESSIONS[0].TIMESTAMP::datetime as suppression_timestamp
