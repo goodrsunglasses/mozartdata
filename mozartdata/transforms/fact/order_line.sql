@@ -16,6 +16,7 @@ SELECT DISTINCT
     '_',
     item_detail.transaction_id_ns
   ) AS order_line_id,
+  tran.shippingaddress,
   item_detail.order_id_edw,
   item_detail.order_id_ns,
   item_detail.transaction_id_ns,
