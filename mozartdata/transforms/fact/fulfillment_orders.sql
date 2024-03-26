@@ -11,7 +11,7 @@ WITH
 SELECT DISTINCT
   orders.ordernumber order_id_edw,
   MD5(
-    LISTAGG(orders.orderid, '_') WITHIN GROUP (
+    LISTAGG(DISTINCT orders.orderid, '_') WITHIN GROUP (
       ORDER BY
         orders.orderid
     ) over (
@@ -34,7 +34,7 @@ SELECT DISTINCT
     PARTITION BY
       orders.ordernumber
   ) shipment_count,
-  ARRAY_AGG(orders.orderid) over (
+  ARRAY_AGG(DISTINCT orders.orderid) over (
     PARTITION BY
       orders.ordernumber
   ) order_ids,
