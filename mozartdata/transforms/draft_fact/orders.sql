@@ -27,7 +27,7 @@ WITH
       LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
   ),
   
-  fulfillment_info AS (--Grab any and all shopify info from this CTE
+  fulfillment_info AS (--Grab fulfillment order information
     SELECT
       orders.order_id_edw,
       order_created_date_pst,
