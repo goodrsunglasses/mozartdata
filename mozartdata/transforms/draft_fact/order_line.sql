@@ -16,6 +16,7 @@ SELECT DISTINCT
     '_',
     item_detail.transaction_id_ns
   ) AS order_line_id,
+  tran.shippingaddress
   item_detail.order_id_edw,
   item_detail.order_id_ns,
   item_detail.transaction_id_ns,
@@ -27,6 +28,7 @@ SELECT DISTINCT
   tran.saleschannel AS inventory_bucket,
   entity AS customer_id_ns,
   customer.email,
+  item_detail.warranty_order_id_ns,
   CASE
     WHEN item_detail.record_type = 'cashrefund' THEN TRUE
     ELSE FALSE
@@ -72,7 +74,7 @@ SELECT DISTINCT
       item_detail.product_id_edw
   ) location
 FROM
-  draft_fact.order_item_detail item_detail
+  fact.order_item_detail item_detail
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = item_detail.transaction_id_ns
   LEFT OUTER JOIN dim.channel channel ON channel.channel_id_ns = tran.cseg7
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
