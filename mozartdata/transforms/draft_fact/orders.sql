@@ -26,8 +26,8 @@ WITH
       dim.orders orders
       LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
   ),
-  
-  fulfillment_info AS (--Grab fulfillment order information needs adjustment in dim.orders and dim.fulfillment, adding this as a test merge, test merge two, test merge 3
+
+  fulfillment_info AS (--Grab fulfillment order information needs adjustment in dim.orders and dim.fulfillment using this as a test merge from pycharm
     SELECT
       orders.order_id_edw,
       order_created_date_pst,
@@ -35,7 +35,7 @@ WITH
     FROM
       dim.orders orders
       LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
-  )
+  ),
   aggregate_netsuite AS (--aggregates the order level information from netsuite, this could definitely have been wrapped in the prior CTE but breaking it out made it more clear
     SELECT DISTINCT
       ns_parent.order_id_edw,
