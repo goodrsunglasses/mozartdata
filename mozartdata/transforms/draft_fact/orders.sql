@@ -27,7 +27,7 @@ WITH
       LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
   ),
 
-  fulfillment_info AS (--Grab fulfillment order information needs adjustment in dim.orders and dim.fulfillment using this as a test merge from pycharm pt 2
+  fulfillment_info AS (--Grab fulfillment order information needs adjustment in dim.orders and dim.fulfillment using this as a test merge from pycharm pt 3
     SELECT
       orders.order_id_edw,
       order_created_date_pst,
