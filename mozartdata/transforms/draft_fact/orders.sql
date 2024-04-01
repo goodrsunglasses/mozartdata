@@ -1,5 +1,5 @@
 WITH
-  netsuite_info AS (--first grab the netsuite info from dim.orders which implicitly should only have parent transactions from NS.
+  netsuite_info AS ( --first grab the netsuite info from dim.orders which implicitly should only have parent transactions from NS.
     SELECT
       orders.order_id_edw,
       orders.transaction_id_ns parent_id,
@@ -17,26 +17,26 @@ WITH
     WHERE
       orders.transaction_id_ns IS NOT NULL -- no need for checking if its a parent as the only transaction_id_ns's that are in dim.orders are parents
   ),
-  shopify_info AS (--Grab any and all shopify info from this CTE
+  shopify_info AS ( --Grab any and all shopify info from this CTE
     SELECT
       orders.order_id_edw,
       order_created_date_pst,
-      quantity_sold AS total_quantity_shopify
+      quantity_sold AS total_quantity_shopify,
+      amount_sold AS amount_sold_shopify
     FROM
       dim.orders orders
       LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
   ),
-
-  fulfillment_info AS (--Grab fulfillment order information needs adjustment in dim.orders and dim.fulfillment using this as a test merge from pycharm pt 77777
-    SELECT
-      orders.order_id_edw,
-      order_created_date_pst,
-      quantity_sold AS total_quantity_shopify
-    FROM
-      dim.orders orders
-      LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
-  ),
-  aggregate_netsuite AS (--aggregates the order level information from netsuite, this could definitely have been wrapped in the prior CTE but breaking it out made it more clear
+  -- fulfillment_info AS (--Grab fulfillment order information needs adjustment in dim.orders and dim.fulfillment using this as a test merge from pycharm pt 77777
+  --   SELECT
+  --     orders.order_id_edw,
+  --     order_created_date_pst,
+  --     quantity_sold AS total_quantity_shopify
+  --   FROM
+  --     dim.orders orders
+  --     LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
+  -- ),
+  aggregate_netsuite AS ( --aggregates the order level information from netsuite, this could definitely have been wrapped in the prior CTE but breaking it out made it more clear
     SELECT DISTINCT
       ns_parent.order_id_edw,
       ns_parent.parent_id,
@@ -271,6 +271,7 @@ SELECT
   rate_booked,
   rate_sold,
   rate_refunded,
+  shopify_info.amount_sold_shopify,
   amount_booked,
   amount_sold,
   amount_refunded,
