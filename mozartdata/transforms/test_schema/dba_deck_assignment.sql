@@ -13,3 +13,5 @@ select * from shopify.product
 select * from shopify.product_variant 
 
 select * from netsuite.item
+
+--data anonymized after export
