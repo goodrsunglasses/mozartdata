@@ -20,7 +20,7 @@ WITH
   shopify_info AS ( --Grab any and all shopify info from this CTE
     SELECT
       orders.order_id_edw,
-      amount_sold AS amount_sold_shopify,
+      shopify_line.amount_sold AS amount_sold_shopify,
       order_created_date_pst,
       quantity_sold AS total_quantity_shopify
     FROM
@@ -264,7 +264,7 @@ SELECT
   ) as quantity_booked,-- source of truth column for quantities also comes from shopify
   shopify_info.total_quantity_shopify as quantity_booked_shopify,
   quantity_booked AS quantity_booked_ns,
-  quantity_sold AS quantity_sold_js,
+  quantity_sold AS quantity_sold_ns,
   quantity_fulfilled AS quantity_fulfilled_ns,
   quantity_refunded as quantity_refunded_ns,
   rate_booked as rate_booked_ns ,
