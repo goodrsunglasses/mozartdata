@@ -1,5 +1,5 @@
 WITH
-  netsuite_info AS (--first grab the netsuite info from dim.orders which implicitly should only have parent transactions from NS.
+  netsuite_info AS ( --first grab the netsuite info from dim.orders which implicitly should only have parent transactions from NS.
     SELECT
       orders.order_id_edw,
       orders.transaction_id_ns parent_id,
@@ -17,16 +17,17 @@ WITH
     WHERE
       orders.transaction_id_ns IS NOT NULL -- no need for checking if its a parent as the only transaction_id_ns's that are in dim.orders are parents
   ),
-  shopify_info AS (--Grab any and all shopify info from this CTE
+  shopify_info AS ( --Grab any and all shopify info from this CTE
     SELECT
       orders.order_id_edw,
+      shopify_line.amount_sold AS amount_sold_shopify,
       order_created_date_pst,
       quantity_sold AS total_quantity_shopify
     FROM
       dim.orders orders
       LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
   ),
-  aggregate_netsuite AS (--aggregates the order level information from netsuite, this could definitely have been wrapped in the prior CTE but breaking it out made it more clear
+  aggregate_netsuite AS ( --aggregates the order level information from netsuite, this could definitely have been wrapped in the prior CTE but breaking it out made it more clear
     SELECT DISTINCT
       ns_parent.order_id_edw,
       ns_parent.parent_id,
@@ -234,13 +235,17 @@ SELECT
   orders.order_id_ns,
   aggregate_netsuite.channel,
   customer_id_edw,
-  location.name location,
+  location.name as location,
   aggregate_netsuite.warranty_order_id_ns,
+  coalesce(
+    shopify_info.order_created_date_pst,
+    aggregate_netsuite.booked_date
+  ) AS booked_date, --shopify shows first as it is considered the "booking" source of truth
   shopify_info.order_created_date_pst booked_date_shopify,
-  aggregate_netsuite.booked_date,
+  aggregate_netsuite.booked_date booked_date_ns,
   aggregate_netsuite.sold_date,
+  aggregate_netsuite.fulfillment_date AS fulfillment_date, --placeholder for rn for when we ad a fulfillment source of truth
   aggregate_netsuite.fulfillment_date AS fulfillment_date_ns,
-  aggregate_netsuite.fulfillment_date AS fulfillment_date,
   aggregate_netsuite.shipping_window_start_date,
   aggregate_netsuite.shipping_window_end_date,
   aggregate_netsuite.is_exchange,
@@ -253,20 +258,31 @@ SELECT
   DATE(refund_timestamp_pst) AS refund_date_pst,
   b2b_d2c,
   aggregate_netsuite.model,
-  shopify_info.total_quantity_shopify,
-  quantity_booked,
+  coalesce(
+    shopify_info.total_quantity_shopify,
+    quantity_booked
+  ) as quantity_booked,-- source of truth column for quantities also comes from shopify
+  shopify_info.total_quantity_shopify as quantity_booked_shopify,
+  quantity_booked AS quantity_booked_ns,
   quantity_sold,
+  quantity_fulfilled,
   quantity_fulfilled AS quantity_fulfilled_ns,
   quantity_refunded,
+  quantity_refunded as quantity_refunded_ns,
   rate_booked,
+  rate_booked as rate_booked_ns,
   rate_sold,
   rate_refunded,
-  amount_booked,
+  rate_refunded as rate_refunded_ns,
+  coalesce(amount_sold_shopify,amount_booked) as amount_booked,--shopify is also the source of truth for booking financial amount (SO's shouldnt matter GL wise anyways)
+  amount_sold_shopify as amount_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
+  amount_booked as amount_booked_ns,
   amount_sold,
   amount_refunded,
+  amount_refunded as amount_refunded_ns,
   aggregates.gross_profit_estimate,
   aggregates.cost_estimate,
-  tax_booked,
+  tax_booked,--Keeping all of these with no suffix as to the best of my understanding we'll only ever see this in NS, however that can of course be changed
   tax_sold,
   tax_refunded,
   shipping_booked,
