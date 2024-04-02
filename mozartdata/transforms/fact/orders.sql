@@ -235,7 +235,7 @@ SELECT
   orders.order_id_ns,
   aggregate_netsuite.channel,
   customer_id_edw,
-  location.name location,
+  location.name as location,
   aggregate_netsuite.warranty_order_id_ns,
   coalesce(
     shopify_info.order_created_date_pst,
@@ -243,7 +243,7 @@ SELECT
   ) AS booked_date, --shopify shows first as it is considered the "booking" source of truth
   shopify_info.order_created_date_pst booked_date_shopify,
   aggregate_netsuite.booked_date booked_date_ns,
-  aggregate_netsuite.sold_date sold_date_ns,
+  aggregate_netsuite.sold_date,
   aggregate_netsuite.fulfillment_date AS fulfillment_date, --placeholder for rn for when we ad a fulfillment source of truth
   aggregate_netsuite.fulfillment_date AS fulfillment_date_ns,
   aggregate_netsuite.shipping_window_start_date,
@@ -264,20 +264,25 @@ SELECT
   ) as quantity_booked,-- source of truth column for quantities also comes from shopify
   shopify_info.total_quantity_shopify as quantity_booked_shopify,
   quantity_booked AS quantity_booked_ns,
-  quantity_sold AS quantity_sold_ns,
+  quantity_sold,
+  quantity_fulfilled,
   quantity_fulfilled AS quantity_fulfilled_ns,
+  quantity_refunded,
   quantity_refunded as quantity_refunded_ns,
-  rate_booked as rate_booked_ns ,
-  rate_sold as rate_sold_ns,
+  rate_booked,
+  rate_booked as rate_booked_ns,
+  rate_sold,
+  rate_refunded,
   rate_refunded as rate_refunded_ns,
   coalesce(amount_sold_shopify,amount_booked) as amount_booked,--shopify is also the source of truth for booking financial amount (SO's shouldnt matter GL wise anyways)
   amount_sold_shopify as amount_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
   amount_booked as amount_booked_ns,
-  amount_sold as amount_sold_ns,
+  amount_sold,
+  amount_refunded,
   amount_refunded as amount_refunded_ns,
   aggregates.gross_profit_estimate,
   aggregates.cost_estimate,
-  tax_booked,
+  tax_booked,--Keeping all of these with no suffix as to the best of my understanding we'll only ever see this in NS, however that can of course be changed
   tax_sold,
   tax_refunded,
   shipping_booked,
