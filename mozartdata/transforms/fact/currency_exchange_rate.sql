@@ -7,10 +7,10 @@ select
 , date(cr.effectivedate) as effective_date
 , cr.exchangerate as exchange_rate
 from
-  NETSUITE.CURRENCYRATE cr
+  netsuite.currencyrate cr
 left join
-  NETSUITE.CURRENCY bc
+  netsuite.currency bc
   on cr.BASECURRENCY = bc.ID
 left join
-  NETSUITE.CURRENCY tc
+  netsuite.currency tc
   on cr.TRANSACTIONCURRENCY = tc.ID
