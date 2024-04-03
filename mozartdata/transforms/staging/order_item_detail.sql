@@ -1,4 +1,4 @@
-with net_amount as 
+with net_amount as
   (
     select
       gt.transaction_id_ns
@@ -114,6 +114,8 @@ WHERE
       AND accountinglinetype IN ('COGS') THEN TRUE
       ELSE FALSE
     END
+  AND tran._FIVETRAN_DELETED = false
+  AND tranline._FIVETRAN_DELETED = false
   )
 GROUP BY
   order_id_ns,
@@ -197,6 +199,8 @@ WHERE
   AND tranline.itemtype IN ('ShipItem', 'TaxItem')
   AND tranline.mainline = 'F'
   AND order_id_ns IS NOT NULL
+  AND tran._FIVETRAN_DELETED = false
+  AND tranline._FIVETRAN_DELETED = false
 GROUP BY
   order_id_ns,
   createdfrom,
