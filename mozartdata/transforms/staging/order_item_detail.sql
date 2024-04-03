@@ -114,8 +114,8 @@ WHERE
       AND accountinglinetype IN ('COGS') THEN TRUE
       ELSE FALSE
     END
-  AND tran._FIVETRAN_DELETED = false
-  AND tranline._FIVETRAN_DELETED = false
+  AND (tran._FIVETRAN_DELETED = false or tran._FIVETRAN_DELETED is null)
+  AND (tranline._FIVETRAN_DELETED = false or tranline._FIVETRAN_DELETED is null)
   )
 GROUP BY
   order_id_ns,
