@@ -78,10 +78,11 @@ use createdate converted instead of trandate
       on tran.id = pt.transaction_id_ns
     where
         date(tran.trandate) >= '2022-01-01' --limit the row count
-       and tran._fivetran_deleted = false
-       and tal._fivetran_deleted = false
-       and tl._fivetran_deleted = false
-       and (pe._fivetran_deleted = false or pe._fivetran_deleted is null)
+    and transaction_line_id = '20355022_1'
+    and (tran._fivetran_deleted = false or tran._fivetran_deleted is null)
+    and (tal._fivetran_deleted = false or tal._fivetran_deleted is null)
+    and (tl._fivetran_deleted = false or tl._fivetran_deleted is null)
+    and (pe._fivetran_deleted = false or pe._fivetran_deleted is null)
     group by
      concat(tal.transaction,'_',tal.transactionline)
     , pt.order_id_edw
