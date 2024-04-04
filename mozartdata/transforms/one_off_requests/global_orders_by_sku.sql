@@ -72,5 +72,3 @@ WHERE
     and LOWER(ol.record_type) = 'salesorder'
     and ol.transaction_status_ns != 'Sales Order : Closed'
     and p.merchandise_class is not null
-order by
-    order_id_ns asc
