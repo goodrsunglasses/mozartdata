@@ -12,7 +12,7 @@ with gl_totals as (
 )
 
 SELECT DISTINCT
-    o.booked_date
+    o.sold_date
     ,o.customer_id_edw
     ,CASE
         WHEN 
