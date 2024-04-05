@@ -17,18 +17,10 @@ SELECT DISTINCT
     ,CASE
         WHEN 
             o.customer_id_edw = 'c7c23b72071e13002bf5d7f62f93006f' 
-            AND o.booked_date >= '2024-03-01' 
         THEN 
             'Unicorn Inc Limited'
         ELSE
-            CASE
-                WHEN 
-                    o.customer_id_edw = 'c7c23b72071e13002bf5d7f62f93006f'  
-                THEN 
-                    '2Pure Ltd'
-                ELSE
-                    c.company_name
-            END
+            c.company_name
     END as company_name
     ,o.order_id_ns
     ,oi.sku
@@ -37,6 +29,7 @@ SELECT DISTINCT
     ,oi.quantity_sold
     ,gl.net_amount
     ,sa.country
+    ,
 FROM
     fact.orders as o
 left join
@@ -50,7 +43,7 @@ left join
     dim.product as p
     on 
         oi.sku = p.sku
-left join
+inner join
     gl_totals as gl
     on 
         oi.order_id_ns = gl.order_id_ns
@@ -72,4 +65,3 @@ WHERE
     and LOWER(ol.record_type) = 'salesorder'
     and ol.transaction_status_ns != 'Sales Order : Closed'
     and p.merchandise_class is not null
-    and gl.net_amount is not null
