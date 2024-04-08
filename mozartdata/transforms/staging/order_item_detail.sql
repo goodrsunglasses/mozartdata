@@ -27,7 +27,7 @@ SELECT
   transtatus.fullname AS full_status,
   tranline.itemtype AS item_type,
   COALESCE(item.displayname, item.externalid) AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  null AS net_amount,
+  null AS net_amount, --moved this to fact.order_item_detail
   SUM(ABS(quantity)) AS total_quantity,
   SUM(ABS(quantitybilled)) quantity_invoiced,
   SUM(ABS(quantitybackordered)) quantity_backordered,
@@ -137,7 +137,7 @@ SELECT
     WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
     ELSE NULL
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
-  null as net_amount,
+  null as net_amount, --moved this to fact.order_item_detail
   SUM(ABS(quantity)) AS total_quantity,
   NULL AS quantity_invoiced,
   NULL AS quantity_backordered,
