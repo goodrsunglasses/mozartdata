@@ -1,5 +1,7 @@
 SELECT
   o.order_id_edw,
+  o.sold_date,
+  o.booked_date,
   o.order_id_ns,
   oi.order_item_id,
   oi.product_id_edw,
