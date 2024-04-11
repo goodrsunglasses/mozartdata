@@ -19,7 +19,8 @@ SELECT
   p.merchandise_department,
   p.merchandise_division,
   o.customer_id_edw,
-  c.customer_name
+  c.customer_name,
+  c.primary_id_flag
 FROM
   fact.orders o
   LEFT JOIN fact.order_item oi ON o.order_id_edw = oi.order_id_edw
@@ -27,3 +28,4 @@ FROM
   LEFT JOIN fact.customer_ns_map c on o.customer_id_edw = c.customer_id_edw
 WHERE
   o.channel = 'Global'
+  and c.primary_id_flag = 'true'
