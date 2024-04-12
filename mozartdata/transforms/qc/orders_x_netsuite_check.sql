@@ -1,6 +1,7 @@
 SELECT
   tran.id,
   tranid,
+  channel.name,
   tran.recordtype,
   tran.createddate,
   tran.custbody_goodr_shopify_order,
@@ -11,6 +12,7 @@ FROM
   netsuite.transaction tran
   LEFT OUTER JOIN staging.order_item_detail detail ON tran.id = detail.transaction_id_ns
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
+  left outer join dim.channel channel on channel.channel_id_ns = tran.cseg7
 WHERE
   tranline.id = 0
   AND order_id_ns IS NULL
