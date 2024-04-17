@@ -1,12 +1,65 @@
-SELECT
-  REPLACE(
+WITH orphan_transactions as
+(
+  SELECT distinct
+    tran.id as transaction_id_ns
+  , tranline.createdfrom
+  , REPLACE(
     COALESCE(
       tran.custbody_goodr_shopify_order,
       tran.custbody_goodr_po_number
     ),
     ' ',
     ''
-  ) AS order_id_ns,
+  ) AS order_id_ns
+  FROM
+    NETSUITE.TRANSACTION tran
+  LEFT JOIN
+    NETSUITE.TRANSACTIONLINE tranline
+    ON tran.id = tranline.transaction
+  WHERE
+    order_id_ns is null
+    and tranline.CREATEDFROM is not null
+)
+, parent_order_ids as
+(
+  SELECT
+    ot.transaction_id_ns
+  , parent.id as parent_transaction_id_ns
+  , parent.recordtype as parent_record_type
+,   REPLACE(
+      COALESCE(
+        parent.custbody_goodr_shopify_order,
+        parent.custbody_goodr_po_number
+      ),
+      ' ',
+    ''
+  ) AS order_id_ns
+  FROM
+    orphan_transactions ot
+  LEFT JOIN
+    NETSUITE.TRANSACTION parent
+    ON ot.CREATEDFROM = parent.id
+)
+, all_transactions as
+(
+  SELECT
+    COALESCE(poi.order_id_ns,REPLACE(
+      COALESCE(
+        tran.custbody_goodr_shopify_order,
+        tran.custbody_goodr_po_number
+      ),
+      ' ',
+    '')) as order_id_ns
+  , tran.*
+  FROM
+    NETSUITE.TRANSACTION tran
+  LEFT JOIN
+    parent_order_ids poi
+    ON tran.id = poi.transaction_id_ns
+
+)
+SELECT
+  tran.order_id_ns,
   tran.id AS transaction_id_ns,
   CONCAT(order_id_ns, '_', tran.id, '_', item) AS order_item_detail_id,
   CASE
@@ -39,7 +92,7 @@ SELECT
   tranline.createdfrom,
   tran.custbodywarranty_reference as warranty_order_id_ns
 FROM
-  netsuite.transaction tran
+  all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
   LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
     tran.status = transtatus.id
@@ -105,14 +158,7 @@ GROUP BY
   -- Shipping and Tax
 UNION ALL
 SELECT
-  REPLACE(
-    COALESCE(
-      tran.custbody_goodr_shopify_order,
-      tran.custbody_goodr_po_number
-    ),
-    ' ',
-    ''
-  ) AS order_id_ns,
+  tran.order_id_ns,
   tran.id AS transaction_id_ns,
   CONCAT(order_id_ns, '_', tran.id, '_', item) AS order_item_detail_id,
   CASE
@@ -149,7 +195,7 @@ SELECT
   tranline.createdfrom,
   tran.custbodywarranty_reference as warranty_order_id_ns
 FROM
-  netsuite.transaction tran
+  all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
   LEFT OUTER JOIN netsuite.transactionstatus transtatus ON (
     tran.status = transtatus.id
