@@ -5,6 +5,10 @@ Note: The second half of the union was joining to the original fivetran data pul
 July 2023 - Jan 2024. However,  this data was incomplete and inconsistent with Portable's data
 so the decision was made to just start fresh in 2024 with Portable.
 Transforms: all dates are natively in UTC, so I converted them to LA time.
+About this data: Klaviyo Campaigns are targeted email marketing campaigns. They can be scheduled to send
+at a specific time locally or universally. eg.  9 AM PST (so 12 ET) or 9 AM everywhere, and the emails
+are sent at their respective times based on customer location. The send_strategy_is_local_flag indicates
+how this campaign will be sent.
 */
 --klaviyo Portable
 SELECT
