@@ -1,9 +1,12 @@
 /*
-options sto
-options throttled
-01HNT4X6WZZVYDZ98H544KDP34
+Purpose: This table contains meta data about klaviyo campaigns. This data comes from an API connection
+set up through the vendor Portable which directly feeds the data into our Snowflake db.
+Note: The second half of the union was joining to the original fivetran data pulled from
+July 2023 - Jan 2024. However,  this data was incomplete and inconsistent with Portable's data
+so the decision was made to just start fresh in 2024 with Portable.
+Transforms: all dates are natively in UTC, so I converted them to LA time.
 */
---klaviyo Portable (February 2024+)
+--klaviyo Portable
 SELECT
   c.campaign_id as campaign_id_klaviyo
 , c.created_at as created_timestamp
