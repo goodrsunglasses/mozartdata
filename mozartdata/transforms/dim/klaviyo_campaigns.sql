@@ -41,7 +41,12 @@ SELECT
 , CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at) as updated_timestamp_pst
 , date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at)) as updated_date_pst
 FROM
-  klaviyo_portable.klaviyo_v2_campaigns_8589937320 c  
+  klaviyo_portable.klaviyo_v2_campaigns_8589937320 c
+/*
+Note: The second half of the union was joining to the original fivetran data pulled from
+July 2023 - Jan 2024. However,  this data was incomplete and inconsistent with Portable's data
+so the decision was made to just start fresh in 2024 with Portable.
+*/
 -- UNION ALL
 -- --klaviyo Fivetran (July 2023 - January 2024)
 -- SELECT
