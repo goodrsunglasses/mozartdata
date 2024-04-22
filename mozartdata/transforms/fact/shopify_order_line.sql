@@ -1,4 +1,3 @@
-CREATE OR REPLACE TABLE fact.shopify_order_line COPY GRANTS AS
 SELECT DISTINCT
   d2c_shop.name order_id_edw,
   d2c_shop.id order_id_shopify,
