@@ -2,7 +2,8 @@ SELECT
   sum(oi.quantity_fulfilled) as quantity_fulfilled,
   oi.product_id_edw,
   oi.plain_name,
-  o.location
+  o.location,
+  o.channel
 FROM
   fact.order_item oi
   LEFT JOIN fact.orders o ON o.order_id_edw = oi.order_id_edw
@@ -13,4 +14,5 @@ WHERE
 GROUP BY
   oi.product_id_edw,
   oi.plain_name,
-  o.location
+  o.location,
+  o.channel
