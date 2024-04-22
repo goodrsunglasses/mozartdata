@@ -4,6 +4,8 @@ WITH
       orders.order_id_edw,
       orders.transaction_id_ns parent_id,
       line.channel,
+      category.currency_id_ns as channel_currency_id_ns,
+      category.currency_abbreviation as channel_currency_abbreviation,
       line.email,
       line.customer_id_ns,
       line.location,
@@ -20,7 +22,7 @@ WITH
   shopify_info AS ( --Grab any and all shopify info from this CTE
     SELECT
       orders.order_id_edw,
-      shopify_line.amount_sold AS amount_sold_shopify,
+      shopify_line.amount_booked AS amount_booked_shopify,
       order_created_date_pst,
       quantity_sold AS total_quantity_shopify
     FROM
@@ -32,6 +34,8 @@ WITH
       ns_parent.order_id_edw,
       ns_parent.parent_id,
       ns_parent.channel,
+      ns_parent.channel_currency_id_ns,
+      ns_parent.channel_currency_abbreviation,
       ns_parent.email,
       ns_parent.customer_id_ns,
       ns_parent.location,
@@ -274,8 +278,9 @@ SELECT
   rate_sold,
   rate_refunded,
   rate_refunded as rate_refunded_ns,
-  coalesce(amount_sold_shopify,amount_booked) as amount_booked,--shopify is also the source of truth for booking financial amount (SO's shouldnt matter GL wise anyways)
-  amount_sold_shopify as amount_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then coalesce(amount_booked_shopify,amount_booked)*cer.exchange_rate else coalesce(amount_booked_shopify,amount_booked) end as amount_booked,--shopify is also the source of truth for booking financial amount (SO's shouldnt matter GL wise anyways)
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then amount_booked_shopify*cer.exchange_rate else amount_booked_shopify end as amount_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then amount_booked_shopify end as amount_booked_shopify_cad, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
   amount_booked as amount_booked_ns,
   amount_sold,
   amount_refunded,
@@ -299,6 +304,7 @@ FROM
   )
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = aggregate_netsuite.order_id_edw
   LEFT OUTER JOIN dim.location location ON location.location_id_ns = aggregate_netsuite.location
+  LEFT OUTER JOIN fact.currency_exchange_rate cer ON aggregate_netsuite.booked_date = cer.effective_date AND aggregate_netsuite.channel_currency_id_ns = cer.transaction_currency_id_ns
 WHERE
   aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY
