@@ -24,8 +24,8 @@ SELECT
   c.customer_name,
   c.primary_id_flag
 FROM
-  fact.orders o
-  LEFT JOIN fact.order_item oi ON o.order_id_edw = oi.order_id_edw
+  fact.order_item oi
+  LEFT JOIN fact.orders o ON o.order_id_edw = oi.order_id_edw
   LEFT JOIN dim.product p ON p.product_id_edw = oi.product_id_edw
   LEFT JOIN fact.customer_ns_map c on o.customer_id_edw = c.customer_id_edw
 WHERE
