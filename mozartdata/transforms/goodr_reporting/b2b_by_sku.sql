@@ -1,3 +1,4 @@
+--- add address, country, customer name 
 SELECT
   o.order_id_edw,
   o.sold_date,
