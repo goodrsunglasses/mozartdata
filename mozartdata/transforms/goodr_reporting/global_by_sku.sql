@@ -3,6 +3,7 @@ SELECT
   o.sold_date,
   o.booked_date,
   o.order_id_ns,
+  o.model,
   oi.order_item_id,
   oi.product_id_edw,
   oi.item_id_ns,
@@ -31,5 +32,5 @@ FROM
   LEFT JOIN dim.product p ON p.product_id_edw = oi.product_id_edw
   LEFT JOIN fact.customer_ns_map c on o.customer_id_edw = c.customer_id_edw
 WHERE
-  o.channel = 'Global'
+  o.b2b_d2c = 'B2B'
   and c.primary_id_flag = 'true'
