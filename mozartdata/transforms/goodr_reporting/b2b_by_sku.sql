@@ -4,6 +4,7 @@ SELECT
   o.booked_date,
   o.order_id_ns,
   o.model,
+  o.channel,
   oi.order_item_id,
   oi.product_id_edw,
   oi.item_id_ns,
@@ -34,3 +35,4 @@ FROM
 WHERE
   o.b2b_d2c = 'B2B'
   and c.primary_id_flag = 'true'
+  and oi.product_id_edw is not null
