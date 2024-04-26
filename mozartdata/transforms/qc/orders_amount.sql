@@ -13,9 +13,7 @@ WITH
       AND transaction_date >= '2024-01-01'
       AND transaction_date < '2024-02-01'
     GROUP BY
-      order_id_edw,
-      channel,
-      transaction_date
+      1, 3, 4
   ),
   cte_orders AS (
     SELECT
