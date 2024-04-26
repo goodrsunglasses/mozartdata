@@ -41,15 +41,31 @@ WITH
       AND sold_date < '2024-02-01'
   group by 
     1, 2, 4
+  ),
+  cte_order_line as(
+  select 
+    channel,
+    order_id_edw,
+    sum(order_line_amount) as orderline_amount_sold,
+    transaction_date 
+  from fact.order_line 
+  WHERE
+      transaction_date >= '2024-01-01'
+      AND transaction_date < '2024-02-01'
+      and record_type in ('cashsale', 'invoice')
+  group by 
+    1, 2, 4
   )
 SELECT
   cte_gltrans.*,
   cte_orders.orders_amount_sold,
   cte_orders.orders_sold_date,
-  cte_order_item.orderitem_amount_sold
+  cte_order_item.orderitem_amount_sold,
+  cte_order_line.orderline_amount_sold
 FROM
   cte_gltrans
   LEFT JOIN cte_orders ON cte_gltrans.order_id_edw = cte_orders.order_id_edw
   LEFT JOIN cte_order_item ON cte_gltrans.order_id_edw = cte_order_item.order_id_edw
+  LEFT JOIN cte_order_line ON cte_gltrans.order_id_edw = cte_order_line.order_id_edw
 ORDER BY
   order_id_edw
