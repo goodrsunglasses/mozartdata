@@ -39,6 +39,7 @@ WITH
     WHERE
       sold_date >= '2024-01-01'
       AND sold_date < '2024-02-01'
+      and item_id_ns <> 5 and item_id_ns <> 3617 -- not tax or shipping
   group by 
     1, 2, 4
   ),
