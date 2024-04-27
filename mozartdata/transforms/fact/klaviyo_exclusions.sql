@@ -1,5 +1,5 @@
 /*
-Purpose: This table contains meta data about Klaviyo Exclussions. This data comes from an API connection
+Purpose: This table contains meta data about Klaviyo Exclusions. This data comes from an API connection
 set up through the vendor Portable which directly feeds the data into our Snowflake db.
 Transforms:all dates are natively in UTC, so I converted them to LA time.
 About this data: This shows when a user is added to an exclusion list and why. Generally they are marking our emails
