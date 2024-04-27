@@ -1,5 +1,5 @@
 /*
-Purpose: This table contains meta data about klaviyo events. This data comes from an API connection
+Purpose: This table contains data about klaviyo events. This data comes from an API connection
 set up through the vendor Portable which directly feeds the data into our Snowflake db. This table contains a LOT of
 rows(Multi-millions). So the source data from portable is only for the past 90 days. So we have a staging table
 (staging.klaviyo_events) which incrementally loads data daily. Then this fact is built off of the entire set of events.

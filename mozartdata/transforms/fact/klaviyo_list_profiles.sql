@@ -1,5 +1,5 @@
 /*
-Purpose: This table contains meta data about Klaviyo Lists. This data comes from an API connection
+Purpose: This table contains data about Klaviyo Lists. This data comes from an API connection
 set up through the vendor Portable which directly feeds the data into our Snowflake db.
 Transforms: No transforms. Simple fact table of profiles and the list they are on.
 About this data: This shows a list in klaviyo as well as all of the profiles (users) included in that list. Unlikely,
