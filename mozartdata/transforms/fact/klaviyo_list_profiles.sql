@@ -12,5 +12,5 @@ SELECT
 FROM 
   klaviyo_portable.klaviyo_v2_list_profiles_8589937320 lp
 LEFT JOIN
-  klaviyo_portable.klaviyo_v2_lists_8589937320 l
-  on lp.list_id = l.list_id
+  dim.klaviyo_lists l
+  on lp.list_id = l.LIST_ID_KLAVIYO
