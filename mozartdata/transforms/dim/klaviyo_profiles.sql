@@ -1,7 +1,11 @@
 /*
-questions - 
-do we use loyalty or swell?
-suppressions list is always null
+Purpose: This table contains meta data about Klaviyo Profiles. This data comes from an API connection
+set up through the vendor Portable which directly feeds the data into our Snowflake db.
+Transforms: all dates are natively in UTC, so I converted them to LA time. Several of these fields (ie.
+location, properties, subscription) are JSON blobs.
+About this data: Klaviyo Profiles are the customers in klaviyo.
+Open questions: (as of 4/20/2024) Do we use swell or loyalty at Goodr?
+The fields are mostly null, is this intentional?
 */
 SELECT
   p.profile_id as profile_id_klaviyo

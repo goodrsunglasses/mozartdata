@@ -1,9 +1,16 @@
 /*
-options sto
-options throttled
-01HNT4X6WZZVYDZ98H544KDP34
+Purpose: This table contains meta data about klaviyo campaigns. This data comes from an API connection
+set up through the vendor Portable which directly feeds the data into our Snowflake db.
+Note: The second half of the union was joining to the original fivetran data pulled from
+July 2023 - Jan 2024. However,  this data was incomplete and inconsistent with Portable's data
+so the decision was made to just start fresh in 2024 with Portable.
+Transforms: all dates are natively in UTC, so I converted them to LA time.
+About this data: Klaviyo Campaigns are targeted email marketing campaigns. They can be scheduled to send
+at a specific time locally or universally. eg.  9 AM PST (so 12 ET) or 9 AM everywhere, and the emails
+are sent at their respective times based on customer location. The send_strategy_is_local_flag indicates
+how this campaign will be sent.
 */
---klaviyo Portable (February 2024+)
+--klaviyo Portable
 SELECT
   c.campaign_id as campaign_id_klaviyo
 , c.created_at as created_timestamp
@@ -34,7 +41,12 @@ SELECT
 , CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at) as updated_timestamp_pst
 , date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.updated_at)) as updated_date_pst
 FROM
-  klaviyo_portable.klaviyo_v2_campaigns_8589937320 c  
+  klaviyo_portable.klaviyo_v2_campaigns_8589937320 c
+/*
+Note: The second half of the union was joining to the original fivetran data pulled from
+July 2023 - Jan 2024. However,  this data was incomplete and inconsistent with Portable's data
+so the decision was made to just start fresh in 2024 with Portable.
+*/
 -- UNION ALL
 -- --klaviyo Fivetran (July 2023 - January 2024)
 -- SELECT

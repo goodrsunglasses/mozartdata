@@ -1,4 +1,14 @@
-/* According to Klaviyo's attribution model on 3/7/2024, the last email which was Clicked or Opened within 4 days prior to placing an order, is attributed to the campaign*/
+/*
+Purpose: This table contains data about order attribution based on Klaviyo's configuration.
+Transforms: This data is broken down into 1 CTE and a final query. The CTE is orders, which looks at all placed orders in
+fact.klaviyo_events, and attributes them to a campaign or flow based on an attribute in the event_properties blob.
+The final query cleans up the columns and brings in data from klaviyo dimensions to improve readability and usability
+of this table.
+About this data: According to Klaviyo's attribution model on 3/7/2024, the last email which was
+Clicked or Opened within 4 days prior to placing an order, is attributed to the campaign. There is a setting in klaviyo
+to change this. However, if marketing changes this setting, no change needs to be made to the code, because we pull
+the attribution directly from klaviyo's json.
+*/
 with orders as
 (
   SELECT
@@ -17,16 +27,17 @@ with orders as
   WHERE
     ke.metric_name = 'Placed Order'  
 )
-, attribution as
-(
   SELECT
-    o.*
-  , ke.event_timestamp
-  , ke.campaign_id_klaviyo
+    ke.campaign_id_klaviyo
   , kc.name as campaign_name
   , ke.flow_id_klaviyo
   , kf.name as flow_name
-  , ke.metric_name
+  , o.order_id_shopify
+  , o.profile_id_klaviyo
+  , o.total_amount
+  , o.subtotal_amount
+  , o.order_timestamp
+  , o.order_date
   FROM
     orders o
   LEFT JOIN
@@ -38,17 +49,3 @@ with orders as
   LEFT JOIN
     dim.klaviyo_flows kf
     on kf.flow_id_klaviyo = ke.flow_id_klaviyo
-)
-SELECT
-  a.campaign_id_klaviyo
-, a.campaign_name
-, a.flow_id_klaviyo
-, a.flow_name
-, a.order_id_shopify 
-, a.profile_id_klaviyo 
-, a.total_amount
-, a.subtotal_amount
-, a.order_timestamp
-, a.order_date
-FROM
-  attribution a

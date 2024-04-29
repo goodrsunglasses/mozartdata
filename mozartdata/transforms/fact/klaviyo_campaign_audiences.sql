@@ -1,4 +1,14 @@
-with excluded as 
+/*
+Purpose: This table contains all campaigns as well as which lists and segments are included and excluded.
+This data comes from an API connection set up through the vendor Portable which directly feeds the data into our
+Snowflake db.
+Transforms: This script is broken down into 3 CTES, one to capture which audiences are included, excluded and then
+combine those CTEs. In the campaign table they use segment and list interchangeably, so the last query pulls relevant
+information from klaviyo lists and klaviyo segments.
+About this data: In Klaviyo, for every campaign the marketing team can select who should receive and who should NOT
+receive a certain email. So this table shows that information.
+*/
+with excluded as
   (
 SELECT
   c.campaign_id as campaign_id_klaviyo
@@ -50,6 +60,3 @@ LEFT JOIN
 LEFT JOIN
   klaviyo_portable.klaviyo_v2_segments_8589937320 s
   on audience_id = s.segment_id
-
-
--- select * from klaviyo_portable.klaviyo_v2_segments_8589937320 where segment_id=  'UUpVX8'
