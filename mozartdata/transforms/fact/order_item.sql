@@ -1,3 +1,4 @@
+CREATE OR REPLACE TABLE fact.order_item COPY GRANTS AS
 WITH
   booked AS (
     SELECT
@@ -8,11 +9,28 @@ WITH
       plain_name,
       SUM(total_quantity) AS quantity_booked,
       SUM(rate) AS rate_booked,
-      SUM(net_amount) AS amount_booked
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN net_amount
+          ELSE 0
+        END
+      ) AS amount_booked,
+      SUM(
+        CASE
+          WHEN plain_name = 'Shipping' THEN net_amount
+          ELSE 0
+        END
+      ) AS shipping_booked,
+      SUM(
+        CASE
+          WHEN plain_name = 'Tax' THEN net_amount
+          ELSE 0
+        END
+      ) AS tax_booked
     FROM
       fact.order_item_detail
     WHERE
-      record_type = 'salesorder'
+      record_type = 'salesorder' and order_id_edw = 'G1701824'
     GROUP BY
       order_id_edw,
       product_id_edw,
@@ -29,7 +47,24 @@ WITH
       plain_name,
       SUM(total_quantity) AS quantity_sold,
       SUM(rate) AS rate_sold,
-      SUM(net_amount) AS amount_sold,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN net_amount
+          ELSE 0
+        END
+      ) AS amount_sold,
+      SUM(
+        CASE
+          WHEN plain_name = 'Shipping' THEN net_amount
+          ELSE 0
+        END
+      ) AS shipping_sold,
+      SUM(
+        CASE
+          WHEN plain_name = 'Tax' THEN net_amount
+          ELSE 0
+        END
+      ) AS tax_sold,
       SUM(gross_profit_estimate) AS gross_profit_estimate,
       SUM(ABS(cost_estimate)) AS cost_estimate
     FROM
@@ -102,7 +137,11 @@ SELECT DISTINCT
   rate_fulfilled,
   rate_refunded,
   amount_booked,
+  tax_booked,
+  shipping_booked,
   amount_sold,
+  tax_sold,
+  shipping_sold,
   amount_fulfilled,
   amount_refunded,
   sold.gross_profit_estimate AS gross_profit_estimate,
