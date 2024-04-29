@@ -108,7 +108,24 @@ WITH
       plain_name,
       SUM(total_quantity) AS quantity_refunded,
       SUM(rate) AS rate_refunded,
-      SUM(ABS(net_amount)) AS amount_refunded
+      SUM(ABS(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN net_amount
+          ELSE 0
+        END
+      )) AS amount_refunded,
+      SUM(ABS(
+        CASE
+          WHEN plain_name = 'Shipping' THEN net_amount
+          ELSE 0
+        END
+      )) AS shipping_refunded,
+      SUM(ABS(
+        CASE
+          WHEN plain_name = 'Tax' THEN net_amount
+          ELSE 0
+        END
+      )) AS tax_refunded
     FROM
       fact.order_item_detail
     WHERE
@@ -144,6 +161,8 @@ SELECT DISTINCT
   shipping_sold,
   amount_fulfilled,
   amount_refunded,
+  tax_refunded,
+  shipping_refunded,
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
