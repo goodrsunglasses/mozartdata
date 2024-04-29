@@ -30,7 +30,7 @@ WITH
     FROM
       fact.order_item_detail
     WHERE
-      record_type = 'salesorder' and order_id_edw = 'G1701824'
+      record_type = 'salesorder'
     GROUP BY
       order_id_edw,
       product_id_edw,
