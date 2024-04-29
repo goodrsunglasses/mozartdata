@@ -152,22 +152,13 @@ WITH
         END
       ) AS rate_refunded,
       SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_booked
-          ELSE 0
-        END
+        amount_booked
       ) AS amount_booked,
       SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_sold
-          ELSE 0
-        END
+        amount_sold
       ) AS amount_sold,
       SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_refunded
-          ELSE 0
-        END
+        amount_refunded
       ) AS amount_refunded,
       SUM(
         CASE
@@ -182,40 +173,22 @@ WITH
         END
       ) AS cost_estimate,
       SUM(
-        CASE
-          WHEN plain_name = 'Tax' THEN amount_booked
-          ELSE 0
-        END
+        tax_booked
       ) AS tax_booked,
       SUM(
-        CASE
-          WHEN plain_name = 'Tax' THEN amount_sold
-          ELSE 0
-        END
+        tax_sold
       ) AS tax_sold,
       SUM(
-        CASE
-          WHEN plain_name = 'Tax' THEN amount_refunded
-          ELSE 0
-        END
+        tax_refunded
       ) AS tax_refunded,
       SUM(
-        CASE
-          WHEN plain_name = 'Shipping' THEN amount_booked
-          ELSE 0
-        END
+        shipping_booked
       ) AS shipping_booked,
       SUM(
-        CASE
-          WHEN plain_name = 'Shipping' THEN amount_sold
-          ELSE 0
-        END
+        shipping_sold
       ) AS shipping_sold,
       SUM(
-        CASE
-          WHEN plain_name = 'Shipping' THEN amount_refunded
-          ELSE 0
-        END
+        shipping_refunded
       ) AS shipping_refunded
     FROM
       fact.order_item
