@@ -1,12 +1,10 @@
 /*
 Purpose: This table contains meta data about Klaviyo Segments. This data comes from an API connection
 set up through the vendor Portable which directly feeds the data into our Snowflake db.
-Transforms: all dates are natively in UTC, so I converted them to LA time. We joined to profiles to add
-a simple count of profiles (users) in each list.
+Transforms: all dates are natively in UTC, so I converted them to LA time.
 About this data: Klaviyo Segments are groups of customers (aka klaviyo profiles). Segments are
-created and populated by the marketing team. Examples of lists include: Mach G Purchasers, LFG Interests,
-2 Month Engaged.
-Often times lists and segments are used interchangeably in Klaviyo.
+created and populated by the marketing team. Examples of lists include: 1 Month Engaged, LFG Interests, 2 Month Engaged.
+Often times lists and segments are used interchangeably in Klaviyo. Most notably in fact.klaviyo_campaign_audiences.
 Note: The second half of the union was joining to the original fivetran data pulled from
 July 2023 - Jan 2024. However,  this data was incomplete and inconsistent with Portable's data
 so the decision was made to just start fresh in 2024 with Portable.
