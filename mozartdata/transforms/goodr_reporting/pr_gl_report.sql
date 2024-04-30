@@ -23,5 +23,6 @@ WHERE
   AND posting_flag = TRUE
   AND abs(net_amount) > 0
   AND account_number LIKE '4%'
+  and posting_period like '%2024'
 ORDER BY
   transaction_date desc
