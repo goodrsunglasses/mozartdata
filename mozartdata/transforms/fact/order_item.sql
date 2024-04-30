@@ -1,4 +1,3 @@
-CREATE OR REPLACE TABLE fact.order_item COPY GRANTS AS
 WITH
   booked AS (
     SELECT
