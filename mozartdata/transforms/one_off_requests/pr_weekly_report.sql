@@ -12,6 +12,16 @@ WHERE
   )
   AND posting_flag = TRUE
   AND net_amount > 0
-  and account_number like '4%'
+  AND account_number LIKE '4%'
+UNION ALL
+SELECT
+  *
+FROM
+  fact.gl_transaction
+WHERE
+  channel IS NULL
+  AND posting_flag = TRUE
+  AND net_amount > 0
+  AND account_number LIKE '4%'
 ORDER BY
   transaction_date desc
