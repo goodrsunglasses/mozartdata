@@ -11,7 +11,7 @@ WHERE
     'Marketing'
   )
   AND posting_flag = TRUE
-  AND net_amount > 0
+  AND abs(net_amount) > 0
   AND account_number LIKE '4%'
 UNION ALL
 SELECT
@@ -21,7 +21,7 @@ FROM
 WHERE
   channel IS NULL
   AND posting_flag = TRUE
-  AND net_amount > 0
+  AND abs(net_amount) > 0
   AND account_number LIKE '4%'
 ORDER BY
   transaction_date desc
