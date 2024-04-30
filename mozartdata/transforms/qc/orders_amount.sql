@@ -1,19 +1,23 @@
 WITH
   cte_gltrans AS (
     SELECT
-      channel,
-      sum(net_amount) AS gl_net_amount,
-      transaction_date AS gl_transaction_date,
-      order_id_edw
+      gt.channel,
+      sum(gt.net_amount) AS gl_net_amount,
+      --transaction_date AS gl_transaction_date,
+      gt.order_id_edw
     FROM
-      fact.gl_transaction
+      fact.gl_transaction gt
+    left join
+      netsuite.transaction tran
+      on gt.transaction_id_ns = tran.id
     WHERE
       account_number = 4000 ---only product sales
       AND posting_flag = 'true'
       AND transaction_date >= '2024-01-01'
       AND transaction_date < '2024-02-01'
+      AND tran.recordtype != 'cashrefund' --remove refunds which are hitting account 4000. This should not be happening.
     GROUP BY
-      1, 3, 4
+      1, 3
   ),
   cte_orders AS (
     SELECT
