@@ -1,29 +1,25 @@
 SELECT
-  shop.id shopify_id,
-  shop.name order_number,
-  tag.value tag,
-  tran.authorization,
-  shop.financial_status,
-  shop.fulfillment_status,
-  stord.status stord_status,
-  line.transaction_status_ns,
-  item.sku,
-  item.plain_name,
-  quantity_booked salesorder_quantity,
-  amount_booked salesorder_netamount,
-  quantity_backordered,
-  quantity_invoiced,
-  loc.name location
+  orders.order_id_edw order_number,
+  orders.order_id_shopify,
+  shopify_line.fulfillment_status shopify_status,
+  stord_orders.status stord_status,
+  stord_orders.shipped_at
 FROM
-  shopify."ORDER" shop
-  LEFT OUTER JOIN dim.orders orders ON orders.d2c_shopify_id = shop.id
-  LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord ON stord.order_id = orders.stord_id
-  left outer join fact.order_line line on line.transaction_id_ns = orders.transaction_id_ns
-  left outer join fact.order_item item on item.order_id_edw = shop.name
-  left outer join fact.order_item_detail detail on (detail.item_id_ns = item.item_id_ns and detail.transaction_id_ns = line.transaction_id_ns)
- left outer join shopify.order_tag tag on tag.order_id = shop.id
- left outer join shopify.transaction tran on tran.order_id = shop.id
-  left outer join netsuite.transactionline tranline on (tranline.transaction = line.transaction_id_ns and tranline.item=item.item_id_ns)
-  left outer join dim.location loc on loc.location_id_ns = tranline.location
+  dim.orders orders
+  LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
+  LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord_orders ON stord_orders.order_id = orders.stord_id
 WHERE
-  shop.created_at >= CURRENT_DATE()-30 and item.plain_name not in ('Tax','Shipping')
+  shopify_line.fulfillment_status = 'fulfilled' and shipped_at is not null
+
+-- SELECT
+--   *
+-- FROM
+--   dim.orders
+-- WHERE
+--   stord_id IS NOT NULL
+-- SELECT
+--   *
+-- FROM
+--   dim.fulfillment
+-- WHERE
+--   source_system = 'Stord'
