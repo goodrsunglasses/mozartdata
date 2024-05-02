@@ -5,7 +5,8 @@ SELECT
   oi.plain_name,
   o.location,
   o.channel,
-  o.fulfillment_date
+  o.fulfillment_date,
+  o.sold_date
 FROM
   fact.order_item oi
   LEFT JOIN fact.orders o ON o.order_id_edw = oi.order_id_edw
@@ -20,4 +21,5 @@ GROUP BY
   oi.plain_name,
   o.location,
   o.channel,
-  o.fulfillment_date
+  o.fulfillment_date,
+  o.sold_date
