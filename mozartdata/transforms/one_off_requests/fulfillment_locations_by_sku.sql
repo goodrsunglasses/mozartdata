@@ -1,5 +1,6 @@
 SELECT
   sum(oi.quantity_fulfilled) as quantity_fulfilled,
+  sum(oi.quantity_sold) as quantity_sold,
   oi.product_id_edw,
   oi.sku,
   oi.plain_name,
