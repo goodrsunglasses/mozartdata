@@ -25,6 +25,7 @@ GROUP BY
   stord_orders.shipped_at,
   fact_orders.fulfillment_date,
   fact_orders.quantity_fulfilled
+limit 200
   -- SELECT
   --   *
   -- FROM
