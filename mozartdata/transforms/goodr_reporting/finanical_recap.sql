@@ -73,7 +73,8 @@ WITH
       posting_period
   )
 SELECT
-  cash.*,
+  cash.posting_period,
+  cash.cash,
   revenue.revenue,
   cogs.cogs,
   opex.opex,
