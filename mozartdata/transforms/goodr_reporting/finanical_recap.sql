@@ -114,7 +114,7 @@ SELECT
   revenue.revenue,
   cogs.cogs,
   opex.opex,
-  ---net_income
+  revenue.revenue - cogs.cogs - opex.opex as net_income,
   fulfillment.fulfillment,
   product_dev.product_dev,
   sales_and_marketing.sales_and_marketing,
