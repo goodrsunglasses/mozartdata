@@ -6,7 +6,7 @@ with
   sum(case when account_number like '4%' then net_amount end) as revenue,
   sum(case when account_number like '5%' then net_amount end) as cogs,
   sum(case when account_number like '6%' or account_number like '7%' then net_amount end) as opex,
-  --- net income
+  (revenue - cogs - opex) as net_income,
   sum(case when account_number like '60%' then net_amount end) as fulfillment,
   sum(case when account_number like '61%' then net_amount end) as product_dev,
   sum(case when account_number like '63%' then net_amount end) as sales_and_marketing,
