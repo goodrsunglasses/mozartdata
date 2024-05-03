@@ -11,7 +11,7 @@ receive a certain email. So this table shows that information.
 with excluded as
   (
 SELECT
-  c.campaign_id as campaign_id_klaviyo
+  c.campaign_id_klaviyo
 , ex.value::varchar audience_id
 , 'excluded' as type
 FROM
@@ -21,7 +21,7 @@ LATERAL FLATTEN(input => c.audiences:EXCLUDED) ex
 included as 
 (
 SELECT
-  c.campaign_id as campaign_id_klaviyo
+  c.campaign_id_klaviyo
 , inc.value::varchar audience_id
 , 'included' as type
 FROM
@@ -44,11 +44,8 @@ SELECT
   campaign_id_klaviyo
 , ca.name as campaign_name
 , audience_id
+, case when l.LIST_ID_KLAVIYO is null then 'segment' else 'list' end audience_type
 , type
-, l.list_id as list_id_klaviyo
-, l.name as list_name
-, s.segment_id as segment_id_klaviyo
-, s.name as segment_name
 FROM
   combined c
 LEFT JOIN
@@ -57,6 +54,3 @@ LEFT JOIN
 LEFT JOIN
   dim.klaviyo_lists l
   on audience_id = l.list_id_klaviyo
-LEFT JOIN
-  dim.klaviyo_segments s
-  on audience_id = s.segment_id_klaviyo
