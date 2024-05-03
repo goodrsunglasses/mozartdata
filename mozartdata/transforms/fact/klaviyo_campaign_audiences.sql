@@ -15,7 +15,7 @@ SELECT
 , ex.value::varchar audience_id
 , 'excluded' as type
 FROM
-  klaviyo_portable.klaviyo_v2_campaigns_8589937320 c,
+  dim.KLAVIYO_CAMPAIGNS c,
 LATERAL FLATTEN(input => c.audiences:EXCLUDED) ex
 ),
 included as 
@@ -25,7 +25,7 @@ SELECT
 , inc.value::varchar audience_id
 , 'included' as type
 FROM
-  klaviyo_portable.klaviyo_v2_campaigns_8589937320 c,
+  dim.KLAVIYO_CAMPAIGNS c,
 LATERAL FLATTEN(input => c.audiences:INCLUDED) inc
 ),
 combined as
@@ -52,11 +52,11 @@ SELECT
 FROM
   combined c
 LEFT JOIN
-  klaviyo_portable.klaviyo_v2_campaigns_8589937320 ca
-  on c.campaign_id_klaviyo = ca.campaign_id
+  dim.KLAVIYO_CAMPAIGNS ca
+  on c.campaign_id_klaviyo = ca.campaign_id_klaviyo
 LEFT JOIN
-  klaviyo_portable.klaviyo_v2_lists_8589937320 l
-  on audience_id = l.list_id
+  dim.klaviyo_lists l
+  on audience_id = l.list_id_klaviyo
 LEFT JOIN
-  klaviyo_portable.klaviyo_v2_segments_8589937320 s
-  on audience_id = s.segment_id
+  dim.klaviyo_segments s
+  on audience_id = s.segment_id_klaviyo
