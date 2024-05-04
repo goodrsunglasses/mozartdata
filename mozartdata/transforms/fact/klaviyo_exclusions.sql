@@ -4,8 +4,10 @@ set up through the vendor Portable which directly feeds the data into our Snowfl
 Transforms:all dates are natively in UTC, so I converted them to LA time.
 About this data: This shows when a user is added to an exclusion list and why. Generally they are marking our emails
 as spam or unsubscribing.
+
+I am doing a distinct, because portable extracts a single event multiple times.
 */
-SELECT
+SELECT DISTINCT
   e.timestamp as exclusion_timestamp
 , convert_timezone('UTC', 'America/Los_Angeles', e.timestamp) as exclusion_timestamp_pst
 , date(e.timestamp) as exclusion_date
