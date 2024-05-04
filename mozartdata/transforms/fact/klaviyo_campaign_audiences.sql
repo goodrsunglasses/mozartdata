@@ -41,7 +41,7 @@ FROM
   included  
 )
 SELECT
-  campaign_id_klaviyo
+  c.campaign_id_klaviyo
 , ca.name as campaign_name
 , audience_id
 , case when l.LIST_ID_KLAVIYO is null then 'segment' else 'list' end audience_type
