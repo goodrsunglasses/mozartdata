@@ -26,6 +26,7 @@ SELECT
 , date(c.send_time) as send_date
 , case when c.send_strategy:OPTIONS_STATIC:IS_LOCAL::boolean then c.send_time else CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.send_time) end as send_timestamp_pst
 , case when c.send_strategy:OPTIONS_STATIC:IS_LOCAL::boolean then date(c.send_time) else date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', c.send_time)) end as send_date_pst
+, c.audiences
 , c.send_options:IGNORE_UNSUBSCRIBES::boolean as ignore_unsubscribes_flag
 , c.send_options:USE_SMART_SENDING::boolean as use_smart_sending_flag
 , c.send_strategy:METHOD::varchar as send_strategy_method
