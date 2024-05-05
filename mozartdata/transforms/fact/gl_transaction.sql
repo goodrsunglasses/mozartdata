@@ -48,6 +48,7 @@ use createdate converted instead of trandate
     , tl.createdfrom as parent_transaction_id_ns
     , tl.department as department_id_ns
     , tl.item as item_id_ns
+    , tran.entity as customer_id_ns
     , d.name as department
     from
       netsuite.transactionaccountingline tal
