@@ -34,12 +34,15 @@ SELECT
   shopify.store,
   parents.transaction_id_ns,
   stord.order_id stord_id,
-  MD5(
-    LISTAGG(shipstation.orderid, '_') WITHIN GROUP (
-      ORDER BY
-        shipstation.orderid
+  CASE
+    WHEN shipstation.ordernumber IS NOT NULL THEN MD5(
+      LISTAGG(shipstation.orderid, '_') WITHIN GROUP (
+        ORDER BY
+          shipstation.orderid
+      )
     )
-  ) AS shipstation_id --done as per the exact same logic on fact.fulfillment_order, in order to get shipstation's order's tables down to one row per order number.
+    ELSE NULL
+  END AS shipstation_id --done as per the exact same logic on fact.fulfillment_order, in order to get shipstation's order's tables down to one row per order number.
 FROM
   orders
   LEFT OUTER JOIN fact.shopify_order_line shopify ON shopify.order_id_edw = orders.order_id_edw
@@ -48,6 +51,7 @@ FROM
   LEFT OUTER JOIN parents ON parents.order_id_edw = orders.order_id_edw
 GROUP BY
   orders.order_id_edw,
+  shipstation.ordernumber,
   shopify.order_id_shopify,
   shopify.store,
   transaction_id_ns,
