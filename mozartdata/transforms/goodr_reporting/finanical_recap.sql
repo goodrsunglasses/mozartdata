@@ -12,7 +12,8 @@ with
   sum(case when account_number like '63%' then net_amount end) as sales_and_marketing,
   sum(case when account_number like '70%' then net_amount end) as labor,
   sum(case when account_number like '7%' and account_number not like '70%' then net_amount end) as g_and_a,
-  (Revenue-COGS)/Revenue as gross_margin
+  (Revenue-COGS)/Revenue as gross_margin,
+  (net_income / revenue) as net_margin
   from
   fact.gl_transaction gt
   where posting_flag = 'true'
@@ -34,6 +35,7 @@ posting_period,to_date(posting_period, 'MON YYYY')
   sum(case when account_number like '70%' then budget_amount end) as labor,
   sum(case when account_number like '7%' and account_number not like '70%' then budget_amount end) as g_and_a,
   (Revenue-COGS)/Revenue as gross_margin,
+  (net_income / revenue) as net_margin,
   budget_version
   from
   fact.gl_budget gb
