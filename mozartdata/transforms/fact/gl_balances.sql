@@ -36,11 +36,11 @@ SELECT
   h.posting_period
 , h.posting_date
 , h.account_number
-, gt.account_id_ns
-, gt.account_id_edw
+, ga.account_id_ns
+, ga.account_id_edw
 , h.amount as balance
 FROM google_sheets.balance_dec_21 h
-left join fact.gl_transaction gt on gt.account_number = h.account_number
+left join dim.gl_account ga on ga.account_number = h.account_number
 UNION
 SELECT
  gt.posting_period
