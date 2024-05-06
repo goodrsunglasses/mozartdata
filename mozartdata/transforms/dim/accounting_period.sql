@@ -8,7 +8,7 @@ select
 , date(ap.startdate) as period_start_date
 , date(ap.enddate) as period_end_date
 , ap.periodname as posting_period
-, case when ap.isinactive = 'F' then true else false end is_active_flag
+, case when ap.isinactive = 'F' then true else false end active_flag
 , case when ap.isposting = 'T' then true else false end is_posting_flag
 , case when ap.ISQUARTER = 'F' and ap.ISYEAR = 'F' then true else false end is_month_flag
 , case when ap.isquarter = 'T' then true else false end is_quarter_flag
