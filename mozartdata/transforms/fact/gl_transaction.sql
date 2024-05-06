@@ -33,7 +33,7 @@ use createdate converted instead of trandate
     , date(CONVERT_TIMEZONE('America/Los_Angeles', tran.trandate)) as transaction_date_pst
     , CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) as date_posted_pst
     , case when tal.posting = 'T' then true else false end posting_flag
-    , ap.periodname as posting_period
+    , ap.posting_period as posting_period
     , sum(coalesce(tal.amount,0)) as transaction_amount
     , sum(coalesce(tal.credit,0)) as  credit_amount
     , sum(coalesce(tal.debit,0)) as debit_amount
@@ -56,8 +56,8 @@ use createdate converted instead of trandate
       netsuite.transaction tran
       on tal.transaction = tran.id
     inner join
-      netsuite.accountingperiod ap
-      on tran.postingperiod = ap.id
+      dim.accounting_period ap
+      on tran.postingperiod = ap.accounting_period_id
     left join
       dim.gl_account ga
       on tal."ACCOUNT" = ga.account_id_edw
@@ -94,9 +94,10 @@ use createdate converted instead of trandate
     , channel.name
     , tran.trandate
     , pe.eventdate
-    , ap.periodname
+    , ap.posting_period
     , case when tal.posting = 'T' then true else false end
     , createdfrom
+   , tran.entity
     , tl.department
     , tl.item
     , d.name
