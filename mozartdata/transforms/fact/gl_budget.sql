@@ -6,7 +6,7 @@ SELECT
   bl.department as department_id_ns,
   d.name as department,
   bl.period as period_id_ns,
-  ap.periodname as posting_period,
+  ap.posting_period as posting_period,
   SUM(bl.amount) AS budget_amount
 FROM
   netsuite.budgetlegacy bl
@@ -20,8 +20,8 @@ FROM
     netsuite.customrecord_cseg7 cseg7 
     ON cseg7.id = bl.cseg7
   left join
-    netsuite.accountingperiod ap
-    on bl.period = ap.id
+    dim.accounting_period ap
+    on bl.period = ap.accounting_period_id
   left join
     netsuite.department d
     on d.id = bl.department
@@ -34,6 +34,6 @@ GROUP BY
   category.name,
  cseg7.name,
   bl.period,
-  ap.periodname,
+  ap.posting_period,
   bl.department,
   d.name
