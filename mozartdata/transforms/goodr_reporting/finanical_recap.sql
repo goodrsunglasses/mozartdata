@@ -43,7 +43,15 @@ group by
 posting_period,to_date(posting_period, 'MON YYYY'), budget_version 
   )
   
-select *, 'actual' as budget_version from actuals
-union   
+select
+  *, 
+  'actual' as budget_version 
+from actuals 
+where posting_period_date >= '2024-01-01'
 
-select * from budget
+  union   
+
+select 
+  * 
+from budget
+where posting_period_date >= '2024-01-01'
