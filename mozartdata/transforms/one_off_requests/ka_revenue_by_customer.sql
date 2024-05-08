@@ -15,7 +15,7 @@ where
   gt.CHANNEL = 'Key Account'
   and gt.ACCOUNT_NUMBER between '4000' and '4999'
   and gt.POSTING_FLAG
-  and gt.POSTING_PERIOD like '%2024'
+  and to_date(gt.POSTING_PERIOD, 'MON YYYY') >= '2022-01-01'
 group by
     gt.POSTING_PERIOD
  , cust.entityid
