@@ -4,6 +4,7 @@ SELECT
   sum(  CASE     WHEN account_number LIKE '10%' THEN ending_balance    END  ) AS cash,
   sum(  CASE     WHEN account_number = '1100' THEN ending_balance  END  ) AS receivables,
   sum(  CASE     WHEN account_number LIKE '20%' THEN ending_balance  END  ) AS payables,
+  sum(  CASE     WHEN account_number LIKE '12%' THEN ending_balance  END  ) AS inventory,
   sum(  CASE     WHEN account_number LIKE '10%' or  
                   account_number LIKE '11%' or
                   account_number LIKE '12%' or
