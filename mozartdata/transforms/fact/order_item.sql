@@ -1,3 +1,5 @@
+CREATE OR REPLACE TABLE fact.order_item_JR COPY GRANTS AS
+(
 WITH
   booked AS (
     SELECT
@@ -90,8 +92,8 @@ WITH
       SUM(case when record_type = 'cashrefund' then oid.total_quantity else 0 end) AS quantity_refunded,
       SUM(case when record_type = 'cashrefund' then oid.rate else 0 end) AS rate_refunded,
       SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END) AS amount_refunded,
-      SUM(CASE WHEN plain_name = 'Shipping' THEN oid.amount_refunded ELSE 0 END) AS shipping_refunded,
-      SUM(CASE WHEN plain_name in ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END) AS tax_refunded
+      SUM(CASE WHEN plain_name = 'Shipping' THEN oid.amount_refunded ELSE 0 END) AS amount_shipping_refunded,
+      SUM(CASE WHEN plain_name in ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END) AS amount_tax_refunded
     FROM
       fact.order_item_detail_JR oid
     WHERE
@@ -139,8 +141,8 @@ SELECT DISTINCT
   amount_paid_fulfilled,
   amount_cogs_fulfilled,
   refunded.amount_refunded,
-  shipping_refunded,
-  tax_refunded,
+  amount_shipping_refunded,
+  amount_tax_refunded,
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
@@ -171,4 +173,4 @@ WHERE
     'invoice'
   )
 ORDER BY
-  detail.order_id_edw
+  detail.order_id_edw)
