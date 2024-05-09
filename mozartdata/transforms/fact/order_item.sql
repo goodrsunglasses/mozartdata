@@ -89,9 +89,9 @@ WITH
       plain_name,
       SUM(case when record_type = 'cashrefund' then oid.total_quantity else 0 end) AS quantity_refunded,
       SUM(case when record_type = 'cashrefund' then oid.rate else 0 end) AS rate_refunded,
-      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END) AS amount_refunded,
+      SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END) AS amount_refunded,
       SUM(CASE WHEN plain_name = 'Shipping' THEN oid.amount_refunded ELSE 0 END) AS shipping_refunded,
-      SUM(CASE WHEN plain_name = 'Tax' THEN oid.amount_refunded ELSE 0 END) AS tax_refunded
+      SUM(CASE WHEN plain_name in ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END) AS tax_refunded
     FROM
       fact.order_item_detail_JR oid
     WHERE
