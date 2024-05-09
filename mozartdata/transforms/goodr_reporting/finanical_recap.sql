@@ -17,7 +17,7 @@ WITH actuals AS (
         fact.gl_transaction gt
     WHERE
         posting_flag = 'true'
-    and to_date(posting_period, 'MON YYYY') >='2024-01-01'
+    and to_date(posting_period, 'MON YYYY') >='2023-01-01'
     GROUP BY
         posting_period, to_date(posting_period, 'MON YYYY')
 ),
