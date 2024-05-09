@@ -40,7 +40,7 @@ budget AS (
     FROM
         fact.gl_budget gb
     WHERE
-       to_date(posting_period, 'MON YYYY') >='2024-01-01'
+       to_date(posting_period, 'MON YYYY') >='2023-01-01'
     GROUP BY
         posting_period, to_date(posting_period, 'MON YYYY'), budget_version
 )
