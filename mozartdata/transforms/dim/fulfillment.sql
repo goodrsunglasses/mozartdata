@@ -107,53 +107,17 @@ WITH
         WHERE
           record_type = 'itemfulfillment'
           AND netsuite_step_one.transaction_id_ns IS NULL
-        and parent_transactions.order_id_edw like('%#%')
-      )
-    WHERE
-      counter = 1
-    and trackingnumber is not null
-  ),
-  netsuite_step_three AS ( --step to get the split shipments based on fulfillment id as well, that also dont have a #
-    SELECT
-      *
-    FROM
-      (
-        SELECT DISTINCT
-          parent_transactions.order_id_ns,
-          parent_transactions.transaction_id_ns,
-          number.trackingnumber,
-          CONCAT(
-            parent_transactions.order_id_ns,
-            '_',
-            number.trackingnumber
-          ) fulfillment_id_edw, --basically creating a fulfillment_id_edw from the IF because all the ones filtered for only have one
-          count(parent_transactions.order_id_edw) over (
-            PARTITION BY
-              parent_transactions.order_id_edw
-          ) counter
-        FROM
-          dim.parent_transactions
-          LEFT OUTER JOIN netsuite_step_one ON netsuite_step_one.transaction_id_ns = parent_transactions.transaction_id_ns
-          LEFT OUTER JOIN netsuite.trackingnumbermap map ON map.transaction = parent_transactions.transaction_id_ns
-          LEFT OUTER JOIN netsuite.trackingnumber number ON number.id = map.trackingnumber
-        WHERE
-          record_type = 'itemfulfillment'
-          AND netsuite_step_one.transaction_id_ns IS NULL
-        and parent_transactions.order_id_edw NOT like('%#%')
-      )
-    WHERE
-      counter != 1
-    and trackingnumber is not null
-  )
 
+      )
+    where trackingnumber is not null
+  )
 SELECT
   edw_fulfillments.fulfillment_id_edw,
   edw_fulfillments.order_id_edw,
   COALESCE(TO_CHAR(shipstation_id), stord_id) source_system_id,
   array_agg(coalesce(
     netsuite_step_one.transaction_id_ns,
-    netsuite_step_two.transaction_id_ns,
-    netsuite_step_three.transaction_id_ns
+    netsuite_step_two.transaction_id_ns
   ) ) itemfulfillment_ids,
   MAX(
     CASE
@@ -167,7 +131,6 @@ FROM
   LEFT OUTER JOIN stord ON stord.fulfillment_id_edw = edw_fulfillments.fulfillment_id_edw
   LEFT OUTER JOIN netsuite_step_one ON netsuite_step_one.order_id_edw = edw_fulfillments.order_id_edw
   LEFT OUTER JOIN netsuite_step_two ON netsuite_step_two.fulfillment_id_edw = edw_fulfillments.fulfillment_id_edw
-LEFT OUTER JOIN netsuite_step_three ON netsuite_step_three.fulfillment_id_edw = edw_fulfillments.fulfillment_id_edw
 GROUP BY
   edw_fulfillments.fulfillment_id_edw,
   edw_fulfillments.order_id_edw,
