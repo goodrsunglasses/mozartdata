@@ -21,13 +21,13 @@ SELECT
 FROM sellgoodr_canada_shopify.order_line oi
   join sellgoodr_canada_shopify."ORDER" o on oi.order_id = o.id
 where oi.name in (
-  'Road Twerk Ahead',
-  'The Empire Did Nothing Wrong', 
-  'Not a Phase, a Transformation', 
-  'Is It Queer in Here or Is It Just Us?! ', 
-  'Dinner Mint Debauchery', 
-  'Drinks Seawater, Sees Future', 
-  'Dont Make Me Blush', 
-  'A Unicorns Calamity', 
-  'Face Under Construction', 
-  'Warn To Be Wild')
+    'Road Twerk Ahead',
+    'The Empire Did Nothing Wrong', 
+    'Not a Phase, a Transformation', 
+    'Dinner Mint Debauchery', 
+    'Drinks Seawater, Sees Future',   
+    'Face Under Construction', 
+    'Warn To Be Wild')
+  or oi.name like '%Queer%'
+  or oi.name like '%Blush%'
+  or oi.name like '%Calamity%'
