@@ -1,5 +1,3 @@
-CREATE OR REPLACE TABLE fact.order_item_JR COPY GRANTS AS
-(
 WITH
   booked AS (
     SELECT
@@ -17,7 +15,7 @@ WITH
       SUM(oid.amount_tax) AS amount_tax_booked,
       SUM(oid.amount_paid) AS amount_paid_booked
     FROM
-      fact.order_item_detail_JR oid
+      fact.order_item_detail oid
     WHERE
       oid.record_type = 'salesorder'
     GROUP BY
@@ -45,7 +43,7 @@ WITH
       SUM(gross_profit_estimate) AS gross_profit_estimate,
       SUM(ABS(cost_estimate)) AS cost_estimate
     FROM
-      fact.order_item_detail_JR oid
+      fact.order_item_detail oid
     WHERE
       oid.record_type IN ('cashsale', 'invoice')
     GROUP BY
@@ -72,7 +70,7 @@ WITH
       SUM(oid.amount_paid) AS amount_paid_fulfilled,
       SUM(oid.amount_cogs) AS amount_cogs_fulfilled
     FROM
-      fact.order_item_detail_JR oid
+      fact.order_item_detail oid
     WHERE
       oid.record_type = 'itemfulfillment'
     GROUP BY
@@ -91,11 +89,11 @@ WITH
       plain_name,
       SUM(case when record_type = 'cashrefund' then oid.total_quantity else 0 end) AS quantity_refunded,
       SUM(case when record_type = 'cashrefund' then oid.rate else 0 end) AS rate_refunded,
-      SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END) AS amount_refunded,
+      SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded+oid.amount_product ELSE 0 END) AS amount_refunded,
       SUM(CASE WHEN plain_name = 'Shipping' THEN oid.amount_refunded ELSE 0 END) AS amount_shipping_refunded,
       SUM(CASE WHEN plain_name in ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END) AS amount_tax_refunded
     FROM
-      fact.order_item_detail_JR oid
+      fact.order_item_detail oid
     WHERE
       record_type in ('cashrefund','cashsale','invoice')
     GROUP BY
@@ -146,7 +144,7 @@ SELECT DISTINCT
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
-      fact.order_item_detail_JR detail
+      fact.order_item_detail detail
   LEFT OUTER JOIN dim.product p ON p.product_id_edw = detail.item_id_ns
   LEFT OUTER JOIN booked ON (
     booked.order_id_edw = detail.order_id_edw
@@ -173,4 +171,4 @@ WHERE
     'invoice'
   )
 ORDER BY
-  detail.order_id_edw)
+  detail.order_id_edw
