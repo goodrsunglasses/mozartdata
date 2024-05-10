@@ -52,7 +52,8 @@ SELECT
 FROM
   fact.gl_transaction gt
 WHERE
-  gt.posting_flag = true
+  gt.posting_flag = true 
+  and posting_date > '2021-12-01'
   and gt.account_number between 1000 and 3999
 GROUP BY
   gt.posting_period
