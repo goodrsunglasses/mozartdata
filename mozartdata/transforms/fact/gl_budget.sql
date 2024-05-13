@@ -41,13 +41,15 @@ GROUP BY
 --- temporary budget for 2024-v4 may
 UNION
 select 
-  268 as account_id_edw,
-  4000 as account_number,
-  '2024-V4' as budget_version,
-  channel,
-  null as department_id_ns,
-  null as netsuite_department,
-  78 as period_id_ns,
-  'May 2024' as posting_period,
+  rt.account_id_edw,
+  rt.account_number,
+  '2024 - V4' as budget_version,
+  rt.channel,
+  rt.department_id_ns,
+  rt.netsuite_department,
+  ap.accounting_period_id as period_id_ns,
+  rt.posting_period as posting_period,
   target as budget_amount,
-FROM google_sheets.may_2024_v_4_revenue_targets
+FROM google_sheets.may_2024_v_4_revenue_targets rt
+left join dim.accounting_period ap
+  on rt.posting_period = ap.posting_period
