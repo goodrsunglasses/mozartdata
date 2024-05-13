@@ -37,3 +37,17 @@ GROUP BY
   ap.posting_period,
   bl.department,
   d.name
+
+--- temporary budget for 2024-v4 may
+UNION
+select 
+  268 as account_id_edw,
+  4000 as account_number,
+  '2024-V4' as budget_version,
+  channel,
+  null as department_id_ns,
+  null as netsuite_department,
+  78 as period_id_ns,
+  'May 2024' as posting_period,
+  target as budget_amount,
+FROM google_sheets.may_2024_v_4_revenue_targets
