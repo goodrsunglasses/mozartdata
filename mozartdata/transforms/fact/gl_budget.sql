@@ -41,12 +41,12 @@ GROUP BY
 --- temporary budget for 2024-v4 may
 UNION
 select 
-  rt.account_id_edw,
+  rt.account_id_ns as account_id_edw
   rt.account_number,
   '2024 - V4' as budget_version,
   rt.channel,
-  rt.department_id_ns,
-  rt.netsuite_department,
+  null as department_id_ns,
+  null as netsuite_department,
   ap.accounting_period_id as period_id_ns,
   rt.posting_period as posting_period,
   target as budget_amount,
