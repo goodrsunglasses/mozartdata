@@ -41,7 +41,7 @@ GROUP BY
 --- temporary budget for 2024-v4 may
 UNION
 select 
-  rt.account_id_ns as account_id_edw
+  rt.account_id_ns as account_id_edw,
   rt.account_number,
   '2024 - V4' as budget_version,
   rt.channel,
