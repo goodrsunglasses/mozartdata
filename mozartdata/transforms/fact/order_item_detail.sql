@@ -5,13 +5,16 @@ with net_amount as
                 , sum(case when gt.account_number = 4000 then gt.net_amount else 0 end)                      amount_product
                 , sum(case when gt.account_number = 4110 then gt.net_amount else 0 end)                      amount_discount
                 , sum(case when gt.account_number = 4050 then gt.net_amount else 0 end)                      amount_shipping
-                , sum(case when gt.account_number between 4210 and 4299 then gt.net_amount
-                           when gt.account_number like '2200%' then gt.debit_amount else 0 end)              amount_refunded
+                , sum(case
+                        when gt.account_number between 4210 and 4299 then gt.net_amount
+                        when gt.account_number like '2200%' then gt.debit_amount
+                        else 0 end)                                                                          amount_refunded
                 , sum(case when gt.account_number like '2200%' then gt.net_amount else 0 end)                amount_tax
                 , sum(case when gt.account_number in (5000, 5100, 5110, 5200) then gt.net_amount else 0 end) amount_cogs
-                , sum(case when gt.account_number between 4000 and 4999 or gt.account_number like '2200%'
+                , sum(case
+                        when gt.account_number between 4000 and 4999 or gt.account_number like '2200%'
                           then gt.net_amount
-                        else 0 end)                                                               amount_paid
+                        else 0 end)                                                                          amount_paid
            from fact.gl_transaction gt
            where gt.account_number between 4000 and 4999
               or gt.account_number in (5000, 5100, 5110, 5200)
