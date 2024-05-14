@@ -81,7 +81,8 @@ WITH
       counter = 1
   ),
   netsuite_step_two AS ( --the idea here is to filter for all the Itemfulfillments that we can use the tracking numbers of to link to their source systems,
-      -- an example being CS-LST-SD-G2501679 whose two IF's have different tracking numbers, basically tracking number based joining
+      -- an example being CS-LST-SD-G2501679 whose two IF's have different tracking numbers, basically tracking number based joining.
+      --A known issue with this is that for orders like SG-CHIMAR2022, where boomi backfilled both improper shipment Id's and tracking numbers, the join is improper.
     SELECT
       *
     FROM
