@@ -49,7 +49,7 @@ select
   null as netsuite_department,
   ap.accounting_period_id as period_id_ns,
   rt.posting_period as posting_period,
-  target as budget_amount,
+  rt.amount as budget_amount,
 FROM google_sheets.may_2024_v_4_revenue_targets rt
 left join dim.accounting_period ap
   on rt.posting_period = ap.posting_period
