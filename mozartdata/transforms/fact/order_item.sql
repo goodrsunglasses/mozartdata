@@ -87,15 +87,15 @@ WITH
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
-      SUM(case when record_type = 'cashrefund' then oid.total_quantity else 0 end) AS quantity_refunded,
-      SUM(case when record_type = 'cashrefund' then oid.rate else 0 end) AS rate_refunded,
-      SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded+oid.amount_product ELSE 0 END) AS amount_refunded,
+      oid.total_quantity AS quantity_refunded,
+      oid.rate AS rate_refunded,
+      SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END) AS amount_refunded,
       SUM(CASE WHEN plain_name = 'Shipping' THEN oid.amount_refunded ELSE 0 END) AS amount_shipping_refunded,
       SUM(CASE WHEN plain_name in ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END) AS amount_tax_refunded
     FROM
       fact.order_item_detail oid
     WHERE
-      record_type in ('cashrefund','cashsale','invoice')
+      record_type in ('cashrefund')
     GROUP BY
       order_id_edw,
       product_id_edw,
@@ -172,3 +172,5 @@ WHERE
   )
 ORDER BY
   detail.order_id_edw
+)
+

@@ -1,4 +1,5 @@
-with net_amount as
+CREATE OR REPLACE TABLE fact.order_item_detail_JR COPY GRANTS AS
+  (with net_amount as
           (select gt.transaction_id_ns
                 , gt.item_id_ns
                 , sum(case when gt.account_number between 4000 and 4999 then gt.net_amount else 0 end)       amount_revenue
@@ -7,7 +8,9 @@ with net_amount as
                 , sum(case when gt.account_number = 4050 then gt.net_amount else 0 end)                      amount_shipping
                 , sum(case
                         when gt.account_number between 4210 and 4299 then gt.net_amount
-                        when gt.account_number like '2200%' then gt.debit_amount
+                        when gt.account_number like '2200%' then gt.debit_amount * -1 -- refund for sales tax
+                        when gt.account_number in (4000, 4050)
+                          then gt.debit_amount * -1 --Some refunds are reversing revenue accounts instead of adding to refund accounts (42*)
                         else 0 end)                                                                          amount_refunded
                 , sum(case when gt.account_number like '2200%' then gt.net_amount else 0 end)                amount_tax
                 , sum(case when gt.account_number in (5000, 5100, 5110, 5200) then gt.net_amount else 0 end) amount_cogs
@@ -60,4 +63,4 @@ with net_amount as
                           ON exceptions.transaction_id_ns = parents.transaction_id_ns
           LEFT OUTER JOIN net_amount na
                           on staging.transaction_id_ns = na.transaction_id_ns and staging.item_id_ns = na.item_id_ns
-   WHERE exception_flag = FALSE
+   WHERE exception_flag = FALSE)
