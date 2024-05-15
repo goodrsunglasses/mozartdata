@@ -87,11 +87,12 @@ WITH
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
-      oid.total_quantity AS quantity_refunded,
-      oid.rate AS rate_refunded,
-      SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END) AS amount_refunded,
-      SUM(CASE WHEN plain_name = 'Shipping' THEN oid.amount_refunded ELSE 0 END) AS amount_shipping_refunded,
-      SUM(CASE WHEN plain_name in ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END) AS amount_tax_refunded
+      SUM(oid.total_quantity) AS quantity_refunded,
+      SUM(oid.rate) AS rate_refunded,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END),0) AS amount_product_refunded,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax') THEN oid.amount_revenue ELSE 0 END),0) AS amount_revenue_refunded,
+      COALESCE(SUM(CASE WHEN plain_name = 'Shipping' THEN oid.amount_refunded ELSE 0 END),0) AS amount_shipping_refunded,
+      COALESCE(SUM(CASE WHEN plain_name in ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END),0) AS amount_tax_refunded
     FROM
       fact.order_item_detail oid
     WHERE
@@ -138,9 +139,11 @@ SELECT DISTINCT
   amount_tax_fulfilled,
   amount_paid_fulfilled,
   amount_cogs_fulfilled,
-  refunded.amount_refunded,
-  amount_shipping_refunded,
-  amount_tax_refunded,
+  refunded.amount_product_refunded,
+  refunded.amount_shipping_refunded,
+  refunded.amount_revenue_refunded as amount_refunded,
+  refunded.amount_tax_refunded,
+  sold.amount_revenue_sold+refunded.amount_revenue_refunded as revenue,
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
@@ -174,3 +177,4 @@ ORDER BY
   detail.order_id_edw
 )
 
+where order_id_edw = 'G2894759'
