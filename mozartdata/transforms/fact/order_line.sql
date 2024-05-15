@@ -1,15 +1,3 @@
-WITH
-  line_amount AS (
-    SELECT
-      gt.transaction_id_ns,
-      SUM(gt.net_amount) net_amount
-    FROM
-      fact.gl_transaction gt
-    WHERE
-      gt.account_number BETWEEN 4000 AND 4999
-    GROUP BY
-      gt.transaction_id_ns
-  )
 SELECT DISTINCT
   CONCAT(
     item_detail.order_id_edw,
@@ -64,7 +52,14 @@ SELECT DISTINCT
       item_detail.order_id_edw,
       item_detail.transaction_id_ns
   ) order_line_quantity,
-  la.net_amount AS order_line_amount,
+  item_detail.amount_revenue,
+  item_detail.amount_product,
+  item_detail.amount_discount,
+  item_detail.amount_shipping,
+  item_detail.amount_refunded,
+  item_detail.amount_tax,
+  item_detail.amount_paid,
+  item_detail.amount_cogs,
   number.trackingnumber tracking_number,
   FIRST_VALUE(item_detail.location IGNORE NULLS) over (
     PARTITION BY

@@ -1,5 +1,6 @@
 CREATE OR REPLACE TABLE fact.order_item_detail_JR COPY GRANTS AS
-  (with net_amount as
+  (
+  with net_amount as
           (select gt.transaction_id_ns
                 , gt.item_id_ns
                 , sum(case when gt.account_number between 4000 and 4999 then gt.net_amount else 0 end)       amount_revenue
@@ -19,9 +20,9 @@ CREATE OR REPLACE TABLE fact.order_item_detail_JR COPY GRANTS AS
                           then gt.net_amount
                         else 0 end)                                                                          amount_paid
            from fact.gl_transaction gt
-           where gt.account_number between 4000 and 4999
+           where (gt.account_number between 4000 and 4999
               or gt.account_number in (5000, 5100, 5110, 5200)
-              or gt.account_number like '2200%'
+              or gt.account_number like '2200%')
            group by gt.transaction_id_ns
                   , gt.item_id_ns)
 
@@ -38,14 +39,14 @@ CREATE OR REPLACE TABLE fact.order_item_detail_JR COPY GRANTS AS
         , full_status
         , item_type
         , plain_name
-        , na.amount_revenue
-        , na.amount_product
-        , na.amount_discount
-        , na.amount_shipping
-        , na.amount_refunded
-        , na.amount_tax
-        , na.amount_paid
-        , na.amount_cogs
+        , coalesce(na.amount_revenue,0) amount_revenue
+        , coalesce(na.amount_product,0) amount_product
+        , coalesce(na.amount_discount,0) amount_discount
+        , coalesce(na.amount_shipping,0) amount_shipping
+        , coalesce(nullif(na.amount_refunded,-0),na.amount_refunded,0) amount_refunded
+        , coalesce(na.amount_tax,0) amount_tax
+        , coalesce(na.amount_paid,0) amount_paid
+        , coalesce(na.amount_cogs,0) amount_cogs
         , total_quantity
         , quantity_invoiced
         , quantity_backordered
@@ -63,4 +64,5 @@ CREATE OR REPLACE TABLE fact.order_item_detail_JR COPY GRANTS AS
                           ON exceptions.transaction_id_ns = parents.transaction_id_ns
           LEFT OUTER JOIN net_amount na
                           on staging.transaction_id_ns = na.transaction_id_ns and staging.item_id_ns = na.item_id_ns
-   WHERE exception_flag = FALSE)
+   WHERE exception_flag = FALSE
+ )

@@ -6,14 +6,14 @@ WITH
       oid.item_id_ns,
       CONCAT(oid.order_id_edw, '_', oid.item_id_ns) AS order_item_id,
       oid.plain_name,
-      SUM(oid.total_quantity) AS quantity_booked,
-      SUM(oid.rate) AS rate_booked,
-      SUM(oid.amount_revenue) AS amount_revenue_booked,
-      SUM(oid.amount_product) AS amount_product_booked,
-      SUM(oid.amount_discount) AS amount_discount_booked,
-      SUM(oid.amount_shipping) AS amount_shipping_booked,
-      SUM(oid.amount_tax) AS amount_tax_booked,
-      SUM(oid.amount_paid) AS amount_paid_booked
+      COALESCE(SUM(oid.total_quantity),0) AS quantity_booked,
+      COALESCE(SUM(oid.rate),0) AS rate_booked,
+      COALESCE(SUM(oid.amount_revenue),0) AS amount_revenue_booked,
+      COALESCE(SUM(oid.amount_product),0) AS amount_product_booked,
+      COALESCE(SUM(oid.amount_discount),0) AS amount_discount_booked,
+      COALESCE(SUM(oid.amount_shipping),0) AS amount_shipping_booked,
+      COALESCE(SUM(oid.amount_tax),0) AS amount_tax_booked,
+      COALESCE(SUM(oid.amount_paid),0) AS amount_paid_booked
     FROM
       fact.order_item_detail oid
     WHERE
@@ -32,16 +32,16 @@ WITH
       oid.item_id_ns,
       CONCAT(oid.order_id_edw, '_', oid.item_id_ns) AS order_item_id,
       oid.plain_name,
-      SUM(oid.total_quantity) AS quantity_sold,
-      SUM(oid.rate) AS rate_sold,
-      SUM(oid.amount_revenue) AS amount_revenue_sold,
-      SUM(oid.amount_product) AS amount_product_sold,
-      SUM(oid.amount_discount) AS amount_discount_sold,
-      SUM(oid.amount_shipping) AS amount_shipping_sold,
-      SUM(oid.amount_tax) AS amount_tax_sold,
-      SUM(oid.amount_paid) AS amount_paid_sold,
-      SUM(gross_profit_estimate) AS gross_profit_estimate,
-      SUM(ABS(cost_estimate)) AS cost_estimate
+      COALESCE(SUM(oid.total_quantity),0) AS quantity_sold,
+      COALESCE(SUM(oid.rate),0) AS rate_sold,
+      COALESCE(SUM(oid.amount_revenue),0) AS amount_revenue_sold,
+      COALESCE(SUM(oid.amount_product),0) AS amount_product_sold,
+      COALESCE(SUM(oid.amount_discount),0) AS amount_discount_sold,
+      COALESCE(SUM(oid.amount_shipping),0) AS amount_shipping_sold,
+      COALESCE(SUM(oid.amount_tax),0) AS amount_tax_sold,
+      COALESCE(SUM(oid.amount_paid),0) AS amount_paid_sold,
+      COALESCE(SUM(gross_profit_estimate),0) AS gross_profit_estimate,
+      COALESCE(SUM(ABS(cost_estimate)),0) AS cost_estimate
     FROM
       fact.order_item_detail oid
     WHERE
@@ -60,15 +60,15 @@ WITH
       oid.item_id_ns,
       CONCAT(oid.order_id_edw, '_', oid.item_id_ns) AS order_item_id,
       oid.plain_name,
-      SUM(oid.total_quantity) AS quantity_fulfilled,
-      SUM(oid.rate) AS rate_fulfilled,
-      SUM(oid.amount_revenue) AS amount_revenue_fulfilled,
-      SUM(oid.amount_product) AS amount_product_fulfilled,
-      SUM(oid.amount_discount) AS amount_discount_fulfilled,
-      SUM(oid.amount_shipping) AS amount_shipping_fulfilled,
-      SUM(oid.amount_tax) AS amount_tax_fulfilled,
-      SUM(oid.amount_paid) AS amount_paid_fulfilled,
-      SUM(oid.amount_cogs) AS amount_cogs_fulfilled
+      COALESCE(SUM(oid.total_quantity),0) AS quantity_fulfilled,
+      COALESCE(SUM(oid.rate),0) AS rate_fulfilled,
+      COALESCE(SUM(oid.amount_revenue),0) AS amount_revenue_fulfilled,
+      COALESCE(SUM(oid.amount_product),0) AS amount_product_fulfilled,
+      COALESCE(SUM(oid.amount_discount),0) AS amount_discount_fulfilled,
+      COALESCE(SUM(oid.amount_shipping),0) AS amount_shipping_fulfilled,
+      COALESCE(SUM(oid.amount_tax),0) AS amount_tax_fulfilled,
+      COALESCE(SUM(oid.amount_paid),0) AS amount_paid_fulfilled,
+      COALESCE(SUM(oid.amount_cogs),0) AS amount_cogs_fulfilled
     FROM
       fact.order_item_detail oid
     WHERE
@@ -139,11 +139,11 @@ SELECT DISTINCT
   amount_tax_fulfilled,
   amount_paid_fulfilled,
   amount_cogs_fulfilled,
+  refunded.amount_revenue_refunded,
   refunded.amount_product_refunded,
   refunded.amount_shipping_refunded,
-  refunded.amount_revenue_refunded as amount_refunded,
   refunded.amount_tax_refunded,
-  sold.amount_revenue_sold+refunded.amount_revenue_refunded as revenue,
+  coalesce(sold.amount_revenue_sold,0)+coalesce(refunded.amount_revenue_refunded,0) as revenue,
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
@@ -175,6 +175,3 @@ WHERE
   )
 ORDER BY
   detail.order_id_edw
-)
-
-where order_id_edw = 'G2894759'
