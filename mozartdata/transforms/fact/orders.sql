@@ -109,91 +109,54 @@ WITH
   aggregates AS (
     SELECT
       order_id_edw,
-      SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_booked
-          ELSE 0
-        END
-      ) AS quantity_booked,
-      SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_sold
-          ELSE 0
-        END
-      ) AS quantity_sold,
-      SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_fulfilled
-          ELSE 0
-        END
-      ) AS quantity_fulfilled,
-      SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_refunded
-          ELSE 0
-        END
-      ) AS quantity_refunded,
-      SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_booked
-          ELSE 0
-        END
-      ) AS rate_booked,
-      SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_sold
-          ELSE 0
-        END
-      ) AS rate_sold,
-      SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_refunded
-          ELSE 0
-        END
-      ) AS rate_refunded,
-      SUM(
-        amount_booked
-      ) AS amount_booked,
-      SUM(
-        amount_sold
-      ) AS amount_sold,
-      SUM(
-        amount_refunded
-      ) AS amount_refunded,
-      SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN gross_profit_estimate
-          ELSE 0
-        END
-      ) AS gross_profit_estimate,
-      SUM(
-        CASE
-          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN cost_estimate
-          ELSE 0
-        END
-      ) AS cost_estimate,
-      SUM(
-        tax_booked
-      ) AS tax_booked,
-      SUM(
-        tax_sold
-      ) AS tax_sold,
-      SUM(
-        tax_refunded
-      ) AS tax_refunded,
-      SUM(
-        shipping_booked
-      ) AS shipping_booked,
-      SUM(
-        shipping_sold
-      ) AS shipping_sold,
-      SUM(
-        shipping_refunded
-      ) AS shipping_refunded
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_booked ELSE 0 END) AS quantity_booked,
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_sold ELSE 0 END) AS quantity_sold,
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_fulfilled ELSE 0 END) AS quantity_fulfilled,
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN quantity_refunded ELSE 0 END) AS quantity_refunded,
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_booked ELSE 0 END) AS rate_booked,
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_sold ELSE 0 END) AS rate_sold,
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_refunded ELSE 0 END) AS rate_refunded,
+--       SUM(amount_booked) AS amount_booked,
+--       SUM(amount_sold) AS amount_sold,
+--       SUM(amount_refunded) AS amount_refunded,
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN gross_profit_estimate ELSE 0 END) AS gross_profit_estimate,
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN cost_estimate ELSE 0 END) AS cost_estimate,
+--       SUM(tax_booked) AS tax_booked,
+--       SUM(tax_sold) AS tax_sold,
+--       SUM(tax_refunded) AS tax_refunded,
+--       SUM(shipping_booked) AS shipping_booked,
+--       SUM(shipping_sold) AS shipping_sold,
+--       SUM(shipping_refunded) AS shipping_refunded,
+          SUM(amount_revenue_booked) as amount_revenue_booked,
+          SUM(amount_product_booked) as amount_product_booked,
+          SUM(amount_discount_booked) as amount_discount_booked,
+          SUM(amount_shipping_booked) as amount_shipping_booked,
+          SUM(amount_tax_booked) as amount_tax_booked,
+          SUM(amount_paid_booked) as amount_paid_booked,
+          SUM(amount_revenue_sold) as amount_revenue_sold,
+          SUM(amount_product_sold) as amount_product_sold,
+          SUM(amount_discount_sold) as amount_discount_sold,
+          SUM(amount_shipping_sold) as amount_shipping_sold,
+          SUM(amount_tax_sold) as amount_tax_sold,
+          SUM(amount_paid_sold) as amount_paid_sold,
+          SUM(amount_revenue_fulfilled) as amount_revenue_fulfilled,
+          SUM(amount_product_fulfilled) as amount_product_fulfilled,
+          SUM(amount_discount_fulfilled) as amount_discount_fulfilled,
+          SUM(amount_shipping_fulfilled) as amount_shipping_fulfilled,
+          SUM(amount_tax_fulfilled) as amount_tax_fulfilled,
+          SUM(amount_paid_fulfilled) as amount_paid_fulfilled,
+          SUM(amount_cogs_fulfilled) as amount_cogs_fulfilled,
+          SUM(amount_revenue_refunded) as amount_revenue_refunded,
+          SUM(amount_product_refunded) as amount_product_refunded,
+          SUM(amount_shipping_refunded) as amount_shipping_refunded,
+          SUM(amount_tax_refunded) as amount_tax_refunded,
+          SUM(revenue) as revenue
     FROM
-      fact.order_item
+      fact.order_item_JR
+    where order_id_edw like 'G%'
     GROUP BY
       order_id_edw
+    having SUM(amount_product_refunded)!=0
   ),
   refund_aggregates AS (
     SELECT DISTINCT
