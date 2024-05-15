@@ -62,12 +62,6 @@ WITH
       oid.plain_name,
       COALESCE(SUM(oid.total_quantity),0) AS quantity_fulfilled,
       COALESCE(SUM(oid.rate),0) AS rate_fulfilled,
-      COALESCE(SUM(oid.amount_revenue),0) AS amount_revenue_fulfilled,
-      COALESCE(SUM(oid.amount_product),0) AS amount_product_fulfilled,
-      COALESCE(SUM(oid.amount_discount),0) AS amount_discount_fulfilled,
-      COALESCE(SUM(oid.amount_shipping),0) AS amount_shipping_fulfilled,
-      COALESCE(SUM(oid.amount_tax),0) AS amount_tax_fulfilled,
-      COALESCE(SUM(oid.amount_paid),0) AS amount_paid_fulfilled,
       COALESCE(SUM(oid.amount_cogs),0) AS amount_cogs_fulfilled
     FROM
       fact.order_item_detail oid
