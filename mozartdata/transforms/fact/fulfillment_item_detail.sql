@@ -70,4 +70,4 @@ FROM dim.fulfillment fulfill
 		 LEFT OUTER JOIN staging.ORDER_ITEM_DETAIL staged ON staged.TRANSACTION_ID_NS = if_ids.value
 		 LEFT OUTER JOIN netsuite.transaction tran ON tran.id = staged.TRANSACTION_ID_NS
 		 LEFT OUTER JOIN netsuite.itemfulfillmentshippingaddress shipping ON shipping.nkey = tran.SHIPPINGADDRESS
-WHERE ARRAY_SIZE(itemfulfillment_ids) > 0
+WHERE ARRAY_SIZE(itemfulfillment_ids) > 0 and PLAIN_NAME Not in ('Shipping','Tax')
