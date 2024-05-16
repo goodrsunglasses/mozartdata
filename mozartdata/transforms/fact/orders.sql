@@ -133,6 +133,7 @@ WITH
       SUM(amount_product_refunded) as amount_product_refunded,
       SUM(amount_shipping_refunded) as amount_shipping_refunded,
       SUM(amount_tax_refunded) as amount_tax_refunded,
+      SUM(amount_paid_refunded) as amount_paid_refunded,
       SUM(revenue) as revenue,
       SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN gross_profit_estimate ELSE 0 END) AS gross_profit_estimate,
       SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN cost_estimate ELSE 0 END) AS cost_estimate
