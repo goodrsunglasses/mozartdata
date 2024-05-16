@@ -12,14 +12,14 @@
                           then gt.debit_amount * -1 --Some refunds are reversing revenue accounts instead of adding to refund accounts (42*)
                         else 0 end)                                                                          amount_refunded
                 , sum(case when gt.account_number like '220%' then gt.net_amount else 0 end)                 amount_tax
-                , sum(case when gt.account_number in (5000, 5100, 5110, 5200) then gt.net_amount else 0 end) amount_cogs
+                , sum(case when gt.account_number like '5%' then gt.net_amount else 0 end)                   amount_cogs
                 , sum(case
                         when gt.account_number between 4000 and 4999 or gt.account_number like '220%'
                           then gt.net_amount
                         else 0 end)                                                                          amount_paid
            from fact.gl_transaction gt
            where (gt.account_number between 4000 and 4999
-              or gt.account_number in (5000, 5100, 5110, 5200)
+              or gt.account_number like '5%'
               or gt.account_number like '220%')
            group by gt.transaction_id_ns
                   , gt.item_id_ns)
