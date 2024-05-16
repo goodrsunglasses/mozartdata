@@ -11,7 +11,7 @@ SELECT fulfillment_id_edw,
 	   shipto:CITY::STRING                     AS city,
 	   TO_CHAR(items.shipmentid)               AS shipment_id,
 	   flattened_items.value:PRODUCTID::STRING AS item_id,
-	   product_id_edw,
+	   product.sku,
 	   flattened_items.value:NAME::STRING      AS product_name,
 	   flattened_items.value:QUANTITY::INTEGER AS quantity
 FROM dim.fulfillment fulfill
@@ -35,7 +35,7 @@ SELECT fulfillment_id_edw,
 	   orders.destination_address:NORMALIZED_LOCALITY::STRING                 AS city,
 	   shipment_confirmation_id                                               AS shipment_id,
 	   flattened_items.value:ITEM_ID::STRING                                  AS item_id,
-	   product_id_edw,
+	   product.sku,
 	   stordprod.name,
 	   flattened_items.value:QUANTITY::INTEGER                                AS quantity
 FROM dim.fulfillment fulfill
@@ -62,12 +62,13 @@ SELECT DISTINCT --adding just in case because NS joins can be funky and I don't 
 				shipping.city,
 				COALESCE(tran.CUSTBODY_STORD_CONFIRMATION_ID, tran.CUSTBODY_SHIPMENT_ID) shipment_id,
 				NULL                          AS                                         item_id,
-				product_id_edw,
+				product.sku,
 				PLAIN_NAME,
 				total_quantity
 FROM dim.fulfillment fulfill
 		 CROSS JOIN LATERAL FLATTEN(INPUT =>itemfulfillment_ids) AS if_ids
 		 LEFT OUTER JOIN staging.ORDER_ITEM_DETAIL staged ON staged.TRANSACTION_ID_NS = if_ids.value
+	left outer join dim.product product on product.item_id_ns = staged.ITEM_ID_NS
 		 LEFT OUTER JOIN netsuite.transaction tran ON tran.id = staged.TRANSACTION_ID_NS
 		 LEFT OUTER JOIN netsuite.itemfulfillmentshippingaddress shipping ON shipping.nkey = tran.SHIPPINGADDRESS
 WHERE ARRAY_SIZE(itemfulfillment_ids) > 0 and PLAIN_NAME Not in ('Shipping','Tax')
