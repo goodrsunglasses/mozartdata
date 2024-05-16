@@ -16,12 +16,35 @@ aliases:
 i = netsuite.item
 
 */
-WITH assembly_aggregate AS (SELECT parentitem,
+WITH unique_products
+	AS (SELECT DISTINCT sku --The idea here is to get a list of all of our products of all time across systems, as certain ones are mising older products
+		FROM (SELECT sku
+			  FROM SHIPSTATION_PORTABLE.SHIPSTATION_PRODUCTS_8589936627
+			  UNION ALL
+			  SELECT sku
+			  FROM stord.STORD_PRODUCTS_8589936822
+			  UNION ALL
+			  SELECT itemid
+			  FROM netsuite.item
+			  UNION ALL
+			  SELECT sku
+			  FROM SHOPIFY.PRODUCT_VARIANT))
+   , assembly_aggregate AS (SELECT parentitem,
 								   SUM(quantity) AS assembly_quantity
 							FROM netsuite.itemmember
 							GROUP BY parentitem
 							HAVING assembly_quantity IS NOT NULL)
-SELECT DISTINCT i.id                                                           AS product_id_edw,
+   , actual_ns_products AS (SELECT *
+							FROM netsuite.item
+							WHERE itemtype IN (--This is so that we can filter NS pre-emptively for all the actual products we wanna see, rather than the whole query
+											   'InvtPart',
+											   'Assembly',
+											   'OthCharge',
+											   'NonInvtPart',
+											   'Payment'
+								))
+SELECT DISTINCT unique_products.sku,
+				i.id                                                           AS product_id_edw,
 				i.id                                                           AS item_id_ns,
 				stord.id                                                       AS item_id_stord,
 				FIRST_VALUE(d2c.product_id) OVER (
@@ -49,7 +72,6 @@ SELECT DISTINCT i.id                                                           A
 						b2b.created_at ASC
 					)                                                          AS inventory_item_id_b2b_shopify,
 				shipstation.productid                                          AS item_id_shipstation,
-				i.itemid                                                       AS sku,
 				i.displayname                                                  AS display_name,
 				i.itemtype                                                     AS item_type,
 				i.custitem5                                                    AS collection,
@@ -104,8 +126,9 @@ SELECT DISTINCT i.id                                                           A
 				i.incomeaccount                                                AS account_id_ns,
 				ga.account_number,
 				ga.account_display_name
-FROM netsuite.item i
-		 INNER JOIN dim.gl_account ga ON i.incomeaccount = ga.account_id_ns
+FROM unique_products
+		 LEFT OUTER JOIN actual_ns_products i ON i.itemid = unique_products.sku
+		 LEFT OUTER JOIN dim.gl_account ga ON i.incomeaccount = ga.account_id_ns
 		 LEFT JOIN netsuite.customlist991 framecolor ON i.custitem20 = framecolor.id
 		 LEFT JOIN netsuite.customlist991 templecolor ON i.custitem32 = templecolor.id
 		 LEFT JOIN netsuite.customlist988 framefinish ON i.custitem21 = framefinish.id
@@ -121,19 +144,17 @@ FROM netsuite.item i
 		 LEFT JOIN netsuite.customlist1271 artwork ON i.custitem30 = artwork.id
 		 LEFT JOIN assembly_aggregate agg ON i.id = agg.parentitem
 	--USED VARIANT BECAUSE SHOPIFY.PRODUCT DOESN'T HAVE SKU AND UPC
-		 LEFT JOIN shopify.product_variant d2c ON (
-	d2c.sku = i.itemid
-	)
-		 LEFT JOIN specialty_shopify.product_variant b2b ON (
-	b2b.sku = i.itemid
-	)
+		 LEFT JOIN shopify.product_variant d2c ON
+	d2c.sku = unique_products.sku
+		 LEFT JOIN specialty_shopify.product_variant b2b ON
+	b2b.sku = unique_products.sku
+
 		 LEFT JOIN stord.stord_products_8589936822 stord
-				   ON stord.sku = i.itemid
-		 LEFT JOIN shipstation_portable.shipstation_products_8589936627 shipstation ON shipstation.sku = i.itemid
-WHERE itemtype IN (
-				   'InvtPart',
-				   'Assembly',
-				   'OthCharge',
-				   'NonInvtPart',
-				   'Payment'
-	)
+				   ON stord.sku = unique_products.sku
+		 LEFT JOIN shipstation_portable.shipstation_products_8589936627 shipstation
+				   ON shipstation.sku = unique_products.sku
+
+
+
+
+
