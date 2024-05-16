@@ -6,7 +6,7 @@ SELECT
   bl.department as department_id_ns,
   d.name as department,
   bl.period as period_id_ns,
-  ap.periodname as posting_period,
+  ap.posting_period as posting_period,
   SUM(bl.amount) AS budget_amount
 FROM
   netsuite.budgetlegacy bl
@@ -20,8 +20,8 @@ FROM
     netsuite.customrecord_cseg7 cseg7 
     ON cseg7.id = bl.cseg7
   left join
-    netsuite.accountingperiod ap
-    on bl.period = ap.id
+    dim.accounting_period ap
+    on bl.period = ap.accounting_period_id
   left join
     netsuite.department d
     on d.id = bl.department
@@ -34,6 +34,22 @@ GROUP BY
   category.name,
  cseg7.name,
   bl.period,
-  ap.periodname,
+  ap.posting_period,
   bl.department,
   d.name
+
+--- temporary budget for 2024-v4 may
+UNION
+select 
+  rt.account_id_ns as account_id_edw,
+  rt.account_number,
+  '2024 - V4' as budget_version,
+  rt.channel,
+  null as department_id_ns,
+  null as netsuite_department,
+  ap.accounting_period_id as period_id_ns,
+  rt.posting_period as posting_period,
+  rt.amount as budget_amount,
+FROM google_sheets.may_2024_v_4_revenue_targets rt
+left join dim.accounting_period ap
+  on rt.posting_period = ap.posting_period
