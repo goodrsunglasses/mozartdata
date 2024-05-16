@@ -200,7 +200,7 @@ SELECT
   aggregates.rate_refunded,
   aggregates.rate_refunded as rate_refunded_ns,
   case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then coalesce(shopify_info.amount_booked_shopify,amount_revenue_booked)*cer.exchange_rate else coalesce(shopify_info.amount_booked_shopify,amount_revenue_booked) end as amount_revenue_booked,--shopify is also the source of truth for booking financial amount (SO's shouldnt matter GL wise anyways)
-  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then amount_revenue_booked*cer.exchange_rate else amount_revenue_booked end as amount_revenue_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then amount_revenue_booked*cer.exchange_rate else shopify_info.amount_booked_shopify end as amount_revenue_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
   case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_booked_shopify end as amount_revenue_booked_shopify_cad, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
   aggregates.amount_revenue_booked as amount_revenue_booked_ns,
   aggregates.amount_product_booked,--Keeping all of these with no suffix as to the best of my understanding we'll only ever see this in NS, however that can of course be changed
