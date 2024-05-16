@@ -19,7 +19,7 @@ FROM dim.fulfillment fulfill
 						 ON TO_CHAR(items.shipmentid) = fulfill.source_system_id
 		 CROSS JOIN LATERAL FLATTEN(INPUT => items.shipmentitems) AS flattened_items
 		 LEFT OUTER JOIN dim.product product ON (product.item_id_shipstation = flattened_items.value:PRODUCTID::INTEGER or product.sku =  flattened_items.value:SKU::STRING)
-WHERE source_system = 'Shipstation' and ORDER_ID_EDW = 'G106672'
+WHERE source_system = 'Shipstation'
 --Stord
 UNION ALL
 SELECT fulfillment_id_edw,
