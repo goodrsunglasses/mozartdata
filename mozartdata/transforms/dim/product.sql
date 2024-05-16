@@ -17,32 +17,34 @@ i = netsuite.item
 
 */
 WITH unique_products
-	AS (SELECT DISTINCT sku --The idea here is to get a list of all of our products of all time across systems, as certain ones are mising older products
-		FROM (SELECT sku
-			  FROM SHIPSTATION_PORTABLE.SHIPSTATION_PRODUCTS_8589936627
-			  UNION ALL
-			  SELECT sku
-			  FROM stord.STORD_PRODUCTS_8589936822
-			  UNION ALL
-			  SELECT itemid
-			  FROM netsuite.item
-			  UNION ALL
-			  SELECT sku
-			  FROM SHOPIFY.PRODUCT_VARIANT))
-   , assembly_aggregate AS (SELECT parentitem,
-								   SUM(quantity) AS assembly_quantity
-							FROM netsuite.itemmember
-							GROUP BY parentitem
-							HAVING assembly_quantity IS NOT NULL)
-   , actual_ns_products AS (SELECT *
-							FROM netsuite.item
-							WHERE itemtype IN (--This is so that we can filter NS pre-emptively for all the actual products we wanna see, rather than the whole query
-											   'InvtPart',
-											   'Assembly',
-											   'OthCharge',
-											   'NonInvtPart',
-											   'Payment'
-								))
+		 AS (SELECT DISTINCT sku --The idea here is to get a list of all of our products of all time across systems, as certain ones are mising older products
+			 FROM (SELECT sku
+				   FROM SHIPSTATION_PORTABLE.SHIPSTATION_PRODUCTS_8589936627
+				   UNION ALL
+				   SELECT sku
+				   FROM stord.STORD_PRODUCTS_8589936822
+				   UNION ALL
+				   SELECT itemid
+				   FROM netsuite.item
+				   UNION ALL
+				   SELECT sku
+				   FROM SHOPIFY.PRODUCT_VARIANT)),
+	 assembly_aggregate
+		 AS (SELECT parentitem,
+					SUM(quantity) AS assembly_quantity
+			 FROM netsuite.itemmember
+			 GROUP BY parentitem
+			 HAVING assembly_quantity IS NOT NULL),
+	 actual_ns_products
+		 AS (SELECT *
+			 FROM netsuite.item
+			 WHERE itemtype IN (--This is so that we can filter NS pre-emptively for all the actual products we wanna see, rather than the whole query
+								'InvtPart',
+								'Assembly',
+								'OthCharge',
+								'NonInvtPart',
+								'Payment'
+				 ))
 SELECT DISTINCT unique_products.sku,
 				i.id                                                           AS product_id_edw,
 				i.id                                                           AS item_id_ns,
