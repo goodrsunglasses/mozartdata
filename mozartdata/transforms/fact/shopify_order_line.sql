@@ -58,7 +58,7 @@ SELECT DISTINCT
 FROM
   specialty_shopify."ORDER" b2b_shop
   LEFT OUTER JOIN specialty_shopify.order_line line ON line.order_id = b2b_shop.id
-  LEFT OUTER JOIN shopify.order_shipping_line ship ON ship.order_id = b2b_shop.id
+  LEFT OUTER JOIN specialty_shopify.order_shipping_line ship ON ship.order_id = b2b_shop.id
 UNION ALL
 SELECT DISTINCT
   d2c_can_shop.name order_id_edw,
@@ -88,8 +88,8 @@ SELECT DISTINCT
   ) quantity_sold
 FROM
   goodr_canada_shopify."ORDER" d2c_can_shop
-  LEFT OUTER JOIN specialty_shopify.order_line line ON line.order_id = d2c_can_shop.id
-  LEFT OUTER JOIN shopify.order_shipping_line ship ON ship.order_id = d2c_can_shop.id
+  LEFT OUTER JOIN goodr_canada_shopify.order_line line ON line.order_id = d2c_can_shop.id
+  LEFT OUTER JOIN goodr_canada_shopify.order_shipping_line ship ON ship.order_id = d2c_can_shop.id
 UNION ALL
 SELECT DISTINCT
   b2b_can_shop.name order_id_edw,
@@ -119,8 +119,8 @@ SELECT DISTINCT
   ) quantity_sold
 FROM
   sellgoodr_canada_shopify."ORDER" b2b_can_shop
-  LEFT OUTER JOIN specialty_shopify.order_line line ON line.order_id = b2b_can_shop.id
-  LEFT OUTER JOIN shopify.order_shipping_line ship ON ship.order_id = b2b_can_shop.id
+  LEFT OUTER JOIN sellgoodr_canada_shopify.order_line line ON line.order_id = b2b_can_shop.id
+  LEFT OUTER JOIN sellgoodr_canada_shopify.order_shipping_line ship ON ship.order_id = b2b_can_shop.id
 UNION ALL
 SELECT DISTINCT
   goodrwill.name order_id_edw,
@@ -150,5 +150,5 @@ SELECT DISTINCT
   ) quantity_sold
 FROM
   goodrwill_shopify."ORDER" goodrwill
-  LEFT OUTER JOIN specialty_shopify.order_line line ON line.order_id = goodrwill.id
-  LEFT OUTER JOIN shopify.order_shipping_line ship ON ship.order_id = goodrwill.id
+  LEFT OUTER JOIN goodrwill_shopify.order_line line ON line.order_id = goodrwill.id
+  LEFT OUTER JOIN goodrwill_shopify.order_shipping_line ship ON ship.order_id = goodrwill.id
