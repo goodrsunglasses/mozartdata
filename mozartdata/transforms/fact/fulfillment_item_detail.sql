@@ -1,5 +1,5 @@
 SELECT fulfillment_id_edw,
-       items.ordernumber                       AS order_id_edw,
+       fulfill.ORDER_ID_EDW,
        'Shipstation'                           AS source,
        carriercode                             AS carrier,
        servicecode                             AS carrier_service,
@@ -22,7 +22,7 @@ WHERE source_system = 'Shipstation'
 --Stord
 UNION ALL
 SELECT fulfillment_id_edw,
-       orders.order_number                                                    AS order_id_edw,
+       fulfill.ORDER_ID_EDW,
        'Stord'                                                                AS source,
        stord.carrier_name,
        stord.carrier_service_method,
@@ -46,7 +46,7 @@ WHERE source_system = 'Stord'
 UNION ALL
 SELECT DISTINCT --adding just in case because NS joins can be funky and I don't want any duplicate lines becase one custom field has two values or something
                 fulfill.FULFILLMENT_ID_EDW,
-                staged.ORDER_ID_NS            AS                                         order_id_edw,
+                fulfill.ORDER_ID_EDW,
                 'Netsuite'                    AS                                         source,
                 custbody_shipstation_carrier_code,
                 custbody_service_code,
