@@ -4,7 +4,7 @@ SELECT fulfillment_id_edw,
 	   carriercode                             AS carrier,
 	   servicecode                             AS carrier_service,
 	   shipdate,
-	   shipmentcost                            AS shipment_cost,
+-- 	   shipmentcost                            AS shipment_cost, Gabby said no
 	   voided,
 	   shipto:STATE::STRING                    AS state,
 	   shipto:COUNTRY::STRING                  AS country,
@@ -18,8 +18,8 @@ FROM dim.fulfillment fulfill
 		 LEFT OUTER JOIN shipstation_portable.shipstation_shipment_items_8589936627 items
 						 ON TO_CHAR(items.shipmentid) = fulfill.source_system_id
 		 CROSS JOIN LATERAL FLATTEN(INPUT => items.shipmentitems) AS flattened_items
-		 LEFT OUTER JOIN dim.product product ON product.item_id_shipstation = flattened_items.value:PRODUCTID::INTEGER
-WHERE source_system = 'Shipstation'
+		 LEFT OUTER JOIN dim.product product ON (product.item_id_shipstation = flattened_items.value:PRODUCTID::INTEGER or product.sku =  flattened_items.value:SKU::STRING)
+WHERE source_system = 'Shipstation' and ORDER_ID_EDW = 'G106672'
 --Stord
 UNION ALL
 SELECT fulfillment_id_edw,
@@ -28,7 +28,7 @@ SELECT fulfillment_id_edw,
 	   stord.carrier_name,
 	   stord.carrier_service_method,
 	   stord.shipped_at,
-	   NULL                                                                   AS shipmentcost,
+-- 	   NULL                                                                   AS shipmentcost,
 	   is_canceled,
 	   orders.destination_address:NORMALIZED_COUNTRY_CODE::STRING             AS state,
 	   orders.destination_address:NORMALIZED_COUNTRY_SUBDIVISION_CODE::STRING AS country,
@@ -55,7 +55,7 @@ SELECT DISTINCT --adding just in case because NS joins can be funky and I don't 
 				custbody_shipstation_carrier_code,
 				custbody_service_code,
 				TO_TIMESTAMP_NTZ(createddate) AS                                         shipped_at, --SADLY WE HAVE TO USE CREATEDDATE AS THE SHIPPING DATE AND JUST HOPE THAT IT WAS CREATED/SHIPPED THE SAME DAY BECAUSE NS DOESN'T STORE SHIPPEDDATE ANYWHERE
-				NULL                          AS                                         shipmentcost,
+-- 				NULL                          AS                                         shipmentcost,
 				NULL                          AS                                         is_cancelled,
 				shipping.state,
 				shipping.country,
