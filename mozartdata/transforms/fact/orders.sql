@@ -137,7 +137,7 @@ WITH
       SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN gross_profit_estimate ELSE 0 END) AS gross_profit_estimate,
       SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN cost_estimate ELSE 0 END) AS cost_estimate
     FROM
-      fact.order_item_JR
+      fact.order_item
     GROUP BY
       order_id_edw
   ),
