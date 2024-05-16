@@ -131,6 +131,7 @@ SELECT DISTINCT
   refunded.amount_product_refunded,
   refunded.amount_shipping_refunded,
   refunded.amount_tax_refunded,
+  coalesce(refunded.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_refunded
   coalesce(sold.amount_revenue_sold,0)+coalesce(refunded.amount_revenue_refunded,0) as revenue,
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate

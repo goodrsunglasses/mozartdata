@@ -116,47 +116,30 @@ WITH
       SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_booked ELSE 0 END) AS rate_booked,
       SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_sold ELSE 0 END) AS rate_sold,
       SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN rate_refunded ELSE 0 END) AS rate_refunded,
---       SUM(amount_booked) AS amount_booked,
---       SUM(amount_sold) AS amount_sold,
---       SUM(amount_refunded) AS amount_refunded,
+      SUM(amount_revenue_booked) as amount_revenue_booked,
+      SUM(amount_product_booked) as amount_product_booked,
+      SUM(amount_discount_booked) as amount_discount_booked,
+      SUM(amount_shipping_booked) as amount_shipping_booked,
+      SUM(amount_tax_booked) as amount_tax_booked,
+      SUM(amount_paid_booked) as amount_paid_booked,
+      SUM(amount_revenue_sold) as amount_revenue_sold,
+      SUM(amount_product_sold) as amount_product_sold,
+      SUM(amount_discount_sold) as amount_discount_sold,
+      SUM(amount_shipping_sold) as amount_shipping_sold,
+      SUM(amount_tax_sold) as amount_tax_sold,
+      SUM(amount_paid_sold) as amount_paid_sold,
+      SUM(amount_cogs_fulfilled) as amount_cogs_fulfilled,
+      SUM(amount_revenue_refunded) as amount_revenue_refunded,
+      SUM(amount_product_refunded) as amount_product_refunded,
+      SUM(amount_shipping_refunded) as amount_shipping_refunded,
+      SUM(amount_tax_refunded) as amount_tax_refunded,
+      SUM(revenue) as revenue,
       SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN gross_profit_estimate ELSE 0 END) AS gross_profit_estimate,
-      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN cost_estimate ELSE 0 END) AS cost_estimate,
---       SUM(tax_booked) AS tax_booked,
---       SUM(tax_sold) AS tax_sold,
---       SUM(tax_refunded) AS tax_refunded,
---       SUM(shipping_booked) AS shipping_booked,
---       SUM(shipping_sold) AS shipping_sold,
---       SUM(shipping_refunded) AS shipping_refunded,
-          SUM(amount_revenue_booked) as amount_revenue_booked,
-          SUM(amount_product_booked) as amount_product_booked,
-          SUM(amount_discount_booked) as amount_discount_booked,
-          SUM(amount_shipping_booked) as amount_shipping_booked,
-          SUM(amount_tax_booked) as amount_tax_booked,
-          SUM(amount_paid_booked) as amount_paid_booked,
-          SUM(amount_revenue_sold) as amount_revenue_sold,
-          SUM(amount_product_sold) as amount_product_sold,
-          SUM(amount_discount_sold) as amount_discount_sold,
-          SUM(amount_shipping_sold) as amount_shipping_sold,
-          SUM(amount_tax_sold) as amount_tax_sold,
-          SUM(amount_paid_sold) as amount_paid_sold,
-          SUM(amount_revenue_fulfilled) as amount_revenue_fulfilled,
-          SUM(amount_product_fulfilled) as amount_product_fulfilled,
-          SUM(amount_discount_fulfilled) as amount_discount_fulfilled,
-          SUM(amount_shipping_fulfilled) as amount_shipping_fulfilled,
-          SUM(amount_tax_fulfilled) as amount_tax_fulfilled,
-          SUM(amount_paid_fulfilled) as amount_paid_fulfilled,
-          SUM(amount_cogs_fulfilled) as amount_cogs_fulfilled,
-          SUM(amount_revenue_refunded) as amount_revenue_refunded,
-          SUM(amount_product_refunded) as amount_product_refunded,
-          SUM(amount_shipping_refunded) as amount_shipping_refunded,
-          SUM(amount_tax_refunded) as amount_tax_refunded,
-          SUM(revenue) as revenue
+      SUM(CASE WHEN plain_name NOT IN ('Tax', 'Shipping') THEN cost_estimate ELSE 0 END) AS cost_estimate
     FROM
       fact.order_item_JR
-    where order_id_edw like 'G%'
     GROUP BY
       order_id_edw
-    having SUM(amount_product_refunded)!=0
   ),
   refund_aggregates AS (
     SELECT DISTINCT
@@ -214,21 +197,30 @@ SELECT
   rate_sold,
   rate_refunded,
   rate_refunded as rate_refunded_ns,
-  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then coalesce(amount_booked_shopify,amount_booked)*cer.exchange_rate else coalesce(amount_booked_shopify,amount_booked) end as amount_booked,--shopify is also the source of truth for booking financial amount (SO's shouldnt matter GL wise anyways)
-  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then amount_booked_shopify*cer.exchange_rate else amount_booked_shopify end as amount_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
-  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then amount_booked_shopify end as amount_booked_shopify_cad, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
-  amount_booked as amount_booked_ns,
-  amount_sold,
-  amount_refunded,
-  amount_refunded as amount_refunded_ns,
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then coalesce(amount_booked_shopify,amount_revenue_booked)*cer.exchange_rate else coalesce(amount_booked_shopify,amount_revenue_booked) end as amount_revenue_booked,--shopify is also the source of truth for booking financial amount (SO's shouldnt matter GL wise anyways)
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then amount_revenue_booked*cer.exchange_rate else amount_revenue_booked end as amount_revenue_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then amount_booked_shopify end as amount_revenue_booked_shopify_cad, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
+  amount_revenue_booked as amount_revenue_booked_ns,
+  amount_product_booked,--Keeping all of these with no suffix as to the best of my understanding we'll only ever see this in NS, however that can of course be changed
+  amount_discount_booked,
+  amount_shipping_booked,
+  amount_tax_booked,
+  amount_paid_booked,
+  amount_revenue_sold,
+  amount_product_sold,
+  amount_discount_sold,
+  amount_shipping_sold,
+  amount_tax_sold,
+  amount_paid_sold,
+  amount_cogs_fulfilled,
+  amount_revenue_refunded,
+  amount_product_refunded,
+  amount_shipping_refunded,
+  amount_tax_refunded,
+  amount_paid_refunded,
+  revenue,
   aggregates.gross_profit_estimate,
   aggregates.cost_estimate,
-  tax_booked,--Keeping all of these with no suffix as to the best of my understanding we'll only ever see this in NS, however that can of course be changed
-  tax_sold,
-  tax_refunded,
-  shipping_booked,
-  shipping_sold,
-  shipping_refunded
 FROM
   dim.orders orders
   LEFT OUTER JOIN aggregate_netsuite ON aggregate_netsuite.order_id_edw = orders.order_id_edw
