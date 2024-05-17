@@ -36,7 +36,7 @@ SELECT DISTINCT detail.fulfillment_id_edw,
 				detail.sku,
 				ss_qty.total_quantity       AS quantity_ss,
 				stord_qty.total_quantity    AS quantity_stord,
-				netsuite_qty.total_quantity AS quantity_ns,
+				netsuite_qty.total_quantity AS quantity_ns
 FROM fact.FULFILLMENT_ITEM_DETAIL detail
 		 LEFT OUTER JOIN ss_qty ON (ss_qty.fulfillment_id_edw = detail.FULFILLMENT_ID_EDW AND ss_qty.sku = detail.sku)
 		 LEFT OUTER JOIN stord_qty

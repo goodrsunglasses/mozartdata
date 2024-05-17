@@ -18,7 +18,9 @@ FROM dim.fulfillment fulfill
 		 LEFT OUTER JOIN shipstation_portable.shipstation_shipment_items_8589936627 items
 						 ON TO_CHAR(items.shipmentid) = fulfill.source_system_id
 		 CROSS JOIN LATERAL FLATTEN(INPUT => items.shipmentitems) AS flattened_items
-		 LEFT OUTER JOIN dim.product product ON (product.item_id_shipstation = flattened_items.value:PRODUCTID::INTEGER or product.sku =  flattened_items.value:SKU::STRING)
+		 LEFT OUTER JOIN dim.product product
+						 ON (product.item_id_shipstation = flattened_items.value:PRODUCTID::INTEGER OR
+							 product.sku = flattened_items.value:SKU::STRING)
 WHERE source_system = 'Shipstation'
 --Stord
 UNION ALL
@@ -30,8 +32,8 @@ SELECT fulfillment_id_edw,
 	   stord.shipped_at,
 -- 	   NULL                                                                   AS shipmentcost,
 	   is_canceled,
-	   orders.destination_address:NORMALIZED_COUNTRY_CODE::STRING             AS state,
-	   orders.destination_address:NORMALIZED_COUNTRY_SUBDIVISION_CODE::STRING AS country,
+	   orders.destination_address:NORMALIZED_COUNTRY_SUBDIVISION_CODE::STRING AS state,
+	   orders.destination_address:NORMALIZED_COUNTRY_CODE::STRING             AS country,
 	   orders.destination_address:NORMALIZED_LOCALITY::STRING                 AS city,
 	   shipment_confirmation_id                                               AS shipment_id,
 	   flattened_items.value:ITEM_ID::STRING                                  AS item_id,
@@ -47,6 +49,7 @@ FROM dim.fulfillment fulfill
 		 LEFT OUTER JOIN stord.STORD_PRODUCTS_8589936822 stordprod
 						 ON stordprod.id = flattened_items.value:ITEM_ID::STRING --Joining here because I want the name of the product because sometimes it doesn't exist in NS
 WHERE source_system = 'Stord'
+--Netsuite
 UNION ALL
 SELECT DISTINCT --adding just in case because NS joins can be funky and I don't want any duplicate lines becase one custom field has two values or something
 				fulfill.FULFILLMENT_ID_EDW,
@@ -60,7 +63,7 @@ SELECT DISTINCT --adding just in case because NS joins can be funky and I don't 
 				shipping.state,
 				shipping.country,
 				shipping.city,
-				COALESCE(tran.CUSTBODY_STORD_CONFIRMATION_ID, tran.CUSTBODY_SHIPMENT_ID) shipment_id,
+				to_char(staged.transaction_id_ns),
 				NULL                          AS                                         item_id,
 				product.sku,
 				PLAIN_NAME,
@@ -68,7 +71,8 @@ SELECT DISTINCT --adding just in case because NS joins can be funky and I don't 
 FROM dim.fulfillment fulfill
 		 CROSS JOIN LATERAL FLATTEN(INPUT =>itemfulfillment_ids) AS if_ids
 		 LEFT OUTER JOIN staging.ORDER_ITEM_DETAIL staged ON staged.TRANSACTION_ID_NS = if_ids.value
-	left outer join dim.product product on product.item_id_ns = staged.ITEM_ID_NS
+		 LEFT OUTER JOIN dim.product product ON product.item_id_ns = staged.ITEM_ID_NS
 		 LEFT OUTER JOIN netsuite.transaction tran ON tran.id = staged.TRANSACTION_ID_NS
 		 LEFT OUTER JOIN netsuite.itemfulfillmentshippingaddress shipping ON shipping.nkey = tran.SHIPPINGADDRESS
-WHERE ARRAY_SIZE(itemfulfillment_ids) > 0 and PLAIN_NAME Not in ('Shipping','Tax')
+WHERE ARRAY_SIZE(itemfulfillment_ids) > 0
+  AND PLAIN_NAME NOT IN ('Shipping', 'Tax')
