@@ -1,4 +1,3 @@
-select * from(
 WITH orphan_transactions as
 (
   SELECT distinct
@@ -235,5 +234,5 @@ GROUP BY
   tranline.location,
   tran.custbodywarranty_reference
 ORDER BY
-  transaction_id_ns asc)
-where transaction_id_ns = 21622006
+  transaction_id_ns asc
+
