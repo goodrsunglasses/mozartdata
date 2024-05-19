@@ -1,3 +1,4 @@
+select * from(
 WITH orphan_transactions as
 (
   SELECT distinct
@@ -117,8 +118,7 @@ WHERE
     'Assembly',
     'OthCharge',
     'NonInvtPart',
-    'Payment',
-    'Discount'
+    'Payment'
   )
   AND tranline.mainline = 'F'
   AND order_id_ns IS NOT NULL
@@ -157,7 +157,7 @@ GROUP BY
   item_type,
   tranline.location,
   tran.custbodywarranty_reference
-  -- Shipping and Tax
+  -- Shipping and Tax and Discount
 UNION ALL
 SELECT
   tran.order_id_ns,
@@ -214,7 +214,7 @@ WHERE
     'itemfulfillment',
     'cashrefund'
   )
-  AND tranline.itemtype IN ('ShipItem', 'TaxItem')
+  AND tranline.itemtype IN ('ShipItem', 'TaxItem','Discount')
   AND tranline.mainline = 'F'
   AND order_id_ns IS NOT NULL
   AND tran._FIVETRAN_DELETED = false
@@ -235,4 +235,5 @@ GROUP BY
   tranline.location,
   tran.custbodywarranty_reference
 ORDER BY
-  transaction_id_ns asc
+  transaction_id_ns asc)
+where transaction_id_ns = 21622006
