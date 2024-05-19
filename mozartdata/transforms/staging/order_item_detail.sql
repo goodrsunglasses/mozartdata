@@ -68,7 +68,8 @@ SELECT
       'Assembly',
       'OthCharge',
       'NonInvtPart',
-      'Payment'
+      'Payment',
+      'Discount'
     ) THEN tranline.item
   END AS product_id_edw,
   tranline.item AS item_id_ns,
@@ -116,7 +117,8 @@ WHERE
     'Assembly',
     'OthCharge',
     'NonInvtPart',
-    'Payment'
+    'Payment',
+    'Discount'
   )
   AND tranline.mainline = 'F'
   AND order_id_ns IS NOT NULL
@@ -167,7 +169,8 @@ SELECT
       'Assembly',
       'OthCharge',
       'NonInvtPart',
-      'Payment'
+      'Payment',
+      'Discount'
     ) THEN tranline.item
   END AS product_id_edw,
   tranline.item AS item_id_ns,
@@ -181,6 +184,7 @@ SELECT
   CASE
     WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
     WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
+    WHEN tranline.itemtype = 'Discount' THEN 'Discount'
     ELSE NULL
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   null as net_amount, --moved this to fact.order_item_detail
