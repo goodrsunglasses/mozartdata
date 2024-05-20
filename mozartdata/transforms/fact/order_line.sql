@@ -75,7 +75,6 @@ FROM
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
   LEFT OUTER JOIN netsuite.trackingnumbermap map ON map.transaction = item_detail.transaction_id_ns
   LEFT OUTER JOIN netsuite.trackingnumber number ON number.id = map.trackingnumber
-  LEFT OUTER JOIN line_amount la ON item_detail.transaction_id_ns = la.transaction_id_ns
 WHERE
   item_detail.record_type IN (
     'cashsale',
