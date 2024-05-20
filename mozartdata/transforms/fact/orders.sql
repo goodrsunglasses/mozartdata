@@ -22,10 +22,12 @@ WITH
   shopify_info AS ( --Grab any and all shopify info from this CTE
     SELECT
       orders.order_id_edw,
-      shopify_line.amount_booked AS amount_product_booked_shopify,
-      shopify_line.shipping_sold AS amount_shipping_booked_shopify,
-      shopify_line.tax_sold AS amount_tax_booked_shopify,
-      shopify_line.amount_sold-shopify_line.tax_sold AS amount_revenue_booked_shopify,
+      shopify_line.amount_booked AS amount_product_booked_shop,
+      shopify_line.shipping_sold AS amount_shipping_booked_shop,
+      shopify_line.tax_sold AS amount_tax_booked_shop,
+      shopify_line.amount_discount AS amount_discount_booked_shop,
+      shopify_line.amount_booked+shopify_line.shipping_sold-shopify_line.amount_discount AS amount_revenue_booked_shop,
+      shopify_line.amount_booked+shopify_line.shipping_sold+shopify_line.tax_sold-shopify_line.amount_discount AS amount_paid_booked_shop,
       order_created_date_pst,
       quantity_sold AS total_quantity_shopify
     FROM
@@ -203,17 +205,27 @@ SELECT
   aggregates.rate_refunded,
   aggregates.rate_refunded as rate_refunded_ns,
   --shopify is also the source of truth for booking financial amount (SO's shouldnt matter GL wise anyways)
-  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then coalesce(shopify_info.amount_revenue_booked_shopify*cer.exchange_rate,amount_revenue_booked) else coalesce(shopify_info.amount_revenue_booked_shopify,amount_revenue_booked) end as amount_revenue_booked,
-  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then coalesce(shopify_info.amount_product_booked_shopify*cer.exchange_rate,aggregates.amount_product_booked) else coalesce(shopify_info.amount_product_booked_shopify,amount_product_booked) end as amount_product_booked,
-  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_product_booked_shopify*cer.exchange_rate else shopify_info.amount_product_booked_shopify end as amount_product_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
-  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_revenue_booked_shopify*cer.exchange_rate else shopify_info.amount_revenue_booked_shopify end as amount_revenue_booked_shopify, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
-  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_revenue_booked_shopify end as amount_revenue_booked_shopify_cad, --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
+  --converting shopify info from CAD to USD
+  --This sounds odd but it makes sense as shopify considers this "sold" but ns _sold is used to denote invoices and cash sales
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_revenue_booked_shop*cer.exchange_rate else shopify_info.amount_revenue_booked_shop end as amount_revenue_booked_shopify,
   aggregates.amount_revenue_booked as amount_revenue_booked_ns,
-  aggregates.amount_product_booked as amount_product_booked_ns,--Keeping all of these with no suffix as to the best of my understanding we'll only ever see this in NS, however that can of course be changed
-  aggregates.amount_discount_booked,
-  aggregates.amount_shipping_booked as amount_shipping_booked_ns,
+  coalesce(amount_revenue_booked_shopify,amount_revenue_booked_ns) as amount_revenue_booked,
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_revenue_booked_shop end as amount_revenue_booked_shopify_cad, --this column shows the original CAD version of revenue, if applicable
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_product_booked_shop*cer.exchange_rate else shopify_info.amount_product_booked_shop end as amount_product_booked_shopify,
+  aggregates.amount_product_booked as amount_product_booked_ns,
+  coalesce(amount_product_booked_shopify,amount_product_booked_ns) as amount_product_booked,
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_discount_booked_shop*cer.exchange_rate else shopify_info.amount_discount_booked_shop end as amount_discount_booked_shopify,
+  aggregates.amount_discount_booked as amount_discount_booked_ns,
+  coalesce(amount_discount_booked_shopify, amount_discount_booked_ns) as amount_discount_booked,
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_tax_booked_shop*cer.exchange_rate else shopify_info.amount_tax_booked_shop end as amount_tax_booked_shopify,
   aggregates.amount_tax_booked as amount_tax_booked_ns,
-  aggregates.amount_paid_booked,
+  coalesce(shopify_info.amount_tax_booked_shop, aggregates.amount_tax_booked) as amount_tax_booked,
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_shipping_booked_shop*cer.exchange_rate else shopify_info.amount_shipping_booked_shop end as amount_shipping_booked_shopify,
+  aggregates.amount_shipping_booked as amount_shipping_booked_ns,
+  coalesce(amount_shipping_booked_shopify, amount_shipping_booked_ns) as amount_shipping_booked,
+  case when aggregate_netsuite.channel_currency_abbreviation = 'CAD' then shopify_info.amount_paid_booked_shop*cer.exchange_rate else shopify_info.amount_paid_booked_shop end as amount_paid_booked_shopify,
+  aggregates.amount_paid_booked as amount_paid_booked_ns,
+  coalesce(amount_paid_booked_shopify,amount_paid_booked_ns) as amount_paid_booked,
   aggregates.amount_revenue_sold,
   aggregates.amount_product_sold,
   aggregates.amount_discount_sold,
@@ -244,6 +256,5 @@ FROM
   LEFT OUTER JOIN fact.currency_exchange_rate cer ON aggregate_netsuite.booked_date = cer.effective_date AND aggregate_netsuite.channel_currency_id_ns = cer.transaction_currency_id_ns
 WHERE
   aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
-and round(amount_revenue_booked_shopify,2) != round(amount_revenue_booked_ns,2)
 ORDER BY
   aggregate_netsuite.booked_date desc
