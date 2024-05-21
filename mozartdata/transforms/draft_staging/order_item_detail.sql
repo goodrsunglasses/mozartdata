@@ -232,3 +232,4 @@ GROUP BY
   tran.custbodywarranty_reference
 ORDER BY
   transaction_id_ns asc
+limit 100
