@@ -6,6 +6,7 @@ SELECT fulfillment_id_edw,
 	   shipdate,
 -- 	   shipmentcost                            AS shipment_cost, Gabby said no
 	   voided,
+	   null as warehouse_location,
 	   shipto:STATE::STRING                    AS state,
 	   shipto:COUNTRY::STRING                  AS country,
 	   shipto:CITY::STRING                     AS city,
@@ -24,7 +25,7 @@ FROM dim.fulfillment fulfill
 WHERE source_system = 'Shipstation'
 --Stord
 UNION ALL
-SELECT fulfillment_id_edw,
+SELECT distinct fulfillment_id_edw,
 	   fulfill.ORDER_ID_EDW,
 	   'Stord'                                                                AS source,
 	   stord.carrier_name,
@@ -32,6 +33,7 @@ SELECT fulfillment_id_edw,
 	   stord.shipped_at,
 -- 	   NULL                                                                   AS shipmentcost,
 	   is_canceled,
+	   sla_lines.value:FACILITY_ACTIVITY:FACILITY_ALIAS as facility_alias,
 	   orders.destination_address:NORMALIZED_COUNTRY_SUBDIVISION_CODE::STRING AS state,
 	   orders.destination_address:NORMALIZED_COUNTRY_CODE::STRING             AS country,
 	   orders.destination_address:NORMALIZED_LOCALITY::STRING                 AS city,
@@ -45,6 +47,7 @@ FROM dim.fulfillment fulfill
 						 ON stord.shipment_confirmation_id = fulfill.source_system_id
 		 LEFT OUTER JOIN stord.stord_sales_orders_8589936822 orders ON orders.order_id = stord.order_id
 		 CROSS JOIN LATERAL FLATTEN(INPUT => stord.SHIPMENT_CONFIRMATION_LINE_ITEMS) AS flattened_items
+	CROSS JOIN LATERAL FLATTEN(INPUT => orders.SLA_SALES_ORDER_LINES) AS sla_lines
 		 LEFT OUTER JOIN dim.product product ON product.item_id_stord = flattened_items.value:ITEM_ID::STRING
 		 LEFT OUTER JOIN stord.STORD_PRODUCTS_8589936822 stordprod
 						 ON stordprod.id = flattened_items.value:ITEM_ID::STRING --Joining here because I want the name of the product because sometimes it doesn't exist in NS
@@ -60,6 +63,7 @@ SELECT DISTINCT --adding just in case because NS joins can be funky and I don't 
 				TO_TIMESTAMP_NTZ(createddate) AS                                         shipped_at, --SADLY WE HAVE TO USE CREATEDDATE AS THE SHIPPING DATE AND JUST HOPE THAT IT WAS CREATED/SHIPPED THE SAME DAY BECAUSE NS DOESN'T STORE SHIPPEDDATE ANYWHERE
 -- 				NULL                          AS                                         shipmentcost,
 				NULL                          AS                                         is_cancelled,
+				staged.location,
 				shipping.state,
 				shipping.country,
 				shipping.city,

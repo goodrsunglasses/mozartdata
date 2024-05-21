@@ -1,20 +1,28 @@
-SELECT DISTINCT
-  line.fulfillment_id_edw,
-  line.order_id_edw,
-  line.source,
-  line.carrier,
-  line.carrier_service,
-  line.shipdate,
-  line.shipment_cost,
-  line.voided,
-  line.country,
-  line.state,
-  line.city,
-  line.shipment_id AS source_shipment_id,
-  SUM(quantity) over (
-    PARTITION BY
-      item.fulfillment_id_edw
-  ) AS total_quantity
-FROM
-  fact.fulfillment_line line
-  LEFT OUTER JOIN fact.fulfillment_item item ON item.fulfillment_id_edw = line.fulfillment_id_edw
+WITH stord_info AS (SELECT FULFILLMENT_ID_EDW,
+						   ORDER_ID_EDW,
+						   carrier,
+						   carrier_service,
+						   shipdate,
+						   country,
+						   state,
+						   city,
+						   CASE
+							   WHEN warehouse_location LIKE 'ATL%' THEN 'ATL'
+							   WHEN warehouse_location LIKE 'LAS%' THEN 'LAS'
+							   ELSE NULL END AS warehouse_location
+					FROM fact.FULFILLMENT_LINE
+					WHERE source = 'Stord'),
+	ss_info as( select FULFILLMENT_ID_EDW,
+						   ORDER_ID_EDW,
+						   carrier,
+						   carrier_service,
+						   shipdate,
+						   country,
+						   state,
+						   city
+						   FROM fact.FULFILLMENT_LINE
+					WHERE source = 'Shipstation'),
+ns_info as ( select *
+						   FROM fact.FULFILLMENT_LINE
+					WHERE source = 'Netsuite')
+select fulfill.FULFILLMENT_ID_EDW,fulfill.ORDER_ID_EDW from dim.FULFILLMENT fulfill
