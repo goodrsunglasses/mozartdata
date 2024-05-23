@@ -23,6 +23,7 @@ use createdate converted instead of trandate
     , COALESCE(pt.order_id_ns,REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ','')) as order_id_ns
     , tran.id as transaction_id_ns
     , tran.tranid as transaction_number_ns
+    , tran.recordtype as record_type --helpful for QC
     , tal."ACCOUNT" as account_id_edw
     , tal."ACCOUNT" as account_id_ns
     , ga.account_number
@@ -90,6 +91,7 @@ use createdate converted instead of trandate
     , COALESCE(pt.order_id_ns,REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ',''))
     , tran.id
     , tran.tranid
+    , tran.recordtype
     , tal."ACCOUNT"
     , ga.account_number
     , channel.name

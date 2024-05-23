@@ -34,6 +34,16 @@ WITH
       dim.orders orders
       LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
   ),
+  fulfillment_info AS ( --Grab any and all shopify info from this CTE
+		 SELECT orders.order_id_edw,
+				SUM(QUANTITY_NS)    AS total_QUANTITY_NS,
+				SUM(QUANTITY_STORD) AS total_QUANTITY_STORD,
+				SUM(QUANTITY_SS)    AS total_QUANTITY_SS
+		 FROM dim.orders orders
+				  LEFT OUTER JOIN dim.FULFILLMENT fulfill ON fulfill.ORDER_ID_EDW = orders.ORDER_ID_EDW
+				  LEFT OUTER JOIN fact.fulfillment_item fulfill_item
+								  ON fulfill_item.FULFILLMENT_ID_EDW = fulfill.FULFILLMENT_ID_EDW
+		 GROUP BY orders.order_id_edw),
   aggregate_netsuite AS ( --aggregates the order level information from netsuite, this could definitely have been wrapped in the prior CTE but breaking it out made it more clear
     SELECT DISTINCT
       ns_parent.order_id_edw,
@@ -195,6 +205,13 @@ SELECT
   shopify_info.total_quantity_shopify as quantity_booked_shopify,
   aggregates.quantity_booked AS quantity_booked_ns,
   aggregates.quantity_sold,
+  CASE WHEN channel NOT IN
+				('Key Account', 'Global', 'Prescription', 'Key Account CAN', 'Amazon Canada', 'Amazon Prime', 'Cabana',
+				 'Amazon')
+       THEN (COALESCE(total_QUANTITY_STORD, 0) + COALESCE(total_QUANTITY_SS, 0))
+		   ELSE quantity_fulfilled END              AS quantity_fulfilled,--As per notes from our meeting, the idea is that on orders not in the channels, we dont want this column to show Netsuite IF information if its lacking from Stord/SS
+	   total_QUANTITY_STORD                         AS quantity_fulfilled_stord,
+	   total_QUANTITY_SS                            AS  quantity_fulfilled_shipstation,
   aggregates.quantity_fulfilled,
   aggregates.quantity_fulfilled AS quantity_fulfilled_ns,
   aggregates.quantity_refunded,
@@ -254,6 +271,7 @@ FROM
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = aggregate_netsuite.order_id_edw
   LEFT OUTER JOIN dim.location location ON location.location_id_ns = aggregate_netsuite.location
   LEFT OUTER JOIN fact.currency_exchange_rate cer ON aggregate_netsuite.booked_date = cer.effective_date AND aggregate_netsuite.channel_currency_id_ns = cer.transaction_currency_id_ns
+  LEFT OUTER JOIN fulfillment_info ON fulfillment_info.ORDER_ID_EDW = orders.ORDER_ID_EDW
 WHERE
   aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY
