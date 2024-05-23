@@ -28,15 +28,15 @@
         , staging.order_id_ns
         , staging.transaction_id_ns
         , parents.is_parent
-        , order_item_detail_id
-        , product_id_edw
+        , staging.order_item_detail_id
+        , staging.product_id_edw
         , staging.item_id_ns
-        , transaction_created_timestamp_pst
-        , transaction_created_date_pst
+        , staging.transaction_created_timestamp_pst
+        , staging.transaction_created_date_pst
         , staging.record_type
-        , full_status
-        , item_type
-        , plain_name
+        , staging.full_status
+        , staging.item_type
+        , staging.plain_name
         , coalesce(na.amount_revenue,0) amount_revenue
         , coalesce(na.amount_product,0) amount_product
         , coalesce(na.amount_discount,0) amount_discount
@@ -45,21 +45,21 @@
         , coalesce(na.amount_tax,0) amount_tax
         , coalesce(na.amount_paid,0) amount_paid
         , coalesce(na.amount_cogs,0) amount_cogs
-        , total_quantity
-        , quantity_invoiced
-        , quantity_backordered
-        , unit_rate
-        , rate
-        , gross_profit_estimate
-        , cost_estimate
-        , location
-        , createdfrom
+        , staging.total_quantity
+        , staging.quantity_invoiced
+        , staging.quantity_backordered
+        , staging.unit_rate
+        , staging.rate
+        , staging.gross_profit_estimate
+        , staging.cost_estimate
+        , staging.location
+        , staging.createdfrom
         , staging.warranty_order_id_ns
-        , exception_flag
+        , exceptions.exception_flag
    FROM dim.parent_transactions parents
           LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns
           LEFT OUTER JOIN exceptions.order_item_detail exceptions
                           ON exceptions.transaction_id_ns = parents.transaction_id_ns
           LEFT OUTER JOIN net_amount na
                           on staging.transaction_id_ns = na.transaction_id_ns and staging.item_id_ns = na.item_id_ns
-   WHERE exception_flag = FALSE
+   WHERE exceptions.exception_flag = FALSE
