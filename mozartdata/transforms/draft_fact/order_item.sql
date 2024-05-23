@@ -1,4 +1,3 @@
-select * from (
 WITH
   booked AS (
     SELECT
@@ -167,4 +166,4 @@ WHERE
     'invoice'
   )
 ORDER BY
-  detail.order_id_edw) where order_id_ns = 'G2966329'
+  detail.order_id_edw
