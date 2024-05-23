@@ -52,14 +52,14 @@ SELECT DISTINCT
       item_detail.order_id_edw,
       item_detail.transaction_id_ns
   ) order_line_quantity,
-  item_detail.amount_revenue,
-  item_detail.amount_product,
-  item_detail.amount_discount,
-  item_detail.amount_shipping,
-  item_detail.amount_refunded,
-  item_detail.amount_tax,
-  item_detail.amount_paid,
-  item_detail.amount_cogs,
+  sum(item_detail.amount_revenue) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_revenue,
+  sum(item_detail.amount_product) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_product,
+  sum(item_detail.amount_discount) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_discount,
+  sum(item_detail.amount_shipping) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_shipping,
+  sum(item_detail.amount_refunded) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_refunded,
+  sum(item_detail.amount_tax) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_tax,
+  sum(item_detail.amount_paid) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_paid,
+  sum(item_detail.amount_cogs) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_cogs,
   number.trackingnumber tracking_number,
   FIRST_VALUE(item_detail.location IGNORE NULLS) over (
     PARTITION BY
