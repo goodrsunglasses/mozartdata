@@ -40,6 +40,8 @@ WITH
       COALESCE(SUM(oid.amount_shipping),0) AS amount_shipping_sold,
       COALESCE(SUM(oid.amount_tax),0) AS amount_tax_sold,
       COALESCE(SUM(oid.amount_paid),0) AS amount_paid_sold,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END),0) AS amount_product_refunded,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax') THEN oid.amount_revenue ELSE 0 END),0) AS amount_revenue_refunded,
       COALESCE(SUM(gross_profit_estimate),0) AS gross_profit_estimate,
       COALESCE(SUM(ABS(cost_estimate)),0) AS cost_estimate
     FROM
@@ -127,13 +129,13 @@ SELECT DISTINCT
   sold.amount_tax_sold,
   sold.amount_paid_sold,
   fulfilled.amount_cogs_fulfilled,
-  refunded.amount_revenue_refunded,
-  refunded.amount_product_refunded,
+  coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0) as amount_revenue_refunded,
+  coalesce(refunded.amount_product_refunded,sold.amount_product_refunded,0) as amount_product_refunded,
   refunded.amount_shipping_refunded,
   refunded.amount_tax_refunded,
-  coalesce(refunded.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_refunded,
-  coalesce(sold.amount_revenue_sold,0)+coalesce(refunded.amount_revenue_refunded,0) as revenue,
-  coalesce(sold.amount_paid_sold,0)+coalesce(refunded.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_total,
+  coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_refunded,
+  coalesce(sold.amount_revenue_sold,0)+coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0) as revenue,
+  coalesce(sold.amount_paid_sold,0)+coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_total,
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
