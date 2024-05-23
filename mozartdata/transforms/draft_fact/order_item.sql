@@ -1,3 +1,4 @@
+select * from (
 WITH
   booked AS (
     SELECT
@@ -134,8 +135,8 @@ SELECT DISTINCT
   refunded.amount_shipping_refunded,
   refunded.amount_tax_refunded,
   coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_refunded,
-  coalesce(sold.amount_revenue_sold,0)+coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0) as revenue,
-  coalesce(sold.amount_paid_sold,0)+coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_total,
+  coalesce(sold.amount_revenue_sold,0)+coalesce(refunded.amount_revenue_refunded,0) as revenue,
+  coalesce(sold.amount_paid_sold,0)+coalesce(refunded.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_total,
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM
@@ -166,4 +167,4 @@ WHERE
     'invoice'
   )
 ORDER BY
-  detail.order_id_edw
+  detail.order_id_edw) where order_id_ns = 'G2966329'
