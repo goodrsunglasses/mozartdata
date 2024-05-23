@@ -299,3 +299,4 @@ FROM dim.orders orders
 		 LEFT OUTER JOIN fulfillment_info ON fulfillment_info.ORDER_ID_EDW = orders.ORDER_ID_EDW
 WHERE aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY aggregate_netsuite.booked_date DESC
+

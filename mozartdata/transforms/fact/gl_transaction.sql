@@ -23,6 +23,7 @@ use createdate converted instead of trandate
     , COALESCE(pt.order_id_ns,REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ','')) as order_id_ns
     , tran.id as transaction_id_ns
     , tran.tranid as transaction_number_ns
+    , tran.recordtype as record_type --helpful for QC
     , tal."ACCOUNT" as account_id_edw
     , tal."ACCOUNT" as account_id_ns
     , ga.account_number
@@ -33,7 +34,7 @@ use createdate converted instead of trandate
     , date(CONVERT_TIMEZONE('America/Los_Angeles', tran.trandate)) as transaction_date_pst
     , CONVERT_TIMEZONE('UTC', 'America/Los_Angeles', pe.eventdate::timestamp_ntz) as date_posted_pst
     , case when tal.posting = 'T' then true else false end posting_flag
-    , ap.periodname as posting_period
+    , ap.posting_period as posting_period
     , sum(coalesce(tal.amount,0)) as transaction_amount
     , sum(coalesce(tal.credit,0)) as  credit_amount
     , sum(coalesce(tal.debit,0)) as debit_amount
@@ -46,8 +47,9 @@ use createdate converted instead of trandate
       when ga.account_category in ('Liabilities','Equity','Revenues') then (coalesce(tal.credit,0)) - (coalesce(tal.debit,0))
       end,0)) as net_amount
     , tl.createdfrom as parent_transaction_id_ns
-    , tl.department as department_id_ns
     , tl.item as item_id_ns
+    , tran.entity as customer_id_ns
+    , tl.department as department_id_ns
     , d.name as department
     from
       netsuite.transactionaccountingline tal
@@ -55,8 +57,8 @@ use createdate converted instead of trandate
       netsuite.transaction tran
       on tal.transaction = tran.id
     inner join
-      netsuite.accountingperiod ap
-      on tran.postingperiod = ap.id
+      dim.accounting_period ap
+      on tran.postingperiod = ap.accounting_period_id
     left join
       dim.gl_account ga
       on tal."ACCOUNT" = ga.account_id_edw
@@ -78,20 +80,26 @@ use createdate converted instead of trandate
       on tran.id = pt.transaction_id_ns
     where
         date(tran.trandate) >= '2022-01-01' --limit the row count
+    and (tran._fivetran_deleted = false or tran._fivetran_deleted is null)
+    and (tal._fivetran_deleted = false or tal._fivetran_deleted is null)
+    and (tl._fivetran_deleted = false or tl._fivetran_deleted is null)
+    and (pe._fivetran_deleted = false or pe._fivetran_deleted is null)
     group by
      concat(tal.transaction,'_',tal.transactionline)
     , pt.order_id_edw
     , COALESCE(pt.order_id_ns,REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ',''))
     , tran.id
     , tran.tranid
+    , tran.recordtype
     , tal."ACCOUNT"
     , ga.account_number
     , channel.name
     , tran.trandate
     , pe.eventdate
-    , ap.periodname
+    , ap.posting_period
     , case when tal.posting = 'T' then true else false end
     , createdfrom
+   , tran.entity
     , tl.department
     , tl.item
     , d.name

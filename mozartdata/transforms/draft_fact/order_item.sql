@@ -1,68 +1,80 @@
 WITH
   booked AS (
     SELECT
-      order_id_edw,
-      product_id_edw,
-      item_id_ns,
-      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
-      plain_name,
-      SUM(total_quantity) AS quantity_booked,
-      SUM(rate) AS rate_booked,
-      SUM(net_amount) AS amount_booked
+      oid.order_id_edw,
+      oid.product_id_edw,
+      oid.item_id_ns,
+      CONCAT(oid.order_id_edw, '_', oid.item_id_ns) AS order_item_id,
+      oid.plain_name,
+      COALESCE(SUM(oid.total_quantity),0) AS quantity_booked,
+      COALESCE(SUM(oid.rate),0) AS rate_booked,
+      COALESCE(SUM(oid.amount_revenue),0) AS amount_revenue_booked,
+      COALESCE(SUM(oid.amount_product),0) AS amount_product_booked,
+      COALESCE(SUM(oid.amount_discount),0) AS amount_discount_booked,
+      COALESCE(SUM(oid.amount_shipping),0) AS amount_shipping_booked,
+      COALESCE(SUM(oid.amount_tax),0) AS amount_tax_booked,
+      COALESCE(SUM(oid.amount_paid),0) AS amount_paid_booked
     FROM
-      draft_fact.order_item_detail
+      draft_fact.order_item_detail oid
     WHERE
-      record_type = 'salesorder'
+      oid.record_type = 'salesorder'
     GROUP BY
-      order_id_edw,
-      product_id_edw,
-      item_id_ns,
+      oid.order_id_edw,
+      oid.product_id_edw,
+      oid.item_id_ns,
       order_item_id,
-      plain_name
+      oid.plain_name
   ),
   sold AS (
     SELECT
-      order_id_edw,
-      product_id_edw,
-      item_id_ns,
-      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
-      plain_name,
-      SUM(total_quantity) AS quantity_sold,
-      SUM(rate) AS rate_sold,
-      SUM(net_amount) AS amount_sold,
-      SUM(gross_profit_estimate) AS gross_profit_estimate,
-      SUM(ABS(cost_estimate)) AS cost_estimate
+      oid.order_id_edw,
+      oid.product_id_edw,
+      oid.item_id_ns,
+      CONCAT(oid.order_id_edw, '_', oid.item_id_ns) AS order_item_id,
+      oid.plain_name,
+      COALESCE(SUM(oid.total_quantity),0) AS quantity_sold,
+      COALESCE(SUM(oid.rate),0) AS rate_sold,
+      COALESCE(SUM(oid.amount_revenue),0) AS amount_revenue_sold,
+      COALESCE(SUM(oid.amount_product),0) AS amount_product_sold,
+      COALESCE(SUM(oid.amount_discount),0) AS amount_discount_sold,
+      COALESCE(SUM(oid.amount_shipping),0) AS amount_shipping_sold,
+      COALESCE(SUM(oid.amount_tax),0) AS amount_tax_sold,
+      COALESCE(SUM(oid.amount_paid),0) AS amount_paid_sold,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END),0) AS amount_product_refunded,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax') THEN oid.amount_revenue ELSE 0 END),0) AS amount_revenue_refunded,
+      COALESCE(SUM(gross_profit_estimate),0) AS gross_profit_estimate,
+      COALESCE(SUM(ABS(cost_estimate)),0) AS cost_estimate
     FROM
-      draft_fact.order_item_detail
+      draft_fact.order_item_detail oid
     WHERE
-      record_type IN ('cashsale', 'invoice')
+      oid.record_type IN ('cashsale', 'invoice')
     GROUP BY
-      order_id_edw,
-      product_id_edw,
-      item_id_ns,
+      oid.order_id_edw,
+      oid.product_id_edw,
+      oid.item_id_ns,
       order_item_id,
-      plain_name
+      oid.plain_name
   ),
   fulfilled AS (
     SELECT
-      order_id_edw,
-      product_id_edw,
-      item_id_ns,
-      CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
-      plain_name,
-      SUM(total_quantity) AS quantity_fulfilled,
-      SUM(rate) AS rate_fulfilled,
-      SUM(net_amount) AS amount_fulfilled
+      oid.order_id_edw,
+      oid.product_id_edw,
+      oid.item_id_ns,
+      CONCAT(oid.order_id_edw, '_', oid.item_id_ns) AS order_item_id,
+      oid.plain_name,
+      COALESCE(SUM(oid.total_quantity),0) AS quantity_fulfilled,
+      COALESCE(SUM(oid.rate),0) AS rate_fulfilled,
+      COALESCE(SUM(oid.amount_cogs),0) AS amount_cogs_fulfilled
     FROM
-      draft_fact.order_item_detail
+      draft_fact.order_item_detail oid
     WHERE
-      record_type = 'itemfulfillment'
+      oid.record_type = 'itemfulfillment'
     GROUP BY
-      order_id_edw,
-      product_id_edw,
-      item_id_ns,
+      oid.order_id_edw,
+      oid.product_id_edw,
+      oid.item_id_ns,
       order_item_id,
-      plain_name
+      oid.plain_name
   ),
   refunded AS (
     SELECT
@@ -71,13 +83,16 @@ WITH
       item_id_ns,
       CONCAT(order_id_edw, '_', item_id_ns) AS order_item_id,
       plain_name,
-      SUM(total_quantity) AS quantity_refunded,
-      SUM(rate) AS rate_refunded,
-      SUM(ABS(net_amount)) AS amount_refunded
+      SUM(oid.total_quantity) AS quantity_refunded,
+      SUM(oid.rate) AS rate_refunded,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END),0) AS amount_product_refunded,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax') THEN oid.amount_revenue ELSE 0 END),0) AS amount_revenue_refunded,
+      COALESCE(SUM(CASE WHEN plain_name = 'Shipping' THEN oid.amount_refunded ELSE 0 END),0) AS amount_shipping_refunded,
+      COALESCE(SUM(CASE WHEN plain_name in ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END),0) AS amount_tax_refunded
     FROM
-      draft_fact.order_item_detail
+      draft_fact.order_item_detail oid
     WHERE
-      record_type = 'cashrefund'
+      record_type in ('cashrefund')
     GROUP BY
       order_id_edw,
       product_id_edw,
@@ -93,18 +108,34 @@ SELECT DISTINCT
   detail.item_id_ns,
   p.sku,
   detail.plain_name,
-  quantity_booked,
-  quantity_sold,
-  quantity_fulfilled,
-  quantity_refunded,
-  rate_booked,
-  rate_sold,
-  rate_fulfilled,
-  rate_refunded,
-  amount_booked,
-  amount_sold,
-  amount_fulfilled,
-  amount_refunded,
+  booked.quantity_booked,
+  sold.quantity_sold,
+  fulfilled.quantity_fulfilled,
+  refunded.quantity_refunded,
+  booked.rate_booked,
+  sold.rate_sold,
+  fulfilled.rate_fulfilled,
+  refunded.rate_refunded,
+  booked.amount_revenue_booked,
+  booked.amount_product_booked,
+  booked.amount_discount_booked,
+  booked.amount_shipping_booked,
+  booked.amount_tax_booked,
+  booked.amount_paid_booked,
+  sold.amount_revenue_sold,
+  sold.amount_product_sold,
+  sold.amount_discount_sold,
+  sold.amount_shipping_sold,
+  sold.amount_tax_sold,
+  sold.amount_paid_sold,
+  fulfilled.amount_cogs_fulfilled,
+  coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0) as amount_revenue_refunded,
+  coalesce(refunded.amount_product_refunded,sold.amount_product_refunded,0) as amount_product_refunded,
+  refunded.amount_shipping_refunded,
+  refunded.amount_tax_refunded,
+  coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_refunded,
+  coalesce(sold.amount_revenue_sold,0)+coalesce(refunded.amount_revenue_refunded,0) as revenue,
+  coalesce(sold.amount_paid_sold,0)+coalesce(refunded.amount_revenue_refunded,0)+coalesce(refunded.amount_tax_refunded,0) as amount_paid_total,
   sold.gross_profit_estimate AS gross_profit_estimate,
   sold.cost_estimate AS cost_estimate
 FROM

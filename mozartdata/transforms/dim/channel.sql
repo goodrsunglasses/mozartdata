@@ -51,7 +51,9 @@ SELECT
       'Content Giveaways',
       'Customer Service'
     ) THEN 'Indirect'
-  END AS model
+  END AS model,
+  CASE WHEN name IN  ('goodr.ca','Specialty CAN','Customer Service CAN','Key Account CAN') then 3 else 1 end as currency_id_ns,
+  CASE WHEN name IN  ('goodr.ca','Specialty CAN','Customer Service CAN','Key Account CAN') then 'CAD' else 'USD' end as currency_abbreviation
 FROM
   netsuite.customrecord_cseg7 channel
 ORDER BY

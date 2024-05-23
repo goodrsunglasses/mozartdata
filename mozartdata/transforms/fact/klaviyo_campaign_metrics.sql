@@ -1,3 +1,12 @@
+/*
+Purpose: This table contains all KPIs for Klaviyo Campaigns.
+Note: This data does not always perfectly tie to what you see in Klaviyo for a few reasons.
+1) The time the EDW updates compared to when you look at Klaviyo can result in different numbers.
+2) There are variances between spam and unsubscribe counts. The root cause is unknown, but the variances are generally
+
+Transforms: This script is broken down into 2 CTES, one to capture campaign KPI data, and another for order attribution.
+The final query combines campaigns and orders into a single result which shows all KPIs per campaign.
+*/
 with campaigns as
   (
   SELECT
