@@ -11,6 +11,12 @@ SELECT DISTINCT --Ok so the main idea for this table is to have it be one row pe
 				country,
 				state,
 				city,
+				postal_code,
+				customer_name,
+				addr_line_1,
+				addr_line_2,
+				addr_verification_status,
+				ADDRESS_TYPE,
 				FIRST_VALUE(warehouse_location) OVER ( PARTITION BY fulfillment_id_edw,
 					SHIPMENT_ID ORDER BY shipdate ASC)       AS warehouse_location,--Has to be a first_value as one NS IF can have multiple locations on it.
 				SUM(quantity) OVER (
