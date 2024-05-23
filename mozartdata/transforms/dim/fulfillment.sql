@@ -1,14 +1,4 @@
-WITH shipment_count AS (SELECT DISTINCT order_id_edw,
-                                        COUNT(trackingnumber)
-                        FROM (SELECT ordernumber AS order_id_edw,
-                                     trackingnumber
-                              FROM shipstation_portable.shipstation_shipments_8589936627 shipstation
-                              UNION
-                              SELECT order_number    AS order_id_edw,
-                                     tracking_number AS trackingnumber
-                              FROM stord.stord_shipment_confirmations_8589936822)
-                        GROUP BY order_id_edw),
-     edw_fulfillments AS (SELECT DISTINCT fulfillment_id_edw,
+WITH edw_fulfillments AS (SELECT DISTINCT fulfillment_id_edw,
                                           order_id_edw
                           FROM (SELECT ordernumber                               AS order_id_edw,
                                        trackingnumber,
