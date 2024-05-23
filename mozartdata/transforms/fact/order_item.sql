@@ -42,7 +42,7 @@ WITH
       COALESCE(SUM(oid.amount_tax),0) AS amount_tax_sold,
       COALESCE(SUM(oid.amount_paid),0) AS amount_paid_sold,
       COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END),0) AS amount_product_refunded,
-      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax') THEN oid.amount_revenue ELSE 0 END),0) AS amount_revenue_refunded,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END),0) AS amount_revenue_refunded,
       COALESCE(SUM(gross_profit_estimate),0) AS gross_profit_estimate,
       COALESCE(SUM(ABS(cost_estimate)),0) AS cost_estimate
     FROM
@@ -87,7 +87,7 @@ WITH
       SUM(oid.total_quantity) AS quantity_refunded,
       SUM(oid.rate) AS rate_refunded,
       COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax', 'Shipping') THEN oid.amount_refunded ELSE 0 END),0) AS amount_product_refunded,
-      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax') THEN oid.amount_revenue ELSE 0 END),0) AS amount_revenue_refunded,
+      COALESCE(SUM(CASE WHEN plain_name NOT IN ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END),0) AS amount_revenue_refunded,
       COALESCE(SUM(CASE WHEN plain_name = 'Shipping' THEN oid.amount_refunded ELSE 0 END),0) AS amount_shipping_refunded,
       COALESCE(SUM(CASE WHEN plain_name in ('Sales Tax','Tax') THEN oid.amount_refunded ELSE 0 END),0) AS amount_tax_refunded
     FROM
