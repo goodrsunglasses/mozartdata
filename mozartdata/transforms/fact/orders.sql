@@ -212,7 +212,6 @@ SELECT
 		   ELSE aggregates.quantity_fulfilled END              AS quantity_fulfilled,--As per notes from our meeting, the idea is that on orders not in the channels, we dont want this column to show Netsuite IF information if its lacking from Stord/SS
 	   fulfillment_info.total_QUANTITY_STORD                         AS quantity_fulfilled_stord,
 	   fulfillment_info.total_QUANTITY_SS                            AS  quantity_fulfilled_shipstation,
-  aggregates.quantity_fulfilled,
   aggregates.quantity_fulfilled AS quantity_fulfilled_ns,
   aggregates.quantity_refunded,
   aggregates.quantity_refunded as quantity_refunded_ns,
