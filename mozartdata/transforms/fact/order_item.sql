@@ -168,3 +168,4 @@ WHERE
   )
 ORDER BY
   detail.order_id_edw
+)
