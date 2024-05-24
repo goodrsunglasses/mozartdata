@@ -9,7 +9,7 @@ WITH
       SUM(total_quantity) AS quantity_ordered,
       SUM(rate) AS rate_ordered,
       sum(unit_rate) AS unit_rate_ordered,
-      SUM(net_amount) AS amount_ordered
+      SUM(amount_revenue) AS amount_ordered
     FROM
       fact.order_item_detail
     WHERE
@@ -31,7 +31,7 @@ WITH
       SUM(total_quantity) AS quantity_billed,
       SUM(rate) AS rate_billed,
       sum(unit_rate) AS unit_rate_billed,
-      SUM(net_amount) AS amount_billed
+      SUM(amount_revenue) AS amount_billed
     FROM
       fact.order_item_detail
     WHERE
@@ -52,7 +52,7 @@ WITH
       plain_name,
       SUM(total_quantity) AS quantity_received,
       SUM(rate) AS rate_received,
-      SUM(net_amount) AS amount_received
+      SUM(amount_revenue) AS amount_received
     FROM
       fact.order_item_detail
     WHERE
