@@ -1,4 +1,3 @@
-select * from(
 WITH
   booked AS (
     SELECT
@@ -168,4 +167,3 @@ WHERE
   )
 ORDER BY
   detail.order_id_edw
-)
