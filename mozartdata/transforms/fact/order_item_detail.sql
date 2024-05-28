@@ -17,10 +17,16 @@
                         when gt.account_number between 4000 and 4999 or gt.account_number like '220%'
                           then gt.net_amount
                         else 0 end)                                                                          amount_paid
+                , sum(case when gt.account_number = 2310 then gt.net_amount else 0 end)                      amount_billed
+                , sum(case when gt.account_number = 2000 then gt.net_amount else 0 end)                      amount_payable
+                , sum(case when gt.account_number = 1260 then gt.net_amount else 0 end)                      amount_transit_inventory
+                , sum(case when gt.account_number = 1200 then gt.net_amount else 0 end)                      amount_inventory
+                , sum(case when gt.account_number = 5200 then gt.net_amount else 0 end)                      amount_landed_costs
            from fact.gl_transaction gt
            where (gt.account_number between 4000 and 4999
               or gt.account_number like '5%'
-              or gt.account_number like '220%')
+              or gt.account_number like '220%'
+              or gt.account_number in (2310,2000,1260,1200,5200))
            group by gt.transaction_id_ns
                   , gt.item_id_ns)
 
@@ -37,14 +43,19 @@
         , staging.full_status
         , staging.item_type
         , staging.plain_name
-        , coalesce(na.amount_revenue,0) amount_revenue
-        , coalesce(na.amount_product,0) amount_product
-        , coalesce(na.amount_discount,0) amount_discount
-        , coalesce(na.amount_shipping,0) amount_shipping
-        , coalesce(nullif(na.amount_refunded,-0),na.amount_refunded,0) amount_refunded
-        , coalesce(na.amount_tax,0) amount_tax
-        , coalesce(na.amount_paid,0) amount_paid
-        , coalesce(na.amount_cogs,0) amount_cogs
+        , coalesce(na.amount_revenue,0) as amount_revenue
+        , coalesce(na.amount_product,0) as amount_product
+        , coalesce(na.amount_discount,0) as amount_discount
+        , coalesce(na.amount_shipping,0) as amount_shipping
+        , coalesce(nullif(na.amount_refunded,-0),na.amount_refunded,0) as amount_refunded
+        , coalesce(na.amount_tax,0) as amount_tax
+        , coalesce(na.amount_paid,0) as amount_paid
+        , coalesce(na.amount_cogs,0) as amount_cogs
+        , coalesce(na.amount_billed,0) as amount_billed
+        , coalesce(na.amount_payable,0) as amount_payable
+        , coalesce(na.amount_transit_inventory,0) as amount_transit_inventory
+        , coalesce(na.amount_inventory,0) as amount_inventory
+        , coalesce(na.amount_landed_costs,0) as amount_landed_costs
         , staging.total_quantity
         , staging.quantity_invoiced
         , staging.quantity_backordered
