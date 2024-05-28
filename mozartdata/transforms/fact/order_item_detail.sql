@@ -17,6 +17,7 @@
                         when gt.account_number between 4000 and 4999 or gt.account_number like '220%'
                           then gt.net_amount
                         else 0 end)                                                                          amount_paid
+                -- The following columns are for Purchase Orders (POs)
                 , sum(case when gt.account_number = 2310 then gt.net_amount else 0 end)                      amount_billed
                 , sum(case when gt.account_number = 2000 then gt.net_amount else 0 end)                      amount_payable
                 , sum(case when gt.account_number = 1260 then gt.net_amount else 0 end)                      amount_transit_inventory
@@ -26,7 +27,7 @@
            where (gt.account_number between 4000 and 4999
               or gt.account_number like '5%'
               or gt.account_number like '220%'
-              or gt.account_number in (2310,2000,1260,1200,5200))
+              or gt.account_number in (2310,2000,1260,1200,5200)) -- PO Accounts
            group by gt.transaction_id_ns
                   , gt.item_id_ns)
 
