@@ -73,19 +73,19 @@ SELECT DISTINCT unique_products.sku,
 					ORDER BY
 						b2b.created_at ASC
 					)                                                          AS inventory_item_id_b2b_shopify,
-	FIRST_VALUE(gw.inventory_item_id) OVER (
+				FIRST_VALUE(gw.inventory_item_id) OVER (
 					PARTITION BY
 						gw.sku
 					ORDER BY
 						gw.created_at ASC
 					)                                                          AS inventory_item_id_goodrwill_shopify,
-	FIRST_VALUE(d2c_can.inventory_item_id) OVER (
+				FIRST_VALUE(d2c_can.inventory_item_id) OVER (
 					PARTITION BY
 						d2c_can.sku
 					ORDER BY
 						d2c_can.created_at ASC
 					)                                                          AS inventory_item_id_d2c_can_shopify,
-	FIRST_VALUE(b2b_can.inventory_item_id) OVER (
+				FIRST_VALUE(b2b_can.inventory_item_id) OVER (
 					PARTITION BY
 						b2b_can.sku
 					ORDER BY
