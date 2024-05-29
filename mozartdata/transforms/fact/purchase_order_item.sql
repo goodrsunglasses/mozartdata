@@ -9,7 +9,7 @@ WITH
       SUM(total_quantity) AS quantity_ordered,
       SUM(rate) AS rate_ordered,
       sum(unit_rate) AS unit_rate_ordered,
-      SUM(amount_revenue) AS amount_ordered
+      SUM(amount_inventory) AS amount_ordered
     FROM
       fact.order_item_detail
     WHERE
@@ -31,7 +31,7 @@ WITH
       SUM(total_quantity) AS quantity_billed,
       SUM(rate) AS rate_billed,
       sum(unit_rate) AS unit_rate_billed,
-      SUM(amount_revenue) AS amount_billed
+      SUM(amount_billed) AS amount_billed
     FROM
       fact.order_item_detail
     WHERE
@@ -52,7 +52,8 @@ WITH
       plain_name,
       SUM(total_quantity) AS quantity_received,
       SUM(rate) AS rate_received,
-      SUM(amount_revenue) AS amount_received
+      SUM(amount_inventory) AS amount_received,
+      SUM(amount_landed_costs) AS amount_landed_costs
     FROM
       fact.order_item_detail
     WHERE
@@ -72,17 +73,18 @@ SELECT DISTINCT
   p.sku,
   detail.plain_name,
   product.family,
-  quantity_ordered,
-  quantity_billed,
-  quantity_received,
-  unit_rate_ordered,
-  unit_rate_billed,
-  rate_ordered,
-  rate_billed,
-  rate_received,
-  amount_ordered,
-  amount_billed,
-  amount_received
+  ordered.quantity_ordered,
+  billed.quantity_billed,
+  received.quantity_received,
+  ordered.unit_rate_ordered,
+  billed.unit_rate_billed,
+  ordered.rate_ordered,
+  billed.rate_billed,
+  received.rate_received,
+  ordered.amount_ordered,
+  billed.amount_billed,
+  received.amount_received,
+  received.amount_landed_costs
 FROM
   fact.order_item_detail detail
   LEFT OUTER JOIN dim.product p ON p.product_id_edw = detail.item_id_ns

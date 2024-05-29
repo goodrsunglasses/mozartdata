@@ -91,7 +91,13 @@ WITH
           WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_received
           ELSE 0
         END
-      ) AS amount_received
+      ) AS amount_received,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_landed_costs
+          ELSE 0
+        END
+      ) AS amount_landed_costs
     FROM
       fact.purchase_order_item
     GROUP BY
@@ -114,7 +120,8 @@ SELECT
   rate_billed,
   amount_ordered,
   amount_billed,
-  amount_received
+  amount_received,
+  amount_landed_costs
 FROM
   aggregate_netsuite order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw
