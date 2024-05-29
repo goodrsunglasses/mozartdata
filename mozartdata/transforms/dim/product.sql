@@ -172,7 +172,7 @@ FROM unique_products
 	gw.sku = unique_products.sku
 		 LEFT JOIN GOODR_CANADA_SHOPIFY.product_variant d2c_can ON
 	d2c_can.sku = unique_products.sku
-		 LEFT JOIN GOODRWILL_SHOPIFY.product_variant b2b_can ON
+		 LEFT JOIN SELLGOODR_CANADA_SHOPIFY.product_variant b2b_can ON
 	b2b_can.sku = unique_products.sku
 
 		 LEFT JOIN stord.stord_products_8589936822 stord
