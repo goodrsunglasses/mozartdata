@@ -26,7 +26,16 @@ SELECT
   p.merchandise_division,
   o.customer_id_edw,
   c.customer_name,
-  c.primary_id_flag
+  c.primary_id_flag,
+  c.primary_sport,
+  c.secondary_sport,
+  c.tertiary_sport,
+  c.tier,
+  c.doors,
+  c.buyer_name,
+  c.buyer_email,
+  c.pop,
+  c.logistics
 FROM
   fact.order_item oi
   LEFT JOIN fact.orders o ON o.order_id_edw = oi.order_id_edw
