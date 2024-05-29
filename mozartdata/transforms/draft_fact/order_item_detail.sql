@@ -18,10 +18,9 @@ with net_amount as
                           then gt.net_amount
                         else 0 end)                                                                          amount_paid
                 -- The following columns are for Purchase Orders (POs)
-                , sum(case when gt.account_number = 2310 then gt.debit_amount else 0 end)                    amount_billed --handling the naturally negative balance of this liability to appear positive for reporting
-                , sum(case when gt.account_number = 1260 then gt.net_amount else 0 end)                      amount_transit_inventory
+                , sum(case when gt.account_number = 2310 then gt.net_amount * -1 else 0 end)                 amount_billed
                 , sum(case when gt.account_number = 1200 then gt.net_amount else 0 end)                      amount_inventory
-                , sum(case when gt.account_number = 5200 then gt.net_amount else 0 end)                      amount_landed_costs
+                , sum(case when gt.account_number = 5200 then gt.net_amount * -1 else 0 end)                 amount_landed_costs
            from fact.gl_transaction gt
            where (gt.account_number between 4000 and 4999
               or gt.account_number like '5%'
@@ -52,7 +51,6 @@ with net_amount as
         , coalesce(na.amount_paid,0) as amount_paid
         , coalesce(na.amount_cogs,0) as amount_cogs
         , coalesce(na.amount_billed,0) as amount_billed
-        , coalesce(na.amount_transit_inventory,0) as amount_transit_inventory
         , coalesce(na.amount_inventory,0) as amount_inventory
         , coalesce(na.amount_landed_costs,0) as amount_landed_costs
         , staging.total_quantity
