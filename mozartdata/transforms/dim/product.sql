@@ -1,21 +1,3 @@
-/*
-purpose:
-One row per product item.
-This transform creates a product list
-
-joins: 
-customlist988 joins to item.custitem21 and item.custitem33 frame finish, temple finish
-customlist991 joins to item.custitem20 and item.custitem30 frame color, temple color
-customlist1271 joins to item.custitem30 and item.custitem29
-customlist_psgss_product_color to item.custitem22 and custitem28 lenscolor lensbase
-customlist_psgss_merc_class to item.customlist_psgss_merc_class class
-customlist894 to item.custitem4 family
-customlist896 to item.custitem6 stage
-
-aliases: 
-i = netsuite.item
-
-*/
 WITH unique_products
 		 AS (SELECT DISTINCT sku --The idea here is to get a list of all of our products of all time across systems, as certain ones are mising older products
 			 FROM (SELECT sku
@@ -28,7 +10,7 @@ WITH unique_products
 				   FROM netsuite.item
 				   UNION ALL
 				   SELECT sku
-				   FROM SHOPIFY.PRODUCT_VARIANT)),
+				   FROM staging.shopify_products)),
 	 assembly_aggregate
 		 AS (SELECT parentitem,
 					SUM(quantity) AS assembly_quantity
