@@ -43,6 +43,24 @@ SELECT DISTINCT unique_products.sku,
 					ORDER BY
 						b2b.created_at ASC
 					)                                                          AS product_id_b2b_shopify,
+				FIRST_VALUE(gw.product_id) OVER (
+					PARTITION BY
+						gw.sku
+					ORDER BY
+						gw.created_at ASC
+					)                                                          AS product_id_goodrwill_shopify,
+				FIRST_VALUE(d2c_can.product_id) OVER (
+					PARTITION BY
+						d2c_can.sku
+					ORDER BY
+						d2c_can.created_at ASC
+					)                                                          AS product_id_d2c_can_shopify,
+				FIRST_VALUE(b2b_can.product_id) OVER (
+					PARTITION BY
+						b2b_can.sku
+					ORDER BY
+						b2b_can.created_at ASC
+					)                                                          AS product_id_b2b_can_shopify,
 				FIRST_VALUE(d2c.inventory_item_id) OVER (
 					PARTITION BY
 						d2c.sku
@@ -55,6 +73,24 @@ SELECT DISTINCT unique_products.sku,
 					ORDER BY
 						b2b.created_at ASC
 					)                                                          AS inventory_item_id_b2b_shopify,
+	FIRST_VALUE(gw.inventory_item_id) OVER (
+					PARTITION BY
+						gw.sku
+					ORDER BY
+						gw.created_at ASC
+					)                                                          AS inventory_item_id_goodrwill_shopify,
+	FIRST_VALUE(d2c_can.inventory_item_id) OVER (
+					PARTITION BY
+						d2c_can.sku
+					ORDER BY
+						d2c_can.created_at ASC
+					)                                                          AS inventory_item_id_d2c_can_shopify,
+	FIRST_VALUE(b2b_can.inventory_item_id) OVER (
+					PARTITION BY
+						b2b_can.sku
+					ORDER BY
+						b2b_can.created_at ASC
+					)                                                          AS inventory_item_id_b2b_can_shopify,
 				shipstation.productid                                          AS item_id_shipstation,
 				i.displayname                                                  AS display_name,
 				i.itemtype                                                     AS item_type,
@@ -132,6 +168,12 @@ FROM unique_products
 	d2c.sku = unique_products.sku
 		 LEFT JOIN specialty_shopify.product_variant b2b ON
 	b2b.sku = unique_products.sku
+		 LEFT JOIN GOODRWILL_SHOPIFY.product_variant gw ON
+	gw.sku = unique_products.sku
+		 LEFT JOIN GOODR_CANADA_SHOPIFY.product_variant d2c_can ON
+	d2c_can.sku = unique_products.sku
+		 LEFT JOIN GOODRWILL_SHOPIFY.product_variant b2b_can ON
+	b2b_can.sku = unique_products.sku
 
 		 LEFT JOIN stord.stord_products_8589936822 stord
 				   ON stord.sku = unique_products.sku
