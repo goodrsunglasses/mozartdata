@@ -1,7 +1,4 @@
 --The entire point of this table is to comfortably union all shopify product information onto one table, as its split between 5 connectors
-CREATE
-	OR
-	REPLACE TABLE staging.shopify_products COPY GRANTS AS
 SELECT PRODUCT_ID,
 	   prod.title,
 	   product_type,
