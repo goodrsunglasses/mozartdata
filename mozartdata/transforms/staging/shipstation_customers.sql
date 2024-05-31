@@ -3,7 +3,7 @@ CREATE OR REPLACE TABLE staging.shipstation_customers
 SELECT customerid AS id,
 	   name,
 	   phone,
-	   NULLIF(REGEXP_REPLACE(phone, '\\+1\\s?|\\(|\\)|-|\\s', ''),'') AS normalized_phone_number,
+	   NULLIF(REGEXP_REPLACE(phone, '^1|\\+1\\s?|\\(|\\)|-|\\s', ''), '') AS normalized_phone_number,
 	   email,
 	   nullif(lower(email), '') as normalized_email,
 	   city,

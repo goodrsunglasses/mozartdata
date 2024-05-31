@@ -3,7 +3,7 @@ id = 1836849 is the generic D2C Customer. This is a catchall goodr.com customer 
 */
 
 WITH distinct_customers AS (SELECT DISTINCT normalized_email,
-											 normalized_phone_number
+											normalized_phone_number
 							FROM (SELECT normalized_email,
 										 normalized_phone_number
 								  FROM staging.SHOPIFY_CUSTOMERS
@@ -14,10 +14,19 @@ WITH distinct_customers AS (SELECT DISTINCT normalized_email,
 								  UNION ALL
 								  SELECT normalized_email,
 										 normalized_phone_number
-								  FROM staging.shipstation_customers))
-select * from distinct_customers where NORMALIZED_EMAIL = 'janetlumby@att.net'
+								  FROM staging.shipstation_customers)),
+	 ranked_customers AS (SELECT normalized_email,
+								 normalized_phone_number,
+								 CASE WHEN normalized_email IS NOT NULL THEN true ELSE false END as flagger,
+								 CASE WHEN normalized_phone_number IS NOT NULL THEN true ELSE false END as flagger_2
+						  FROM distinct_customers)
+SELECT *
+FROM ranked_customers
+WHERE NORMALIZED_EMAIL = 'bevmaddylpn@yahoo.com'
+  AND (flagger = true and flagger_2 = true)
 SELECT COUNT(normalized_email) counter, normalized_email
-FROM distinct_customers
+FROM ranked_customers
+where (flagger = true and flagger_2 = true)
 GROUP BY normalized_email
 HAVING counter > 2
 
