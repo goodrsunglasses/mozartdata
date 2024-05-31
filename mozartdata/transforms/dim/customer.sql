@@ -15,13 +15,11 @@ WITH distinct_customers AS (SELECT DISTINCT normalized_email,
 								  SELECT normalized_email,
 										 normalized_phone_number
 								  FROM staging.shipstation_customers))
-SELECT *
+select * from distinct_customers where NORMALIZED_EMAIL = 'janetlumby@att.net'
+SELECT COUNT(normalized_email) counter, normalized_email
 FROM distinct_customers
-WHERE normalized_email = 'ptigue88@gmail.com'
-SELECT COUNT(email) counter, email
-FROM distinct_customers
-GROUP BY email
-HAVING counter > 1
+GROUP BY normalized_email
+HAVING counter > 2
 
 -- with ns as
 --   (
