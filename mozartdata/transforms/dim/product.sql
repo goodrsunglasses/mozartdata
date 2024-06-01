@@ -26,6 +26,88 @@ WITH
                            staging.shopify_products
                    )
            )
+  , products_and_invty_ids_cte
+        AS (
+               SELECT DISTINCT
+                   up.sku
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'd2c'
+                               , shop_prod.product_id
+                               , null
+                           )
+                   ) as product_id_d2c_shopify
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'b2b'
+                               , shop_prod.product_id
+                               , null
+                           )
+                   ) as product_id_b2b_shopify
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'goodrwill'
+                               , shop_prod.product_id
+                               , null
+                           )
+                   ) as product_id_goodrwill_shopify
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'd2c_can'
+                               , shop_prod.product_id
+                               , null
+                           )
+                   ) as product_id_d2c_can_shopify
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'b2b_can'
+                               , shop_prod.product_id
+                               , null
+                           )
+                   ) as product_id_b2b_can_shopify
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'd2c'
+                               , shop_prod.inventory_item_id
+                               , null
+                           )
+                   ) as inventory_item_id_d2c_shopify
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'b2b'
+                               , shop_prod.inventory_item_id
+                               , null
+                           )
+                   ) as inventory_item_id_b2b_shopify
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'goodrwill'
+                               , shop_prod.inventory_item_id
+                               , null
+                           )
+                   ) as inventory_item_id_goodrwill_shopify
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'd2c_can'
+                               , shop_prod.inventory_item_id
+                               , null
+                           )
+                   ) as inventory_item_id_d2c_can_shopify
+                 , max(
+                           iff(
+                                   shop_prod.shopify_store = 'b2b'
+                               , shop_prod.inventory_item_id
+                               , null
+                           )
+                   ) as inventory_item_id_b2b_can_shopify
+               FROM
+                   unique_products              as up
+                   LEFT JOIN
+                       staging.shopify_products as shop_prod
+                           ON up.sku = shop_prod.sku
+               GROUP BY
+                   up.sku
+           )
   , assembly_aggregate
         AS (
                SELECT
@@ -54,111 +136,77 @@ WITH
                        )
            )
 SELECT DISTINCT
-    unique_products.sku
-  , i.id                                                           AS product_id_edw
-  , i.id                                                           AS item_id_ns
-  , stord.id                                                       AS item_id_stord                                                          AS product_id_d2c_shopify
-  , case
-        when shop_prod.shopify_store = 'd2c'
-            then shop_prod.product_id
-    end                                                            AS product_id_d2c_shopify
-  , case
-        when shop_prod.shopify_store = 'b2b'
-            then shop_prod.product_id
-    end                                                            AS product_id_b2b_shopify
-  , case
-        when shop_prod.shopify_store = 'goodrwill'
-            then shop_prod.product_id
-    end                                                            AS product_id_goodrwill_shopify
-  , case
-        when shop_prod.shopify_store = 'd2c_can'
-            then shop_prod.product_id
-    end                                                            AS product_id_d2c_can_shopify
-  , case
-        when shop_prod.shopify_store = 'b2b_can'
-            then shop_prod.product_id
-    end                                                            AS product_id_b2b_can_shopify
-  , case
-        when shop_prod.shopify_store = 'd2c'
-            then shop_prod.inventory_item_id
-    end                                                            AS inventory_item_id_d2c_shopify
-  , case
-        when shop_prod.shopify_store = 'b2b'
-            then shop_prod.inventory_item_id
-    end                                                            AS inventory_item_id_b2b_shopify
-  , case
-        when shop_prod.shopify_store = 'goodrwill'
-            then shop_prod.inventory_item_id
-    end                                                            AS inventory_item_id_goodrwill_shopify
-  , case
-        when shop_prod.shopify_store = 'd2c_can'
-            then shop_prod.inventory_item_id
-    end                                                            AS inventory_item_id_d2c_can_shopify
-  , case
-        when shop_prod.shopify_store = 'b2b_can'
-            then shop_prod.inventory_item_id
-    end                                                            AS inventory_item_id_b2b_can_shopify
-  , shipstation.productid                                          AS item_id_shipstation
-  , i.displayname                                                  AS display_name
-  , i.itemtype                                                     AS item_type
-  , i.custitem5                                                    AS collection
-  , family.name                                                    AS family
-  , stage.name                                                     AS stage
-  , i.fullname                                                     AS full_name
-  , class.name                                                     AS merchandise_class
-  , dept.name                                                      AS merchandise_department
-  , division.name                                                  AS merchandise_division
-  , i.upccode                                                      AS upc_code
-  , i.custitemold_upc_code                                         AS old_upc_code
-  , i.CUSTITEM18                                                   AS lens_sku
-  , i.vendorname                                                   AS vendor_name
-  , i.custitem19                                                   AS logo_sku
-  , framecolor.name                                                AS color_frame
-  , templecolor.name                                               AS color_temple
-  , framefinish.name                                               AS finish_frame
-  , templefinish.name                                              AS finish_temple
-  , lenscolor.name                                                 AS color_lens_finish
-  , i.custitem24                                                   AS lens_type
-  , design.name                                                    AS design_tier
-  , artwork.name                                                   AS frame_artwork
-  , i.custitem7                                                    AS d2c_launch_timestamp
-  , DATE(i.custitem7)                                              AS d2c_launch_date
-  , i.custitem16                                                   AS b2b_launch_timestamp
-  , DATE(i.custitem16)                                             AS b2b_launch_date
-  , i.custitem_goodr_mc_ip_qty                                     AS mc_quantity
-  , i.custitem_goodr_mc_weight                                     AS mc_weight_oz
-  , i.custitem_goodr_mc_length                                     AS mc_length_in
-  , i.custitem_goodr_mc_width                                      AS mc_width_in
-  , i.custitem_goodr_item_height                                   AS mc_height_in
-  , i.custitem3                                                    AS ip_weight_oz
-  , i.custitem_goodr_ip_length                                     AS ip_length_in
-  , i.custitem_good_ip_width                                       AS ip_width_in
-  , i.custitem_goodr_ip_height                                     AS ip_height_in
-  , i.custitem_goodr_hts_code_item                                 AS hts_code
-  , i.CUSTITEM1                                                    AS country_of_origin
-  , CASE WHEN i.custitem_stord_item = 'T' THEN TRUE ELSE FALSE END AS stord_item_flag
-  , CASE WHEN i.custitem14 = 'T' THEN TRUE ELSE FALSE END          AS distributor_portal_item_flag
-  , CASE WHEN i.custitem25 = 'T' THEN TRUE ELSE FALSE END          AS key_account_prebook_item_flag
-  , CASE WHEN i.custitem27 = 'T' THEN TRUE ELSE FALSE END          AS replenish_flag
-  , CASE
-        WHEN i.custitemmozard_gp_flag = 'T'
-            THEN TRUE
-        ELSE FALSE
-    END                                                            AS free_shit_flag
+    prod_inv.sku
+  , i.id                                             AS product_id_edw
+  , i.id                                             AS item_id_ns
+  , stord.id                                         AS item_id_stord
+  , prod_inv.product_id_d2c_shopify
+  , prod_inv.product_id_b2b_shopify
+  , prod_inv.product_id_goodrwill_shopify
+  , prod_inv.product_id_d2c_can_shopify
+  , prod_inv.product_id_b2b_can_shopify
+  , prod_inv.inventory_item_id_d2c_shopify
+  , prod_inv.inventory_item_id_b2b_shopify
+  , prod_inv.inventory_item_id_goodrwill_shopify
+  , prod_inv.inventory_item_id_d2c_can_shopify
+  , prod_inv.inventory_item_id_b2b_can_shopify
+  , shipstation.productid                            AS item_id_shipstation
+  , i.displayname                                    AS display_name
+  , i.itemtype                                       AS item_type
+  , i.custitem5                                      AS collection
+  , family.name                                      AS family
+  , stage.name                                       AS stage
+  , i.fullname                                       AS full_name
+  , class.name                                       AS merchandise_class
+  , dept.name                                        AS merchandise_department
+  , division.name                                    AS merchandise_division
+  , i.upccode                                        AS upc_code
+  , i.custitemold_upc_code                           AS old_upc_code
+  , i.CUSTITEM18                                     AS lens_sku
+  , i.vendorname                                     AS vendor_name
+  , i.custitem19                                     AS logo_sku
+  , framecolor.name                                  AS color_frame
+  , templecolor.name                                 AS color_temple
+  , framefinish.name                                 AS finish_frame
+  , templefinish.name                                AS finish_temple
+  , lenscolor.name                                   AS color_lens_finish
+  , i.custitem24                                     AS lens_type
+  , design.name                                      AS design_tier
+  , artwork.name                                     AS frame_artwork
+  , i.custitem7                                      AS d2c_launch_timestamp
+  , DATE(i.custitem7)                                AS d2c_launch_date
+  , i.custitem16                                     AS b2b_launch_timestamp
+  , DATE(i.custitem16)                               AS b2b_launch_date
+  , i.custitem_goodr_mc_ip_qty                       AS mc_quantity
+  , i.custitem_goodr_mc_weight                       AS mc_weight_oz
+  , i.custitem_goodr_mc_length                       AS mc_length_in
+  , i.custitem_goodr_mc_width                        AS mc_width_in
+  , i.custitem_goodr_item_height                     AS mc_height_in
+  , i.custitem3                                      AS ip_weight_oz
+  , i.custitem_goodr_ip_length                       AS ip_length_in
+  , i.custitem_good_ip_width                         AS ip_width_in
+  , i.custitem_goodr_ip_height                       AS ip_height_in
+  , i.custitem_goodr_hts_code_item                   AS hts_code
+  , i.CUSTITEM1                                      AS country_of_origin
+  , IFF(i.custitem_stord_item = 'T', TRUE, FALSE)    AS stord_item_flag
+  , IFF(i.custitem14 = 'T', TRUE, FALSE)             AS distributor_portal_item_flag
+  , IFF(i.custitem25 = 'T', TRUE, FALSE)             AS key_account_prebook_item_flag
+  , IFF(i.custitem27 = 'T', TRUE, FALSE)             AS replenish_flag
+  , IFF(i.custitemmozard_gp_flag = 'T', TRUE, FALSE) AS free_shit_flag
   , assembly_quantity
   , CAST(
             CASE
                 WHEN LEFT(i.itemid, 2) = 'GC'
                     THEN SPLIT_PART(i.itemid, '-', 2)
             END AS int
-    )                                                              AS gift_card_amount
-  , i.incomeaccount                                                AS account_id_ns
+    )                                                AS gift_card_amount
+  , i.incomeaccount                                  AS account_id_ns
   , ga.account_number
   , ga.account_display_name
 FROM
-    unique_products
+    products_and_invty_ids_cte                                     prod_inv
     LEFT OUTER JOIN actual_ns_products                             i
-        ON i.itemid = unique_products.sku
+        ON i.itemid = prod_inv.sku
     LEFT OUTER JOIN dim.gl_account                                 ga
         ON i.incomeaccount = ga.account_id_ns
     LEFT JOIN netsuite.customlist991                               framecolor
@@ -189,12 +237,10 @@ FROM
         ON i.custitem30 = artwork.id
     LEFT JOIN assembly_aggregate                                   agg
         ON i.id = agg.parentitem
-    LEFT JOIN staging.shopify_products                             shop_prod
-        ON shop_prod.sku = unique_products.sku
     LEFT JOIN stord.stord_products_8589936822                      stord
-        ON stord.sku = unique_products.sku
+        ON stord.sku = prod_inv.sku
     LEFT JOIN shipstation_portable.shipstation_products_8589936627 shipstation
-        ON shipstation.sku = unique_products.sku
+        ON shipstation.sku = prod_inv.sku
 
 
 
