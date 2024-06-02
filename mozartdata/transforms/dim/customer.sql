@@ -1,7 +1,5 @@
-/*
-id = 1836849 is the generic D2C Customer. This is a catchall goodr.com customer only to be used when needing to mass import CSVs of SOs from Shopify
-*/
-
+--The idea of this approach is to break down the ascociation of emails and phone numbers to eventually form customer_id_edw's into a series of filtered steps,
+-- isolating out the vast majority of customers who do not need special care, from the statistically small but annoying few that have whacky amounts of data splay attached to them.
 WITH distinct_customers
 		 AS -- Ok so the idea here is that you start by selecting a distinct list of all the combinations of phone numbers and emails from all our data sources that have customer data
 		 (SELECT DISTINCT normalized_email,
@@ -33,7 +31,7 @@ WITH distinct_customers
 					 OVER (PARTITION BY normalized_phone_number) AS has_both_phone_and_email
 		  FROM distinct_customers),
 	 clean_list
-		 AS --Afterworkds you then select a list of normalized emails and phone numbers to make a clean, non null list using the stringent where conditions found below
+		 AS --Afterwords you then select a list of normalized emails and phone numbers to make a clean, non null list using the stringent where conditions found below
 		 (SELECT DISTINCT *
 		  FROM ranked_customers
 		  WHERE (normalized_email IS NOT NULL AND normalized_phone_number IS NOT NULL)
@@ -63,9 +61,16 @@ WITH distinct_customers
 								   ON (filter.problem_ids = clean_list.NORMALIZED_PHONE_NUMBER OR
 									   filter.problem_ids = clean_list.NORMALIZED_EMAIL)
 		  WHERE problem_ids IS NULL)
-select count(*) from majority_pass
+SELECT *
+FROM majority_pass
 
 
+
+
+/*
+id = 1836849 is the generic D2C Customer. This is a catchall goodr.com customer only to be used when needing to mass import CSVs of SOs from Shopify
+
+*/
 
 --                                                                    where
 --     (normalized_email IS NOT NULL AND normalized_phone_number IS NOT NULL)
