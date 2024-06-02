@@ -52,14 +52,18 @@ WITH distinct_customers
 								normalized_email
 				FROM clean_list
 				GROUP BY normalized_email
-				HAVING counter > 1))
-SELECT clean_list.normalized_email,
-	   clean_list.NORMALIZED_PHONE_NUMBER,
-	   filter.problem_ids
-FROM clean_list
-		 LEFT OUTER JOIN exceptions_filter filter ON (filter.problem_ids = clean_list.NORMALIZED_PHONE_NUMBER OR
-													  filter.problem_ids = clean_list.NORMALIZED_EMAIL)
-WHERE problem_ids IS NULL
+				HAVING counter > 1)),
+	 majority_pass
+		 AS --The idea here is to get customer_id_edw's established for the 2,293,290 customers who don't need special attention to then later join to NS,Stord,shopify,etc...
+		 (SELECT clean_list.normalized_email,
+				 clean_list.NORMALIZED_PHONE_NUMBER,
+				 filter.problem_ids
+		  FROM clean_list
+				   LEFT OUTER JOIN exceptions_filter filter
+								   ON (filter.problem_ids = clean_list.NORMALIZED_PHONE_NUMBER OR
+									   filter.problem_ids = clean_list.NORMALIZED_EMAIL)
+		  WHERE problem_ids IS NULL)
+select count(*) from majority_pass
 
 
 
