@@ -39,6 +39,7 @@ GROUP BY
   d.name
 
 --- temporary budget for 2024-v4 may
+  /*
 UNION
 select 
   rt.account_id_ns as account_id_edw,
@@ -53,3 +54,4 @@ select
 FROM google_sheets.may_2024_v_4_revenue_targets rt
 left join dim.accounting_period ap
   on rt.posting_period = ap.posting_period
+*/
