@@ -23,7 +23,7 @@ with
     fact.gl_budget gb
 --  WHERE
 --    gb.budget_version != '2024 - V4' -- temporary exclude 2024 - V4 until it's finalized in NS
---  QUALIFY row_number() over (partition by budget_version_year order by version_num desc) = 1 
+  QUALIFY row_number() over (partition by budget_version_year order by version_num desc) = 1 
   ),
   actual as
   (
