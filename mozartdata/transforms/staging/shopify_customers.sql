@@ -79,4 +79,4 @@ SELECT id,
 	   state,
 	   total_spent,
 	   updated_at
-FROM GOODRWILL_SHOPIFY.CUSTOMER
+FROM SELLGOODR_CANADA_SHOPIFY.CUSTOMER
