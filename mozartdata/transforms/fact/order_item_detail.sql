@@ -63,6 +63,7 @@
         , staging.cost_estimate
         , staging.location
         , staging.createdfrom
+        , staging.SHIPPINGADDRESS
         , staging.warranty_order_id_ns
         , exceptions.exception_flag
    FROM dim.parent_transactions parents
