@@ -100,7 +100,7 @@ WITH distinct_customers
 				FROM isolated_customers)),
 	 email_join
 		 AS --The idea for this one, and the next two CTE's is that since each of these join conditions also represent a given distinct customer with a distinct primary identifier,
-	 -- you can comfortably join using the method as a differing condition between systems
+	 -- you can comfortably join using the method as a differing condition between systems this also helps isolate if a given join condition is incorrect for future QC.
 		 (SELECT customer_id_edw,
 				 primary_identifier,
 				 method,
