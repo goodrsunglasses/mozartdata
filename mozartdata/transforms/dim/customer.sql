@@ -15,6 +15,28 @@ WITH distinct_customers
 				SELECT normalized_email,
 					   normalized_phone_number
 				FROM staging.shipstation_customers)),
+	 isolated_customers
+		 AS --Idea here is to find the customers that only exist in their respective systems for whatever reason, then grab those source Id's and their store, filtered for when there is no email and phone number
+		 (SELECT DISTINCT source
+		  FROM (SELECT id,
+					   normalized_email,
+					   normalized_phone_number,
+					   store AS source
+				FROM staging.SHOPIFY_CUSTOMERS
+				UNION ALL
+				SELECT id,
+					   normalized_email,
+					   normalized_phone_number,
+					   'Netsuite' AS source
+				FROM staging.netsuite_customers
+				UNION ALL
+				SELECT id,
+					   normalized_email,
+					   normalized_phone_number,
+					   'Shipstation' AS source
+				FROM staging.shipstation_customers)
+		  WHERE NORMALIZED_PHONE_NUMBER IS NULL
+			AND NORMALIZED_EMAIL IS NULL),
 	 ranked_customers
 		 AS --Then you go ahead and rank them to get rid of the cases when for example the same number shows up twice, but in one of the instances the email is null and vice versa
 		 (SELECT normalized_email,
@@ -39,33 +61,39 @@ WITH distinct_customers
 			 OR (normalized_phone_number IS NOT NULL AND has_both_phone_and_email = 0)),
 	 exceptions_filter
 		 AS --Then you go ahead and figure out all the problematic ones that would cause data splay, a relatively minor amount that we will deal with later, to get a list of the clean and simple customer ascociations
-		 (SELECT DISTINCT normalized_phone_number AS problem_ids
-		  FROM (SELECT DISTINCT COUNT(normalized_phone_number) AS counter,
-								normalized_phone_number
-				FROM clean_list
-				GROUP BY normalized_phone_number
-				HAVING counter > 1
-				UNION ALL
-				SELECT DISTINCT COUNT(normalized_email) AS counter,
-								normalized_email
+	 --note for later, this used to also consider when one phone number was shared by multiple emails, we removed this but its worth making note of as it can be used to detect resellers
+		 (SELECT DISTINCT normalized_email AS problem_ids
+		  FROM (SELECT DISTINCT COUNT(normalized_email) AS counter, normalized_email
 				FROM clean_list
 				GROUP BY normalized_email
 				HAVING counter > 1)),
 	 majority_pass
 		 AS --The idea here is to get customer_id_edw's established for the 2,293,290 customers who don't need special attention to then later join to NS,Stord,shopify,etc...
-		 (SELECT clean_list.normalized_email,
-				 clean_list.NORMALIZED_PHONE_NUMBER,
-				 filter.problem_ids
+		 (SELECT clean_list.normalized_email, clean_list.NORMALIZED_PHONE_NUMBER, filter.problem_ids
 		  FROM clean_list
 				   LEFT OUTER JOIN exceptions_filter filter
 								   ON (filter.problem_ids = clean_list.NORMALIZED_PHONE_NUMBER OR
 									   filter.problem_ids = clean_list.NORMALIZED_EMAIL)
-		  WHERE problem_ids IS NULL)
+		  WHERE problem_ids IS NULL),
+	 email_joins AS
+		 (SELECT DISTINCT normalized_email, source
+		  FROM (SELECT normalized_email, store AS source
+				FROM staging.SHOPIFY_CUSTOMERS
+				UNION ALL
+				SELECT normalized_email, 'Netsuite' AS source
+				FROM staging.netsuite_customers
+				UNION ALL
+				SELECT normalized_email, 'Shipstation' AS source
+				FROM staging.shipstation_customers)
+		  WHERE NORMALIZED_EMAIL IS NOT NULL)
 SELECT *
 FROM majority_pass
+WHERE NORMALIZED_EMAIL is null
 
-
-
+SELECT COUNT(*)
+FROM distinct_customers
+WHERE NORMALIZED_EMAIL IS NULL
+  AND NORMALIZED_PHONE_NUMBER IS NOT NULL
 
 /*
 id = 1836849 is the generic D2C Customer. This is a catchall goodr.com customer only to be used when needing to mass import CSVs of SOs from Shopify
