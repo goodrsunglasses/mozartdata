@@ -2,6 +2,7 @@
 -- isolating out the vast majority of customers who do not need special care, from the statistically small but annoying few that have whacky amounts of data splay attached to them.
 WITH distinct_customers
 		 AS -- Ok so the idea here is that you start by selecting a distinct list of all the combinations of phone numbers and emails from all our data sources that have customer data
+	--CAVEAT HERE IS THAT WHENEVER WE ADD A NEW SYSTEM THEY NEED TO BE ADDED TO THESE FIRST COUPLE CTE'S UNLESS WE FEEL LIKE DOING DYNAMIC PARSING OF THE STAGING SCHEMA OR SUMN
 		 (SELECT DISTINCT normalized_email,
 						  normalized_phone_number
 		  FROM (SELECT normalized_email,
@@ -17,7 +18,7 @@ WITH distinct_customers
 				FROM staging.shipstation_customers)),
 	 isolated_customers
 		 AS --Idea here is to find the customers that only exist in their respective systems for whatever reason, then grab those source Id's and their store, filtered for when there is no email and phone number
-		 (SELECT DISTINCT source
+		 (SELECT DISTINCT id, source
 		  FROM (SELECT id,
 					   normalized_email,
 					   normalized_phone_number,
@@ -75,25 +76,27 @@ WITH distinct_customers
 								   ON (filter.problem_ids = clean_list.NORMALIZED_PHONE_NUMBER OR
 									   filter.problem_ids = clean_list.NORMALIZED_EMAIL)
 		  WHERE problem_ids IS NULL),
-	 email_joins AS
-		 (SELECT DISTINCT normalized_email, source
-		  FROM (SELECT normalized_email, store AS source
-				FROM staging.SHOPIFY_CUSTOMERS
+	 prim_ident
+		 AS --idea here is to establish the unique customers from the 2 CTE's we've established and filtered through to create a hashed ID we will use to join back to their source systems later on
+		 (SELECT MD5(primary_identifier) as customer_id_edw,
+		         primary_identifier,
+		         method
+		  FROM (SELECT NORMALIZED_EMAIL AS primary_identifier,
+					   'Email'          AS method
+				FROM majority_pass
+				WHERE NORMALIZED_EMAIL IS NOT NULL
 				UNION ALL
-				SELECT normalized_email, 'Netsuite' AS source
-				FROM staging.netsuite_customers
+				SELECT NORMALIZED_PHONE_NUMBER AS primary_identifier,
+					   'Phone'                 AS method
+				FROM majority_pass
+				WHERE NORMALIZED_EMAIL IS NULL
 				UNION ALL
-				SELECT normalized_email, 'Shipstation' AS source
-				FROM staging.shipstation_customers)
-		  WHERE NORMALIZED_EMAIL IS NOT NULL)
+				SELECT to_char(id)          AS primary_identifier,
+					   'Source_id' AS method
+				FROM isolated_customers))
 SELECT *
-FROM majority_pass
-WHERE NORMALIZED_EMAIL is null
+FROM prim_ident where method = 'Source_id'
 
-SELECT COUNT(*)
-FROM distinct_customers
-WHERE NORMALIZED_EMAIL IS NULL
-  AND NORMALIZED_PHONE_NUMBER IS NOT NULL
 
 /*
 id = 1836849 is the generic D2C Customer. This is a catchall goodr.com customer only to be used when needing to mass import CSVs of SOs from Shopify
