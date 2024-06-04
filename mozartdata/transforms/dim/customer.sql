@@ -1,5 +1,7 @@
---The idea of this approach is to break down the ascociation of emails and phone numbers to eventually form customer_id_edw's into a series of filtered steps,
--- isolating out the vast majority of customers who do not need special care, from the statistically small but annoying few that have whacky amounts of data splay attached to them.
+--	The idea of this approach is to break down the association of emails and phone numbers to eventually form customer_id_edw's into a series of filtered steps,
+--isolating out the vast majority of customers who do not need special care, from the statistically small but annoying few that have whacky amounts of data splay attached to them.
+--	Obviously this is a bit more enumerated than it needs to be, and hypothetically less efficient, but the benefit of doing this way is that you can QC the living shit out of every single level and
+--immediately  pivot to report given discrepancies and exclusions that cause data splay at a given case incredibly quickly, rather than combining everything and subsequently getting lost when we run into problems later.
 WITH distinct_customers
 		 AS -- Ok so the idea here is that you start by selecting a distinct list of all the combinations of phone numbers and emails from all our data sources that have customer data
 	--CAVEAT HERE IS THAT WHENEVER WE ADD A NEW SYSTEM THEY NEED TO BE ADDED TO THESE FIRST COUPLE CTE'S UNLESS WE FEEL LIKE DOING DYNAMIC PARSING OF THE STAGING SCHEMA OR SUMN
@@ -70,7 +72,9 @@ WITH distinct_customers
 				HAVING counter > 1)),
 	 majority_pass
 		 AS --The idea here is to get customer_id_edw's established for the 2,293,290 customers who don't need special attention to then later join to NS,Stord,shopify,etc...
-		 (SELECT clean_list.normalized_email, clean_list.NORMALIZED_PHONE_NUMBER, filter.problem_ids
+		 (SELECT clean_list.normalized_email,
+				 clean_list.NORMALIZED_PHONE_NUMBER,
+				 filter.problem_ids
 		  FROM clean_list
 				   LEFT OUTER JOIN exceptions_filter filter
 								   ON (filter.problem_ids = clean_list.NORMALIZED_PHONE_NUMBER OR
@@ -78,9 +82,9 @@ WITH distinct_customers
 		  WHERE problem_ids IS NULL),
 	 prim_ident
 		 AS --idea here is to establish the unique customers from the 2 CTE's we've established and filtered through to create a hashed ID we will use to join back to their source systems later on
-		 (SELECT MD5(primary_identifier) as customer_id_edw,
-		         primary_identifier,
-		         method
+		 (SELECT MD5(CONCAT(primary_identifier, method)) AS customer_id_edw,
+				 primary_identifier,
+				 method
 		  FROM (SELECT NORMALIZED_EMAIL AS primary_identifier,
 					   'Email'          AS method
 				FROM majority_pass
@@ -91,39 +95,75 @@ WITH distinct_customers
 				FROM majority_pass
 				WHERE NORMALIZED_EMAIL IS NULL
 				UNION ALL
-				SELECT to_char(id)          AS primary_identifier,
+				SELECT TO_CHAR(id) AS primary_identifier,
 					   'Source_id' AS method
-				FROM isolated_customers))
+				FROM isolated_customers)),
+	 email_join
+		 AS --The idea for this one, and the next two CTE's is that since each of these join conditions also represent a given distinct customer with a distinct primary identifier,
+	 -- you can comfortably join using the method as a differing condition between systems
+		 (SELECT customer_id_edw,
+				 primary_identifier,
+				 method,
+				 ARRAY_AGG(DISTINCT ns.id)   AS customer_id_ns,
+				 ARRAY_AGG(DISTINCT shop.id) AS customer_id_shopify,
+				 ARRAY_AGG(DISTINCT ship.id) AS customer_id_shipstation
+		  FROM prim_ident
+				   LEFT OUTER JOIN staging.netsuite_customers ns
+								   ON ns.NORMALIZED_EMAIL = prim_ident.primary_identifier
+				   LEFT OUTER JOIN staging.SHOPIFY_CUSTOMERS shop
+								   ON shop.NORMALIZED_EMAIL = prim_ident.primary_identifier
+				   LEFT OUTER JOIN staging.SHIPSTATION_CUSTOMERS ship
+								   ON ship.NORMALIZED_EMAIL = prim_ident.primary_identifier
+		  WHERE method = 'Email'
+		  GROUP BY customer_id_edw,
+				   primary_identifier,
+				   method),
+	 phone_join AS (SELECT customer_id_edw,
+						   primary_identifier,
+						   method,
+						   ARRAY_AGG(DISTINCT ns.id)   AS customer_id_ns,
+						   ARRAY_AGG(DISTINCT shop.id) AS customer_id_shopify,
+						   ARRAY_AGG(DISTINCT ship.id) AS customer_id_shipstation
+					FROM prim_ident
+							 LEFT OUTER JOIN staging.netsuite_customers ns
+											 ON ns.NORMALIZED_PHONE_NUMBER = prim_ident.primary_identifier
+							 LEFT OUTER JOIN staging.SHOPIFY_CUSTOMERS shop
+											 ON shop.NORMALIZED_PHONE_NUMBER = prim_ident.primary_identifier
+							 LEFT OUTER JOIN staging.SHIPSTATION_CUSTOMERS ship
+											 ON ship.NORMALIZED_PHONE_NUMBER = prim_ident.primary_identifier
+					WHERE method = 'Phone'
+					GROUP BY customer_id_edw,
+							 primary_identifier,
+							 method),
+	 source_join AS (SELECT customer_id_edw,
+							primary_identifier,
+							method,
+							ARRAY_AGG(DISTINCT ns.id)   AS customer_id_ns,
+							ARRAY_AGG(DISTINCT shop.id) AS customer_id_shopify,
+							ARRAY_AGG(DISTINCT ship.id) AS customer_id_shipstation
+					 FROM prim_ident
+							  LEFT OUTER JOIN staging.netsuite_customers ns
+											  ON ns.id = prim_ident.primary_identifier
+							  LEFT OUTER JOIN staging.SHOPIFY_CUSTOMERS shop
+											  ON shop.id = prim_ident.primary_identifier
+							  LEFT OUTER JOIN staging.SHIPSTATION_CUSTOMERS ship
+											  ON ship.id = prim_ident.primary_identifier
+					 WHERE method = 'Source_id'
+					 GROUP BY customer_id_edw,
+							  primary_identifier,
+							  method)
+--Then here you can just do a simple union all to get every single customer_id_edw's external source ID's got later flattening
 SELECT *
-FROM prim_ident where method = 'Source_id'
+FROM email_join
+UNION ALL
+SELECT *
+FROM phone_join
+UNION ALL
+SELECT *
+FROM source_join
 
 
 /*
 id = 1836849 is the generic D2C Customer. This is a catchall goodr.com customer only to be used when needing to mass import CSVs of SOs from Shopify
 
 */
-
---                                                                    where
---     (normalized_email IS NOT NULL AND normalized_phone_number IS NOT NULL)
---     OR (normalized_email IS NOT NULL AND has_both_email_and_phone = 0)
---     OR (normalized_phone_number IS NOT NULL AND has_both_phone_and_email = 0)
---                                                                    group by  normalized_phone_number having counter >2
-
--- with ns as
---   (
--- SELECT distinct
---   lower(case when c.id= 1836849 then t.email else c.email end) email
--- , category.customer_category
--- FROM
---   netsuite.transaction t
--- inner join
---   netsuite.customer c
---   on t.entity = c.id
--- LEFT OUTER JOIN
---   netsuite.customrecord_cseg7 channel
---   on channel.id = t.cseg7
--- left outer join dim.channel category on category.name = channel.name
--- where
---   t.recordtype in ('salesorder','cashsale','invoice')
--- )
-

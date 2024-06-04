@@ -22,6 +22,8 @@ SELECT id,
 	   DATECREATED,
 	   DEFAULTBILLINGADDRESS,
 	   DEFAULTSHIPPINGADDRESS,
-	   duplicate
+	   duplicate,
+	   _FIVETRAN_DELETED
 FROM netsuite.customer
+where _FIVETRAN_DELETED != true
 
