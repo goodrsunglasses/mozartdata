@@ -1,5 +1,5 @@
 SELECT
-  posting_period,
+  customer_id_ns,
   sum(net_amount)
 
 FROM
