@@ -91,6 +91,7 @@ SELECT
   SUM(tranline.costestimate) AS cost_estimate,
   tranline.location,
   tranline.createdfrom,
+  tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference as warranty_order_id_ns
 FROM
   all_transactions tran
@@ -155,6 +156,7 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location,
+  tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference
   -- Shipping and Tax and Discount
 UNION ALL
@@ -196,6 +198,7 @@ SELECT
   SUM(tranline.costestimate) AS cost_estimate,
   NULL AS location,
   tranline.createdfrom,
+  tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference as warranty_order_id_ns
 FROM
   all_transactions tran
@@ -232,6 +235,7 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location,
+  tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference
 ORDER BY
   transaction_id_ns asc
