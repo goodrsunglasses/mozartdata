@@ -70,3 +70,29 @@ WHERE
   o.b2b_d2c = 'B2B'
   AND c.primary_id_flag = 'true'
   AND oi.product_id_edw IS NOT NULL
+----------------------------------
+--CTE for future addition
+-- with  fulfilled AS (
+--     SELECT
+--       oid.order_id_edw,
+--        addy.country,
+--       addy.state,
+--       addy.city,
+--       addy.zip,
+--       addy.addr1,
+--       addy.addr2,
+--       addy.addr3,
+--       oid.product_id_edw,
+--       oid.item_id_ns,
+--       CONCAT(oid.order_id_edw, '_', oid.item_id_ns) AS order_item_id,
+--       oid.plain_name,
+--       COALESCE(oid.total_quantity,0) AS quantity_fulfilled,
+--       COALESCE(oid.rate,0) AS rate_fulfilled,
+--       COALESCE(oid.amount_cogs,0) AS amount_cogs_fulfilled
+--     FROM
+--       fact.order_item_detail oid
+--     left outer join netsuite.transaction tran on tran.id = oid.TRANSACTION_ID_NS
+--     LEFT OUTER JOIN netsuite.salesordershippingaddress addy ON addy.nkey = tran.SHIPPINGADDRESS
+--     WHERE
+--       oid.record_type = 'itemfulfillment'
+--   )
