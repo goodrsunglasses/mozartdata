@@ -64,37 +64,37 @@ WITH distinct_customers
 		  WHERE (normalized_email IS NOT NULL AND normalized_phone_number IS NOT NULL)
 			 OR (normalized_email IS NOT NULL AND has_both_email_and_phone = 0)
 			 OR (normalized_phone_number IS NOT NULL AND has_both_phone_and_email = 0)),
-	 exceptions_filter
-		 AS --Then you go ahead and figure out all the problematic ones that would cause data splay, a relatively minor amount that we will deal with later, to get a list of the clean and simple customer ascociations
-	 --note for later, this used to also consider when one phone number was shared by multiple emails, we removed this but its worth making note of as it can be used to detect resellers
-		 (SELECT DISTINCT normalized_email AS problem_ids
-		  FROM (SELECT DISTINCT COUNT(normalized_email) AS counter, normalized_email
-				FROM clean_list
-				GROUP BY normalized_email
-				HAVING counter > 1)),
-	 majority_pass
-		 AS --The idea here is to get customer_id_edw's established for the 2,293,290 customers who don't need special attention to then later join to NS,Stord,shopify,etc...
-		 (SELECT clean_list.normalized_email,
-				 clean_list.NORMALIZED_PHONE_NUMBER,
-				 filter.problem_ids
-		  FROM clean_list
-				   LEFT OUTER JOIN exceptions_filter filter
-								   ON (filter.problem_ids = clean_list.NORMALIZED_PHONE_NUMBER OR
-									   filter.problem_ids = clean_list.NORMALIZED_EMAIL)
-		  WHERE problem_ids IS NULL),
+-- 	 exceptions_filter
+-- 		 AS --Then you go ahead and figure out all the problematic ones that would cause data splay, a relatively minor amount that we will deal with later, to get a list of the clean and simple customer ascociations
+-- 	 --note for later, this used to also consider when one phone number was shared by multiple emails, we removed this but its worth making note of as it can be used to detect resellers
+-- 		 (SELECT DISTINCT normalized_email AS problem_ids
+-- 		  FROM (SELECT DISTINCT COUNT(normalized_email) AS counter, normalized_email
+-- 				FROM clean_list
+-- 				GROUP BY normalized_email
+-- 				HAVING counter > 1)),
+-- 	 majority_pass
+-- 		 AS --The idea here is to get customer_id_edw's established for the 2,293,290 customers who don't need special attention to then later join to NS,Stord,shopify,etc...
+-- 		 (SELECT clean_list.normalized_email,
+-- 				 clean_list.NORMALIZED_PHONE_NUMBER,
+-- 				 filter.problem_ids
+-- 		  FROM clean_list
+-- 				   LEFT OUTER JOIN exceptions_filter filter
+-- 								   ON (filter.problem_ids = clean_list.NORMALIZED_PHONE_NUMBER OR
+-- 									   filter.problem_ids = clean_list.NORMALIZED_EMAIL)
+-- 		  WHERE problem_ids IS NULL),
 	 prim_ident
 		 AS --idea here is to establish the unique customers from the 2 CTE's we've established and filtered through to create a hashed ID we will use to join back to their source systems later on
 		 (SELECT MD5(CONCAT(primary_identifier, method)) AS customer_id_edw,
 				 primary_identifier,
 				 method
-		  FROM (SELECT NORMALIZED_EMAIL AS primary_identifier,
+		  FROM (SELECT distinct NORMALIZED_EMAIL AS primary_identifier,
 					   'Email'          AS method
-				FROM majority_pass
+				FROM clean_list
 				WHERE NORMALIZED_EMAIL IS NOT NULL
 				UNION ALL
 				SELECT NORMALIZED_PHONE_NUMBER AS primary_identifier,
 					   'Phone'                 AS method
-				FROM majority_pass
+				FROM clean_list
 				WHERE NORMALIZED_EMAIL IS NULL
 				UNION ALL
 				SELECT TO_CHAR(id) AS primary_identifier,
