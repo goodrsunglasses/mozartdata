@@ -2,6 +2,8 @@
 --isolating out the vast majority of customers who do not need special care, from the statistically small but annoying few that have whacky amounts of data splay attached to them.
 --	Obviously this is a bit more enumerated than it needs to be, and hypothetically less efficient, but the benefit of doing this way is that you can QC the living shit out of every single level and
 --immediately  pivot to report given discrepancies and exclusions that cause data splay at a given case incredibly quickly, rather than combining everything and subsequently getting lost when we run into problems later.
+CREATE OR REPLACE TABLE dim.customer
+	COPY GRANTS AS
 WITH distinct_customers
 		 AS -- Ok so the idea here is that you start by selecting a distinct list of all the combinations of phone numbers and emails from all our data sources that have customer data
 	--CAVEAT HERE IS THAT WHENEVER WE ADD A NEW SYSTEM THEY NEED TO BE ADDED TO THESE FIRST COUPLE CTE'S UNLESS WE FEEL LIKE DOING DYNAMIC PARSING OF THE STAGING SCHEMA OR SUMN
@@ -21,19 +23,19 @@ WITH distinct_customers
 	 isolated_customers
 		 AS --Idea here is to find the customers that only exist in their respective systems for whatever reason, then grab those source Id's and their store, filtered for when there is no email and phone number
 		 (SELECT DISTINCT id, source
-		  FROM (SELECT id,
+		  FROM (SELECT distinct_id as id,
 					   normalized_email,
 					   normalized_phone_number,
 					   store AS source
 				FROM staging.SHOPIFY_CUSTOMERS
 				UNION ALL
-				SELECT id,
+				SELECT to_char(id),
 					   normalized_email,
 					   normalized_phone_number,
 					   'Netsuite' AS source
 				FROM staging.netsuite_customers
 				UNION ALL
-				SELECT id,
+				SELECT to_char(id),
 					   normalized_email,
 					   normalized_phone_number,
 					   'Shipstation' AS source
@@ -105,7 +107,7 @@ WITH distinct_customers
 				 primary_identifier,
 				 method,
 				 ARRAY_AGG(DISTINCT ns.id)   AS customer_id_ns,
-				 ARRAY_AGG(DISTINCT shop.id) AS customer_id_shopify,
+				 ARRAY_AGG(DISTINCT shop.distinct_id) AS customer_id_shopify,
 				 ARRAY_AGG(DISTINCT ship.id) AS customer_id_shipstation
 		  FROM prim_ident
 				   LEFT OUTER JOIN staging.netsuite_customers ns
@@ -122,7 +124,7 @@ WITH distinct_customers
 						   primary_identifier,
 						   method,
 						   ARRAY_AGG(DISTINCT ns.id)   AS customer_id_ns,
-						   ARRAY_AGG(DISTINCT shop.id) AS customer_id_shopify,
+						   ARRAY_AGG(DISTINCT shop.distinct_id) AS customer_id_shopify,
 						   ARRAY_AGG(DISTINCT ship.id) AS customer_id_shipstation
 					FROM prim_ident
 							 LEFT OUTER JOIN staging.netsuite_customers ns
@@ -139,15 +141,15 @@ WITH distinct_customers
 							primary_identifier,
 							method,
 							ARRAY_AGG(DISTINCT ns.id)   AS customer_id_ns,
-							ARRAY_AGG(DISTINCT shop.id) AS customer_id_shopify,
+							ARRAY_AGG(DISTINCT shop.distinct_id) AS customer_id_shopify,
 							ARRAY_AGG(DISTINCT ship.id) AS customer_id_shipstation
 					 FROM prim_ident
 							  LEFT OUTER JOIN staging.netsuite_customers ns
-											  ON ns.id = prim_ident.primary_identifier
+											  ON to_char(ns.id) = prim_ident.primary_identifier
 							  LEFT OUTER JOIN staging.SHOPIFY_CUSTOMERS shop
-											  ON shop.id = prim_ident.primary_identifier
+											  ON shop.distinct_id = prim_ident.primary_identifier
 							  LEFT OUTER JOIN staging.SHIPSTATION_CUSTOMERS ship
-											  ON ship.id = prim_ident.primary_identifier
+											  ON to_char(ship.id) = prim_ident.primary_identifier
 					 WHERE method = 'Source_id'
 					 GROUP BY customer_id_edw,
 							  primary_identifier,
