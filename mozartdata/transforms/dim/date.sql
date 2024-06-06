@@ -11,8 +11,8 @@ SELECT MY_DATE as date_timestamp
     , MONTH(MY_DATE) as month
     , MONTHNAME(MY_DATE) as month_name   
     , DAY(MY_DATE) as day
-    , DAYOFWEEK(MY_DATE) as day_of_week_number
-    , DAYNAME(MY_DATE) as day_of_week
+    , DAYOFWEEK(MY_DATE) as day_of_week
+    , DAYNAME(MY_DATE) as day_of_week_name
     , DATE(DATE_TRUNC(week,MY_DATE)) as week_start_date
     , DATE(DATEADD('DAY', 7 - DAYOFWEEK(MY_DATE), MY_DATE)) AS week_end_date
     , WEEKOFYEAR(MY_DATE) as week_of_year
