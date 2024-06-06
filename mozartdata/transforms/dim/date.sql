@@ -14,7 +14,7 @@ SELECT MY_DATE as date_timestamp
     , DAYOFWEEK(MY_DATE) as day_of_week_number
     , DAYNAME(MY_DATE) as day_of_week
     , DATE(DATE_TRUNC(week,MY_DATE)) as week_start_date
-    , DATE(DATEADD('DAY', 6 - DAYOFWEEK(MY_DATE), MY_DATE)) AS week_end_date
+    , DATE(DATEADD('DAY', 7 - DAYOFWEEK(MY_DATE), MY_DATE)) AS week_end_date
     , WEEKOFYEAR(MY_DATE) as week_of_year
     , YEAROFWEEK(MY_DATE) as week_year
     , CASE
