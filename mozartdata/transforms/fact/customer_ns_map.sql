@@ -1,9 +1,9 @@
     SELECT cust.customer_id_edw,
 	   ns_ids.value,
 	   nc.*
-    FROM draft_dim.CUSTOMER cust
+    FROM dim.CUSTOMER cust
 		 CROSS JOIN LATERAL FLATTEN(INPUT => cust.CUSTOMER_ID_NS) AS ns_ids
-		 LEFT OUTER JOIN draft_staging.netsuite_customers nc ON nc.id = ns_ids.value
+		 LEFT OUTER JOIN staging.netsuite_customers nc ON nc.id = ns_ids.value
 /*
   customer_category AS (
     SELECT DISTINCT
@@ -79,12 +79,12 @@ SELECT
       4533439
     ) THEN TRUE
     ELSE FALSE
-  END AS is_key_account_current_flag,
+  END AS is_key_account_current_flag, -> remove this
   b2b_d2c,
   CASE
     WHEN MIN(rn) = 1 THEN TRUE
     ELSE FALSE
-  END AS primary_id_flag,
+  END AS primary_id_flag, --> figure this out. always true?
   custentityam_primary_sport as primary_sport,
   custentityam_secondary_sport as secondary_sport,
   custentityam_tertiary_sport as tertiary_sport,

@@ -2,7 +2,7 @@ CREATE OR REPLACE TABLE staging.netsuite_customers
 	COPY GRANTS AS
 SELECT id,
 	   altname,
-	   isperson,
+	   isperson as is_person_flag,
 	   email,
 	   NULLIF(LOWER(email), '')                                        AS normalized_email,
 	   PHONE,
