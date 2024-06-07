@@ -1,4 +1,10 @@
-WITH
+    SELECT cust.customer_id_edw,
+	   ns_ids.value,
+	   nc.*
+    FROM draft_dim.CUSTOMER cust
+		 CROSS JOIN LATERAL FLATTEN(INPUT => cust.CUSTOMER_ID_NS) AS ns_ids
+		 LEFT OUTER JOIN draft_staging.netsuite_customers nc ON nc.id = ns_ids.value
+/*
   customer_category AS (
     SELECT DISTINCT
       cust.id,
@@ -149,4 +155,6 @@ GROUP BY
   custentityam_state_2,
   custentityam_state_3
 ORDER BY
-  customer_id_edw
+    customer_id_edw
+  */
+
