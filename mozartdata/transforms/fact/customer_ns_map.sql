@@ -15,7 +15,22 @@ WITH
         ORDER BY
           CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) desc
       ) AS rn,
-        channel.customer_category as b2b_d2c
+        channel.customer_category as b2b_d2c,
+        cust.custentityam_primary_sport,
+        cust.custentityam_secondary_sport,
+        cust.custentityam_tertiary_sport,
+        cust.custentityam_tier,
+        cust.custentityam_doors,
+        cust.custentityam_buyer_name,
+        cust.custentityam_buyer_email,
+        cust.custentityam_pop,
+        cust.custentityam_logistics,
+        cust.custentityam_city_1,
+        cust.custentityam_city_2,
+        cust.custentityam_city_3,
+        cust.custentityam_state_1,
+        cust.custentityam_state_2,
+        cust.custentityam_state_3
     FROM
       netsuite.transaction tran
       LEFT OUTER JOIN netsuite.customer cust ON cust.id = tran.entity
@@ -63,7 +78,22 @@ SELECT
   CASE
     WHEN MIN(rn) = 1 THEN TRUE
     ELSE FALSE
-  END AS primary_id_flag
+  END AS primary_id_flag,
+  custentityam_primary_sport as primary_sport,
+  custentityam_secondary_sport as secondary_sport,
+  custentityam_tertiary_sport as tertiary_sport,
+  custentityam_tier as tier,
+  custentityam_doors as doors,
+  custentityam_buyer_name as buyer_name,
+  custentityam_buyer_email as buyer_email,
+  custentityam_pop as pop,
+  custentityam_logistics as logistics,
+  custentityam_city_1 as city_1,
+  custentityam_city_2 as city_2,
+  custentityam_city_3 as city_3,
+  custentityam_state_1 as state_1,
+  custentityam_state_2 as state_2,
+  custentityam_state_3 as state_3
 FROM
   customer_category
   LEFT OUTER JOIN dim.customer customers ON (
@@ -102,6 +132,21 @@ GROUP BY
     ELSE FALSE
   END,
   b2b_d2c,
-  customer_category.email
+  customer_category.email,
+  custentityam_primary_sport,
+  custentityam_secondary_sport,
+  custentityam_tertiary_sport,
+  custentityam_tier,
+  custentityam_doors,
+  custentityam_buyer_name,
+  custentityam_buyer_email,
+  custentityam_pop,
+  custentityam_logistics,
+  custentityam_city_1,
+  custentityam_city_2,
+  custentityam_city_3,
+  custentityam_state_1,
+  custentityam_state_2,
+  custentityam_state_3
 ORDER BY
   customer_id_edw

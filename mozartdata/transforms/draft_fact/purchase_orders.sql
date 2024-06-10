@@ -8,7 +8,7 @@ WITH
       line.vendor_id_ns
     FROM
       dim.purchase_orders
-      LEFT OUTER JOIN draft_fact.purchase_order_line line ON line.transaction_id_ns = purchase_orders.transaction_id_ns
+      LEFT OUTER JOIN fact.purchase_order_line line ON line.transaction_id_ns = purchase_orders.transaction_id_ns
   ),
   aggregate_netsuite AS (
     SELECT DISTINCT
@@ -37,7 +37,7 @@ WITH
       parent_info.name
     FROM
       parent_info
-      LEFT OUTER JOIN draft_fact.purchase_order_line line ON line.order_id_edw = parent_info.order_id_edw
+      LEFT OUTER JOIN fact.purchase_order_line line ON line.order_id_edw = parent_info.order_id_edw
   ),
   aggregates AS (
     SELECT
@@ -91,9 +91,15 @@ WITH
           WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_received
           ELSE 0
         END
-      ) AS amount_received
+      ) AS amount_received,
+      SUM(
+        CASE
+          WHEN plain_name NOT IN ('Tax', 'Shipping') THEN amount_landed_costs
+          ELSE 0
+        END
+      ) AS amount_landed_costs
     FROM
-      fact.purchase_order_item
+      draft_fact.purchase_order_item
     GROUP BY
       order_id_edw
   )
@@ -114,7 +120,8 @@ SELECT
   rate_billed,
   amount_ordered,
   amount_billed,
-  amount_received
+  amount_received,
+  amount_landed_costs
 FROM
   aggregate_netsuite order_level
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = order_level.order_id_edw

@@ -1,15 +1,3 @@
-WITH
-  line_amount AS (
-    SELECT
-      gt.transaction_id_ns,
-      SUM(gt.net_amount) net_amount
-    FROM
-      fact.gl_transaction gt
-    WHERE
-      gt.account_number BETWEEN 4000 AND 4999
-    GROUP BY
-      gt.transaction_id_ns
-  )
 SELECT DISTINCT
   CONCAT(
     item_detail.order_id_edw,
@@ -64,7 +52,14 @@ SELECT DISTINCT
       item_detail.order_id_edw,
       item_detail.transaction_id_ns
   ) order_line_quantity,
-  la.net_amount AS order_line_amount,
+  sum(item_detail.amount_revenue) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_revenue,
+  sum(item_detail.amount_product) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_product,
+  sum(item_detail.amount_discount) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_discount,
+  sum(item_detail.amount_shipping) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_shipping,
+  sum(item_detail.amount_refunded) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_refunded,
+  sum(item_detail.amount_tax) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_tax,
+  sum(item_detail.amount_paid) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_paid,
+  sum(item_detail.amount_cogs) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_cogs,
   number.trackingnumber tracking_number,
   FIRST_VALUE(item_detail.location IGNORE NULLS) over (
     PARTITION BY
@@ -80,7 +75,6 @@ FROM
   LEFT OUTER JOIN netsuite.customer customer ON customer.id = tran.entity
   LEFT OUTER JOIN netsuite.trackingnumbermap map ON map.transaction = item_detail.transaction_id_ns
   LEFT OUTER JOIN netsuite.trackingnumber number ON number.id = map.trackingnumber
-  LEFT OUTER JOIN line_amount la ON item_detail.transaction_id_ns = la.transaction_id_ns
 WHERE
   item_detail.record_type IN (
     'cashsale',

@@ -11,7 +11,7 @@ WITH
       sum(unit_rate) AS unit_rate_ordered,
       SUM(amount_inventory) AS amount_ordered
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
       record_type = 'purchaseorder'
     GROUP BY
@@ -33,7 +33,7 @@ WITH
       sum(unit_rate) AS unit_rate_billed,
       SUM(amount_billed) AS amount_billed
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
       record_type = 'vendorbill'
     GROUP BY
@@ -55,7 +55,7 @@ WITH
       SUM(amount_inventory) AS amount_received,
       SUM(amount_landed_costs) AS amount_landed_costs
     FROM
-      fact.order_item_detail
+      draft_fact.order_item_detail
     WHERE
       record_type = 'itemreceipt'
     GROUP BY
@@ -86,7 +86,7 @@ SELECT DISTINCT
   received.amount_received,
   received.amount_landed_costs
 FROM
-  fact.order_item_detail detail
+  draft_fact.order_item_detail detail
   LEFT OUTER JOIN dim.product p ON p.product_id_edw = detail.item_id_ns
   LEFT OUTER JOIN ordered ON (
     ordered.order_id_edw = detail.order_id_edw

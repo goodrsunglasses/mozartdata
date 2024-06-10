@@ -33,7 +33,7 @@ grid_days as
     , ld.collection
     , ld.family
     , ld.earliest_d2c_sale
-    , sum(oi.amount_sold) launch_product_sales
+    , sum(oi.amount_product_sold) launch_product_sales
     , sum(oi.quantity_sold) launch_product_quantity
     from
       fact.order_item oi
@@ -62,7 +62,7 @@ grid_days as
       (o.sold_date - lo.earliest_d2c_sale) as days_since_launch,
       sum(lo.launch_product_sales) as launch_product_sales,
       sum(lo.launch_product_quantity) as launch_product_quantity,
-      SUM(o.amount_sold) total_sales,
+      SUM(o.amount_product_sold) total_sales,
       SUM(o.quantity_sold) total_quantity,
       COUNT(DISTINCT o.order_id_edw) as orders_containing_launch
     FROM

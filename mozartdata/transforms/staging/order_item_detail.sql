@@ -68,7 +68,8 @@ SELECT
       'Assembly',
       'OthCharge',
       'NonInvtPart',
-      'Payment'
+      'Payment',
+      'Discount'
     ) THEN tranline.item
   END AS product_id_edw,
   tranline.item AS item_id_ns,
@@ -90,6 +91,7 @@ SELECT
   SUM(tranline.costestimate) AS cost_estimate,
   tranline.location,
   tranline.createdfrom,
+  tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference as warranty_order_id_ns
 FROM
   all_transactions tran
@@ -154,8 +156,9 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location,
+  tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference
-  -- Shipping and Tax
+  -- Shipping and Tax and Discount
 UNION ALL
 SELECT
   tran.order_id_ns,
@@ -167,7 +170,8 @@ SELECT
       'Assembly',
       'OthCharge',
       'NonInvtPart',
-      'Payment'
+      'Payment',
+      'Discount'
     ) THEN tranline.item
   END AS product_id_edw,
   tranline.item AS item_id_ns,
@@ -181,6 +185,7 @@ SELECT
   CASE
     WHEN tranline.itemtype = 'ShipItem' THEN 'Shipping'
     WHEN tranline.itemtype = 'TaxItem' THEN 'Tax'
+    WHEN tranline.itemtype = 'Discount' THEN 'Discount'
     ELSE NULL
   END AS plain_name, --mostly used for QC purposes, easily being able to see whats going on in the line
   null as net_amount, --moved this to fact.order_item_detail
@@ -193,6 +198,7 @@ SELECT
   SUM(tranline.costestimate) AS cost_estimate,
   NULL AS location,
   tranline.createdfrom,
+  tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference as warranty_order_id_ns
 FROM
   all_transactions tran
@@ -210,7 +216,7 @@ WHERE
     'itemfulfillment',
     'cashrefund'
   )
-  AND tranline.itemtype IN ('ShipItem', 'TaxItem')
+  AND tranline.itemtype IN ('ShipItem', 'TaxItem','Discount')
   AND tranline.mainline = 'F'
   AND order_id_ns IS NOT NULL
   AND tran._FIVETRAN_DELETED = false
@@ -229,6 +235,8 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location,
+  tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference
 ORDER BY
   transaction_id_ns asc
+
