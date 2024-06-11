@@ -12,19 +12,6 @@ with
       try_to_date(posting_period,'Mon YYYY') is not null
 
   ),
-  recent_forecast as
-  (
-  select distinct
-    gb.budget_version
-  , left(gb.budget_version,4) as budget_version_year
-  , POSITION('V' in gb.budget_version) v_spot
-  , right(gb.budget_version,len(budget_version)-v_spot) as version_num
-  FROM
-    fact.gl_budget gb
---  WHERE
---    gb.budget_version != '2024 - V4' -- temporary exclude 2024 - V4 until it's finalized in NS
-  QUALIFY row_number() over (partition by budget_version_year order by version_num desc) = 1 
-  ),
   actual as
   (
     select
@@ -63,7 +50,7 @@ with
   budget as
   (
   select
-    concat(left(gb.budget_version,4),' Forecast') as budget_version
+    gb.budget_version
   , ga.account_number
   , gb.account_id_edw
   , gb.posting_period
@@ -73,9 +60,6 @@ with
   , gb.budget_amount
   FROM
     fact.gl_budget gb
-  inner join
-    recent_forecast rf
-    on gb.budget_version = rf.budget_version
   inner join
     dim.gl_account ga
     on ga.account_id_edw = gb.account_id_edw
