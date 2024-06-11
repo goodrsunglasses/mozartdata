@@ -1,4 +1,4 @@
-  with net_amount as
+with net_amount as
           (select gt.transaction_id_ns
                 , gt.item_id_ns
                 , sum(case when gt.account_number between 4000 and 4999 then gt.net_amount else 0 end)       amount_revenue
