@@ -28,7 +28,6 @@ use createdate converted instead of trandate
     , tal."ACCOUNT" as account_id_ns
     , ga.account_number
     , channel.name as channel
-    , tran.recordtype AS record_type
     , tran.trandate as transaction_timestamp
     , date(tran.trandate) as transaction_date
     , CONVERT_TIMEZONE('America/Los_Angeles', tran.trandate) AS transaction_timestamp_pst
@@ -99,7 +98,6 @@ use createdate converted instead of trandate
     , tal."ACCOUNT"
     , ga.account_number
     , channel.name
-    , tran.recordtype
     , tran.trandate
     , pe.eventdate
     , ap.posting_period
