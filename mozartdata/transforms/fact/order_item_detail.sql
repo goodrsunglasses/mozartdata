@@ -56,6 +56,7 @@ with net_amount as
         , staging.createdfrom
         , staging.warranty_order_id_ns
         , cnm.customer_id_edw
+        , staging.CUSTOMER_ID_NS,
         , exceptions.exception_flag
    FROM dim.parent_transactions parents
           LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns

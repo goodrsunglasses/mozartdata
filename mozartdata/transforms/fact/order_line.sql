@@ -15,6 +15,7 @@ SELECT DISTINCT
   channel.name AS channel,
   tran.saleschannel AS inventory_bucket,
   entity AS customer_id_ns,
+  item_detail.CUSTOMER_ID_EDW,
   customer.email,
   item_detail.warranty_order_id_ns,
   CASE
