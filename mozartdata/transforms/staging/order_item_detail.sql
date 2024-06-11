@@ -91,7 +91,8 @@ SELECT
   SUM(tranline.costestimate) AS cost_estimate,
   tranline.location,
   tranline.createdfrom,
-  tran.custbodywarranty_reference as warranty_order_id_ns
+  tran.custbodywarranty_reference as warranty_order_id_ns,
+  tran.entity as customer_id_ns
 FROM
   all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -155,7 +156,8 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location,
-  tran.custbodywarranty_reference
+  tran.custbodywarranty_reference,
+  tran.entity
   -- Shipping and Tax and Discount
 UNION ALL
 SELECT
@@ -196,7 +198,8 @@ SELECT
   SUM(tranline.costestimate) AS cost_estimate,
   NULL AS location,
   tranline.createdfrom,
-  tran.custbodywarranty_reference as warranty_order_id_ns
+  tran.custbodywarranty_reference as warranty_order_id_ns,
+  tran.entity as customer_id_ns
 FROM
   all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -232,7 +235,8 @@ GROUP BY
   plain_name,
   item_type,
   tranline.location,
-  tran.custbodywarranty_reference
+  tran.custbodywarranty_reference,
+  tran.entity
 ORDER BY
   transaction_id_ns asc
 

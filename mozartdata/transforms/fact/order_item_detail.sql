@@ -55,6 +55,7 @@
         , staging.location
         , staging.createdfrom
         , staging.warranty_order_id_ns
+        , cnm.customer_id_edw
         , exceptions.exception_flag
    FROM dim.parent_transactions parents
           LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns
@@ -62,4 +63,6 @@
                           ON exceptions.transaction_id_ns = parents.transaction_id_ns
           LEFT OUTER JOIN net_amount na
                           on staging.transaction_id_ns = na.transaction_id_ns and staging.item_id_ns = na.item_id_ns
+          LEFT OUTER JOIN fact.customer_ns_map cnm
+                          ON staging.customer_id_ns = cnm.customer_id_ns
    WHERE exceptions.exception_flag = FALSE
