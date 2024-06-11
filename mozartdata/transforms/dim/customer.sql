@@ -29,13 +29,13 @@ WITH distinct_customers
 					   store AS source
 				FROM staging.SHOPIFY_CUSTOMERS
 				UNION ALL
-				SELECT to_char(id),
+				SELECT to_char(customer_id_ns) as id,
 					   normalized_email,
 					   normalized_phone_number,
 					   'Netsuite' AS source
 				FROM staging.netsuite_customers
 				UNION ALL
-				SELECT to_char(id),
+				SELECT to_char(id) as id,
 					   normalized_email,
 					   normalized_phone_number,
 					   'Shipstation' AS source
@@ -106,7 +106,7 @@ WITH distinct_customers
 		 (SELECT customer_id_edw,
 				 primary_identifier,
 				 method,
-				 ARRAY_AGG(DISTINCT ns.id)   AS customer_id_ns,
+				 ARRAY_AGG(DISTINCT ns.customer_id_ns)   AS customer_id_ns,
 				 ARRAY_AGG(DISTINCT shop.distinct_id) AS customer_id_shopify,
 				 ARRAY_AGG(DISTINCT ship.id) AS customer_id_shipstation
 		  FROM prim_ident
@@ -123,7 +123,7 @@ WITH distinct_customers
 	 phone_join AS (SELECT customer_id_edw,
 						   primary_identifier,
 						   method,
-						   ARRAY_AGG(DISTINCT ns.id)   AS customer_id_ns,
+						   ARRAY_AGG(DISTINCT ns.customer_id_ns)   AS customer_id_ns,
 						   ARRAY_AGG(DISTINCT shop.distinct_id) AS customer_id_shopify,
 						   ARRAY_AGG(DISTINCT ship.id) AS customer_id_shipstation
 					FROM prim_ident
@@ -140,12 +140,12 @@ WITH distinct_customers
 	 source_join AS (SELECT customer_id_edw,
 							primary_identifier,
 							method,
-							ARRAY_AGG(DISTINCT ns.id)   AS customer_id_ns,
+							ARRAY_AGG(DISTINCT ns.customer_id_ns)   AS customer_id_ns,
 							ARRAY_AGG(DISTINCT shop.distinct_id) AS customer_id_shopify,
 							ARRAY_AGG(DISTINCT ship.id) AS customer_id_shipstation
 					 FROM prim_ident
 							  LEFT OUTER JOIN staging.netsuite_customers ns
-											  ON to_char(ns.id) = prim_ident.primary_identifier
+											  ON to_char(ns.customer_id_ns) = prim_ident.primary_identifier
 							  LEFT OUTER JOIN staging.SHOPIFY_CUSTOMERS shop
 											  ON shop.distinct_id = prim_ident.primary_identifier
 							  LEFT OUTER JOIN staging.SHIPSTATION_CUSTOMERS ship
