@@ -70,6 +70,8 @@ inner join
 left join
   grid g
   on tmd.event_date = g.date
+where
+  tc.funnel_stage in ('TOF','MOF','BOF')
 group by
   g.date
 , g.week_of_year
