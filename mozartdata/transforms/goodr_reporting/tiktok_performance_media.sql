@@ -47,7 +47,7 @@ with weeks as
     order by
       w.year_of_week
     , w.week_of_year
-  )select * from grid;
+  )
 select
   g.date
 , g.week_of_year
@@ -57,6 +57,7 @@ select
 , g.week_end_date
 , g.week_label
 , case when tc.funnel_stage in ('TOF','MOF') then 'TOF/MOF' else tc.funnel_stage end as funnel_stage
+, g.sales_season
 , sum(tmd.SPEND) as spend
 , sum(tmd.REVENUE)as revenue
 , sum(tmd.IMPRESSIONS) as impressions
@@ -81,7 +82,6 @@ group by
 , g.week_end_date
 , g.week_label
 , g.sales_season
-, tmd.event_date
 , case when tc.funnel_stage in ('TOF','MOF') then 'TOF/MOF' else tc.funnel_stage end
 order by
   g.date
