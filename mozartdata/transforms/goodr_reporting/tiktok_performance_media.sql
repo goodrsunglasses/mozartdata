@@ -62,7 +62,7 @@ select
 , sum(tmd.REVENUE)as revenue
 , sum(tmd.IMPRESSIONS) as impressions
 , sum(tmd.CLICKS) as clicks
-, sum(tmd.CONVERSION) as conversions
+, sum(tmd.CONVERSIONS) as conversions
 from
   fact.tiktok_campaign_metrics_daily tmd
 inner join
