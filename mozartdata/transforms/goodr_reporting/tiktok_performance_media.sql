@@ -44,20 +44,10 @@ with weeks as
     left join
       week_periods wp
       on w.week_group = wp.week_group
-    group by
-      w.date
-    , w.week_of_year
-    , w.year_of_week
-    , wp.period_start
-    , wp.period_end
-    , w.week_start_date
-    , w.week_end_date
-    , w.week_group
-    , w.sales_season
     order by
       w.year_of_week
     , w.week_of_year
-  )
+  )select * from grid;
 select
   g.date
 , g.week_of_year
@@ -69,7 +59,7 @@ select
 , tmd.event_date
 , case when tc.funnel_stage in ('TOF','MOF') then 'TOF/MOF' else tc.funnel_stage end as funnel_stage
 , sum(tmd.SPEND) as spend
-, sum(tmd.complete_payment*crd.value_per_complete_payment)as revenue
+, sum(tmd.REVENUE)as revenue
 , sum(tmd.IMPRESSIONS) as impressions
 , sum(tmd.CLICKS) as clicks
 , sum(tmd.CONVERSION) as conversions
