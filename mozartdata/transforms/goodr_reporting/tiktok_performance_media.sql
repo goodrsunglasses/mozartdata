@@ -74,7 +74,7 @@ select
 , sum(tmd.CLICKS) as clicks
 , sum(tmd.CONVERSION) as conversions
 from
-  fact.tiktok_metrics_daily tmd
+  fact.tiktok_campaign_metrics_daily tmd
 inner join
   dim.tiktok_campaigns tc
   on tmd.campaign_id_tiktok = tc.campaign_id_tiktok
