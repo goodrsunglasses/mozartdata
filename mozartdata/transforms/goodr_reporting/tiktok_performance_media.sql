@@ -56,7 +56,6 @@ select
 , g.week_start_date
 , g.week_end_date
 , g.week_label
-, tmd.event_date
 , case when tc.funnel_stage in ('TOF','MOF') then 'TOF/MOF' else tc.funnel_stage end as funnel_stage
 , sum(tmd.SPEND) as spend
 , sum(tmd.REVENUE)as revenue
