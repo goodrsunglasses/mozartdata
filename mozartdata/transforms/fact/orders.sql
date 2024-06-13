@@ -9,6 +9,7 @@ WITH
       line.email,
       line.customer_id_ns,
       line.customer_id_edw,
+      line.tier,
       line.location,
       line.warranty_order_id_ns,
       customer_category AS b2b_d2c,
