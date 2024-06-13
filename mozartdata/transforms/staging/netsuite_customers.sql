@@ -29,7 +29,9 @@ SELECT cust.id                                                                 A
 	   cust.custentityam_primary_sport as primary_sport,
      cust.custentityam_secondary_sport as secondary_sport,
      cust.custentityam_tertiary_sport as tertiary_sport,
-     cust.custentityam_tier as tier,
+     tiers.id as tier_id_ns,
+     tiers.name as tier_ns,
+     case when tiers.name = 'Named' then case when lower(cust.companyname) like 'fleet feet%' then 'Fleet Feet' else cust.companyname end else tiers.name end as tier,
      cust.custentityam_doors as doors,
      cust.custentityam_buyer_name as buyer_name,
      cust.custentityam_buyer_email as buyer_email,
@@ -45,6 +47,8 @@ SELECT cust.id                                                                 A
 FROM netsuite.customer cust
 		 LEFT JOIN netsuite.customer parent
 				   ON cust.parent = parent.id
+    LEFT JOIN netsuite.CUSTOMLISTB2B_MATRIX_TIERS tiers
+          ON cust.custentityam_tier = tiers.id
 WHERE cust._FIVETRAN_DELETED = FALSE
   AND (parent._FIVETRAN_DELETED = FALSE OR parent._FIVETRAN_DELETED IS NULL)
 
