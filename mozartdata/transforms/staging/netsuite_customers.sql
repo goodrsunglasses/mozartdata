@@ -1,5 +1,5 @@
-CREATE OR REPLACE TABLE staging.netsuite_customers
-	COPY GRANTS AS
+-- CREATE OR REPLACE TABLE staging.netsuite_customers
+-- 	COPY GRANTS AS
 SELECT cust.id                                                                 AS customer_id_ns,
 	   cust.altname                                                            AS customer_name,
 	   cust.entityid                                                           AS customer_number,
@@ -29,9 +29,11 @@ SELECT cust.id                                                                 A
 	   cust.custentityam_primary_sport as primary_sport,
      cust.custentityam_secondary_sport as secondary_sport,
      cust.custentityam_tertiary_sport as tertiary_sport,
-     tiers.id as tier_id_ns,
-     tiers.name as tier_ns,
-     case when tiers.name = 'Named' then case when lower(cust.companyname) like 'fleet feet%' then 'Fleet Feet' else cust.companyname end else tiers.name end as tier,
+     coalesce(parent_tier.id,tiers.id) as tier_id_ns,
+     coalesce(parent_tier.name,tiers.name) as tier_ns,
+     case when coalesce(parent_tier.name,tiers.name) = 'Named' then
+       case when lower(cust.companyname) like '%fleet feet%' then 'Fleet Feet' else cust.companyname
+       end else coalesce(parent_tier.name,tiers.name)  end as tier,
      cust.custentityam_doors as doors,
      cust.custentityam_buyer_name as buyer_name,
      cust.custentityam_buyer_email as buyer_email,
@@ -49,6 +51,7 @@ FROM netsuite.customer cust
 				   ON cust.parent = parent.id
     LEFT JOIN netsuite.CUSTOMLISTB2B_MATRIX_TIERS tiers
           ON cust.custentityam_tier = tiers.id
+    LEFT JOIN netsuite.CUSTOMLISTB2B_MATRIX_TIERS parent_tier
+          ON parent.custentityam_tier = parent_tier.id
 WHERE cust._FIVETRAN_DELETED = FALSE
   AND (parent._FIVETRAN_DELETED = FALSE OR parent._FIVETRAN_DELETED IS NULL)
-
