@@ -94,6 +94,7 @@ use createdate converted instead of trandate
     , tran.recordtype
     , tal."ACCOUNT"
     , ga.account_number
+    , ga.budget_category
     , channel.name
     , tran.trandate
     , pe.eventdate
