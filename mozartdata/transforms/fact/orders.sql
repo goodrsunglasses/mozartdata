@@ -177,6 +177,7 @@ SELECT
   orders.order_id_edw,
   orders.order_id_ns,
   aggregate_netsuite.channel,
+  aggregate_netsuite.customer_id_ns,
   aggregate_netsuite.customer_id_edw,
   location.name as location,
   aggregate_netsuite.warranty_order_id_ns,

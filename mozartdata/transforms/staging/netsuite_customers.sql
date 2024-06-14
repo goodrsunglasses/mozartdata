@@ -1,5 +1,12 @@
 -- CREATE OR REPLACE TABLE staging.netsuite_customers
 -- 	COPY GRANTS AS
+with parents_list as
+  (
+    select distinct
+      parent as customer_id_ns
+    from
+      netsuite.customer
+  )
 SELECT cust.id                                                                 AS customer_id_ns,
 	   cust.altname                                                            AS customer_name,
 	   cust.entityid                                                           AS customer_number,
@@ -8,6 +15,7 @@ SELECT cust.id                                                                 A
 	   parent.altname                                                          AS parent_name,
 	   cust.isperson                                                           AS is_person_flag,
 	   CASE WHEN cust.parent IS NULL THEN TRUE ELSE FALSE END                  AS is_parent_flag,
+	   case when pl.customer_id_ns is not null then true else false end        AS has_children_flag,
 	   cust.email,
 	   NULLIF(LOWER(cust.email), '')                                        AS normalized_email,
 	   cust.PHONE,
@@ -47,7 +55,9 @@ SELECT cust.id                                                                 A
      cust.custentityam_state_3 as state_3,
 	   cust.duplicate
 FROM netsuite.customer cust
-		 LEFT JOIN netsuite.customer parent
+    LEFT JOIN parents_list pl
+      on cust.id = pl.customer_id_ns
+		LEFT JOIN netsuite.customer parent
 				   ON cust.parent = parent.id
     LEFT JOIN netsuite.CUSTOMLISTB2B_MATRIX_TIERS tiers
           ON cust.custentityam_tier = tiers.id
