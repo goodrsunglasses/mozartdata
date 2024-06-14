@@ -1,10 +1,11 @@
 SELECT
   bl."ACCOUNT" as account_id_edw,
   ga.account_number,
-  category.name AS budget_version,
+  version.name AS budget_version,
   cseg7.name as channel,
   bl.department as department_id_ns,
   d.name as department,
+  ga.budget_category,
   bl.period as period_id_ns,
   ap.posting_period as posting_period,
   SUM(bl.amount) AS budget_amount
@@ -14,8 +15,8 @@ FROM
     dim.gl_account ga 
   ON ga.account_id_edw = bl."ACCOUNT"
   LEFT JOIN 
-    netsuite.budgetcategory category 
-    ON category.id = bl.category
+    netsuite.budgetcategory version
+    ON version.id = bl.category
   LEFT JOIN 
     netsuite.customrecord_cseg7 cseg7 
     ON cseg7.id = bl.cseg7

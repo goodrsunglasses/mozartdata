@@ -35,6 +35,7 @@ select
   when acct.accttype in ('COGS','Expense','OthExpense') then 'Expenses'
   when acct.accttype in ('NonPosting') then 'Other'
   end as account_category
+, bc.name as budget_category
 , case
   when account_number between 1600 and 1699 then 'Credit'
   when account_number in (1800, 1810, 1820) then 'Credit'
@@ -57,6 +58,9 @@ from
 left join
   netsuite."ACCOUNT" p
   on acct.parent = p.id
+left join
+  netsuite.CUSTOMLISTBUDGET_CATEGORY_LIST bc
+  on acct.custrecordbudget_category = bc.id
 where
   acct._fivetran_deleted = false
   and (p._fivetran_deleted = false or p._fivetran_deleted is null)

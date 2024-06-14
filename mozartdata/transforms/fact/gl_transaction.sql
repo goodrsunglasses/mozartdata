@@ -27,6 +27,7 @@ use createdate converted instead of trandate
     , tal."ACCOUNT" as account_id_edw
     , tal."ACCOUNT" as account_id_ns
     , ga.account_number
+    , ga.budget_category
     , channel.name as channel
     , tran.trandate as transaction_timestamp
     , date(tran.trandate) as transaction_date
