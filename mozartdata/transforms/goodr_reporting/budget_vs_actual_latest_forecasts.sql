@@ -38,6 +38,7 @@ with
     , sum(gt.net_amount) amount
     -- , sum(gt.amount_debit) amount_debit
     -- , sum(gt.amount_transaction_positive) amount_transaction_positive
+    , ga.budget_category
     from
       fact.gl_transaction gt
     inner join
@@ -59,6 +60,7 @@ with
     , gt.department
     , gt.department_id_ns
     , gt.posting_period
+    , ga.budget_category
   ),
   budget as
   (
@@ -71,6 +73,7 @@ with
   , gb.department
   , gb.department_id_ns
   , gb.budget_amount
+  , ga.budget_category
   FROM
     fact.gl_budget gb
   inner join
