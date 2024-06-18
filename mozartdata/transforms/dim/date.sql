@@ -37,24 +37,37 @@ FROM CTE_MY_DATE
 ), week_periods as
 (
 select distinct
-  dd.date
-, dd.week_start_date as media_period_start
+  dd.week_start_date as media_period_start
 , dateadd(day, 13, dd.week_start_date) as media_period_end
 , CEIL(week_of_year / 2.0) AS media_week_group
 , CONCAT('Week ', CEIL(week_of_year / 2.0) * 2 - 1, ' / ', CEIL(week_of_year / 2.0)  * 2) as media_week_label
+, dd.week_year
+, dd.week_of_year
 from
     dim_date dd
+), distinct_weeks as
+(
+    select
+        wp.week_year
+    ,   wp.week_of_year
+    ,   wp.media_week_group
+    ,   wp.media_week_label
+    ,   min(wp.media_period_start) over (partition by wp.media_week_group, wp.week_year) as media_period_start
+    ,   min(wp.media_period_end) over (partition by wp.media_week_group, wp.week_year) as media_period_end
+    from
+        week_periods wp
 )
 select
     dd.*
 , min(dd.date) over (partition by dd.sales_season, dd.year) as season_start_date
 , max(dd.date) over (partition by dd.sales_season, dd.year) as season_end_date
-, wp.media_period_start
-, wp.media_period_end
-, wp.media_week_group
-, wp.media_week_label
+, dw.media_period_start
+, dw.media_period_end
+, dw.media_week_group
+, dw.media_week_label
 from
     dim_date dd
 left join
-    week_periods wp
-on dd.date = wp.date
+    distinct_weeks dw
+on dd.week_of_year = dw.week_of_year
+and dd.week_year = dw.week_year
