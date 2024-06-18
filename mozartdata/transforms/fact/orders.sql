@@ -56,6 +56,7 @@ WITH
       ns_parent.email,
       ns_parent.customer_id_ns,
       ns_parent.customer_id_edw,
+      ns_parent.tier,
       ns_parent.location,
       ns_parent.warranty_order_id_ns,
       ns_parent.b2b_d2c,
@@ -179,6 +180,7 @@ SELECT
   aggregate_netsuite.channel,
   aggregate_netsuite.customer_id_ns,
   aggregate_netsuite.customer_id_edw,
+  aggregate_netsuite.tier,
   location.name as location,
   aggregate_netsuite.warranty_order_id_ns,
   coalesce(
