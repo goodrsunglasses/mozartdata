@@ -52,8 +52,8 @@ from
     ,   wp.week_of_year
     ,   wp.media_week_group
     ,   wp.media_week_label
-    ,   min(wp.media_period_start) over (partition by wp.media_week_group, wp.week_year) as media_period_start
-    ,   min(wp.media_period_end) over (partition by wp.media_week_group, wp.week_year) as media_period_end
+    ,   min(wp.media_period_start) over (partition by wp.media_week_group, wp.week_year) as media_period_start_date
+    ,   min(wp.media_period_end) over (partition by wp.media_week_group, wp.week_year) as media_period_end_date
     from
         week_periods wp
 )
@@ -61,8 +61,8 @@ select
     dd.*
 , min(dd.date) over (partition by dd.sales_season, dd.year) as season_start_date
 , max(dd.date) over (partition by dd.sales_season, dd.year) as season_end_date
-, dw.media_period_start
-, dw.media_period_end
+, dw.media_period_start_date
+, dw.media_period_end_date
 , dw.media_week_group
 , dw.media_week_label
 from
