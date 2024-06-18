@@ -1,4 +1,3 @@
-CREATE OR REPLACE TABLE fact.customer_ns_map COPY GRANTS AS
 SELECT
   cust.customer_id_edw,
   ns_ids.value,

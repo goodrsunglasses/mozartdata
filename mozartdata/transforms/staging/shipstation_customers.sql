@@ -1,5 +1,3 @@
-CREATE OR REPLACE TABLE staging.shipstation_customers
-            COPY GRANTS  as
 SELECT customerid AS id,
 	   name,
 	   phone,

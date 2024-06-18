@@ -1,6 +1,4 @@
 --The entire point of this table is to comfortably union all shopify product information onto one table, as its split between 5 connectors
-CREATE OR REPLACE TABLE staging.shopify_customers
-	COPY GRANTS AS
 SELECT id,
 	   'Goodr.com'                                                        AS store,
 	   'D2C'                                                              AS category,

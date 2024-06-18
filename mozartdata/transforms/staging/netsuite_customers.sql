@@ -1,5 +1,3 @@
--- CREATE OR REPLACE TABLE staging.netsuite_customers
--- 	COPY GRANTS AS
 with parents_list as
   (
     select distinct
