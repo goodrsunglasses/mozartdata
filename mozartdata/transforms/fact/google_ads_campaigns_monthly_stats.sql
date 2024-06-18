@@ -1,5 +1,5 @@
 select
-    g_ads_campaign_id
+    campaign_id_g_ads
     , name
     , month(date) as month
     , year(date) as year
@@ -41,7 +41,7 @@ select
 from
     fact.google_ads_campaigns_daily_stats as camp_d
 group by
-    g_ads_campaign_id
+    campaign_id_g_ads
     , name
     , month(camp_d.date)
     , year(camp_d.date)

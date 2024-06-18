@@ -1,5 +1,5 @@
 SELECT
-    id as g_ads_campaign_id
+    id as campaign_id_g_ads
   , name
 FROM
     google_ads_us.campaign_history
