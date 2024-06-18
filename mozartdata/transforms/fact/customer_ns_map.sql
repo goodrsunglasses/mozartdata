@@ -1,6 +1,5 @@
 SELECT
   cust.customer_id_edw,
-  ns_ids.value,
   nc.*
 FROM
   dim.CUSTOMER cust
