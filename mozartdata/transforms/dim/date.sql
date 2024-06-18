@@ -47,6 +47,8 @@ from
 )
 select
     dd.*
+, min(dd.date) over (partition by dd.sales_season, dd.year) as season_start_date
+, max(dd.date) over (partition by dd.sales_season, dd.year) as season_end_date
 , wp.media_period_start
 , wp.media_period_end
 , wp.media_week_group
