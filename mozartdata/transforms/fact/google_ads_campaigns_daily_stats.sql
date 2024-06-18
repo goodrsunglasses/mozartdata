@@ -1,5 +1,5 @@
 SELECT
-    camp_s.id
+    camp_info.campaign_id_g_ads
     , DATE_TRUNC('WEEK',
         DATEADD('DAY',
             MOD(
@@ -9,9 +9,8 @@ SELECT
             , 2)
         * -7, camp_s.date)
     ) as period_start
-    , 'WEEKS ' || WEEKOFYEAR(period_start) || '/' || WEEKOFYEAR(DATEADD('week', 1, period_start)) as week_nums
+    , 'WEEKS ' || WEEKOFYEAR(period_start) || ' / ' || WEEKOFYEAR(DATEADD('week', 1, period_start)) as week_nums
     , camp_s.date
-    , camp_info.campaign_id_g_ads
     , camp_info.name
     , round(sum(camp_s.conversions_value), 2) AS revenue
     , round(sum(camp_s.cost_micros) / 1000000, 2) AS spend
@@ -27,8 +26,7 @@ on
 where
     camp_s.date >= '2023-12-31'
 GROUP BY
-    camp_s.id
-    , camp_info.campaign_id_g_ads
+    camp_info.campaign_id_g_ads
     , camp_info.name
     , camp_s.date
 ORDER BY
