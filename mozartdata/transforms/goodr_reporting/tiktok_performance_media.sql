@@ -86,7 +86,7 @@ group by
 , g.week_end_date
 , g.week_label
 , g.sales_season
-, case when tc.funnel_stage in ('TOF','MOF') then 'TOF/MOF' else tc.funnel_stage end
+, tc.funnel_stage
 order by
   g.date
 , funnel_stage
