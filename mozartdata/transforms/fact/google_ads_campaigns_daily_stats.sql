@@ -9,7 +9,7 @@ SELECT
             , 2)
         * -7, camp_s.date)
     ) as period_start
-    , 'WEEKS ' || WEEKOFYEAR(period_start) || '/' || WEEKOFYEAR(DATEADD('week', 1, period_start)) as week_nums
+    , 'WEEKS ' || WEEKOFYEAR(period_start) || ' / ' || WEEKOFYEAR(DATEADD('week', 1, period_start)) as week_nums
     , camp_s.date
     , camp_info.campaign_id_g_ads
     , camp_info.name
