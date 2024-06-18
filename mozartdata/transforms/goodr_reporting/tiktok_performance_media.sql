@@ -37,7 +37,7 @@ with weeks as
     , min(wp.period_end) over (partition by w.week_of_year) period_end
     , w.week_start_date
     , w.week_end_date
-    , CONCAT('Week ', w.week_group * 2 - 1, '/', w.week_group * 2) AS week_label
+    , CONCAT('Week ', w.week_group * 2 - 1, ' / ', w.week_group * 2) AS week_label
     , w.sales_season
     from
       weeks w
@@ -57,6 +57,10 @@ select
 , g.week_end_date
 , g.week_label
 , case when tc.funnel_stage in ('TOF','MOF') then 'TOF/MOF' else tc.funnel_stage end as funnel_stage
+, case 
+  when tc.funnel_stage in ('TOF','MOF') then 'Awareness' 
+  when tc.funnel_stage in ('BOF') then 'Performance'
+  else 'Other' end as marketing_strategy
 , g.sales_season
 , sum(tmd.SPEND) as spend
 , sum(tmd.REVENUE)as revenue
