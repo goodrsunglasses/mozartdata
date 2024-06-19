@@ -1,57 +1,78 @@
-with
-    tiktok as
+WITH
+  tiktok   AS
     (
-select
-  tmd.event_date
-, 'tiktok' as social_channel
-, case when tc.funnel_stage in ('TOF','MOF') then 'TOF/MOF' else tc.funnel_stage end as funnel_stage
-, case
-  when tc.funnel_stage in ('TOF','MOF') then 'Awareness'
-  when tc.funnel_stage in ('BOF') then 'Performance'
-  else 'Other' end as marketing_strategy
-, sum(tmd.SPEND) as spend
-, sum(tmd.REVENUE)as revenue
-, sum(tmd.IMPRESSIONS) as impressions
-, sum(tmd.CLICKS) as clicks
-, sum(tmd.CONVERSIONS) as conversions
-from
-  fact.tiktok_campaign_metrics_daily tmd
-inner join
-  dim.tiktok_campaigns tc
-  on tmd.campaign_id_tiktok = tc.campaign_id_tiktok
-where
-  tc.funnel_stage in ('TOF','MOF','BOF')
-group by
-  tmd.event_date
-, tc.funnel_stage
-    )
-select
+      SELECT
+        tmd.event_date
+      , 'tiktok'             AS social_channel
+      , CASE
+          WHEN tc.funnel_stage IN ('TOF', 'MOF') THEN 'Awareness'
+          WHEN tc.funnel_stage IN ('BOF') THEN 'Performance'
+          ELSE 'Other' END   AS marketing_strategy
+      , SUM(tmd.spend)       AS spend
+      , SUM(tmd.revenue)     AS revenue
+      , SUM(tmd.impressions) AS impressions
+      , SUM(tmd.clicks)      AS clicks
+      , SUM(tmd.conversions) AS conversions
+      FROM
+        fact.tiktok_campaign_metrics_daily tmd
+        INNER JOIN
+          dim.tiktok_campaigns tc
+          ON tmd.campaign_id_tiktok = tc.campaign_id_tiktok
+      WHERE
+        tc.funnel_stage IN ('TOF', 'MOF', 'BOF')
+      GROUP BY
+        tmd.event_date
+      , tc.funnel_stage
+      )
+, g_ads    AS
+    (
+      SELECT
+        ga.date         AS event_date
+      , 'google ads'    AS social_channel
+      , case when ga.funnel_stage not in ('Awareness','Performance') then 'Other' else ga.funnel_stage end AS marketing_strategy
+      , ga.spend
+      , ga.revenue
+      , ga.impressions
+      , ga.clicks
+      , ga.conversions
+      FROM
+        fact.google_ads_daily_stats ga
+      )
+, combined AS
+    (
+      SELECT *
+      FROM
+        tiktok
+      UNION ALL
+      SELECT *
+      FROM
+        g_ads
+      )
+SELECT
   d.date
 , d.week_of_year
 , d.media_period_start_date
 , d.media_period_end_date
 , d.media_week_label
-, t.social_channel
-, t.funnel_stage
-, t.marketing_strategy
-, sum(t.clicks) as clicks
-, sum(t.conversions) as conversions
-, sum(t.impressions) as impressions
-, sum(t.revenue) as revenue
-, sum(t.spend) as spend
-from
-    dim.date d
-left join
-    tiktok t
-    on t.event_date = d.date
-where
-    d.week_year >= 2024
-group by
-    d.date
+, c.social_channel
+, c.marketing_strategy
+, SUM(c.clicks)      AS clicks
+, SUM(c.conversions) AS conversions
+, SUM(c.impressions) AS impressions
+, SUM(c.revenue)     AS revenue
+, SUM(c.spend)       AS spend
+FROM
+  dim.date d
+  LEFT JOIN
+    combined c
+    ON c.event_date = d.date
+WHERE
+  d.week_year >= 2024
+GROUP BY
+  d.date
 , d.week_of_year
 , d.media_period_start_date
 , d.media_period_end_date
 , d.media_week_label
-, t.social_channel
-, t.funnel_stage
-, t.marketing_strategy
+, c.social_channel
+, c.marketing_strategy
