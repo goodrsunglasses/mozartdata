@@ -1,6 +1,6 @@
 Select 
-  date
+  id
 from
-  dim.date
+    netsuite."ACCOUNT"
 limit 
   1
