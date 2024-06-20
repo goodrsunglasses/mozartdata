@@ -1,3 +1,5 @@
+CREATE OR REPLACE TABLE dim.fulfillment
+    COPY GRANTS as
 WITH edw_fulfillments AS (SELECT DISTINCT fulfillment_id_edw,
                                           order_id_edw
                           FROM (SELECT ordernumber                               AS order_id_edw,
@@ -8,9 +10,10 @@ WITH edw_fulfillments AS (SELECT DISTINCT fulfillment_id_edw,
                                 SELECT order_number                              AS order_id_edw,
                                        tracking_number                           AS trackingnumber,
                                        CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw
-                                FROM stord.stord_shipment_confirmations_8589936822)
-                          union select order_
-                          ),
+                                FROM stord.stord_shipment_confirmations_8589936822
+                                union
+                                select order_id_ns, trackingnumber, fulfillment_id_edw
+                                from staging.NETSUITE_FULFILLMENTS)),
      shipstation AS (SELECT ordernumber                               AS order_id_edw,
                             trackingnumber,
                             CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw,

@@ -1,3 +1,5 @@
+CREATE OR REPLACE TABLE fact.fulfillment_item_detail
+    COPY GRANTS as
 SELECT fulfillment_id_edw,
 	   fulfill.ORDER_ID_EDW,
 	   'Shipstation'                           AS source,
