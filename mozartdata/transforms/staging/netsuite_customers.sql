@@ -1,3 +1,4 @@
+create or REPLACE TABLE staging.netsuite_customers COPY GRANTS as
 with parents_list as
   (
     select distinct
@@ -25,7 +26,8 @@ SELECT cust.id                                                                 A
 	   cust.LASTORDERDATE as last_order_date,
 	   cust.lastsaledate as last_sale_date,
 	   cust.entitytitle as entity_title,
-	   cust.category,
+	   cust.category as category_id_ns,
+	   custcat.name as category,
 	   cust.companyname as company_name,
 	   cust.CUSTENTITY_BOOMI_EXTERNALID,
 	   cust.CUSTENTITY_BOOMI_SOURCE,
@@ -37,7 +39,7 @@ SELECT cust.id                                                                 A
      cust.custentityam_secondary_sport as secondary_sport_id_ns,
      sec.name as secondary_sport,
      cust.custentityam_tertiary_sport as tertiary_sport_id_ns,
-     ter.name as tertiary_sport_id_ns,
+     ter.name as tertiary_sport,
      coalesce(parent_tier.id,tiers.id) as tier_id_ns,
      coalesce(parent_tier.name,tiers.name) as tier_ns,
      case when coalesce(parent_tier.name,tiers.name) = 'Named' then
@@ -76,5 +78,7 @@ FROM netsuite.customer cust
           ON cust.custentityam_secondary_sport = sec.id
     LEFT JOIN netsuite.CUSTOMLISTB2B_MATRIX_SUBCATS ter
           ON cust.custentityam_tertiary_sport = ter.id
+    LEFT JOIN netsuite.customercategory custcat
+          ON cust.category = custcat.id
 WHERE cust._FIVETRAN_DELETED = FALSE
   AND (parent._FIVETRAN_DELETED = FALSE OR parent._FIVETRAN_DELETED IS NULL)
