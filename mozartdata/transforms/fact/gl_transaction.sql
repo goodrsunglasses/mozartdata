@@ -50,6 +50,7 @@ use createdate converted instead of trandate
     , tl.item as item_id_ns
     , tran.entity as customer_id_ns
     , cnm.customer_id_edw
+    , cnm.tier
     , tl.department as department_id_ns
     , d.name as department
     from
@@ -105,6 +106,7 @@ use createdate converted instead of trandate
     , createdfrom
     , tran.entity
     , cnm.customer_id_edw
+    , cnm.tier
     , tl.department
     , tl.item
     , d.name
