@@ -8,6 +8,7 @@ WITH
       , ol.transaction_id_ns
       , ol.transaction_number_ns
       , ol.customer_id_ns
+      , ol.transaction_created_timestamp_pst
       , ol.transaction_date AS refund_date
       , ol.amount_revenue
       , ol.amount_product
@@ -25,6 +26,7 @@ SELECT
 , r.channel
 , r.transaction_id_ns
 , r.transaction_number_ns
+, r.transaction_created_timestamp_pst
 , r.customer_id_ns
 , o.sold_date as order_sold_date
 , date_trunc(month,o.sold_date) as order_sold_month
