@@ -1,5 +1,5 @@
 --The entire point of this table is to comfortably union all shopify product information onto one table, as its split between 5 connectors
-SELECT id,
+    SELECT id,
        'Goodr.com'                                                        AS store,
        'D2C'                                                              AS category,
        id || '_' || store                                                 AS distinct_id,--Needed because shopify reuses ID's between stores
