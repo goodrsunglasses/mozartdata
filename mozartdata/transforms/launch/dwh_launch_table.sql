@@ -1,1 +1,6 @@
-Select 1
+Select 
+  date
+from
+  dim.date
+limit 
+  1
