@@ -1,6 +1,8 @@
 /*
 Purpose: This table ingests and transforms netsuite.accoutingperiod into the EDW. This will be used for GL analysis
 
+launch.dwh_launch_table controls this base table's launch.
+
 */
 select
   ap.id as accounting_period_id
