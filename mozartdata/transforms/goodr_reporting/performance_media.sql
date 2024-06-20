@@ -68,6 +68,7 @@ FROM
     ON c.event_date = d.date
 WHERE
   d.week_year >= 2024
+and d.date <= current_date()
 GROUP BY
   d.date
 , d.week_of_year
