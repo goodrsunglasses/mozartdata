@@ -1,4 +1,4 @@
-SELECT
+SELECT distinct 
   detail.order_id_edw,
   detail.transaction_created_date_pst as sold_date, --renamed it this because this report only looks at the sold transaction types
   gltran.date_posted_pst,
