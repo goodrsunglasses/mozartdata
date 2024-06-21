@@ -50,3 +50,4 @@ FROM
 WHERE
 detail.product_id_edw is not null and orders.b2b_d2c = 'B2B'
   AND detail.record_type IN ('cashsale', 'invoice')
+and gltran.posting_flag = true
