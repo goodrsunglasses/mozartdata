@@ -50,7 +50,6 @@ SELECT
   p.merchandise_division,
   o.customer_id_edw,
   c.customer_name,
-  c.primary_id_flag,
   c.primary_sport,
   c.secondary_sport,
   c.tertiary_sport,
@@ -68,7 +67,6 @@ FROM
   LEFT OUTER JOIN booked_shipping addy ON addy.order_id_edw = oi.order_id_edw
 WHERE
   o.b2b_d2c = 'B2B'
-  AND c.primary_id_flag = 'true'
   AND oi.product_id_edw IS NOT NULL
 ----------------------------------
 --CTE for future addition
