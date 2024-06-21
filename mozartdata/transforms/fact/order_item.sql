@@ -103,6 +103,8 @@ WITH
 SELECT DISTINCT
   detail.order_id_edw,
   detail.order_id_ns,
+  detail.CUSTOMER_ID_EDW,
+  detail.customer_id_ns,
   CONCAT(detail.order_id_edw, '_', detail.item_id_ns) AS order_item_id,
   detail.product_id_edw,
   detail.item_id_ns,

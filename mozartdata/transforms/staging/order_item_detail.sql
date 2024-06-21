@@ -92,7 +92,8 @@ SELECT
   tranline.location,
   tranline.createdfrom,
   tran.SHIPPINGADDRESS,
-  tran.custbodywarranty_reference as warranty_order_id_ns
+  tran.custbodywarranty_reference as warranty_order_id_ns,
+  tran.entity as customer_id_ns
 FROM
   all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -157,7 +158,8 @@ GROUP BY
   item_type,
   tranline.location,
   tran.SHIPPINGADDRESS,
-  tran.custbodywarranty_reference
+  tran.custbodywarranty_reference,
+  tran.entity
   -- Shipping and Tax and Discount
 UNION ALL
 SELECT
@@ -199,7 +201,8 @@ SELECT
   NULL AS location,
   tranline.createdfrom,
   tran.SHIPPINGADDRESS,
-  tran.custbodywarranty_reference as warranty_order_id_ns
+  tran.custbodywarranty_reference as warranty_order_id_ns,
+  tran.entity as customer_id_ns
 FROM
   all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -236,7 +239,8 @@ GROUP BY
   item_type,
   tranline.location,
   tran.SHIPPINGADDRESS,
-  tran.custbodywarranty_reference
+  tran.custbodywarranty_reference,
+  tran.entity
 ORDER BY
   transaction_id_ns asc
 
