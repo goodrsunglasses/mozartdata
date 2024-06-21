@@ -2,8 +2,6 @@
 --isolating out the vast majority of customers who do not need special care, from the statistically small but annoying few that have whacky amounts of data splay attached to them.
 --	Obviously this is a bit more enumerated than it needs to be, and hypothetically less efficient, but the benefit of doing this way is that you can QC the living shit out of every single level and
 --immediately  pivot to report given discrepancies and exclusions that cause data splay at a given case incredibly quickly, rather than combining everything and subsequently getting lost when we run into problems later.
-CREATE OR REPLACE TABLE dim.customer
-	COPY GRANTS AS
 WITH distinct_customers
 		 AS -- Ok so the idea here is that you start by selecting a distinct list of all the combinations of phone numbers and emails from all our data sources that have customer data
 	--CAVEAT HERE IS THAT WHENEVER WE ADD A NEW SYSTEM THEY NEED TO BE ADDED TO THESE FIRST COUPLE CTE'S UNLESS WE FEEL LIKE DOING DYNAMIC PARSING OF THE STAGING SCHEMA OR SUMN
