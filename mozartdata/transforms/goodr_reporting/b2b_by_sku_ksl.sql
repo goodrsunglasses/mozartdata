@@ -4,6 +4,8 @@ SELECT
   detail.transaction_id_ns,
   detail.record_type,
   detail.product_id_edw,
+  detail.customer_id_edw,
+  detail.customer_id_ns,
   orders.model AS business_unit,
   orders.channel,
   detail.item_type,
