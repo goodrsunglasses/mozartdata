@@ -8,6 +8,8 @@ WITH
       category.currency_abbreviation as channel_currency_abbreviation,
       line.email,
       line.customer_id_ns,
+      line.customer_id_edw,
+      line.tier,
       line.location,
       line.warranty_order_id_ns,
       customer_category AS b2b_d2c,
@@ -53,6 +55,8 @@ WITH
       ns_parent.channel_currency_abbreviation,
       ns_parent.email,
       ns_parent.customer_id_ns,
+      ns_parent.customer_id_edw,
+      ns_parent.tier,
       ns_parent.location,
       ns_parent.warranty_order_id_ns,
       ns_parent.b2b_d2c,
@@ -174,7 +178,9 @@ SELECT
   orders.order_id_edw,
   orders.order_id_ns,
   aggregate_netsuite.channel,
-  customer_id_edw,
+  aggregate_netsuite.customer_id_ns,
+  aggregate_netsuite.customer_id_edw,
+  aggregate_netsuite.tier,
   location.name as location,
   aggregate_netsuite.warranty_order_id_ns,
   coalesce(
@@ -263,10 +269,7 @@ FROM
   LEFT OUTER JOIN aggregate_netsuite ON aggregate_netsuite.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN shopify_info ON shopify_info.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = aggregate_netsuite.order_id_edw
-  LEFT OUTER JOIN dim.customer customer ON (
-    LOWER(customer.email) = LOWER(aggregate_netsuite.email)
-    AND customer.customer_category = aggregate_netsuite.b2b_d2c
-  )
+
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = aggregate_netsuite.order_id_edw
   LEFT OUTER JOIN dim.location location ON location.location_id_ns = aggregate_netsuite.location
   LEFT OUTER JOIN fact.currency_exchange_rate cer ON aggregate_netsuite.booked_date = cer.effective_date AND aggregate_netsuite.channel_currency_id_ns = cer.transaction_currency_id_ns

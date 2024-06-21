@@ -50,6 +50,8 @@ use createdate converted instead of trandate
     , tl.createdfrom as parent_transaction_id_ns
     , tl.item as item_id_ns
     , tran.entity as customer_id_ns
+    , cnm.customer_id_edw
+    , cnm.tier
     , tl.department as department_id_ns
     , d.name as department
     from
@@ -79,6 +81,9 @@ use createdate converted instead of trandate
     left join
       dim.parent_transactions pt
       on tran.id = pt.transaction_id_ns
+    left join
+      fact.customer_ns_map cnm
+      on tran.entity = cnm.customer_id_ns
     where
         date(tran.trandate) >= '2022-01-01' --limit the row count
     and (tran._fivetran_deleted = false or tran._fivetran_deleted is null)
@@ -101,7 +106,9 @@ use createdate converted instead of trandate
     , ap.posting_period
     , case when tal.posting = 'T' then true else false end
     , createdfrom
-   , tran.entity
+    , tran.entity
+    , cnm.customer_id_edw
+    , cnm.tier
     , tl.department
     , tl.item
     , d.name
