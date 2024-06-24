@@ -49,5 +49,5 @@ FROM
   LEFT OUTER JOIN fact.gl_transaction gltran ON gltran.transaction_id_ns = detail.transaction_id_ns
 WHERE
   orders.b2b_d2c = 'B2B'
-  AND detail.record_type IN ('cashsale', 'invoice')
+  AND detail.record_type IN ('cashsale', 'invoice','cashrefund')
   AND gltran.posting_flag = TRUE
