@@ -15,7 +15,7 @@ SELECT DISTINCT
   detail.plain_name,
   prod.sku,
   detail.amount_revenue AS revenue,
-  detail.total_quantity,
+  detail.total_quantity as quantity_sold,
   prod.family AS model,
   prod.stage,
   prod.collection,
