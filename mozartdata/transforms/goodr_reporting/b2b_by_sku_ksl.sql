@@ -10,12 +10,16 @@ SELECT DISTINCT
   detail.customer_id_edw,
   detail.customer_id_ns,
   orders.model AS business_unit,
-  orders.channel,
+  line.channel,
+  channel.customer_category,
   detail.item_type,
   detail.plain_name,
   prod.sku,
   detail.amount_revenue AS revenue,
-  case when plain_name='Shipping' then 0 else detail.total_quantity end as quantity_sold,
+  CASE
+    WHEN plain_name = 'Shipping' THEN 0
+    ELSE detail.total_quantity
+  END AS quantity_sold,
   prod.family AS model,
   prod.stage,
   prod.collection,
@@ -42,13 +46,15 @@ SELECT DISTINCT
 FROM
   fact.order_item_detail detail
   LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = detail.order_id_edw
+  LEFT OUTER JOIN fact.order_line line ON line.transaction_id_ns = detail.transaction_id_ns
+  LEFT OUTER JOIN dim.channel channel ON channel.name = line.channel
   LEFT OUTER JOIN netsuite.invoiceshippingaddress invaddy ON invaddy.nkey = detail.shippingaddress
   LEFT OUTER JOIN netsuite.cashsaleshippingaddress csaddy ON csaddy.nkey = detail.shippingaddress
   LEFT OUTER JOIN dim.product prod ON prod.product_id_edw = detail.product_id_edw
   LEFT OUTER JOIN fact.customer_ns_map nsmap ON nsmap.customer_id_ns = detail.customer_id_ns --Doing a straight join as this entire report is NS based and a couple b2b customers have splayed customer info 
   LEFT OUTER JOIN fact.gl_transaction gltran ON gltran.transaction_id_ns = detail.transaction_id_ns
 WHERE
-  orders.b2b_d2c = 'B2B'
-  AND detail.record_type IN ('cashsale', 'invoice','cashrefund')
+  channel.customer_category = 'B2B'
+  AND detail.record_type IN ('cashsale', 'invoice', 'cashrefund')
   AND gltran.posting_flag = TRUE
-and plain_name != 'Tax'
+  AND plain_name != 'Tax'
