@@ -15,7 +15,7 @@ SELECT DISTINCT
   detail.plain_name,
   prod.sku,
   detail.amount_revenue AS revenue,
-  detail.total_quantity as quantity_sold,
+  case when plain_name='Shipping' then 0 else detail.total_quantity end as quantity_sold,
   prod.family AS model,
   prod.stage,
   prod.collection,
@@ -51,3 +51,4 @@ WHERE
   orders.b2b_d2c = 'B2B'
   AND detail.record_type IN ('cashsale', 'invoice','cashrefund')
   AND gltran.posting_flag = TRUE
+and plain_name != 'Tax'
