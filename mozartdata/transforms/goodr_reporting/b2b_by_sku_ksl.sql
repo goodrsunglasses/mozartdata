@@ -1,6 +1,6 @@
-SELECT distinct 
+SELECT DISTINCT
   detail.order_id_edw,
-  detail.transaction_created_date_pst as sold_date, --renamed it this because this report only looks at the sold transaction types
+  detail.transaction_created_date_pst AS sold_date, --renamed it this because this report only looks at the sold transaction types
   gltran.date_posted_pst,
   gltran.posting_period,
   gltran.posting_flag,
@@ -46,8 +46,8 @@ FROM
   LEFT OUTER JOIN netsuite.cashsaleshippingaddress csaddy ON csaddy.nkey = detail.shippingaddress
   LEFT OUTER JOIN dim.product prod ON prod.product_id_edw = detail.product_id_edw
   LEFT OUTER JOIN fact.customer_ns_map nsmap ON nsmap.customer_id_ns = detail.customer_id_ns --Doing a straight join as this entire report is NS based and a couple b2b customers have splayed customer info 
-  left outer join fact.gl_transaction gltran on gltran.transaction_id_ns = detail.transaction_id_ns
+  LEFT OUTER JOIN fact.gl_transaction gltran ON gltran.transaction_id_ns = detail.transaction_id_ns
 WHERE
-detail.product_id_edw is not null and orders.b2b_d2c = 'B2B'
+  orders.b2b_d2c = 'B2B'
   AND detail.record_type IN ('cashsale', 'invoice')
-and gltran.posting_flag = true
+  AND gltran.posting_flag = TRUE
