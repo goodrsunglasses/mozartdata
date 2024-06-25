@@ -75,6 +75,7 @@ baskets_agg as
   , sum(case when b2.merchandise_class = 'MACH GS' then b2.quantity_booked else 0 end) machgs_quantity
   , sum(case when b2.merchandise_class = 'LFGS' then b2.quantity_booked else 0 end) lfgs_quantity
   , sum(case when b2.merchandise_class = 'POP GS' then b2.quantity_booked else 0 end) popgs_quantity
+  , sum(case when b2.merchandise_class = 'RETRO GS' then b2.quantity_booked else 0 end) retrogs_quantity
   from
     baskets b1
   left join
@@ -125,6 +126,7 @@ SELECT
 , sum(ba.machgs_quantity) machgs_quantity
 , sum(ba.lfgs_quantity) lfgs_quantity
 , sum(ba.popgs_quantity) popgs_quantity
+, sum(ba.retrogs_quantity) retrogs_quantity
 from 
   customer_orders co
 left join
