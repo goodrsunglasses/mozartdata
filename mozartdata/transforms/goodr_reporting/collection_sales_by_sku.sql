@@ -35,6 +35,7 @@ where   product_category = 'LICENSING'
   (
     SELECT
       co.item_id_ns,
+      co.sold_date,
       sum(co.collection_product_sales) as collection_product_sales,
       sum(co.collection_product_quantity) as collection_product_quantity,
       SUM(o.amount_product_sold) total_sales,
@@ -45,8 +46,9 @@ where   product_category = 'LICENSING'
       inner join
         collection_orders co
       on o.order_id_edw = co.order_id_edw
+      and o.sold_date = co.sold_date
     WHERE  o.sold_date >= '2022-01-01' 
-    group by co.item_id_ns
+    group by co.item_id_ns, co.sold_date
   )
 
 SELECT
@@ -72,6 +74,7 @@ inner join
 left join
   total_sales ts
   on co.item_id_ns = ts.item_id_ns
+  and co.sold_date = ts.sold_date
 where p.merchandise_department = 'SUNGLASSES'
 order by
   co.item_id_ns
