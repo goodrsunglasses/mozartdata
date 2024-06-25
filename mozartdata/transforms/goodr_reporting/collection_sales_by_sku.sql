@@ -1,4 +1,24 @@
-with collection_orders as
+WITH 
+grid_date as
+  (
+  select 
+    * 
+  from 
+    dim.date
+  where date >= '2023-01-01' and date <= '2025-01-01'
+  )
+  
+, grid_product as
+  (
+    select
+      p.item_id_ns
+    , d.date
+    from
+      dim.product p
+    inner join grid_date d on 1=1
+    where item_id_ns is not null
+  )
+, collection_orders as
   (
     SELECT
       oi.order_id_edw
@@ -52,10 +72,10 @@ where   product_category = 'LICENSING'
   )
 
 SELECT
-  co.sold_date
-, co.item_id_ns
-, co.plain_name
-, co.collection
+  gp.date
+, gp.item_id_ns
+, p.display_name
+, p.collection
 , p.family
 , p.sku
 , p.merchandise_class
@@ -67,16 +87,18 @@ SELECT
 , coalesce(ts.total_quantity,0) total_quantity
 , coalesce(ts.orders_containing_collection,0) orders_containing_collection
 FROM
-  collection_orders co
+grid_product gp
 inner join
   dim.product p
-  on co.item_id_ns = p.item_id_ns
+  on gp.item_id_ns = p.item_id_ns
+--inner join
+--  collection_orders co --- should not do because it was make total sales not work??
+--  on p.item_id_ns =co.item_id_ns
 left join
   total_sales ts
-  on co.item_id_ns = ts.item_id_ns
-  and co.sold_date = ts.sold_date
+  on gp.item_id_ns = ts.item_id_ns
 where p.merchandise_department = 'SUNGLASSES'
 order by
-  co.item_id_ns
-  , sold_date
+  gp.item_id_ns
+, date
 ---
