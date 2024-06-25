@@ -50,7 +50,8 @@ where   product_category = 'LICENSING'
   )
 
 SELECT
-  co.item_id_ns
+  co.sold_date
+, co.item_id_ns
 , co.plain_name
 , co.collection
 , p.family
