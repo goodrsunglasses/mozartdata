@@ -13,7 +13,7 @@ def preprocess_sql_file(file_path):
 
 def main():
     # Directory where your SQL scripts are located
-    sql_directory = 'path/to/your/sql/directory'
+    sql_directory = 'mozartdata/transforms/fact'
 
     for root, dirs, files in os.walk(sql_directory):
         for file in files:
