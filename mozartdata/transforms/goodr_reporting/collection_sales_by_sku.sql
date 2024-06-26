@@ -17,6 +17,8 @@ grid_date as
       dim.product p
     inner join grid_date d on 1=1
     where item_id_ns is not null
+      and p.family = 'LICENSING' 
+      and p.replenish_flag = 'True'
   )
 , collection_orders as
   (
@@ -91,9 +93,6 @@ grid_product gp
 inner join
   dim.product p
   on gp.item_id_ns = p.item_id_ns
---inner join
---  collection_orders co --- should not do because it was make total sales not work??
---  on p.item_id_ns =co.item_id_ns
 left join
   total_sales ts
   on gp.item_id_ns = ts.item_id_ns
