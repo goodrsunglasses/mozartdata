@@ -3,10 +3,10 @@ name: Preprocess SQL Files
 on:
   push:
     branches:
-      - main
+      - Yaml_Test_1
   pull_request:
     branches:
-      - main
+      - Yaml_Test_1  
 
 jobs:
   preprocess:
@@ -26,7 +26,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install --upgrade setuptools
           python preprocess_sql.py
-          
+
       - name: Commit changes
         run: |
           git config --global user.name 'github-actions'
