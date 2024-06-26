@@ -1,5 +1,3 @@
-CREATE OR REPLACE TABLE fact.fulfillment_line
-    COPY GRANTS as
 SELECT DISTINCT --Ok so the main idea for this table is to have it be one row per "transaction" that makes up a fulfillment, no matter how many there may be
 				fulfillment_id_edw,
 				order_id_edw,

@@ -1,5 +1,3 @@
-CREATE OR REPLACE TABLE staging.netsuite_fulfillments
-	COPY GRANTS AS
 SELECT --The idea for this table is to get a simple staging area for the myriad of tracking and fulfillment related info SPECIFICALLY coming out of Netsuite, for easy use later in the pipeline
 	   tran.id                           AS transaction_id_ns,
 	   tran.custbody_goodr_shopify_order AS order_id_ns,

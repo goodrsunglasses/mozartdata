@@ -1,5 +1,3 @@
-CREATE OR REPLACE TABLE fact.fulfillment
-	COPY GRANTS AS
 WITH stord_line AS (SELECT FULFILLMENT_ID_EDW,
 						   ORDER_ID_EDW,
 						   SHIPMENT_ID,

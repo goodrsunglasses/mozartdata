@@ -1,5 +1,3 @@
-CREATE OR REPLACE TABLE dim.fulfillment
-    COPY GRANTS as
 WITH edw_fulfillments AS (SELECT DISTINCT fulfillment_id_edw,
                                           order_id_edw
                           FROM (SELECT distinct ordernumber                               AS order_id_edw,
