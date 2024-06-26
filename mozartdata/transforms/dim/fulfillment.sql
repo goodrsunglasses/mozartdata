@@ -2,7 +2,7 @@ CREATE OR REPLACE TABLE dim.fulfillment
     COPY GRANTS as
 WITH edw_fulfillments AS (SELECT DISTINCT fulfillment_id_edw,
                                           order_id_edw
-                          FROM (SELECT ordernumber                               AS order_id_edw,
+                          FROM (SELECT distinct ordernumber                               AS order_id_edw,
                                        trackingnumber,
                                        CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw
                                 FROM shipstation_portable.shipstation_shipments_8589936627 shipstation
@@ -78,8 +78,9 @@ SELECT COALESCE(netsuite_step_two.actual_fulfillment_id_edw, edw_fulfillments.fu
                  ))                                                                                  itemfulfillment_ids,
        MAX(
                CASE
-                   WHEN shipstation_id IS NULL THEN 'Stord'
-                   ELSE 'Shipstation'
+                   when shipstation_id is not null then 'Shipstation'
+                   when stord_id is not null then 'Stord'
+                   else 'Netsuite'
                    END
        )                                                                                             source_system
 FROM edw_fulfillments

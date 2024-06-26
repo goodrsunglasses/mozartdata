@@ -71,32 +71,31 @@ UNION ALL
 SELECT DISTINCT --adding just in case because NS joins can be funky and I don't want any duplicate lines becase one custom field has two values or something
 				fulfill.FULFILLMENT_ID_EDW,
 				fulfill.ORDER_ID_EDW,
-				'Netsuite'                    AS source,
-				custbody_shipstation_carrier_code,
-				custbody_service_code,
-				TO_TIMESTAMP_NTZ(createddate) AS shipped_at, --SADLY WE HAVE TO USE CREATEDDATE AS THE SHIPPING DATE AND JUST HOPE THAT IT WAS CREATED/SHIPPED THE SAME DAY BECAUSE NS DOESN'T STORE SHIPPEDDATE ANYWHERE
+				'Netsuite'                                                                           AS source,
+				COALESCE(nsfulfill.CUSTBODYRFS_CARRIER, nsfulfill.custbody_shipstation_carrier_code) AS carrier_name,
+				COALESCE(nsfulfill.CUSTBODYRFS_CARRIER_service, nsfulfill.custbody_service_code)     AS carrier_service,
+				TO_TIMESTAMP_NTZ(COALESCE(nsfulfill.CUSTBODYRFS_SHIPPED_AT, createddate))            AS shipped_at, --SADLY WE HAVE TO USE CREATEDDATE AS THE SHIPPING DATE AND JUST HOPE THAT IT WAS CREATED/SHIPPED THE SAME DAY BECAUSE NS DOESN'T STORE SHIPPEDDATE ANYWHERE
 -- 				NULL                          AS                                         shipmentcost,
-				NULL                          AS is_cancelled,
+				NULL                                                                                 AS is_cancelled,
 				staged.location,
-				shipping.ADDRESSEE,
-				shipping.state,
-				shipping.country,
-				shipping.city,
-				shipping.zip                  AS postal_code,
-				shipping.ADDR1,
-				shipping.ADDR2,
-				NULL                          AS addr_verification_status,
-				NULL                          AS ADDRESS_TYPE,
+				nsfulfill.ADDRESSEE,
+				nsfulfill.state,
+				nsfulfill.country,
+				nsfulfill.city,
+				nsfulfill.postal_code,
+				nsfulfill.ADDR1,
+				nsfulfill.ADDR2,
+				NULL                                                                                 AS addr_verification_status,
+				NULL                                                                                 AS ADDRESS_TYPE,
 				TO_CHAR(staged.transaction_id_ns),
-				NULL                          AS item_id,
+				NULL                                                                                 AS item_id,
 				product.sku,
 				PLAIN_NAME,
 				total_quantity
 FROM dim.fulfillment fulfill
 		 CROSS JOIN LATERAL FLATTEN(INPUT =>itemfulfillment_ids) AS if_ids
-		 LEFT OUTER JOIN staging.ORDER_ITEM_DETAIL staged ON staged.TRANSACTION_ID_NS = if_ids.value
+		 LEFT OUTER JOIN staging.NETSUITE_FULFILLMENTS nsfulfill ON nsfulfill.TRANSACTION_ID_NS = if_ids.value
+		 LEFT OUTER JOIN staging.ORDER_ITEM_DETAIL staged ON staged.TRANSACTION_ID_NS = nsfulfill.TRANSACTION_ID_NS
 		 LEFT OUTER JOIN dim.product product ON product.item_id_ns = staged.ITEM_ID_NS
-		 LEFT OUTER JOIN netsuite.transaction tran ON tran.id = staged.TRANSACTION_ID_NS
-		 LEFT OUTER JOIN netsuite.itemfulfillmentshippingaddress shipping ON shipping.nkey = tran.SHIPPINGADDRESS
 WHERE ARRAY_SIZE(itemfulfillment_ids) > 0
   AND PLAIN_NAME NOT IN ('Shipping', 'Tax')

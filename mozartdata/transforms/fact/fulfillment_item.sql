@@ -1,3 +1,5 @@
+CREATE OR REPLACE TABLE fact.fulfillment_item
+    COPY GRANTS as
 WITH ss_qty AS (SELECT fulfillment_id_edw,
 					   order_id_edw,
 					   sku,
