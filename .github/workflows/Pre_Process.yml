@@ -7,7 +7,8 @@ on:
   pull_request:
     branches:
       - Yaml_Test_1  
-
+permissions:
+  contents: write
 jobs:
   preprocess:
     runs-on: ubuntu-latest
