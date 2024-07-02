@@ -6,6 +6,7 @@ SELECT
   detail.record_type,
   detail.full_status,
   detail.item_type,
+  prod.sku,
   detail.plain_name,
   detail.quantity_backordered,
   detail.location,
@@ -15,5 +16,6 @@ FROM
   fact.order_item_detail detail
   left outer join dim.location loc on loc.location_id_ns = detail.location
   left outer join fact.orders orders on orders.order_id_edw = detail.order_id_edw
+  left outer join dim.product prod on prod.item_id_ns = detail.item_id_ns
 WHERE
   record_type = 'salesorder'  and quantity_backordered >0 and quantity_fulfilled_stord is not null
