@@ -1,40 +1,17 @@
 SELECT
-  orders.order_id_edw order_number,
-  orders.order_id_shopify,
-  shopify_line.fulfillment_status shopify_status,
-  stord_orders.status stord_status,
-  stord_orders.shipped_at,
-  fact_orders.fulfillment_date,
-  sum(fulfill.total_quantity) stord_fulfilled_quantity,
-  fact_orders.quantity_fulfilled quantity_fulfilled_ns
+  detail.order_id_ns,
+  detail.transaction_id_ns,
+  detail.item_id_ns,
+  detail.transaction_created_date_pst,
+  detail.record_type,
+  detail.full_status,
+  detail.item_type,
+  detail.plain_name,
+  detail.quantity_backordered,
+  detail.location,
+  loc.name
 FROM
-  dim.orders orders
-  LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
-  LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord_orders ON stord_orders.order_id = orders.stord_id
-  LEFT OUTER JOIN fact.fulfillment_orders fulfil_order ON fulfil_order.hashed_orderid = stord_orders.order_id
-  LEFT OUTER JOIN fact.orders fact_orders ON fact_orders.order_id_edw = orders.order_id_edw
-  LEFT OUTER JOIN fact.fulfillment fulfill ON fulfill.order_id_edw = orders.order_id_edw
+  fact.order_item_detail detail
+  left outer join dim.location loc on loc.location_id_ns = detail.location
 WHERE
-  shopify_line.fulfillment_status = 'fulfilled'
-  AND shipped_at IS NOT NULL
-GROUP BY
-  orders.order_id_edw,
-  orders.order_id_shopify,
-  shopify_line.fulfillment_status,
-  stord_orders.status,
-  stord_orders.shipped_at,
-  fact_orders.fulfillment_date,
-  fact_orders.quantity_fulfilled
-limit 200
-  -- SELECT
-  --   *
-  -- FROM
-  --   dim.orders
-  -- WHERE
-  --   stord_id IS NOT NULL
-  -- SELECT
-  --   *
-  -- FROM
-  --   dim.fulfillment
-  -- WHERE
-  --   source_system = 'Stord'
+  record_type = 'salesorder'
