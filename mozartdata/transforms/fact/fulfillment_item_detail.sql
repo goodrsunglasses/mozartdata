@@ -77,7 +77,7 @@ SELECT DISTINCT --adding just in case because NS joins can be funky and I don't 
 				TO_TIMESTAMP_NTZ(COALESCE(nsfulfill.CUSTBODYRFS_SHIPPED_AT, createddate))            AS shipped_at, --SADLY WE HAVE TO USE CREATEDDATE AS THE SHIPPING DATE AND JUST HOPE THAT IT WAS CREATED/SHIPPED THE SAME DAY BECAUSE NS DOESN'T STORE SHIPPEDDATE ANYWHERE
 -- 				NULL                          AS                                         shipmentcost,
 				NULL                                                                                 AS is_cancelled,
-				staged.location,
+				TO_CHAR(staged.location),
 				nsfulfill.ADDRESSEE,
 				nsfulfill.state,
 				nsfulfill.country,
