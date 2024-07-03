@@ -11,4 +11,4 @@ SELECT
   date(_fivetran_synced) AS date_synced,
   _fivetran_synced
 FROM
-  netsuite.inventorybalance balance
+  netsuite.inventorybalance as balance
