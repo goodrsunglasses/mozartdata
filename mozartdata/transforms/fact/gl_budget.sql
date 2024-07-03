@@ -1,10 +1,11 @@
 SELECT
   bl."ACCOUNT" as account_id_edw,
   ga.account_number,
-  category.name AS budget_version,
+  version.name AS budget_version,
   cseg7.name as channel,
   bl.department as department_id_ns,
   d.name as department,
+  ga.budget_category,
   bl.period as period_id_ns,
   ap.posting_period as posting_period,
   SUM(bl.amount) AS budget_amount
@@ -14,8 +15,8 @@ FROM
     dim.gl_account ga 
   ON ga.account_id_edw = bl."ACCOUNT"
   LEFT JOIN 
-    netsuite.budgetcategory category 
-    ON category.id = bl.category
+    netsuite.budgetcategory version
+    ON version.id = bl.category
   LEFT JOIN 
     netsuite.customrecord_cseg7 cseg7 
     ON cseg7.id = bl.cseg7
@@ -31,14 +32,16 @@ GROUP BY
   bl."ACCOUNT",
   ga.account_display_name,
   ga.account_number,
-  category.name,
- cseg7.name,
+  version.name,
+  cseg7.name,
+  ga.budget_category,
   bl.period,
   ap.posting_period,
   bl.department,
   d.name
 
 --- temporary budget for 2024-v4 may
+  /*
 UNION
 select 
   rt.account_id_ns as account_id_edw,
@@ -53,3 +56,4 @@ select
 FROM google_sheets.may_2024_v_4_revenue_targets rt
 left join dim.accounting_period ap
   on rt.posting_period = ap.posting_period
+*/

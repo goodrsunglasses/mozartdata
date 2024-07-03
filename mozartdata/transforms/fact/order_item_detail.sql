@@ -1,4 +1,4 @@
-  with net_amount as
+with net_amount as
           (select gt.transaction_id_ns
                 , gt.item_id_ns
                 , sum(case when gt.account_number between 4000 and 4999 then gt.net_amount else 0 end)       amount_revenue
@@ -63,7 +63,11 @@
         , staging.cost_estimate
         , staging.location
         , staging.createdfrom
+        , staging.SHIPPINGADDRESS
         , staging.warranty_order_id_ns
+        , cnm.customer_id_edw
+        , staging.CUSTOMER_ID_NS
+        , cnm.tier
         , exceptions.exception_flag
    FROM dim.parent_transactions parents
           LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns
@@ -71,4 +75,6 @@
                           ON exceptions.transaction_id_ns = parents.transaction_id_ns
           LEFT OUTER JOIN net_amount na
                           on staging.transaction_id_ns = na.transaction_id_ns and staging.item_id_ns = na.item_id_ns
+          LEFT OUTER JOIN fact.customer_ns_map cnm
+                          ON staging.customer_id_ns = cnm.customer_id_ns
    WHERE exceptions.exception_flag = FALSE

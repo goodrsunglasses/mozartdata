@@ -1,6 +1,6 @@
 WITH edw_fulfillments AS (SELECT DISTINCT fulfillment_id_edw,
                                           order_id_edw
-                          FROM (SELECT ordernumber                               AS order_id_edw,
+                          FROM (SELECT distinct ordernumber                               AS order_id_edw,
                                        trackingnumber,
                                        CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw
                                 FROM shipstation_portable.shipstation_shipments_8589936627 shipstation
@@ -8,7 +8,10 @@ WITH edw_fulfillments AS (SELECT DISTINCT fulfillment_id_edw,
                                 SELECT order_number                              AS order_id_edw,
                                        tracking_number                           AS trackingnumber,
                                        CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw
-                                FROM stord.stord_shipment_confirmations_8589936822)),
+                                FROM stord.stord_shipment_confirmations_8589936822
+                                union
+                                select order_id_ns, trackingnumber, fulfillment_id_edw
+                                from staging.NETSUITE_FULFILLMENTS)),
      shipstation AS (SELECT ordernumber                               AS order_id_edw,
                             trackingnumber,
                             CONCAT(order_id_edw, '_', trackingnumber) AS fulfillment_id_edw,
@@ -73,8 +76,9 @@ SELECT COALESCE(netsuite_step_two.actual_fulfillment_id_edw, edw_fulfillments.fu
                  ))                                                                                  itemfulfillment_ids,
        MAX(
                CASE
-                   WHEN shipstation_id IS NULL THEN 'Stord'
-                   ELSE 'Shipstation'
+                   when shipstation_id is not null then 'Shipstation'
+                   when stord_id is not null then 'Stord'
+                   else 'Netsuite'
                    END
        )                                                                                             source_system
 FROM edw_fulfillments

@@ -1,6 +1,7 @@
 /*
 Purpose: This table ingests and transforms netsuite.accoutingperiod into the EDW. This will be used for GL analysis
 
+
 */
 select
   ap.id as accounting_period_id

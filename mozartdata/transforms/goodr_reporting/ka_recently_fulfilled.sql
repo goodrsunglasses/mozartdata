@@ -7,7 +7,7 @@ SELECT
   c.customer_name
 FROM
   fact.order_line ol
-  LEFT JOIN fact.customer_ns_map c on c.customer_internal_id_ns = ol.customer_id_ns
+  LEFT JOIN fact.customer_ns_map c on c.customer_id_ns = ol.customer_id_ns
 WHERE
   ol.channel = 'Key Account'
   and record_type = 'itemfulfillment'

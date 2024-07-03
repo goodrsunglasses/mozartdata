@@ -8,6 +8,8 @@ WITH
       category.currency_abbreviation as channel_currency_abbreviation,
       line.email,
       line.customer_id_ns,
+      line.customer_id_edw,
+      line.tier,
       line.location,
       line.warranty_order_id_ns,
       customer_category AS b2b_d2c,
@@ -53,6 +55,8 @@ WITH
       ns_parent.channel_currency_abbreviation,
       ns_parent.email,
       ns_parent.customer_id_ns,
+      ns_parent.customer_id_edw,
+      ns_parent.tier,
       ns_parent.location,
       ns_parent.warranty_order_id_ns,
       ns_parent.b2b_d2c,
@@ -174,7 +178,9 @@ SELECT
   orders.order_id_edw,
   orders.order_id_ns,
   aggregate_netsuite.channel,
-  customer_id_edw,
+  aggregate_netsuite.customer_id_ns,
+  aggregate_netsuite.customer_id_edw,
+  aggregate_netsuite.tier,
   location.name as location,
   aggregate_netsuite.warranty_order_id_ns,
   coalesce(
@@ -212,7 +218,7 @@ SELECT
 		   ELSE aggregates.quantity_fulfilled END              AS quantity_fulfilled,--As per notes from our meeting, the idea is that on orders not in the channels, we dont want this column to show Netsuite IF information if its lacking from Stord/SS
 	   fulfillment_info.total_QUANTITY_STORD                         AS quantity_fulfilled_stord,
 	   fulfillment_info.total_QUANTITY_SS                            AS  quantity_fulfilled_shipstation,
-  aggregates.quantity_fulfilled AS quantity_fulfilled_ns,
+  fulfillment_info.total_QUANTITY_NS AS quantity_fulfilled_ns,
   aggregates.quantity_refunded,
   aggregates.quantity_refunded as quantity_refunded_ns,
   aggregates.rate_booked,
@@ -263,15 +269,12 @@ FROM
   LEFT OUTER JOIN aggregate_netsuite ON aggregate_netsuite.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN shopify_info ON shopify_info.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN aggregates ON aggregates.order_id_edw = aggregate_netsuite.order_id_edw
-  LEFT OUTER JOIN dim.customer customer ON (
-    LOWER(customer.email) = LOWER(aggregate_netsuite.email)
-    AND customer.customer_category = aggregate_netsuite.b2b_d2c
-  )
+
   LEFT OUTER JOIN refund_aggregates refund ON refund.order_id_edw = aggregate_netsuite.order_id_edw
   LEFT OUTER JOIN dim.location location ON location.location_id_ns = aggregate_netsuite.location
   LEFT OUTER JOIN fact.currency_exchange_rate cer ON aggregate_netsuite.booked_date = cer.effective_date AND aggregate_netsuite.channel_currency_id_ns = cer.transaction_currency_id_ns
   LEFT OUTER JOIN fulfillment_info ON fulfillment_info.ORDER_ID_EDW = orders.ORDER_ID_EDW
 WHERE
-  aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
+  aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z' 
 ORDER BY
   aggregate_netsuite.booked_date desc
