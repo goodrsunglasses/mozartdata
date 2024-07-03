@@ -39,7 +39,10 @@ SELECT DISTINCT fulfillment_id_edw,
 				stord.shipped_at,
 -- 	   NULL                                                                   AS shipmentcost,
 				is_canceled,
-				sla_lines.value:FACILITY_ACTIVITY:FACILITY_ALIAS                       AS facility_alias,
+				CASE
+					WHEN stord.facility_id = '4155f00a-e3d9-45c0-84b3-7a03d02080fb' THEN 'ATLs001'
+					WHEN stord.facility_id = '12156b5c-23de-48b8-b29d-521414f912e2' THEN 'LASs002'
+					ELSE NULL END                                                      AS warehouse_location,--Had to adjust this as before I was joining to the Stord Sales Orders SLA Line which isn't shipment specific
 				orders.destination_address:NAME::STRING                                AS customer_name,
 				orders.destination_address:NORMALIZED_COUNTRY_SUBDIVISION_CODE::STRING AS state,
 				orders.destination_address:NORMALIZED_COUNTRY_CODE::STRING             AS country,
@@ -59,7 +62,6 @@ FROM dim.fulfillment fulfill
 						 ON stord.shipment_confirmation_id = fulfill.source_system_id
 		 LEFT OUTER JOIN stord.stord_sales_orders_8589936822 orders ON orders.order_id = stord.order_id
 		 CROSS JOIN LATERAL FLATTEN(INPUT => stord.SHIPMENT_CONFIRMATION_LINE_ITEMS) AS flattened_items
-		 CROSS JOIN LATERAL FLATTEN(INPUT => orders.SLA_SALES_ORDER_LINES) AS sla_lines
 		 LEFT OUTER JOIN dim.product product ON product.item_id_stord = flattened_items.value:ITEM_ID::STRING
 		 LEFT OUTER JOIN stord.STORD_PRODUCTS_8589936822 stordprod
 						 ON stordprod.id = flattened_items.value:ITEM_ID::STRING --Joining here because I want the name of the product because sometimes it doesn't exist in NS
