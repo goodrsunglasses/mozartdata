@@ -43,6 +43,9 @@ WITH
       record_type = 'salesorder'
   )
 SELECT
+  stord_info.order_id_edw,
+  ns_info.transaction_id_ns,
+  ns_info.transaction_number_ns,
   tracking,
   shipment_id,
   warehouse_location,
