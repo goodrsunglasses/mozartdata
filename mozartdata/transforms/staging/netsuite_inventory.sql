@@ -1,1 +1,14 @@
-select * from netsuite.INVENTORYITEMLOCATIONS where item = 90
+SELECT
+  binnumber,
+  committedqtyperlocation,
+  committedqtyperseriallotnumber,
+  committedqtyperseriallotnumberlocation,
+  item,
+  location,
+  quantityavailable,
+  quantityonhand,
+  quantitypicked,
+  date(_fivetran_synced) AS date_synced,
+  _fivetran_synced
+FROM
+  netsuite.inventorybalance balance
