@@ -54,5 +54,7 @@ FROM
   stord_info
   LEFT OUTER JOIN ns_info ON ns_info.order_id_edw = stord_info.order_id_edw
   left outer join backordered on backordered.order_id_edw = stord_info.order_id_edw
+  left outer join stord.stord_sales_orders_8589936822 stord on stord.order_number = stord_info.order_id_edw
 WHERE
-  ns_info.order_id_edw IS NOT NULL and backorder_flag = false
+  ns_info.order_id_edw IS NOT NULL and backorder_flag = false 
+and stord.status = 'canceled'
