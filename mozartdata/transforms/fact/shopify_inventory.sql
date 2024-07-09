@@ -1,3 +1,5 @@
+CREATE OR REPLACE TABLE fact.shopify_inventory
+            COPY GRANTS  as
 SELECT --Idea here is to select from the shopify snapshot tables native to mozart then join to some relevant fact and dim tables, and also renaming to make the fields clearer
 	   snapshot.store,
 	   snapshot.category,
