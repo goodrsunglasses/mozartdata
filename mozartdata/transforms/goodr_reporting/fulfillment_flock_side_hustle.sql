@@ -1,3 +1,9 @@
+SELECT
+  main_query.*,
+  case when quantity_fulfilled< quantity_on_salesorder then true else false end as fulfillable 
+  -- --another boolean for when stord shipped it but its backordered in NS by sku by order
+FROM
+(
 WITH
   stord_info AS (
     SELECT
@@ -50,7 +56,11 @@ SELECT
   booked_info.plain_name AS display_name,
   booked_info.total_quantity AS quantity_on_salesorder,
   quantity_backordered,
-  name AS location_name_ns,
+  CASE
+    WHEN item.quantity_fulfilled IS NULL THEN 0
+    ELSE item.quantity_fulfilled
+  END AS quantity_fulfilled_ns,
+  name AS location_name_netsuite,
   CASE
     WHEN sum(stord_info.quantity) IS NULL THEN 0
     ELSE sum(stord_info.quantity)
@@ -61,8 +71,12 @@ FROM
     stord_info.sku = booked_info.sku
     AND booked_info.order_id_ns = stord_info.order_id_edw
   )
+  LEFT OUTER JOIN fact.order_item item ON (
+    item.sku = booked_info.sku
+    AND booked_info.order_id_ns = item.order_id_ns
+  )
 WHERE
-  location_name IN ('Stord LAS', 'Stord ATL', 'Stord HOLD')
+  location_name_netsuite IN ('Stord LAS', 'Stord ATL', 'Stord HOLD')
   AND order_number = 'SG-100163'
 GROUP BY
   booked_info.order_id_ns,
@@ -73,6 +87,8 @@ GROUP BY
   booked_info.plain_name,
   booked_info.total_quantity,
   quantity_backordered,
+  quantity_fulfilled,
   name
 ORDER BY
-  order_id_ns
+  booked_info.order_id_ns
+  )main_query
