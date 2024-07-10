@@ -40,14 +40,34 @@ WITH
       )
       AND plain_name NOT IN ('Shipping', 'Tax', 'Discount')
   )
-  
 SELECT
-  stord_info.order_id_edw,
-  ns_info.transaction_id_ns,
-  ns_info.transaction_number_ns,
-  tracking,
-  shipment_id,
-  warehouse_location,
-  shipdate
+  booked_info.order_id_ns,
+  booked_info.transaction_id_ns,
+  booked_info.transaction_created_date_pst,
+  booked_info.full_status,
+  booked_info.sku,
+  booked_info.plain_name,
+  booked_info.total_quantity,
+  quantity_backordered,
+  name AS location_name,
+  sum(stord_info.quantity)
 FROM
-  stord_info
+  booked_info
+  LEFT OUTER JOIN stord_info ON (
+    stord_info.sku = booked_info.sku
+    AND booked_info.order_id_ns = stord_info.order_id_edw
+  )
+WHERE
+  location_name IN ('Stord LAS', 'Stord ATL')
+GROUP BY
+  booked_info.order_id_ns,
+  booked_info.transaction_id_ns,
+  booked_info.transaction_created_date_pst,
+  booked_info.full_status,
+  booked_info.sku,
+  booked_info.plain_name,
+  booked_info.total_quantity,
+  quantity_backordered,
+  name
+ORDER BY
+  order_id_ns
