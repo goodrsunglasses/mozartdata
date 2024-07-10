@@ -35,22 +35,23 @@ WITH
       record_type = 'salesorder'
       AND full_status NOT IN (
         'Sales Order : Billed',
+        'Sales Order : Pending Billing',
         'Sales Order : Closed',
         'Sales Order : Cancelled'
       )
       AND plain_name NOT IN ('Shipping', 'Tax', 'Discount')
   )
 SELECT
-  booked_info.order_id_ns,
-  booked_info.transaction_id_ns,
-  booked_info.transaction_created_date_pst,
-  booked_info.full_status,
+  booked_info.order_id_ns as order_number,
+  booked_info.transaction_id_ns as netsuite_transaction_id,
+  booked_info.transaction_created_date_pst as salesorder_date,
+  booked_info.full_status as salesorder_status,
   booked_info.sku,
-  booked_info.plain_name,
-  booked_info.total_quantity,
+  booked_info.plain_name as display_name,
+  booked_info.total_quantity as quantity_on_salesorder,
   quantity_backordered,
   name AS location_name,
-  sum(stord_info.quantity)
+  sum(stord_info.quantity) quantity_shipped_stord
 FROM
   booked_info
   LEFT OUTER JOIN stord_info ON (
