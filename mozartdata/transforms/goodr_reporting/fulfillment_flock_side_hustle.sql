@@ -2,7 +2,8 @@ SELECT
   main_query.*,
   CASE
     WHEN quantity_fulfilled_ns < quantity_on_salesorder
-    AND quantity_backordered = 0 and quantity_shipped_stord = quantity_on_salesorder THEN TRUE
+    AND quantity_backordered = 0
+    AND quantity_shipped_stord = quantity_on_salesorder THEN TRUE
     ELSE FALSE
   END AS fulfillable,
   CASE
@@ -72,7 +73,8 @@ FROM
       CASE
         WHEN sum(stord_info.quantity) IS NULL THEN 0
         ELSE sum(stord_info.quantity)
-      END AS quantity_shipped_stord
+      END AS quantity_shipped_stord,
+      stord_info.warehouse_location AS warehouse_location_stord
     FROM
       booked_info
       LEFT OUTER JOIN stord_info ON (
@@ -95,6 +97,7 @@ FROM
       booked_info.total_quantity,
       quantity_backordered,
       quantity_fulfilled,
+      stord_info.warehouse_location,
       name
     ORDER BY
       booked_info.order_id_ns
