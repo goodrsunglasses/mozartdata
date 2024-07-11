@@ -13,8 +13,10 @@ FROM
   dim.product p
   LEFT JOIN fact.order_item oi ON p.item_id_ns = oi.item_id_ns
   LEFT JOIN fact.orders o ON o.order_id_edw = oi.order_id_edw
+  LEFT JOIN fact.customer_ns_map cnm ON o.customer_id_ns = cnm.customer_id_ns
 WHERE
   o.channel = 'Goodr.com'
+  AND cnm.email not like '%goodr.com'
 GROUP BY
   p.item_id_ns,
   o.channel,
