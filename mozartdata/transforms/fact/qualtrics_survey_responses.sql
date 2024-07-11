@@ -30,12 +30,12 @@ SELECT distinct
             and q.id = q_o.question_id
             and split_values.value = q_o.key
     WHERE
-        q.question_type = 'MC'
+        lower(q.question_type) = 'mc'
         and trim(q_r.value) != ''
         and q_r.sub_question_key is null
         and q_r.question_option_key is null
-        and q.question_text not like '%email address%'
-        and q.question_text not like '%Zip Code%'
+        and lower(q.question_text) not like '%email address%'
+        and lower(q.question_text) not like '%zip code%'
     union all
     SELECT
         s_r.survey_id as survey_id_qualtrics
@@ -58,12 +58,12 @@ SELECT distinct
             q.id = q_r.question_id
             and s_r.id = q_r.response_id
     WHERE
-        q.question_type = 'MC'
+        lower(q.question_type) = 'mc'
         and trim(q_r.value) != ''
         and q_r.sub_question_key is null
         and q_r.question_option_key is not null
-        and q.question_text not like '%email address%'
-        and q.question_text not like '%Zip Code%'
+        and lower(q.question_text) not like '%email address%'
+        and lower(q.question_text) not like '%zip code%'
     union all
     select
         s_r.survey_id as survey_id_qualtrics
@@ -92,14 +92,14 @@ SELECT distinct
             and s_r.survey_id = sq.survey_id
             and q_r.sub_question_key = sq.key
     WHERE
-        q.question_type = 'Matrix'
+        lower(q.question_type) = 'matrix'
         and q_r.sub_question_key is not null
         and q_r.question_option_key is null
         and trim(q_r.value) != ''
         and q_r.label is not null
         and sq.text is not null
-        and q.question_text not like '%email address%'
-        and q.question_text not like '%Zip Code%'
+        and lower(q.question_text) not like '%email address%'
+        and lower(q.question_text) not like '%zip code%'
     union all
     SELECT distinct
         s_r.survey_id as survey_id_qualtrics
@@ -128,14 +128,14 @@ SELECT distinct
             and s_r.survey_id = sq.survey_id
             and q_r.value = sq.key
     WHERE
-        q.question_type = 'Matrix'
+        lower(q.question_type) = 'matrix'
         and q_r.sub_question_key is not null
         and q_r.question_option_key is null
         and trim(q_r.value) != ''
         and q_r.label is null
         and sq.text is null
-        and q.question_text not like '%email address%'
-        and q.question_text not like '%Zip Code%'
+        and lower(q.question_text) not like '%email address%'
+        and lower(q.question_text) not like '%zip code%'
     union all
     SELECT distinct
         s_r.survey_id as survey_id_qualtrics
@@ -158,11 +158,11 @@ SELECT distinct
             q.id = q_r.question_id
             and s_r.id = q_r.response_id
     WHERE
-        q.question_type != 'MC'
-        and q.question_type != 'Matrix'
+        lower(q.question_type) != 'mc'
+        and lower(q.question_type) != 'matrix'
         and trim(q_r.value) != ''
-        and q.question_text not like '%email address%'
-        and q.question_text not like '%Zip Code%'
+        and lower(q.question_text) not like '%email address%'
+        and lower(q.question_text) not like '%zip code%'
     ORDER BY
          survey_id_qualtrics asc
         , response_id_qualtrics asc
