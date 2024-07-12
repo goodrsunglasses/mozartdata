@@ -10,7 +10,8 @@ SELECT
     WHEN quantity_backordered > 0
     AND quantity_shipped_stord > 0 THEN TRUE
     ELSE FALSE
-  END AS backordered_but_shipped
+  END AS backordered_but_shipped,
+  quantity_shipped_stord - quantity_fulfilled_ns AS quantity_to_fulfill_in_ns
 FROM
   (
     WITH
@@ -84,7 +85,13 @@ FROM
         ELSE sum(stord_info.quantity)
       END AS quantity_shipped_stord,
       stord_info.warehouse_location AS warehouse_location_stord,
-      case when stord_info.split_flag is null then false else stord_info.split_flag end as split_shipment_flag
+      CASE
+        WHEN stord_info.split_flag IS NULL THEN FALSE
+        ELSE stord_info.split_flag
+      END AS split_shipment_flag,
+      stord_info.tracking,
+      stord_info.shipment_id,
+      stord_info.shipdate AS shipment_date_stord,
     FROM
       booked_info
       LEFT OUTER JOIN stord_info ON (
@@ -99,6 +106,7 @@ FROM
       location_name_netsuite IN ('Stord LAS', 'Stord ATL', 'Stord HOLD')
     GROUP BY
       booked_info.order_id_ns,
+      tracking,
       booked_info.transaction_id_ns,
       booked_info.transaction_created_date_pst,
       booked_info.full_status,
@@ -107,6 +115,8 @@ FROM
       booked_info.total_quantity,
       quantity_backordered,
       quantity_fulfilled,
+      stord_info.shipdate,
+      shipment_id,
       stord_info.warehouse_location,
       split_flag,
       name
