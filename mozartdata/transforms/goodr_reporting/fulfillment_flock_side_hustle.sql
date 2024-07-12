@@ -15,8 +15,17 @@ FROM
   (
     WITH
       stord_info AS (
-        SELECT
+        SELECT DISTINCT
           SPLIT_PART(fulfillment_id_edw, '_', 2) AS tracking,
+          CASE
+            WHEN array_size(
+              array_agg(DISTINCT tracking) over (
+                PARTITION BY
+                  order_id_edw
+              )
+            ) > 1 THEN TRUE
+            ELSE FALSE
+          END AS split_flag,
           order_id_edw,
           shipment_id,
           warehouse_location,
@@ -74,7 +83,8 @@ FROM
         WHEN sum(stord_info.quantity) IS NULL THEN 0
         ELSE sum(stord_info.quantity)
       END AS quantity_shipped_stord,
-      stord_info.warehouse_location AS warehouse_location_stord
+      stord_info.warehouse_location AS warehouse_location_stord,
+      stord_info.split_flag
     FROM
       booked_info
       LEFT OUTER JOIN stord_info ON (
@@ -98,6 +108,7 @@ FROM
       quantity_backordered,
       quantity_fulfilled,
       stord_info.warehouse_location,
+      split_flag,
       name
     ORDER BY
       booked_info.order_id_ns
