@@ -4,7 +4,7 @@ select
 , gt.posting_period
 , gt.account_number
 , gt.net_amount
-,
+, ga.account_display_name as account_name
 FROM
   fact.gl_transaction gt
 inner join
