@@ -84,7 +84,7 @@ FROM
         ELSE sum(stord_info.quantity)
       END AS quantity_shipped_stord,
       stord_info.warehouse_location AS warehouse_location_stord,
-      stord_info.split_flag
+      case when stord_info.split_flag is null then false else stord_info.split_flag end as split_shipment_flag
     FROM
       booked_info
       LEFT OUTER JOIN stord_info ON (
