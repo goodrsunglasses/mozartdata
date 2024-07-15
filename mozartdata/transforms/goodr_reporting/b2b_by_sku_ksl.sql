@@ -43,7 +43,7 @@ SELECT DISTINCT
   nsmap.buyer_email,
   nsmap.pop,
   nsmap.logistics,
-  nsmap.created_date
+  date(nsmap.created_date) AS created_date
 FROM
   fact.order_item_detail detail
   LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = detail.order_id_edw
