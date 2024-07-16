@@ -54,6 +54,7 @@ use createdate converted instead of trandate
     , cnm.tier
     , tl.department as department_id_ns
     , d.name as department
+    , tran.memo as memo
     from
       netsuite.transactionaccountingline tal
     inner join
@@ -112,3 +113,4 @@ use createdate converted instead of trandate
     , tl.department
     , tl.item
     , d.name
+    , tran.memo
