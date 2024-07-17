@@ -2,6 +2,7 @@ SELECT
   t.transaction_line_id,
   t.transaction_number_ns,
   t.account_id_ns,
+  t.account_number,
   t.transaction_date,
   t.posting_flag,
   t.posting_period,
