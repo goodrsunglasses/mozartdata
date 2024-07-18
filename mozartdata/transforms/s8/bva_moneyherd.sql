@@ -18,3 +18,4 @@ FROM
 WHERE
   department in ('Business Intelligence','Accounting','Finance Herd')
   and posting_period like '%2024'
+  and t.account_number >= 5000
