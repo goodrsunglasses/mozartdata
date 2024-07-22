@@ -5,7 +5,7 @@ grid_date AS (
   FROM 
     dim.date
   WHERE 
-    date >= '2023-01-01' AND date <= '2025-01-01'
+    date >= '2022-01-01' AND date <= '2025-01-01'
 ),
 grid_product AS (
   SELECT
