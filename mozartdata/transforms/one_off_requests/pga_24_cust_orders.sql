@@ -11,7 +11,9 @@ WITH
 SELECT
   o.*,
   nsc.customer_name,
-  nsc.customer_number
+  nsc.customer_number,
+  date_part(month, sold_date) as sold_month,
+  date_part(year, sold_date) as sold_year
 FROM
   fact.orders o
   LEFT JOIN fact.customer_shopify_map c ON o.customer_id_edw = c.customer_id_edw
