@@ -19,16 +19,15 @@ with cogs as (
       netsuite.transactionline tranline
       ON concat(tranline.transaction,'_',tranline.id) = gt.transaction_line_id
       AND tranline.item = gt.item_id_ns
+      AND tranline.mainline = 'F'
       AND tranline.accountinglinetype in ('COGS','CUSTOMERRETURNVARIANCE')
+      AND tranline.iscogs = 'T'
+      AND (tranline._FIVETRAN_DELETED = false or tranline._FIVETRAN_DELETED is null)
       AND tranline.quantity is not null
   WHERE
       gt.posting_flag
   AND gt.account_number = 5000
-  AND tranline.mainline = 'F'
-  AND tranline.accountinglinetype in ('COGS','CUSTOMERRETURNVARIANCE')
-  AND tranline.iscogs = 'T'
-  AND (tranline._FIVETRAN_DELETED = false or tranline._FIVETRAN_DELETED is null)
-  AND tranline.quantity is not null
+
   GROUP BY
     ALL
   )
