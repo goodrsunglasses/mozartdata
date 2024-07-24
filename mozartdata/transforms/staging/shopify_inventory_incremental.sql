@@ -1,3 +1,9 @@
+SELECT 
+  *,
+ CURRENT_TIMESTAMP as snapshot_timestamp,
+ CURRENT_DATE as snapshot_date
+FROM
+(
 --The main idea here is to just grab as much raw inventory data as possible from the various shopify connectors we have to have it nicely staged and the columns renamed
 SELECT 'Goodr.com'     AS     store,
 	   'D2C'           AS     category,
@@ -73,3 +79,4 @@ SELECT 'Specialty CAN'       AS     store,
 FROM SELLGOODR_CANADA_SHOPIFY.INVENTORY_LEVEL level
 		 LEFT OUTER JOIN SELLGOODR_CANADA_SHOPIFY.INVENTORY_ITEM item ON item.id = level.INVENTORY_ITEM_ID
 WHERE item._FIVETRAN_DELETED = FALSE
+)
