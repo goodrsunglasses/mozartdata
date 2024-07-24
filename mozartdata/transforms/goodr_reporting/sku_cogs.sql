@@ -2,6 +2,7 @@ select
   c.posting_period
 , c.period_end_date
 , c.sku
+, c.display_name
 , c.channel
 , c.transaction_type
 , round(sum(c.total_cogs),2) total_cogs
