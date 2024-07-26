@@ -7,7 +7,7 @@ with
     , gt.record_type
     , gt.transaction_date
     , gt.account_number
-    , null as transaction_reference--concat(gt.record_type,': ',gt.transaction_number_ns) as transaction_reference
+    , gt.transaction_number_ns --concat(gt.record_type,': ',gt.transaction_number_ns) as transaction_reference
     , ga.account_display_name as account_name
     , v.name as vendor_name
     , cnm.company_name
@@ -30,7 +30,7 @@ with
  )
 SELECT
   cc.transaction_id_ns
-, cc.transaction_reference
+, cc.transaction_number_ns
 , gt.posting_period
 , gt.record_type
 , t.accountbasednumber
@@ -43,6 +43,7 @@ SELECT
 , gt.account_number as account_number_2
 , ga.account_display_name as account_name_2
 , gt.transaction_id_ns as transaction_id_ns_2--concat(gt.record_type,': ',gt.transaction_number_ns) as transaction_reference_2
+, gt.transaction_number_ns as transaction_number_ns_2
 , t.memo
 , sum(gt.credit_amount) credit
 , sum(gt.debit_amount) debit
