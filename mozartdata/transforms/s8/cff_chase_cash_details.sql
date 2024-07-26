@@ -42,7 +42,7 @@ SELECT
 , gt.channel
 , gt.account_number as account_number_2
 , ga.account_display_name as account_name_2
-, null as transaction_reference_2--concat(gt.record_type,': ',gt.transaction_number_ns) as transaction_reference_2
+, gt.transaction_id_ns as transaction_id_ns_2--concat(gt.record_type,': ',gt.transaction_number_ns) as transaction_reference_2
 , t.memo
 , sum(gt.credit_amount) credit
 , sum(gt.debit_amount) debit
