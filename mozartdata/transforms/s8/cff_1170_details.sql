@@ -1,7 +1,8 @@
 SELECT
       gt.transaction_id_ns
     , gt.record_type
-    , null as transaction_reference--concat(gt.record_type,': ',gt.transaction_number_ns) as transaction_reference
+    , gt.transaction_id_ns
+    , gt.transaction_number_ns
     , gt.transaction_date
     , gt.posting_period
     , gt.account_number
