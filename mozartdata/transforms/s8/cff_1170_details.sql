@@ -1,7 +1,6 @@
 SELECT
       gt.transaction_id_ns
     , gt.record_type
-    , gt.transaction_id_ns
     , gt.transaction_number_ns
     , gt.transaction_date
     , gt.posting_period
