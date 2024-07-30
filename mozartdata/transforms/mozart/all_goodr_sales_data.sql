@@ -30,6 +30,7 @@ FROM
   LEFT OUTER JOIN booked_shipping addy ON addy.order_id_edw = oi.order_id_edw
 WHERE
   oi.product_id_edw IS NOT NULL
+  AND p.family = 'INLINE'
 GROUP BY
   o.channel,
   EXTRACT(YEAR FROM o.sold_date),
