@@ -18,6 +18,7 @@ WITH
   )
 SELECT
   o.channel,
+  EXTRACT(YEAR FROM o.sold_date) AS year,
   TO_CHAR(o.sold_date, 'YYYY-MM') AS sold_month,
   COALESCE(SUM(oi.revenue), 0) AS total_revenue,
   COALESCE(SUM(oi.quantity_sold), 0) AS total_quantity_sold
@@ -31,7 +32,9 @@ WHERE
   oi.product_id_edw IS NOT NULL
 GROUP BY
   o.channel,
+  EXTRACT(YEAR FROM o.sold_date),
   TO_CHAR(o.sold_date, 'YYYY-MM')
 ORDER BY
   o.channel,
+  year,
   sold_month;
