@@ -19,7 +19,7 @@ WITH
 SELECT
   o.channel,
   TO_CHAR(o.sold_date, 'YYYY-MM') AS sold_month,
-  COALESCE(SUM(oi.amount_revenue_booked), 0) AS total_revenue,
+  COALESCE(SUM(oi.revenue), 0) AS total_revenue,
   COALESCE(SUM(oi.quantity_sold), 0) AS total_quantity_sold
 FROM
   fact.order_item oi
