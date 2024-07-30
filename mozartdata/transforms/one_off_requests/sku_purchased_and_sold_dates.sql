@@ -1,13 +1,15 @@
 SELECT
   p.item_id_ns,
   p.display_name,
+  p.sku,
   p.family,
   p.collection,
   p.stage,
   p.merchandise_department,
   p.merchandise_class,
   p.product_id_edw,
-  MIN(po.purchase_date) AS earliest_po_date,
+  min(po.purchase_date) AS earliest_po_date,
+  max(po.purchase_date) AS latest_po_date,
   min(o.sold_date) as earliest_order_date,
   max(o.sold_date) as latest_order_date
 FROM
