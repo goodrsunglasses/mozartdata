@@ -1,41 +1,34 @@
-WITH
-  periods AS (
-    SELECT
-      'year' AS period_type,
-      'Jan ''22-Dec ''22' AS period,
-      '2022-01-01' AS period_start_date,
-      '2022-12-31' AS period_end_date
-    UNION ALL
-    SELECT
-      'year' AS period_type,
-      'Jan ''23-Dec ''23' AS period,
-      '2023-01-01' AS period_start_date,
-      '2023-12-31' AS period_end_date
-    UNION ALL
-    SELECT
-      'month' AS period_type,
-      'Jun ''23' AS period,
-      '2023-06-01' AS period_start_date,
-      '2023-06-30' AS period_end_date
-    UNION ALL
-    SELECT
-      'month' AS period_type,
-      'Jun ''24' AS period,
-      '2024-06-01' AS period_start_date,
-      '2024-06-30' AS period_end_date
-  )
 SELECT
-  transaction_id_ns,
-  transaction_number_ns,
-  record_type,
-  channel,
-  location_id_ns,
-  location_name,
-  transaction_created_date_pst,
-  sku,
-  plain_name,
-  quantity
+  iid.transaction_id_ns,
+  iid.transaction_number_ns,
+  iid.record_type,
+  iid.channel,
+  iid.location_id_ns,
+  iid.location_name,
+  iid.transaction_created_date_pst,
+  iid.item_id_ns,
+  iid.sku,
+  iid.plain_name,
+  iid.quantity,
+  sum(gt.net_amount) net_amount
 FROM
-  fact.inventory_item_detail
+  fact.inventory_item_detail iid
+LEFT JOIN
+  fact.gl_transaction gt
+  ON iid.transaction_id_ns = gt.transaction_id_ns
+  AND iid.transaction_line_id_ns = gt.transaction_line_id_ns
+  AND gt.posting_flag
 WHERE
-  record_type = 'inventoryadjustment'
+  iid.record_type = 'inventoryadjustment'
+GROUP BY
+  iid.transaction_id_ns,
+  iid.transaction_number_ns,
+  iid.record_type,
+  iid.channel,
+  iid.location_id_ns,
+  iid.location_name,
+  iid.transaction_created_date_pst,
+  iid.item_id_ns,
+  iid.sku,
+  iid.plain_name,
+  iid.quantity
