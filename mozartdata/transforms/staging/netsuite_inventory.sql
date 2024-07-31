@@ -12,3 +12,4 @@ SELECT
   _fivetran_synced
 FROM
   netsuite.inventorybalance balance
+order by _FIVETRAN_SYNCED desc

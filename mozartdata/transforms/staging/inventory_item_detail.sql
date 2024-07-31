@@ -1,6 +1,8 @@
+--CREATE OR REPLACE TABLE staging.inventory_item_detail
+        --   COPY GRANTS  as
 SELECT -- the idea of this staging table is to select all the inventory affecting transactions from Netsuite to seperately replicate inventory quantities as a balance sheet rather than a snapshot
 	   --As per what I (KSL) usually do for these I am kinda just broad swathe selecting columns that I think will be useful to be save
-	   transaction,
+	   transaction as transaction_id_ns,
 	   REPLACE(
 			   COALESCE(
 					   tran.custbody_goodr_shopify_order,
@@ -14,16 +16,16 @@ SELECT -- the idea of this staging table is to select all the inventory affectin
 			   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)
 	   )                                                         AS transaction_created_date_pst,
 	   tran.recordtype                                           AS record_type,
-	   tran.tranid,
-	   tranline.entity,
-	   tranline.item,
+	   tran.tranid as transaction_number_ns,
+	   tranline.entity as customer_id_ns,
+	   tranline.item as item_id_ns,
 	   COALESCE(item.displayname, item.externalid)               AS plain_name,
-	   tranline.cseg7,
+	   tranline.cseg7 as channel_id_ns,
 	   tranline.quantity,
 	   tranline.itemtype,
 	   tranline.dropship,
-	   tranline.expenseaccount,
-	   tranline.location,
+	   tranline.expenseaccount as expense_account_id_ns,
+	   tranline.location as location_id_ns,
 	   tranline.rate,
 	   tranline.rateamount,
 	   tranline.inventoryreportinglocation,

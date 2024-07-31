@@ -1,3 +1,5 @@
+--CREATE OR REPLACE TABLE staging.shopify_inventory
+           -- COPY GRANTS  as
 --The main idea here is to just grab as much raw inventory data as possible from the various shopify connectors we have to have it nicely staged and the columns renamed
 SELECT 'Goodr.com'     AS     store,
 	   'D2C'           AS     category,
