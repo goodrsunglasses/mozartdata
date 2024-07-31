@@ -5,7 +5,7 @@ grid_date AS (
   FROM 
     dim.date
   WHERE 
-    date >= '2023-01-01' AND date <= '2025-01-01'
+    date >= '2022-07-012' AND date <= '2025-01-01'
 ),
 grid_product AS (
   SELECT
@@ -37,7 +37,7 @@ collection_orders AS (
   WHERE 
     o.channel = 'Goodr.com'
     AND p.family = 'LICENSING' 
-    AND o.sold_date >= '2022-01-01'
+    AND o.sold_date >= '2022-07-12'
     AND p.replenish_flag = 'True'
   GROUP BY
     oi.order_id_edw,
@@ -59,7 +59,7 @@ total_sales AS (
   INNER JOIN 
     fact.orders o ON co.order_id_edw = o.order_id_edw
   WHERE 
-    o.sold_date >= '2022-01-01'
+    o.sold_date >= '2022-07-12'
   GROUP BY
     co.item_id_ns, 
     co.sold_date

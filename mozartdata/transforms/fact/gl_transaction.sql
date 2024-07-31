@@ -26,6 +26,7 @@ use createdate converted instead of trandate
     , tran.recordtype as record_type --helpful for QC
     , tal."ACCOUNT" as account_id_edw
     , tal."ACCOUNT" as account_id_ns
+    , tal.transactionline as transaction_line_id_ns
     , ga.account_number
     , ga.budget_category
     , channel.name as channel
@@ -54,6 +55,7 @@ use createdate converted instead of trandate
     , cnm.tier
     , tl.department as department_id_ns
     , d.name as department
+    , tran.memo as memo
     from
       netsuite.transactionaccountingline tal
     inner join
@@ -98,6 +100,7 @@ use createdate converted instead of trandate
     , tran.tranid
     , tran.recordtype
     , tal."ACCOUNT"
+    , tal.transactionline
     , ga.account_number
     , ga.budget_category
     , channel.name
@@ -112,3 +115,4 @@ use createdate converted instead of trandate
     , tl.department
     , tl.item
     , d.name
+    , tran.memo

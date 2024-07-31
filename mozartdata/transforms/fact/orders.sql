@@ -218,7 +218,7 @@ SELECT
 		   ELSE aggregates.quantity_fulfilled END              AS quantity_fulfilled,--As per notes from our meeting, the idea is that on orders not in the channels, we dont want this column to show Netsuite IF information if its lacking from Stord/SS
 	   fulfillment_info.total_QUANTITY_STORD                         AS quantity_fulfilled_stord,
 	   fulfillment_info.total_QUANTITY_SS                            AS  quantity_fulfilled_shipstation,
-  aggregates.quantity_fulfilled AS quantity_fulfilled_ns,
+  fulfillment_info.total_QUANTITY_NS AS quantity_fulfilled_ns,
   aggregates.quantity_refunded,
   aggregates.quantity_refunded as quantity_refunded_ns,
   aggregates.rate_booked,
@@ -275,6 +275,6 @@ FROM
   LEFT OUTER JOIN fact.currency_exchange_rate cer ON aggregate_netsuite.booked_date = cer.effective_date AND aggregate_netsuite.channel_currency_id_ns = cer.transaction_currency_id_ns
   LEFT OUTER JOIN fulfillment_info ON fulfillment_info.ORDER_ID_EDW = orders.ORDER_ID_EDW
 WHERE
-  aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
+  aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z' 
 ORDER BY
   aggregate_netsuite.booked_date desc
