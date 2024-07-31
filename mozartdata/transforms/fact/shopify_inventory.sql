@@ -17,7 +17,7 @@ SELECT --Idea here is to select from the shopify snapshot tables native to mozar
 	   snapshot.cost,
 	   snapshot.ITEM_UPDATED_AT_UTC,
 	   snapshot.ITEM_CREATED_AT_UTC
-FROM SNAPSHOTS.STAGING__SHOPIFY_INVENTORY snapshot
+FROM STAGING.SHOPIFY_INVENTORY_INCREMENTAL snapshot
 		 LEFT OUTER JOIN dim.product prod ON prod.sku = snapshot.sku
 WHERE tracked = TRUE
   AND store = 'Goodr.com'
