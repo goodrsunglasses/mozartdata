@@ -21,7 +21,7 @@ left join
   fact.order_line ol
   on gt.transaction_id_ns = ol.transaction_id_ns
 WHERE
-   gt.posting_period = 'Dec 2023' --change period as needed
+   gt.posting_period = 'Jun 2023' --change period as needed
   and gt.posting_flag = true
   and gt.account_number like '4%'
 ),
@@ -53,8 +53,8 @@ SELECT
 , do.account_number
 , do.net_amount
   --we don't have insight into amazon/amazon prime shipping. so we recognize revenue at sale. Cabana is literal cash sales so there is no item fulfillment
-, case when do.channel in ('Amazon','Amazon Prime','Cabana') then o.booked_date else o.fulfillment_date end fulfillment_date 
-, case when do.channel in ('Amazon','Amazon Prime','Cabana') then d.posting_period else if.posting_period end if_posting_period 
+, case when do.channel in ('Amazon','Amazon Prime','Amazon Canada','Cabana') then o.booked_date else o.fulfillment_date end fulfillment_date 
+, case when do.channel in ('Amazon','Amazon Prime','Amazon Canada','Cabana') then d.posting_period else if.posting_period end if_posting_period 
 FROM
   dec_orders do
 left join
