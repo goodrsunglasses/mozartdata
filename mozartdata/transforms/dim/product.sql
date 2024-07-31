@@ -177,6 +177,8 @@ SELECT DISTINCT
   , DATE(i.custitem7)                                AS d2c_launch_date
   , i.custitem16                                     AS b2b_launch_timestamp
   , DATE(i.custitem16)                               AS b2b_launch_date
+  , i.custitem11                                     AS offsite_date
+  , i.custitem12                                     AS dead_date
   , i.custitem_goodr_mc_ip_qty                       AS mc_quantity
   , i.custitem_goodr_mc_weight                       AS mc_weight_oz
   , i.custitem_goodr_mc_length                       AS mc_length_in
@@ -241,8 +243,3 @@ FROM
         ON stord.sku = prod_inv.sku
     LEFT JOIN shipstation_portable.shipstation_products_8589936627 shipstation
         ON shipstation.sku = prod_inv.sku
-
-
-
-
-
