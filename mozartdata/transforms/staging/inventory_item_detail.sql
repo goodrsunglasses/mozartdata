@@ -18,7 +18,7 @@ SELECT -- the idea of this staging table is to select all the inventory affectin
 	   tran.recordtype                                           AS record_type,
 	   tran.tranid as transaction_number_ns,
 	   tranline.entity,
-	   tranline.item,
+	   tranline.item as item_id_ns,
 	   COALESCE(item.displayname, item.externalid)               AS plain_name,
 	   tranline.cseg7 as channel_id_ns,
 	   tranline.quantity,
