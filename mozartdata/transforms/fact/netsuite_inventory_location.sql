@@ -3,7 +3,7 @@
 SELECT inv.sku,
 	   inv.location_name,
 	   inv.FIVETRAN_SNAPSHOT_DATE_PST,
-	   SUM(QUANTITYAVAILABLE) total_QUANTITYAVAILABLE,
+	   SUM(QUANTITYAVAILABLE) total_quantity_available,
 	   SUM(QUANTITYONHAND)    total_quantity_on_hand,
 	   SUM(QUANTITYPICKED)    total_QUANTITYPICKED
 FROM fact.NETSUITE_INVENTORY inv
