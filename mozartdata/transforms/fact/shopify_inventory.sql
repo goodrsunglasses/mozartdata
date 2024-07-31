@@ -19,7 +19,7 @@ SELECT --Idea here is to select from the shopify snapshot tables native to mozar
 	   snapshot.ITEM_CREATED_AT_UTC
 FROM STAGING.SHOPIFY_INVENTORY_INCREMENTAL snapshot
 		 LEFT OUTER JOIN dim.product prod ON prod.sku = snapshot.sku
-WHERE tracked = TRUE
+WHERE tracked = TRUE --This one from what I can tell just filters out a secondary line of False, untracked item inventory?
   AND store = 'Goodr.com'
   AND snapshot.sku = 'OG-HND-NRBR1'--This one from what I can tell just filters out a secondary line of False, untracked item inventory?
 ORDER BY fivetran_snapshot_date_pst ASC
