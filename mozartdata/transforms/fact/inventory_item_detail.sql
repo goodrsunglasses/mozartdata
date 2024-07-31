@@ -7,24 +7,24 @@ SELECT--the idea of this table is to link the staging inventory data to other di
 	  chan.name as channel,
 	  chan.CUSTOMER_CATEGORY,
 	  chan.model,
-	  staging.location as location_id_ns,
+	  staging.location_id_ns,
 	  loc.name as location_name,
 	  staging.TRANSACTION_CREATED_TIMESTAMP_PST,
 	  staging.TRANSACTION_CREATED_DATE_PST,
-	  staging.transaction_number_ns
+	  staging.transaction_number_ns,
 	  staging.item_id_ns,
 	  staging.plain_name,
 	  prod.sku,
 	  staging.quantity,
 	  staging.dropship,
-	  staging.EXPENSEACCOUNT,
+	  staging.expense_account_id_ns,
 	  staging.rate,
 	  staging.rateamount,
 	  staging.INVENTORYREPORTINGLOCATION as inventory_reporting_location,
-	  staging.entity,
+	  staging.customer_id_ns,
 	  staging.createdfrom
 FROM staging.INVENTORY_ITEM_DETAIL staging
-		 LEFT OUTER JOIN dim.PARENT_TRANSACTIONS parents ON parents.TRANSACTION_ID_NS = staging.transaction
-		 LEFT OUTER JOIN dim.location loc ON loc.LOCATION_ID_NS = staging.location
-		 LEFT OUTER JOIN dim.product prod ON prod.ITEM_ID_NS = staging.item
+		 LEFT OUTER JOIN dim.PARENT_TRANSACTIONS parents ON parents.TRANSACTION_ID_NS = staging.transaction_id_ns
+		 LEFT OUTER JOIN dim.location loc ON loc.LOCATION_ID_NS = staging.location_id_ns
+		 LEFT OUTER JOIN dim.product prod ON prod.ITEM_ID_NS = staging.item_id_ns
 		 LEFT OUTER JOIN dim.channel chan ON chan.CHANNEL_ID_NS = staging.channel_id_ns
