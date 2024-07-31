@@ -11,7 +11,7 @@ SELECT --Idea here is to select from the shopify snapshot tables native to mozar
 	   DATE(CONVERT_TIMEZONE('America/Los_Angeles', snapshot.FIVETRAN_SYNC_TIME_UTC)) AS fivetran_snapshot_date_pst,
 	   CONVERT_TIMEZONE('America/Los_Angeles', snapshot.UPDATED_AT_UTC)               AS UPDATED_AT_SHOPIFY_PST,
 	   DATE(CONVERT_TIMEZONE('America/Los_Angeles', snapshot.UPDATED_AT_UTC))         AS UPDATED_AT_SHOPIFY_DATE_PST,
-	   CONVERT_TIMEZONE('America/Los_Angeles', snapshot.snapshot_ts)                  AS snapshot_ts_mozart_pst,
+	   CONVERT_TIMEZONE('America/Los_Angeles', snapshot.snapshot_timestamp)                  AS snapshot_ts_mozart_pst,
 	   snapshot.tracked,
 	   --everything past here is included for posterity, as often we seem to need the most nonsensical fields for one specific request
 	   snapshot.cost,
