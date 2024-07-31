@@ -21,4 +21,4 @@ FROM STAGING.SHOPIFY_INVENTORY_INCREMENTAL snapshot
 		 LEFT OUTER JOIN dim.product prod ON prod.sku = snapshot.sku
 WHERE tracked = TRUE --This one from what I can tell just filters out a secondary line of False, untracked item inventory?
   AND store = 'Goodr.com'
-ORDER BY fivetran_snapshot_date_pst ASC
+ORDER BY snapshot_date ASC
