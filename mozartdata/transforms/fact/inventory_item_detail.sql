@@ -20,7 +20,7 @@ SELECT--the idea of this table is to link the staging inventory data to other di
 	  staging.EXPENSEACCOUNT,
 	  staging.rate,
 	  staging.rateamount,
-	  staging.INVENTORYREPORTINGLOCATION,
+	  staging.INVENTORYREPORTINGLOCATION as inventory_reporting_location,
 	  staging.entity,
 	  staging.createdfrom
 FROM staging.INVENTORY_ITEM_DETAIL staging
