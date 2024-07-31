@@ -1,5 +1,5 @@
 --CREATE OR REPLACE TABLE fact.netsuite_inventory_location
-            COPY GRANTS  as
+           -- COPY GRANTS  as
 SELECT inv.sku,
 	   inv.location_name,
 	   inv.FIVETRAN_SNAPSHOT_DATE_PST,
