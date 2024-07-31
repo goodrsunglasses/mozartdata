@@ -12,7 +12,7 @@ SELECT--the idea of this table is to link the staging inventory data to other di
 	  staging.TRANSACTION_CREATED_TIMESTAMP_PST,
 	  staging.TRANSACTION_CREATED_DATE_PST,
 	  staging.transaction_number_ns
-	  staging.item as item_id_ns,
+	  staging.item_id_ns,
 	  staging.plain_name,
 	  prod.sku,
 	  staging.quantity,
