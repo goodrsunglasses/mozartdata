@@ -2,7 +2,7 @@
         --   COPY GRANTS  as
 SELECT -- the idea of this staging table is to select all the inventory affecting transactions from Netsuite to seperately replicate inventory quantities as a balance sheet rather than a snapshot
 	   --As per what I (KSL) usually do for these I am kinda just broad swathe selecting columns that I think will be useful to be save
-	   transaction,
+	   transaction as transaction_id_ns,
 	   REPLACE(
 			   COALESCE(
 					   tran.custbody_goodr_shopify_order,
