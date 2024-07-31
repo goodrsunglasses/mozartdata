@@ -25,7 +25,7 @@ SELECT -- the idea of this staging table is to select all the inventory affectin
 	   tranline.itemtype,
 	   tranline.dropship,
 	   tranline.expenseaccount as expense_account_id_ns,
-	   tranline.location,
+	   tranline.location as location_id_ns,
 	   tranline.rate,
 	   tranline.rateamount,
 	   tranline.inventoryreportinglocation,
