@@ -27,4 +27,4 @@ FROM staging.INVENTORY_ITEM_DETAIL staging
 		 LEFT OUTER JOIN dim.PARENT_TRANSACTIONS parents ON parents.TRANSACTION_ID_NS = staging.transaction
 		 LEFT OUTER JOIN dim.location loc ON loc.LOCATION_ID_NS = staging.location
 		 LEFT OUTER JOIN dim.product prod ON prod.ITEM_ID_NS = staging.item
-		 LEFT OUTER JOIN dim.channel chan ON chan.CHANNEL_ID_NS = staging.cseg7
+		 LEFT OUTER JOIN dim.channel chan ON chan.CHANNEL_ID_NS = staging.channel_id_ns
