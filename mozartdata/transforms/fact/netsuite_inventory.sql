@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE fact.netsuite_inventory
+--CREATE OR REPLACE TABLE fact.netsuite_inventory
             COPY GRANTS  as
 SELECT prod.sku,
 	   ns.location,
