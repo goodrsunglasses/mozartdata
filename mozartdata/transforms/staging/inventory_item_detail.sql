@@ -20,7 +20,7 @@ SELECT -- the idea of this staging table is to select all the inventory affectin
 	   tranline.entity,
 	   tranline.item,
 	   COALESCE(item.displayname, item.externalid)               AS plain_name,
-	   tranline.cseg7,
+	   tranline.cseg7 as channel_id_ns,
 	   tranline.quantity,
 	   tranline.itemtype,
 	   tranline.dropship,
