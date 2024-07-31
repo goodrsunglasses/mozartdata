@@ -1,5 +1,5 @@
 --CREATE OR REPLACE TABLE fact.inventory_item_detail
-            COPY GRANTS  as
+            --COPY GRANTS  as
 SELECT--the idea of this table is to link the staging inventory data to other dims and facts, like parent transactions, locations, etc... and provide a solid basis to build other facts off of
 	  staging.transaction AS transaction_id_ns,
 	  parents.ORDER_ID_EDW,
