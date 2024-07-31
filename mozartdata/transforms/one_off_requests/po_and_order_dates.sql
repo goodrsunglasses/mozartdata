@@ -10,6 +10,8 @@ SELECT
   p.product_id_edw,
   p.d2c_launch_date,
   p.b2b_launch_date,
+  date(p.dead_date) as dead_date,
+  date(p.offsite_date) as offsite_date,
   min(po.purchase_date) AS earliest_po_date,
   max(po.purchase_date) AS latest_po_date,
   min(o.sold_date) as earliest_order_date,
