@@ -13,13 +13,14 @@ WITH
     WHERE
       tranline.id = 0
       AND custbody_merch_auth_id IS NOT NULL
+      AND recordtype IN ('cashsale', 'cashrefund')
   ),
   braintree_data AS (
     SELECT
       id,
     TYPE,
     date(disbursement_date) disbursement_date,
-  amount,
+    amount,
     disbursement_settlement_amount
     FROM
       braintree.transaction
@@ -28,17 +29,20 @@ SELECT
   id AS braintree_transaction_id,
 TYPE,
 disbursement_date,
-case when order_id_edw like '%-CA%' then amount else disbursement_settlement_amount end as presentment_amount,
+CASE
+  WHEN order_id_edw LIKE '%-CA%' THEN amount
+  ELSE disbursement_settlement_amount
+END AS presentment_amount,
 transaction AS netsuite_transaction_id,
 tranid,
 order_id_edw,
 recordtype,
-netamount as netsuite_netamount,
-round(disbursement_settlement_amount - netamount, 2) AS difference
+netamount AS netsuite_netamount,
+round(presentment_amount - netamount, 2) AS difference
 FROM
   braintree_data
   LEFT OUTER JOIN netsuite_data ON netsuite_data.merch_auth = braintree_data.id
 WHERE
-  disbursement_settlement_amount != netamount
+  presentment_amount != netamount
 ORDER BY
 TYPE asc
