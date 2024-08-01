@@ -19,6 +19,7 @@ WITH
       id,
     TYPE,
     date(disbursement_date) disbursement_date,
+  amount,
     disbursement_settlement_amount
     FROM
       braintree.transaction
@@ -27,7 +28,7 @@ SELECT
   id AS braintree_transaction_id,
 TYPE,
 disbursement_date,
-disbursement_settlement_amount,
+case when order_id_edw like '%-CA%' then amount else disbursement_settlement_amount end as presentment_amount,
 transaction AS netsuite_transaction_id,
 tranid,
 order_id_edw,
