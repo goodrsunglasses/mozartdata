@@ -38,7 +38,7 @@ tranid,
 order_id_edw,
 recordtype,
 netamount AS netsuite_netamount,
-round(presentment_amount - netamount, 2) AS difference
+abs(round(presentment_amount - netamount, 2)) AS difference
 FROM
   braintree_data
   LEFT OUTER JOIN netsuite_data ON netsuite_data.merch_auth = braintree_data.id
