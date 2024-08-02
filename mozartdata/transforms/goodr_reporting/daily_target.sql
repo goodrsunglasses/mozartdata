@@ -1,5 +1,5 @@
 with period_map as (SELECT
-'2024 V4'  as year,
+'2024 V5'  as year,
   date,
   posting_period,
   count(*) OVER (partition by year,month) as days
