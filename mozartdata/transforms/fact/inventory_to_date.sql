@@ -13,4 +13,4 @@ WITH running_totals AS (SELECT location_name,
 								   ) AS cumulative_quantity
 						FROM fact.inventory_item_detail)
 SELECT *
-FROM running_totals
+FROM running_totals order by location_name,transaction_created_date_pst
