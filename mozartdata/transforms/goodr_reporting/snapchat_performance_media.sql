@@ -91,7 +91,7 @@ end as funnel_stage
 , sum(snap_daily.CLICKS) as clicks
 , sum(snap_daily.CONVERSIONS) as conversions
 from
-  fact.SNAPCHAT_CAMPAIGN_DAILY_METRICS as snap_daily
+  fact.snapchat_campaign_metrics_daily as snap_daily
 inner join
   dim.SNAPCHAT_CAMPAIGNS as snap_cams
   on snap_daily.campaign_id_snapchat = snap_cams.campaign_id_snapchat
