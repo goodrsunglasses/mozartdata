@@ -1,18 +1,20 @@
-WITH running_totals AS (SELECT location_name,
-							   transaction_created_date_pst,
-							   sku,
-							   plain_name,
-							   SUM(quantity) OVER (
-								   PARTITION BY
-									   sku,
-									   location_name,
-									   plain_name
-								   ORDER BY
-									   transaction_created_date_pst ROWS BETWEEN UNBOUNDED PRECEDING
-									   AND CURRENT ROW
-								   )                                                                           AS cumulative_quantity,
-							   ROW_NUMBER() OVER (PARTITION BY sku ORDER BY transaction_created_date_pst DESC) AS row_num
-						FROM fact.inventory_item_detail)
+WITH running_totals
+		 AS (SELECT --the idea here is that we wanted a table that would concat the netsuite inventory "balance sheet" into a view by sku by location UP TO a given day since it came up alot
+					location_name,
+					transaction_created_date_pst,
+					sku,
+					plain_name,
+					SUM(quantity) OVER (
+						PARTITION BY
+							sku,
+							location_name,
+							plain_name
+						ORDER BY
+							transaction_created_date_pst ROWS BETWEEN UNBOUNDED PRECEDING
+							AND CURRENT ROW
+						)                                                                           AS cumulative_quantity,
+					ROW_NUMBER() OVER (PARTITION BY sku ORDER BY transaction_created_date_pst DESC) AS row_num
+			 FROM fact.inventory_item_detail)
 SELECT location_name,
 	   transaction_created_date_pst,
 	   sku,
