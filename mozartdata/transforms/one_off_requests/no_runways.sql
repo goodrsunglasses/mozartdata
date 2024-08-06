@@ -19,7 +19,7 @@ order by o.customer_id_edw
 SELECT 
   c.customer_id_edw,
   ca.company
-from fact.customer c 
+from archive.customer c 
 join dim.customer dc on c.customer_id_edw = dc.customer_id_edw
 JOIN fact.customer_shopify_map cs on cs.customer_id_edw = c.customer_id_edw
 left join cte_runways r on r.customer_id_edw = c.customer_id_edw
