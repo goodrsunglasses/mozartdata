@@ -11,28 +11,26 @@ WITH
         WHEN merchant_name LIKE 'USPS STAMPS%' THEN 'USA Postal Service'
         ELSE merchant_name
       END AS clean_merchant,
-      array_agg(DISTINCT merchant_id) AS id_list
+      post_date,
+      amount
     FROM
       google_sheets.jpmastercard_upload
     WHERE
-      transaction_id IS NOT NULL
-      AND merchant_name NOT LIKE '%/%'
-      AND account_given_name = 'JANE'
-    GROUP BY
-      clean_merchant
+      account_given_name = 'JANE'
     ORDER BY
       clean_merchant
   )
 SELECT
-  Transaction_ID,
-  Merchant_Name,
-  Merchant_ID,
-  Post_Date,
-  Number,
+  clean_merchant,
+  post_date,
+  amount,
+  Vendor,
+  GL,
+  Internal,
+  Account_Name,
   Department,
-  Amount,
-  Memo,
-  Class,
-  Account_Number
+  ID,
+  Line_Memo
 FROM
-  google_sheets.jpmastercard_upload upload
+  google_sheets.jpmc_mapping map
+  LEFT OUTER JOIN cleaned_list ON map.vendor = cleaned_list.clean_merchant
