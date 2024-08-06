@@ -46,7 +46,7 @@ inner join
   customer c
   on c.customer_id_edw = o.customer_id_edw
 left join
-  fact.customer fc
+  archive.customer fc
   on c.customer_id_edw = fc.customer_id_edw
 group by
   c.email
