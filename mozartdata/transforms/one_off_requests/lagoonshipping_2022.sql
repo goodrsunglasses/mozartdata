@@ -12,7 +12,7 @@ SELECT
   COUNT(DISTINCT (fulfill.order_id)) AS orders_count_quantity,
   SUM((quantity_items)) AS units_sum_quantity
 FROM
-fact.fulfillment_event fulfill
+archive.fulfillment_event fulfill
   left outer join dim.orders orders on orders.order_id = fulfill.order_id
 WHERE
   fulfill.location LIKE '%HQ DC%'
