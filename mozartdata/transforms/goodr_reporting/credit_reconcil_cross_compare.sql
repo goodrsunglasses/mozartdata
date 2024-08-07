@@ -1,5 +1,5 @@
 WITH
-  expensify_split AS (
+  netsuite_select AS (
     SELECT DISTINCT
       gl_tran.transaction_id_ns,
       gl_tran.transaction_number_ns,
@@ -17,11 +17,19 @@ WITH
       LEFT OUTER JOIN netsuite.entity emp ON emp.id = line.entity
     WHERE
       transaction_id_ns IN (25425510, 25319828)
-      AND custbody_createdfrom_expensify IS NOT NULL
+      AND cleared != 'T'
+      AND record_type IN (
+        'journalentry',
+        'creditcardcharge',
+        'vendorpayment',
+        'check'
+      )
+  ),
+  expensify_split AS (
+    SELECT
+      netsuite_select.*,
+      TRIM(parts[0]) AS email,
+      replace(TRIM(REPLACE(parts[3], 'Expense:', '')), '"', '') AS expense --had to do this because it puts double quotes, idk why but dont have time to fix it rn
+    FROM
+      netsuite_select
   )
-SELECT
-  expensify_split.*,
-  TRIM(parts[0]) AS email,
-  replace(TRIM(REPLACE(parts[3], 'Expense:', '')), '"', '') AS expense --had to do this because it puts double quotes, idk why but dont have time to fix it rn
-FROM
-  expensify_split
