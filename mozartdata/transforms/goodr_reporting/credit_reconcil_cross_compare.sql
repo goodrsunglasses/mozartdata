@@ -4,15 +4,19 @@ WITH
       gl_tran.transaction_id_ns,
       gl_tran.transaction_number_ns,
       gl_tran.net_amount,
-      gl_tran.department,
       gl_tran.transaction_date,
       gl_tran.memo,
-      SPLIT(gl_tran.memo, '|') AS parts,
+      emp.altname,
+      emp.firstname,
+      emp.lastname,
+      SPLIT(gl_tran.memo, '|') AS parts
     FROM
       fact.gl_transaction gl_tran
       LEFT OUTER JOIN netsuite.transaction tran ON tran.id = gl_tran.transaction_id_ns
+      LEFT OUTER JOIN netsuite.transactionline line ON line.transaction = tran.id
+      LEFT OUTER JOIN netsuite.entity emp ON emp.id = line.entity
     WHERE
-      transaction_id_ns = 23886919
+      transaction_id_ns IN (25425510, 25319828)
       AND custbody_createdfrom_expensify IS NOT NULL
   )
 SELECT
