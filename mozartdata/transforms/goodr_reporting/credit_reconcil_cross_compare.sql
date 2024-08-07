@@ -9,6 +9,8 @@ WITH
       emp.altname,
       emp.firstname,
       emp.lastname,
+      concat(firstname,' ',lastname) as first_last,
+      line.cleared,
       SPLIT(gl_tran.memo, '|') AS parts,
     FROM
       fact.gl_transaction gl_tran
@@ -53,27 +55,30 @@ WITH
     WHERE
       splay_counter = 1
   )
+
 SELECT
-  *
+  transaction_id_ns,
+  transaction_number_ns,
+  net_amount,
+  transaction_date,
+  altname,
+  amex.reference
 FROM
-  splay_detect
+  first_list
+  LEFT OUTER JOIN google_sheets.amex_import amex ON (
+    amex.date = first_list.transaction_date
+    AND first_list.net_amount = amex.amount
+    AND upper(amex.card_member) = upper(first_list.first_last)
+  )
 WHERE
-  splay_counter > 1
-and altname = 'Nicole Sedmak'
-order by transaction_date,net_amount
-  -- SELECT
-  --   transaction_id_ns,
-  --   transaction_number_ns,
-  --   net_amount,
-  --   transaction_date,
-  --   altname,
-  --   amex.reference
-  -- FROM
-  --   first_list
-  --   LEFT OUTER JOIN google_sheets.amex_import amex ON (
-  --     amex.date = first_list.transaction_date
-  --     AND first_list.net_amount = amex.amount
-  --     AND upper(amex.card_member) = upper(first_list.altname)
-  --   )
-  -- WHERE
-  --   reference IS NOT NULL
+  reference is not null
+
+-- SELECT
+--   *
+-- FROM
+--   splay_detect
+-- WHERE
+--   splay_counter > 1
+-- ORDER BY
+--   transaction_date,
+--   net_amount
