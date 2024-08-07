@@ -1,6 +1,6 @@
 WITH
   cleaned_list AS (
-    SELECT DISTINCT
+    SELECT
       CASE
         WHEN merchant_name LIKE 'FACEBK%' THEN 'FACEBOOK'
         WHEN merchant_name LIKE 'GOOGL%' THEN 'GOOGLE'
