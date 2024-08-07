@@ -16,7 +16,7 @@ SELECT fulfillment_id_edw,
 	   'Shipstation'                             AS source,
 	   carriercode                               AS carrier,
 	   servicecode                               AS carrier_service,
-	   shipdate,
+  	   shipdate                                  AS ship_date,
 -- 	   shipmentcost                            AS shipment_cost, Gabby said no
 	   NULL                                      AS order_status,
 	   voided,
