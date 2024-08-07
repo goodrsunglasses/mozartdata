@@ -69,8 +69,13 @@ WITH
         WHEN upped LIKE '%SHOPIFY%' THEN 'SHOPIFY'
         WHEN upped LIKE '%ZENDESK%' THEN 'ZENDESK'
         WHEN upped LIKE '%INTUIT%' THEN 'INTUIT'
+        WHEN upped LIKE '%INTUIT%' THEN 'INTUIT'
+        WHEN upped LIKE '%MENLO%' THEN 'FACEBOOK'
+        WHEN upped LIKE '%VZWRLSS%' THEN 'Verizon Wireless'
+        WHEN upped LIKE '%SPOTIFY%' THEN 'SPOTIFY'
         ELSE NULL
       END AS clean_merchant,
+      reference,
       appears_on_your_statement_as,
       amount,
       DATE
@@ -82,8 +87,16 @@ WITH
       clean_merchant
   )
 SELECT
-  *
+  reference,
+  clean_merchant,
+  DATE,
+  amount,
+  Vendor,
+  GL,
+  Internal,
+  Description,
+  Department,
+  Department_id,
 FROM
-  cleaned_list
-WHERE
-  clean_merchant IS NULL
+  google_sheets.amex_mapping map
+  LEFT OUTER JOIN cleaned_list ON upper(map.vendor) = upper(cleaned_list.clean_merchant)
