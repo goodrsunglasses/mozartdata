@@ -8,10 +8,8 @@ WITH
         WHEN upped LIKE 'SERATO%' THEN 'SERATO DJ PRO'
         WHEN upped LIKE 'SNAP%' THEN 'SNAP INC'
         WHEN upped LIKE 'TIKTOK%' THEN 'TIKTOK'
-        WHEN upped LIKE 'USPS STAMPS%' THEN 'USA Postal Service'
         WHEN upped LIKE '%ELK MARKETING%' THEN 'ELK MARKETING'
         WHEN upped LIKE '%ADOBE%' THEN 'ADOBE'
-        WHEN upped LIKE '%GOOGLE%' THEN 'GOOGLE'
         WHEN upped LIKE '%AMERICAN EXPRESS%' THEN 'AMERICAN EXPRESS'
         WHEN upped LIKE '%APPLE%' THEN 'APPLE'
         WHEN upped LIKE '%AT&T%' THEN 'AT&T'
@@ -27,10 +25,8 @@ WITH
         WHEN upped LIKE '%ATTENTIVE%' THEN 'ATTENTIVE'
         WHEN upped LIKE '%DROPBOX%' THEN 'DROPBOX'
         WHEN upped LIKE '%DIGIOH%' THEN 'DIGIOH'
-        WHEN upped LIKE '%ENDICIA%' THEN 'ENDICIA'
         WHEN upped LIKE '%EXPERIAN%' THEN 'EXPERIAN'
         WHEN upped LIKE '%FACEBOOK%' THEN 'Facebook'
-        WHEN upped LIKE '%FEDEX%' THEN 'FEDEX'
         WHEN upped LIKE '%GLEW.IO%' THEN 'Glew.io'
         WHEN upped LIKE '%DRIFT.COM, INC.%' THEN 'Drift.com, Inc.'
         WHEN upped LIKE '%GSUITE%' THEN 'Gsuite'
@@ -40,7 +36,6 @@ WITH
         WHEN upped LIKE '%ULINE SHIP SUPPLIES%' THEN 'ULINE SHIP SUPPLIES'
         WHEN upped LIKE '%UPS%' THEN 'UPS'
         WHEN upped LIKE '%US CORP%' THEN 'US Corp'
-        WHEN upped LIKE '%USA POSTAL SERVICE%' THEN 'USA Postal Service'
         WHEN upped LIKE '%VERIZON WIRELESS%' THEN 'Verizon Wireless'
         WHEN upped LIKE '%WAVVE%' THEN 'Wavve'
         WHEN upped LIKE '%NOUNPROJECT%' THEN 'NOUNPROJECT'
@@ -65,14 +60,14 @@ WITH
         WHEN upped LIKE '%PIPE17.COM%' THEN 'PIPE17.COM'
         WHEN upped LIKE '%AMAZON%' THEN 'AMAZON'
         WHEN upped LIKE '%FEDEX%' THEN 'FEDEX'
-        WHEN upped LIKE '%STAMPS.COM%' THEN 'STAMPS.COM'
         WHEN upped LIKE '%SHOPIFY%' THEN 'SHOPIFY'
         WHEN upped LIKE '%ZENDESK%' THEN 'ZENDESK'
-        WHEN upped LIKE '%INTUIT%' THEN 'INTUIT'
         WHEN upped LIKE '%INTUIT%' THEN 'INTUIT'
         WHEN upped LIKE '%MENLO%' THEN 'FACEBOOK'
         WHEN upped LIKE '%VZWRLSS%' THEN 'Verizon Wireless'
         WHEN upped LIKE '%SPOTIFY%' THEN 'SPOTIFY'
+        WHEN upped LIKE '%STAMPS.COM%' THEN 'STAMPS.COM'
+        WHEN upped LIKE 'USPS STAMPS%' THEN 'USA Postal Service'
         ELSE NULL
       END AS clean_merchant,
       reference,
@@ -88,6 +83,7 @@ WITH
   )
 SELECT
   reference,
+  appears_on_your_statement_as,
   clean_merchant,
   DATE,
   amount,
@@ -98,5 +94,5 @@ SELECT
   Department,
   Department_id,
 FROM
-  google_sheets.amex_mapping map
-  LEFT OUTER JOIN cleaned_list ON upper(map.vendor) = upper(cleaned_list.clean_merchant)
+  cleaned_list
+  LEFT OUTER JOIN google_sheets.amex_mapping map ON upper(map.vendor) = upper(cleaned_list.clean_merchant)
