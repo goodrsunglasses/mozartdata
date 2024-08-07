@@ -67,6 +67,7 @@ WITH
         WHEN upped LIKE '%STAMPS.COM%' THEN 'STAMPS.COM'
         WHEN upped LIKE 'USPS STAMPS%' THEN 'USA Postal Service'
         WHEN upped LIKE 'AUCTANE%' THEN 'SHIPSTATION'
+  WHEN upped LIKE 'AMAZON.COM%' THEN 'Amazon.com-Ads'
         ELSE NULL
       END AS clean_merchant,
       reference,
