@@ -12,6 +12,7 @@ WITH
         ELSE merchant_name
       END AS clean_merchant,
       post_date,
+      transaction_id,
       amount
     FROM
       google_sheets.jpmastercard_upload
@@ -21,6 +22,7 @@ WITH
       clean_merchant
   )
 SELECT
+  transaction_id,
   clean_merchant,
   post_date,
   amount,
