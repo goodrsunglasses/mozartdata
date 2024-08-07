@@ -34,3 +34,5 @@ SELECT
 FROM
   google_sheets.jpmc_mapping map
   LEFT OUTER JOIN cleaned_list ON map.vendor = cleaned_list.clean_merchant
+WHERE
+  amount IS NOT NULL
