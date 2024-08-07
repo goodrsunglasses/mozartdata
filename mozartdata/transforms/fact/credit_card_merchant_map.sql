@@ -95,6 +95,3 @@ SELECT
   END AS clean_merchant
 FROM
   joined
-WHERE
-  source = 'JPM'
-  AND clean_merchant IS NULL
