@@ -40,7 +40,6 @@ WITH
         WHEN upped LIKE '%WAVVE%' THEN 'Wavve'
         WHEN upped LIKE '%NOUNPROJECT%' THEN 'NOUNPROJECT'
         WHEN upped LIKE '%PIPEDRIVE%' THEN 'PIPEDRIVE'
-        WHEN upped LIKE '%ZENDESK INC.%' THEN 'ZenDesk Inc.'
         WHEN upped LIKE '%AD AGE%' THEN 'AD AGE'
         WHEN upped LIKE '%LINKEDIN%' THEN 'LINKEDIN'
         WHEN upped LIKE '%CODECADEMY%' THEN 'CODECADEMY'
@@ -58,16 +57,16 @@ WITH
         WHEN upped LIKE '%DOCUSIGN%' THEN 'Docusign'
         WHEN upped LIKE '%EASYPOST%' THEN 'Easypost'
         WHEN upped LIKE '%PIPE17.COM%' THEN 'PIPE17.COM'
-        WHEN upped LIKE '%AMAZON%' THEN 'AMAZON'
         WHEN upped LIKE '%FEDEX%' THEN 'FEDEX'
         WHEN upped LIKE '%SHOPIFY%' THEN 'SHOPIFY'
-        WHEN upped LIKE '%ZENDESK%' THEN 'ZENDESK'
+        WHEN upped LIKE '%ZENDESK%' THEN 'ZenDesk Inc.'
         WHEN upped LIKE '%INTUIT%' THEN 'INTUIT'
         WHEN upped LIKE '%MENLO%' THEN 'FACEBOOK'
         WHEN upped LIKE '%VZWRLSS%' THEN 'Verizon Wireless'
         WHEN upped LIKE '%SPOTIFY%' THEN 'SPOTIFY'
         WHEN upped LIKE '%STAMPS.COM%' THEN 'STAMPS.COM'
         WHEN upped LIKE 'USPS STAMPS%' THEN 'USA Postal Service'
+        WHEN upped LIKE 'AUCTANE%' THEN 'SHIPSTATION'
         ELSE NULL
       END AS clean_merchant,
       reference,
