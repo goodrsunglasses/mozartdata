@@ -21,7 +21,7 @@ group by 1,2,3 ) a ) ,
   where name in ('Amazon','Cabana','Goodr.com','Global','Key Account','Prescription','Specialty') 
   )
 
-  SELECT * , month_rev/days_in_month as divide_evenly, revenue/iff(month_rev=0,1,month_rev) as past_performance 
+  SELECT * ,dayofweek(date) as dayofweek, month_rev/days_in_month as divide_evenly, revenue/iff(month_rev=0,1,month_rev) as past_performance 
   FROM 
   (SELECT *,  SUM(revenue) OVER (PARTITION BY month,dm_channel) as month_rev, count(*) over (PARTITION BY month,dm_channel) as days_in_month 
 
