@@ -23,7 +23,7 @@ WITH
         'vendorpayment',
         'check'
       )
-      AND gl_tran.transaction_date >= DATEADD(DAY, -30, CURRENT_DATE)
+      AND transaction_date >= DATEADD(DAY, -60, CURRENT_DATE)
   ),
   expensify_split AS (
     SELECT
@@ -54,16 +54,26 @@ WITH
       splay_counter = 1
   )
 SELECT
-  transaction_id_ns,
-  transaction_number_ns,
-  net_amount,
-  transaction_date,
-  altname,
-  amex.reference
+  *
 FROM
-  first_list
-  LEFT OUTER JOIN google_sheets.amex_import amex ON (
-    amex.date = first_list.transaction_date
-    AND first_list.net_amount = amex.amount
-    AND upper(amex.card_member) = upper(first_list.altname)
-  )
+  splay_detect
+WHERE
+  splay_counter > 1
+and altname = 'Nicole Sedmak'
+order by transaction_date,net_amount
+  -- SELECT
+  --   transaction_id_ns,
+  --   transaction_number_ns,
+  --   net_amount,
+  --   transaction_date,
+  --   altname,
+  --   amex.reference
+  -- FROM
+  --   first_list
+  --   LEFT OUTER JOIN google_sheets.amex_import amex ON (
+  --     amex.date = first_list.transaction_date
+  --     AND first_list.net_amount = amex.amount
+  --     AND upper(amex.card_member) = upper(first_list.altname)
+  --   )
+  -- WHERE
+  --   reference IS NOT NULL
