@@ -53,7 +53,6 @@ WITH
         WHEN upped LIKE '%LASTPASS.COM%' THEN 'LastPass.com'
         WHEN upped LIKE '%GITHUB%' THEN 'GITHUB'
         WHEN upped LIKE '%JETBRAINS%' THEN 'JETBRAINS'
-        WHEN upped LIKE '%AMAZON.COM-ADS%' THEN 'Amazon.com-Ads'
         WHEN upped LIKE '%DOCUSIGN%' THEN 'Docusign'
         WHEN upped LIKE '%EASYPOST%' THEN 'Easypost'
         WHEN upped LIKE '%PIPE17.COM%' THEN 'PIPE17.COM'
@@ -67,7 +66,8 @@ WITH
         WHEN upped LIKE '%STAMPS.COM%' THEN 'STAMPS.COM'
         WHEN upped LIKE 'USPS STAMPS%' THEN 'USA Postal Service'
         WHEN upped LIKE 'AUCTANE%' THEN 'SHIPSTATION'
-  WHEN upped LIKE 'AMAZON.COM%' THEN 'Amazon.com-Ads'
+        WHEN upped LIKE 'AMAZON.COM%' THEN 'Amazon.com-Ads'
+        WHEN upped LIKE 'PAY.AMAZON.COM%' THEN 'AMAZON PAY'
         ELSE NULL
       END AS clean_merchant,
       reference,
