@@ -23,6 +23,12 @@ WITH
       'Jun ''24' AS period,
       '2024-06-01' AS period_start_date,
       '2024-06-30' AS period_end_date
+    UNION ALL
+    SELECT
+      'year' AS period_type,
+      'Jan ''24-May ''24' AS period,
+      '2024-01-01' AS period_start_date,
+      '2024-05-31' AS period_end_date
   )
 SELECT
   iid.transaction_id_ns,
