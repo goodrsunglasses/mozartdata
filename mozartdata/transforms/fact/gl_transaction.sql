@@ -56,6 +56,8 @@ use createdate converted instead of trandate
     , tl.department as department_id_ns
     , d.name as department
     , tran.memo as memo
+    , case when tl.cleared = 'T' then true else false end as cleared_flag
+    , date(tl.cleareddate) AS cleared_date
     from
       netsuite.transactionaccountingline tal
     inner join
@@ -116,3 +118,5 @@ use createdate converted instead of trandate
     , tl.item
     , d.name
     , tran.memo
+    , tl.cleared
+    , tl.cleareddate
