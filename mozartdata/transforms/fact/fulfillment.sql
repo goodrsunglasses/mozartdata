@@ -3,7 +3,7 @@ WITH stord_line AS (SELECT FULFILLMENT_ID_EDW,
 						   SHIPMENT_ID,
 						   carrier,
 						   carrier_service,
-						   shipdate,
+						   ship_date,
 						   country,
 						   state,
 						   city,
@@ -24,7 +24,7 @@ WITH stord_line AS (SELECT FULFILLMENT_ID_EDW,
 						SHIPMENT_ID,
 						carrier,
 						carrier_service,
-						shipdate,
+						ship_date,
 						country,
 						state,
 						city,
@@ -38,25 +38,25 @@ WITH stord_line AS (SELECT FULFILLMENT_ID_EDW,
 								 ORDER_ID_EDW,
 								 FIRST_VALUE(
 										 carrier) -- All of these need to be first_valued as there can be multiple IF's per shipment, and ideally these won't differ however to avoid data splay we handle it via earliest record
-										 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC)     AS carrier,
+										 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC)     AS carrier,
 								 FIRST_VALUE(CARRIER_SERVICE)
-											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC) AS CARRIER_SERVICE,
-								 FIRST_VALUE(shipdate)
-											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC) AS ship_date,
+											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC) AS CARRIER_SERVICE,
+								 FIRST_VALUE(ship_date)
+											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC) AS ship_date,
 								 FIRST_VALUE(country)
-											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC) AS country,
+											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC) AS country,
 								 FIRST_VALUE(state)
-											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC) AS state,
+											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC) AS state,
 								 FIRST_VALUE(city)
-											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC) AS city,
+											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC) AS city,
 								 FIRST_VALUE(postal_code)
-											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC) AS postal_code,
+											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC) AS postal_code,
 								 FIRST_VALUE(customer_name)
-											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC) AS customer_name,
+											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC) AS customer_name,
 								 FIRST_VALUE(addr_line_1)
-											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC) AS addr_line_1,
+											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC) AS addr_line_1,
 								 FIRST_VALUE(addr_line_2)
-											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY SHIPDATE DESC) AS addr_line_2
+											 OVER (PARTITION BY FULFILLMENT_ID_EDW ORDER BY ship_date DESC) AS addr_line_2
 				 FROM fact.FULFILLMENT_LINE
 				 WHERE source = 'Netsuite'),
 	 aggregates AS (SELECT FULFILLMENT_ID_EDW,
@@ -72,7 +72,7 @@ SELECT fulfill.FULFILLMENT_ID_EDW,
 	   COALESCE(stord.customer_name, ss.customer_name, ns_info.customer_name)       AS customer_name,
 	   COALESCE(stord.carrier, ss.CARRIER, ns_info.carrier)                         AS carrier,           --we can use coalesce logic because a given fulfillment_id_edw isn't present in both stord and shipstation (I checked to be sure)
 	   COALESCE(stord.carrier_service, ss.carrier_service, ns_info.CARRIER_SERVICE) AS carrier_service,
-	   COALESCE(stord.shipdate, ss.shipdate, ns_info.ship_date)                     AS ship_date,
+	   COALESCE(stord.ship_date, ss.ship_date, ns_info.ship_date)                     AS ship_date,
 	   COALESCE(stord.country, ss.country, ns_info.country)                         AS country,
 	   COALESCE(stord.state, ss.state, ns_info.state)                               AS state,
 	   COALESCE(stord.city, ss.city, ns_info.city)                                  AS city,
