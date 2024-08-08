@@ -30,7 +30,7 @@ FROM
           order_id_edw,
           shipment_id,
           warehouse_location,
-          date(shipdate) shipdate,
+          date(ship_date) shipdate,
           voided,
           sku,
           product_name,
