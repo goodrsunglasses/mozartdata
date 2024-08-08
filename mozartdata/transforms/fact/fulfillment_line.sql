@@ -6,7 +6,7 @@ SELECT DISTINCT --Ok so the main idea for this table is to have it be one row pe
 				SOURCE,
 				carrier,
 				carrier_service,
-				shipdate,
+				ship_date,
 				voided,
 				country,
 				state,
@@ -27,7 +27,7 @@ SELECT DISTINCT --Ok so the main idea for this table is to have it be one row pe
 					ELSE FALSE
 					END                                      AS split_flag,
 				FIRST_VALUE(warehouse_location) OVER ( PARTITION BY fulfillment_id_edw,
-					SHIPMENT_ID ORDER BY shipdate ASC)       AS warehouse_location,--Has to be a first_value as one NS IF can have multiple locations on it.
+					SHIPMENT_ID ORDER BY ship_date ASC)       AS warehouse_location,--Has to be a first_value as one NS IF can have multiple locations on it.
 				SUM(quantity) OVER (
 					PARTITION BY
 						fulfillment_id_edw,
