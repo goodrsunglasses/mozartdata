@@ -11,6 +11,7 @@ WITH
       emp.altname,
       emp.firstname,
       emp.lastname,
+      concat(firstname, ' ', lastname) AS first_last,
       line.cleared
     FROM
       netsuite.transactionline line
@@ -35,18 +36,49 @@ WITH
   ),
   card_agg AS ( --This one is to attempt to aggregate the totals by cardholder to eliminate any easy ones
     SELECT
+      entity,
       altname,
       firstname,
       lastname,
       account_number,
-      sum(net_amount)
+      CASE
+        WHEN account_number = 2020 THEN 'AMEX'
+        ELSE 'JPM'
+      END AS bank,
+      sum(net_amount) total_amount
     FROM
       ns_info
     GROUP BY
       altname,
+      entity,
       firstname,
       lastname,
       account_number
+  ),
+  bank_agg AS (
+    SELECT
+      CASE
+        WHEN account_given_name = 'ALLIE' THEN 'Allison'
+        WHEN account_given_name = 'ROBERTO' THEN 'Rob'
+        ELSE account_given_name
+      END AS account_given_name,
+      'JPM' AS bank,
+      sum(amount)
+    FROM
+      google_sheets.jpmastercard_upload
+    GROUP BY
+      account_given_name,
+      bank
+    UNION ALL
+    SELECT
+      card_member,
+      'AMEX' AS bank,
+      sum(amount)
+    FROM
+      google_sheets.amex_import
+    GROUP BY
+      card_member,
+      bank
   ),
   splay_detect AS ( --This exists because we want to join to AMEX/JPM based off of card holder,date and amount but sometimes that can be duplicated on the exact same day
     SELECT DISTINCT
@@ -89,4 +121,6 @@ WITH
 SELECT
   *
 FROM
-  card_agg
+  bank_agg
+WHERE
+  bank = 'JPM'
