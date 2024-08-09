@@ -159,9 +159,9 @@ WITH
         AND upper(jpm.clean_card_member) = upper(first_list.first_last)
       )
     WHERE
-      reference IS NOT NULL
+      reference IS NOT NULL and source='JPM'
   )
 SELECT
   *
 FROM
-  amex_direct_join
+  jpm_direct_join
