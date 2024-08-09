@@ -11,4 +11,4 @@ SELECT
   totalunitcost,
   unitlandedcost
 FROM
-  fact.shipment_item_detail
+  fact.inbound_shipment_item_detail
