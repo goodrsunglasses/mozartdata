@@ -1,21 +1,28 @@
 WITH
   netsuite_select AS (
-    SELECT DISTINCT
+    SELECT
       gl_tran.transaction_id_ns,
       gl_tran.transaction_number_ns,
       gl_tran.net_amount,
       gl_tran.transaction_date,
+      record_type,
       gl_tran.memo,
       emp.altname,
       emp.firstname,
       emp.lastname,
-      concat(firstname,' ',lastname) as first_last,
+      tran.voided,
+      gl_tran.account_number,
+      gl_tran.posting_flag,
+      concat(firstname, ' ', lastname) AS first_last,
       line.cleared,
-      SPLIT(gl_tran.memo, '|') AS parts,
+      SPLIT(gl_tran.memo, '|') AS parts
     FROM
-      fact.gl_transaction gl_tran
-      LEFT OUTER JOIN netsuite.transaction tran ON tran.id = gl_tran.transaction_id_ns
-      LEFT OUTER JOIN netsuite.transactionline line ON line.transaction = tran.id
+      netsuite.transactionline line
+      LEFT OUTER JOIN netsuite.transaction tran ON line.transaction = tran.id
+      LEFT OUTER JOIN fact.gl_transaction gl_tran ON (
+        tran.id = gl_tran.transaction_id_ns
+        AND gl_tran.account_id_edw = line.expenseaccount
+      )
       LEFT OUTER JOIN netsuite.entity emp ON emp.id = line.entity
     WHERE
       cleared != 'T'
@@ -25,8 +32,15 @@ WITH
         'vendorpayment',
         'check'
       )
-      AND transaction_date >= DATEADD(DAY, -60, CURRENT_DATE)
+      AND account_number in (2020,2021)
+      AND voided = 'F'
+      AND net_amount != 0
+    ORDER BY
+      transaction_date asc
   ),
+  aggregation_by_cardholder as (--This one is to attempt to aggregate the totals by cardholder to eliminate any easy ones
+  
+  )
   expensify_split AS (
     SELECT
       netsuite_select.*,
@@ -54,31 +68,31 @@ WITH
       splay_detect
     WHERE
       splay_counter = 1
+  ),
+  amex_direct_join AS ( --this one is basically joining based on when there is only one transaction of a given amount for a given person on a given day, its like 1/3rd as accurate rn
+    SELECT
+      transaction_id_ns,
+      transaction_number_ns,
+      net_amount,
+      transaction_date,
+      altname,
+      amex.reference
+    FROM
+      first_list
+      LEFT OUTER JOIN google_sheets.amex_import amex ON (
+        amex.date = first_list.transaction_date
+        AND first_list.net_amount = amex.amount
+        AND upper(amex.card_member) = upper(first_list.first_last)
+      )
+    WHERE
+      reference IS NOT NULL
   )
-
-SELECT
-  transaction_id_ns,
-  transaction_number_ns,
-  net_amount,
-  transaction_date,
-  altname,
-  amex.reference
-FROM
-  first_list
-  LEFT OUTER JOIN google_sheets.amex_import amex ON (
-    amex.date = first_list.transaction_date
-    AND first_list.net_amount = amex.amount
-    AND upper(amex.card_member) = upper(first_list.first_last)
-  )
-WHERE
-  reference is not null
-
--- SELECT
---   *
--- FROM
---   splay_detect
--- WHERE
---   splay_counter > 1
--- ORDER BY
---   transaction_date,
---   net_amount
+  -- SELECT
+  --   *
+  -- FROM
+  --   splay_detect
+  -- WHERE
+  --   splay_counter > 1
+  -- ORDER BY
+  --   transaction_date,
+  --   net_amount
