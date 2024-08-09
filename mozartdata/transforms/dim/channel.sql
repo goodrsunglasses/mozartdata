@@ -13,6 +13,7 @@ SELECT
     WHEN name IN (
       'Goodr.com',
       'Amazon',
+      'Amazon Canada',
       'Amazon Prime',
       'Cabana',
       'Goodr.com CAN',
@@ -38,7 +39,7 @@ SELECT
       'Specialty CAN'
     ) THEN 'Wholesale'
     WHEN name IN ('Goodr.com', 'Goodr.com CAN','goodr.ca') THEN 'Digital'
-    WHEN name IN ('Amazon', 'Amazon Prime','Prescription') THEN 'Partner'
+    WHEN name IN ('Amazon', 'Amazon Prime','Prescription','Amazon Canada') THEN 'Partner'
     WHEN name IN ('Cabana') THEN 'Retail'
     WHEN name IN ('Global') THEN 'Distribution'
     WHEN name IN (
