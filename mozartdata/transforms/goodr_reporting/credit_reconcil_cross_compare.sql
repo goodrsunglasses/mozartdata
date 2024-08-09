@@ -104,7 +104,6 @@ WITH
       )
     WHERE
       firstname IS NOT NULL
-      AND rounded_total != agg_amnt
   ),
   splay_detect AS ( --This exists because we want to join to AMEX/JPM based off of card holder,date and amount but sometimes that can be duplicated on the exact same day
     SELECT DISTINCT
@@ -147,4 +146,4 @@ WITH
 SELECT
   *
 FROM
-  cardholder_compare
+  amex_direct_join
