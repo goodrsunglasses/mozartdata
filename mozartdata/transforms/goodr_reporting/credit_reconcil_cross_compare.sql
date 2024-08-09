@@ -87,7 +87,7 @@ WITH
       card_member,
       bank
   ),
-  cardholder_compare AS (--This is basically step one as of rn, you go ahead and compare the aggregations of a given cardholder's bank data to their NS data, meaning that when they match u can reconcile them.
+  cardholder_compare AS ( --This is basically step one as of rn, you go ahead and compare the aggregations of a given cardholder's bank data to their NS data, meaning that when they match u can reconcile them.
     SELECT
       card_agg.first_last,
       UPPER(card_agg.first_last),
@@ -102,7 +102,8 @@ WITH
         AND card_agg.bank = bank_agg.bank
       )
     WHERE
-      firstname IS NOT NULL and total_amount!=agg_amnt
+      firstname IS NOT NULL
+      AND total_amount != agg_amnt
   ),
   splay_detect AS ( --This exists because we want to join to AMEX/JPM based off of card holder,date and amount but sometimes that can be duplicated on the exact same day
     SELECT DISTINCT
