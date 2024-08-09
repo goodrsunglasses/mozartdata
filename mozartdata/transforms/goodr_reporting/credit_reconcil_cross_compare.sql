@@ -60,7 +60,7 @@ WITH
   bank_agg AS (
     SELECT
       CASE
-        WHEN account_given_name = 'ALLIE' THEN 'Allison Lefton'
+        WHEN account_given_name = 'ALLIE' THEN 'Allison Lefton'--There aren't very many JPM holders, so I converted their names into the full ones to join to NS later 
         WHEN account_given_name = 'ROBERTO' THEN 'Rob Federic'
         WHEN account_given_name = 'LAUREN' THEN 'Lauren Larvejo'
         ELSE account_given_name
@@ -90,11 +90,12 @@ WITH
   cardholder_compare AS ( --This is basically step one as of rn, you go ahead and compare the aggregations of a given cardholder's bank data to their NS data, meaning that when they match u can reconcile them.
     SELECT
       card_agg.first_last,
-      UPPER(card_agg.first_last),
+      UPPER(card_agg.first_last) upper_case,
       card_agg.account_number,
       card_agg.bank,
-      card_agg.total_amount,
-      agg_amnt
+      round(card_agg.total_amount,2) rounded_total,
+      agg_amnt,
+      abs(rounded_total) - abs(agg_amnt) as difference
     FROM
       card_agg
       LEFT OUTER JOIN bank_agg ON (
@@ -103,7 +104,7 @@ WITH
       )
     WHERE
       firstname IS NOT NULL
-      AND total_amount != agg_amnt
+      AND rounded_total != agg_amnt
   ),
   splay_detect AS ( --This exists because we want to join to AMEX/JPM based off of card holder,date and amount but sometimes that can be duplicated on the exact same day
     SELECT DISTINCT
