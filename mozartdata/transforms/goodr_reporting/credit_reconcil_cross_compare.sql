@@ -82,7 +82,7 @@ WITH
       'AMEX' AS bank,
       sum(amount)
     FROM
-      google_sheets.amex_import
+      google_sheets.amex_full_compare
     GROUP BY
       card_member,
       bank
@@ -135,10 +135,28 @@ WITH
       amex.reference
     FROM
       first_list
-      LEFT OUTER JOIN google_sheets.amex_import amex ON (
+      LEFT OUTER JOIN google_sheets.amex_full_compare amex ON (
         amex.date = first_list.transaction_date
         AND first_list.net_amount = amex.amount
         AND upper(amex.card_member) = upper(first_list.first_last)
+      )
+    WHERE
+      reference IS NOT NULL
+  ),
+  jpm_direct_join AS ( 
+    SELECT
+      transaction,
+      transaction_number_ns,
+      net_amount,
+      transaction_date,
+      altname,
+      jpm.reference
+    FROM
+      first_list
+        LEFT OUTER JOIN fact.credit_card_merchant_map jpm ON (
+        jpm.date = first_list.transaction_date
+        AND first_list.net_amount = jpm.amount
+        AND upper(jpm.clean_card_member) = upper(first_list.first_last)
       )
     WHERE
       reference IS NOT NULL
@@ -146,4 +164,4 @@ WITH
 SELECT
   *
 FROM
-  amex_direct_join
+  jpm_direct_join
