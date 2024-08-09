@@ -95,6 +95,9 @@ SELECT
   END AS clean_merchant,
   CASE
     WHEN card_member LIKE 'JANE%' THEN 'JANE WU'
+    WHEN card_member = 'ALLIE' THEN 'Allison Lefton'
+    WHEN card_member = 'ROBERTO' THEN 'Rob Federic'
+    WHEN card_member = 'LAUREN' THEN 'Lauren Larvejo'
     ELSE card_member
   END AS clean_card_member
 FROM
