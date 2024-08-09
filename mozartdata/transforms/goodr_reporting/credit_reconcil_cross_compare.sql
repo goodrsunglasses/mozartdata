@@ -60,8 +60,9 @@ WITH
   bank_agg AS (
     SELECT
       CASE
-        WHEN account_given_name = 'ALLIE' THEN 'Allison'
-        WHEN account_given_name = 'ROBERTO' THEN 'Rob'
+        WHEN account_given_name = 'ALLIE' THEN 'Allison Lefton'
+        WHEN account_given_name = 'ROBERTO' THEN 'Rob Federic'
+        WHEN account_given_name = 'LAUREN' THEN 'Lauren Larvejo'
         ELSE account_given_name
       END AS account_given_name,
       'JPM' AS bank,
@@ -75,6 +76,7 @@ WITH
     SELECT
       CASE
         WHEN card_member = 'DAN WEINSOFT' THEN 'Daniel Weinsoft'
+        WHEN card_member = 'MICHEAL EDDY' THEN 'Michael Eddy'
         ELSE card_member
       END AS card_member,
       'AMEX' AS bank,
@@ -87,14 +89,18 @@ WITH
   ),
   cardholder_compare AS (
     SELECT
-      first_last,
-      account_number,
-      bank,
-      total_amount,
+      card_agg.first_last,
+      UPPER(card_agg.first_last),
+      card_agg.account_number,
+      card_agg.bank,
+      card_agg.total_amount,
       agg_amnt
     FROM
       card_agg
-  left outer join bank_agg on (upper(bank_agg.account_given_name) = UPPER(card_agg.first_last) and card_agg.bank=bank_agg.bank)
+      LEFT OUTER JOIN bank_agg ON (
+        upper(bank_agg.account_given_name) = UPPER(card_agg.first_last)
+        AND card_agg.bank = bank_agg.bank
+      )
     WHERE
       firstname IS NOT NULL
   ),
@@ -137,4 +143,6 @@ WITH
       reference IS NOT NULL
   )
 SELECT
-* from cardholder_compare
+  *
+FROM
+  cardholder_compare
