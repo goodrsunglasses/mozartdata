@@ -1,5 +1,5 @@
 SELECT
-  inb.id shipment_id_ns,
+  inb.id inbound_shipment_id_ns,
   shipmentstatus as status,
   shipmentnumber as inb_number,
   type.name as method,
