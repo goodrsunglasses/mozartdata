@@ -164,4 +164,4 @@ WITH
 SELECT
   *
 FROM
-  jpm_direct_join
+  amex_direct_join
