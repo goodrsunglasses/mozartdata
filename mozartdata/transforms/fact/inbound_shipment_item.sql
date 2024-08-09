@@ -1,14 +1,14 @@
 SELECT
-  shipmentnumber,
-  item,
-  expectedrate,
-  quantitybilled,
-  quantityexpected,
-  quantityreceived,
-  quantityremaining,
-  receivinglocation,
-  shipmentitemamount,
-  totalunitcost,
-  unitlandedcost
+  inbound_shipment_id_ns,
+  item_id_ns,
+  expected_rate,
+  quantity_billed,
+  quantity_expected,
+  quantity_received,
+  quantity_remaining,
+  receiving_location,
+  inbound_shipment_amount,
+  total_unit_cost,
+  unit_landed_cost
 FROM
   fact.inbound_shipment_item_detail
