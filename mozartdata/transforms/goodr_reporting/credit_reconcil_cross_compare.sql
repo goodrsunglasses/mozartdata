@@ -40,6 +40,7 @@ WITH
       altname,
       firstname,
       lastname,
+      first_last,
       account_number,
       CASE
         WHEN account_number = 2020 THEN 'AMEX'
@@ -50,6 +51,7 @@ WITH
       ns_info
     GROUP BY
       altname,
+      first_last,
       entity,
       firstname,
       lastname,
@@ -63,7 +65,7 @@ WITH
         ELSE account_given_name
       END AS account_given_name,
       'JPM' AS bank,
-      sum(amount)
+      sum(amount) AS agg_amnt
     FROM
       google_sheets.jpmastercard_upload
     GROUP BY
@@ -71,7 +73,10 @@ WITH
       bank
     UNION ALL
     SELECT
-      card_member,
+      CASE
+        WHEN card_member = 'DAN WEINSOFT' THEN 'Daniel Weinsoft'
+        ELSE card_member
+      END AS card_member,
       'AMEX' AS bank,
       sum(amount)
     FROM
@@ -79,6 +84,19 @@ WITH
     GROUP BY
       card_member,
       bank
+  ),
+  cardholder_compare AS (
+    SELECT
+      first_last,
+      account_number,
+      bank,
+      total_amount,
+      agg_amnt
+    FROM
+      card_agg
+  left outer join bank_agg on (upper(bank_agg.account_given_name) = UPPER(card_agg.first_last) and card_agg.bank=bank_agg.bank)
+    WHERE
+      firstname IS NOT NULL
   ),
   splay_detect AS ( --This exists because we want to join to AMEX/JPM based off of card holder,date and amount but sometimes that can be duplicated on the exact same day
     SELECT DISTINCT
@@ -119,8 +137,4 @@ WITH
       reference IS NOT NULL
   )
 SELECT
-  *
-FROM
-  bank_agg
-WHERE
-  bank = 'JPM'
+* from cardholder_compare
