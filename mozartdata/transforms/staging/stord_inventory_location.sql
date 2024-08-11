@@ -16,8 +16,6 @@ SELECT
 , sfi.inventory_alerts
 , sfi.inventory_alerts:"OUT_OF_STOCK"    AS out_of_stock
 , sfi.inventory_alerts:"REORDER_WARNING" AS reorder_warning
-
-
 , sfi._portable_extracted                AS snapshot_timestamp
 , DATE(sfi._portable_extracted)          AS snapshot_date
 FROM
