@@ -21,4 +21,3 @@ SELECT
 , sia.unit
 FROM
   stord.stord_inventory_adjustments_8589936822 sia
-LIMIT 100
