@@ -6,7 +6,8 @@ with gabbys as (
   channel,
   net_amount,
   custbody_boomi_orderid,
-  account_number
+  account_number,
+  record_type
 FROM
   fact.gl_transaction gl
   LEFT JOIN netsuite.transaction nst ON nst.id = gl.transaction_id_ns
