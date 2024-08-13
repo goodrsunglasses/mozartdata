@@ -13,11 +13,10 @@ FROM
 WHERE
   posting_flag = TRUE
   and posting_period = 'Jun 2024'
- -- AND transaction_number_ns LIKE 'CS%'
   and account_number like '4%'
 )
 
 select * from gabbys
 where channel = 'Goodr.com'
 and account_number = 4000
-AND transaction_number_ns  like 'CS%'
+and record_type = 'cashsale'
