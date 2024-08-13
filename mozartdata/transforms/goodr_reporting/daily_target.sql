@@ -21,11 +21,11 @@ group by 1,2,3)
 
 
 SELECT 
-pm.year, pm.date,
+budget_version as year, pm.date,
 t.channel,
   target/pm.days as revenue
   from
 period_map pm 
 LEFT JOIN targets t on t.posting_period = pm.posting_period 
-  where budget_version = '2024 - V5' and channel is not null
+  where budget_version LIKE '2024%' and channel is not null
 order by date, channel
