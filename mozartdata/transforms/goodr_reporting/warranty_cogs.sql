@@ -16,8 +16,8 @@ WITH
     WHERE
       gl.account_number = 5000
       AND (
-        order_id_ns LIKE 'CI%'
-        OR order_id_ns LIKE 'CS-DMG%'
+        order_id_ns iLIKE 'CI%'
+        OR order_id_ns iLIKE 'CS-DMG%'
       )
       AND posting_flag
   )
