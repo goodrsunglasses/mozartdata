@@ -23,6 +23,7 @@ ItemAvgCost AS (
 SELECT
   il.item AS item_id_ns,
   p.display_name,
+  p.sku,
   il.lastpurchasepricemli AS average_cost,
   COALESCE(
     CASE 
