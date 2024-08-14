@@ -37,6 +37,7 @@ with net_amount as
         , staging.order_item_detail_id
         , staging.product_id_edw
         , staging.item_id_ns
+        , staging.transaction_date
         , staging.transaction_created_timestamp_pst
         , staging.transaction_created_date_pst
         , staging.record_type
@@ -69,6 +70,7 @@ with net_amount as
         , staging.CUSTOMER_ID_NS
         , cnm.tier
         , exceptions.exception_flag
+        , c.name as channel
    FROM dim.parent_transactions parents
           LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns
           LEFT OUTER JOIN exceptions.order_item_detail exceptions
@@ -77,4 +79,6 @@ with net_amount as
                           on staging.transaction_id_ns = na.transaction_id_ns and staging.item_id_ns = na.item_id_ns
           LEFT OUTER JOIN fact.customer_ns_map cnm
                           ON staging.customer_id_ns = cnm.customer_id_ns
+          LEFT OUTER JOIN dim.channel c
+                          ON c.channel_id_ns = staging.channel_id_ns
    WHERE exceptions.exception_flag = FALSE

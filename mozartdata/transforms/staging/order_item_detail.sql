@@ -73,6 +73,7 @@ SELECT
     ) THEN tranline.item
   END AS product_id_edw,
   tranline.item AS item_id_ns,
+  date(tran.trandate) as transaction_date,
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_created_timestamp_pst,
   DATE(
     CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)
@@ -93,7 +94,8 @@ SELECT
   tranline.createdfrom,
   tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference as warranty_order_id_ns,
-  tran.entity as customer_id_ns
+  tran.entity as customer_id_ns,
+  tran.cseg7 as channel_id_ns
 FROM
   all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -150,6 +152,7 @@ GROUP BY
   order_item_detail_id,
   product_id_edw,
   tranline.item,
+  transaction_date,
   transaction_created_timestamp_pst,
   transaction_created_date_pst,
   record_type,
@@ -159,7 +162,8 @@ GROUP BY
   tranline.location,
   tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference,
-  tran.entity
+  tran.entity,
+  tran.cseg7
   -- Shipping and Tax and Discount
 UNION ALL
 SELECT
@@ -177,6 +181,7 @@ SELECT
     ) THEN tranline.item
   END AS product_id_edw,
   tranline.item AS item_id_ns,
+  date(tran.trandate) as transaction_date,
   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_created_timestamp_pst,
   DATE(
     CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)
@@ -202,7 +207,8 @@ SELECT
   tranline.createdfrom,
   tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference as warranty_order_id_ns,
-  tran.entity as customer_id_ns
+  tran.entity as customer_id_ns,
+  tran.cseg7 as channel_id_ns
 FROM
   all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -231,6 +237,7 @@ GROUP BY
   order_item_detail_id,
   product_id_edw,
   tranline.item,
+  transaction_date,
   transaction_created_timestamp_pst,
   transaction_created_date_pst,
   record_type,
@@ -240,7 +247,8 @@ GROUP BY
   tranline.location,
   tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference,
-  tran.entity
+  tran.entity,
+  tran.cseg7
 ORDER BY
   transaction_id_ns asc
 
