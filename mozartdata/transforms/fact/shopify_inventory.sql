@@ -1,5 +1,5 @@
---CREATE OR REPLACE TABLE fact.shopify_inventory
-        --    COPY GRANTS  as
+-- CREATE OR REPLACE TABLE fact.shopify_inventory
+--            COPY GRANTS  as
 SELECT --Idea here is to select from the shopify snapshot tables native to mozart then join to some relevant fact and dim tables, and also renaming to make the fields clearer
 	   snapshot.store,
 	   snapshot.category,
@@ -16,9 +16,12 @@ SELECT --Idea here is to select from the shopify snapshot tables native to mozar
 	   --everything past here is included for posterity, as often we seem to need the most nonsensical fields for one specific request
 	   snapshot.cost,
 	   snapshot.ITEM_UPDATED_AT_UTC,
-	   snapshot.ITEM_CREATED_AT_UTC
+	   snapshot.ITEM_CREATED_AT_UTC,
+	   prod.family,
+	   prod.stage,
+	   prod.MERCHANDISE_CLASS,
+	   prod.DESIGN_TIER
 FROM STAGING.SHOPIFY_INVENTORY_INCREMENTAL snapshot
 		 LEFT OUTER JOIN dim.product prod ON prod.sku = snapshot.sku
 WHERE tracked = TRUE --This one from what I can tell just filters out a secondary line of False, untracked item inventory?
-  AND store = 'Goodr.com'
-ORDER BY snapshot_date ASC
+ORDER BY store,fivetran_snapshot_date_pst ASC

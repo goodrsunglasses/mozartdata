@@ -1,0 +1,1 @@
+select * from staging.shopify_inventory_incremental
