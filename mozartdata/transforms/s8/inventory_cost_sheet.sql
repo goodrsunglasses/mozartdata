@@ -34,6 +34,7 @@ SELECT
     0
   ) AS average_cost_upd,
   l.full_name AS location,
+  l.location_id_ns,
   DATE(rp.max_synced) AS date_as_of
 FROM
   netsuite.inventoryitemlocations il
