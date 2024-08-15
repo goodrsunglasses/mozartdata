@@ -6,6 +6,7 @@ SELECT
   , gt.transaction_number_ns
   , gt.record_type
   , p.sku
+  , p.item_id_ns
   , p.display_name
   ,tranline.accountinglinetype
   , SUM(gt.net_amount) total_cogs
