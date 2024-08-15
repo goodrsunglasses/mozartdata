@@ -11,7 +11,7 @@ SELECT
     ) as period_start
     , 'WEEKS ' || WEEKOFYEAR(period_start) || ' / ' || WEEKOFYEAR(DATEADD('week', 1, period_start)) as week_nums
     , camp_s.date
-    , camp_info.name
+    , camp_info.campaign_name
     , round(sum(camp_s.conversions_value), 2) AS revenue
     , round(sum(camp_s.cost_micros) / 1000000, 2) AS spend
     , sum(camp_s.clicks) AS clicks
@@ -22,13 +22,13 @@ FROM
 INNER JOIN
     dim.google_ads_campaign_names AS camp_info
 on
-  camp_s.id = camp_info.campaign_id_g_ads
+    camp_s.id = camp_info.campaign_id_g_ads
 where
     camp_s.date >= '2023-12-31'
 GROUP BY
     camp_info.campaign_id_g_ads
-    , camp_info.name
+    , camp_info.campaign_name
     , camp_s.date
 ORDER BY
     camp_s.date asc
-    , camp_info.name asc
+    , camp_info.campaign_name asc
