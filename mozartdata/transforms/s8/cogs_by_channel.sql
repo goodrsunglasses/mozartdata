@@ -13,8 +13,14 @@ SELECT
   c.display_name,
   sum(c.total_cogs) cogs,
   sum(c.quantity) quantity,
-  c.unit_cogs,
+  -- c.unit_cogs,
   c.transaction_type
-FROM s8.cogs_transactions c
-  left join dim.product p on p.item_id_ns = c.item_id_ns
-group by all
+FROM
+  s8.cogs_transactions c
+  LEFT JOIN dim.product p ON p.item_id_ns = c.item_id_ns
+WHERE
+  p.sku = 'OG-BK-BL1'
+  AND posting_period = 'Jun 2024'
+  AND channel = 'Goodr.com'
+GROUP BY
+  ALL
