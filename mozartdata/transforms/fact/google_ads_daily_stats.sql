@@ -1,11 +1,11 @@
 select
     date
   , case
-        when name like '%BOF%'
+        when campaign_name like '%BOF%'
             then 'Performance'
-        when name like '%TOF%' or name like '%MOF%'
+        when campaign_name like '%TOF%' or campaign_name like '%MOF%'
             then 'Awareness'
-        else name
+        else campaign_name
     end                        as funnel_stage
   , round(sum(revenue), 2)     as revenue
   , round(sum(spend), 2)       as spend
