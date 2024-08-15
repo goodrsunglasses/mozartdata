@@ -1,6 +1,6 @@
 select
     campaign_id_g_ads
-    , name
+    , campaign_name
     , month(date) as month
     , year(date) as year
     , round(sum(revenue), 2) as revenue
@@ -42,6 +42,6 @@ from
     fact.google_ads_campaigns_daily_stats as camp_d
 group by
     campaign_id_g_ads
-    , name
+    , campaign_name
     , month(camp_d.date)
     , year(camp_d.date)
