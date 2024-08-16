@@ -1,6 +1,7 @@
---CREATE OR REPLACE TABLE fact.netsuite_inventory_location
-           -- COPY GRANTS  as
+-- CREATE OR REPLACE TABLE fact.netsuite_inventory_location
+--            COPY GRANTS  as
 SELECT inv.sku,
+       inv.display_name,
 	   inv.location_name,
 	   inv.FIVETRAN_SNAPSHOT_DATE_PST,
 	   SUM(QUANTITYAVAILABLE) total_quantity_available,
@@ -8,5 +9,6 @@ SELECT inv.sku,
 	   SUM(QUANTITYPICKED)    total_quantity_picked
 FROM fact.NETSUITE_INVENTORY inv
 GROUP BY inv.sku,
+         display_name,
          inv.location_name,
 		 inv.FIVETRAN_SNAPSHOT_DATE_PST
