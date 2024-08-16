@@ -1,4 +1,4 @@
--- CREATE OR REPLACE TABLE fact.inventory
+-- CREATE OR REPLACE TABLE fact.inventory_location
 --             COPY GRANTS  as
 SELECT sku,
 	   display_name,
@@ -10,7 +10,7 @@ FROM fact.NETSUITE_INVENTORY_LOCATION
 UNION ALL
 SELECT sku,
 	   display_name,
-	   store,
+	   store as location_name,
 	   snapshot_date,
 	   quantity,
 	   'Shopify' AS source
