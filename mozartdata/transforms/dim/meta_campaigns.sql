@@ -9,9 +9,9 @@ with
 
 select distinct
     ch.id                 as campaign_id_meta
-  , ch.name               as campaign_name
+  , lower(ch.name)               as campaign_name
   , ch.account_id         as account_id
-  , acc.account_name      as account_name
+  , lower(acc.account_name)      as account_name
   , case
         when ch.name like '%TOF%'
             then 'TOF'
@@ -65,4 +65,3 @@ qualify
     row_number() over (partition by ch.id order by ch.updated_time desc) = 1
 order by
     campaign_name asc
-
