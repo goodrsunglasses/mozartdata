@@ -3,7 +3,7 @@ WITH grouped_data AS (SELECT location_name,
 							 sku,
 							 plain_name,
 							 SUM(quantity) AS daily_quantity
-					  FROM fact.inventory_item_detail detail
+					  FROM fact.netsuite_inventory_item_detail detail
 					  GROUP BY location_name,
 							   transaction_created_date_pst,
 							   sku,
