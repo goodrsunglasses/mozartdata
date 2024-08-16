@@ -4,7 +4,7 @@ SELECT sku,
 	   display_name,
 	   LOCATION_NAME,
 	   FIVETRAN_SNAPSHOT_DATE_PST as snapshot_date,
-	   total_quantity_on_hand, --using this one because its the highest level one available for unioning purposes
+	   total_quantity_on_hand as quantity, --using this one because its the highest level one available for unioning purposes
 	   'Netsuite' AS source
 FROM fact.NETSUITE_INVENTORY_LOCATION
 UNION ALL
