@@ -45,7 +45,7 @@ SELECT
   period,
   sum(gt.net_amount) net_amount
 FROM
-  fact.inventory_item_detail iid
+  fact.netsuite_inventory_item_detail iid
 INNER JOIN
   periods
   on iid.transaction_created_date_pst between period_start_date and period_end_date
