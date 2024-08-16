@@ -1,0 +1,1 @@
+select * from fact.NETSUITE_INVENTORY_LOCATION
