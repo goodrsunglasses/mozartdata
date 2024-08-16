@@ -1,6 +1,7 @@
---CREATE OR REPLACE TABLE fact.netsuite_inventory
-            --COPY GRANTS  as
+-- CREATE OR REPLACE TABLE fact.netsuite_inventory
+--             COPY GRANTS  as
 SELECT prod.sku,
+       prod.DISPLAY_NAME,
 	   ns.location,
 	   loc.name as location_name,
 	   ns.binnumber as bin_number,
