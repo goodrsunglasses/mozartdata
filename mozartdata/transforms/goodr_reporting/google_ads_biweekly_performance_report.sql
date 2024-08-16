@@ -2,7 +2,7 @@ with performance_weeks_cte as (
         SELECT
             period_start
             , dateadd('day', 13, period_start) as period_end
-            --,name
+            --,campaign_name
             , week_nums
             , round(sum(revenue), 2)::number(15, 2) as revenue
             , round(sum(spend), 2)::number(15, 2) as spend
@@ -104,12 +104,12 @@ with performance_weeks_cte as (
         where
             period_start >= '2023-12-31'
             and period_end <= CURRENT_DATE
-            and name like '%BOF%'
+            and campaign_name like '%BOF%'
             --period_start = '2024-04-07'
         group by
             period_start
             , week_nums
-            --,name
+            --,campaign_name
         order by
             period_start
             --conversions
@@ -135,7 +135,7 @@ with performance_weeks_cte as (
             camp_d.period_start
             , dateadd('day', 13, camp_d.period_start) as period_end
             --, camp_d.date
-            --, camp_d.name
+            --, camp_d.campaign_name
             , seas.sales_season
             , case
                 when seas.sales_season = 'Valley' then 1
@@ -211,7 +211,7 @@ with performance_weeks_cte as (
             , round(year_revenue / year_spend, 2) as year_ROAS
             , round(year_spend / year_conversions, 2) as year_CPA
             , round(year_conversions / year_clicks, 2) as year_CVR
-            --, sum(revenue) over (partition by period_start, camp_d.name order by period_start asc) as revenue
+            --, sum(revenue) over (partition by period_start, camp_d.campaign_name order by period_start asc) as revenue
         from
             fact.google_ads_campaigns_daily_stats as camp_d
         left join
@@ -230,8 +230,8 @@ with performance_weeks_cte as (
                 and seas_end.year = year(camp_d.date)
         where
             year(camp_d.date) >= 2024
-            and camp_d.name like '%BOF%'
-            and mon_totals.name like '%BOF%'
+            and camp_d.campaign_name like '%BOF%'
+            and mon_totals.campaign_name like '%BOF%'
 
         order by
             camp_d.period_start asc
