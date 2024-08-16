@@ -2,7 +2,7 @@ with awareness_weeks_cte as (
         SELECT
             period_start
             , dateadd('day', 13, period_start) as period_end
-            --,name
+            --,campaign_name
             , week_nums
             , round(sum(revenue), 2)::number(15, 2) as revenue
             , round(sum(spend), 2)::number(15, 2) as spend
@@ -68,14 +68,14 @@ with awareness_weeks_cte as (
             period_start >= '2023-12-31'
             and period_end <= CURRENT_DATE
             and (
-                name like '%TOF%'
-                or name like '%MOF%'
+                campaign_name like '%TOF%'
+                or campaign_name like '%MOF%'
             )
             --period_start = '2024-04-07'
         group by
             period_start
             ,week_nums
-            --,name
+            --,campaign_name
         order by
             period_start
             --conversions
@@ -101,7 +101,7 @@ with awareness_weeks_cte as (
             camp_d.period_start
             , dateadd('day', 13, camp_d.period_start) as period_end
             --, camp_d.date
-            --, camp_d.name
+            --, camp_d.campaign_name
             , seas.sales_season
             , case
                 when seas.sales_season = 'Valley' then 1
@@ -156,7 +156,7 @@ with awareness_weeks_cte as (
             , round(year_spend / year_clicks, 2) as year_CPC
             , round(year_clicks / year_impressions, 2) as year_CTR
             , round(year_spend * 1000 / year_impressions, 2) as year_CPM
-            --, sum(revenue) over (partition by period_start, camp_d.name order by period_start asc) as revenue
+            --, sum(revenue) over (partition by period_start, camp_d.campaign_name order by period_start asc) as revenue
         from
             fact.google_ads_campaigns_daily_stats as camp_d
         left join
@@ -176,12 +176,12 @@ with awareness_weeks_cte as (
         where
             year(camp_d.date) >= 2024
             and (
-                camp_d.name like '%TOF%'
-                or camp_d.name like '%MOF%'
+                camp_d.campaign_name like '%TOF%'
+                or camp_d.campaign_name like '%MOF%'
             )
             and (
-                mon_totals.name like '%TOF%'
-                or mon_totals.name like '%MOF%'
+                mon_totals.campaign_name like '%TOF%'
+                or mon_totals.campaign_name like '%MOF%'
             )
         order by
             camp_d.period_start asc
