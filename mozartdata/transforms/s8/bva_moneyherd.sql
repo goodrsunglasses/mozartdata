@@ -16,6 +16,6 @@ FROM
   fact.gl_transaction t
   left join dim.gl_account a on a.account_id_edw = t.account_id_edw
 WHERE
-  department in ('Business Intelligence','Accounting','Finance Herd')
+  t.department_id_ns in (25,18331,12,53241)
   and posting_period like '%2024'
   and t.account_number >= 5000
