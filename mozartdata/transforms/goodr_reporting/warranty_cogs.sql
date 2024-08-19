@@ -23,17 +23,15 @@ WITH
       AND posting_flag
       AND o.is_exchange = 'false'
   ),
-  
   --- CTE to select the order_id_ns for warranties via Shopify (returnlogic)
   cte_rma_ids AS (
-    SELECT DISTINCT 
-      o.order_id_ns 
-    FROM 
+    SELECT DISTINCT
+      o.order_id_ns
+    FROM
       fact.orders o
-    WHERE 
+    WHERE
       o.is_exchange = 'false'
   ),
-
   --- CTE for COGS of returnlogic warranties, excluding orders already in cte_cs
   cte_returnlogic AS (
     SELECT DISTINCT
@@ -53,12 +51,14 @@ WITH
       gl.account_number = 5000
       AND posting_flag
       AND NOT EXISTS (
-        SELECT 1
-        FROM cte_cs cs
-        WHERE cs.cs_order_id_ns = gl.order_id_ns
+        SELECT
+          1
+        FROM
+          cte_cs cs
+        WHERE
+          cs.cs_order_id_ns = gl.order_id_ns
       )
   ),
-
   --- CTE to select the order_id_ns for warranties via Shopify (parcellab)
   cte_shopify_warranty_ids AS (
     SELECT DISTINCT
@@ -67,19 +67,18 @@ WITH
       shopify."ORDER" so
       LEFT JOIN shopify.discount_application d ON so.id = d.order_id
     WHERE
-      d.description ILIKE 'war%' OR d.description ILIKE 'exc%'
-    
+      d.description ILIKE 'war%'
+      OR d.description ILIKE 'exc%'
     UNION
-
     SELECT DISTINCT
       so.name
     FROM
       goodr_canada_shopify."ORDER" so
       LEFT JOIN goodr_canada_shopify.discount_application d ON so.id = d.order_id
     WHERE
-      d.description ILIKE 'war%' OR d.description ILIKE 'exc%'
+      d.description ILIKE 'war%'
+      OR d.description ILIKE 'exc%'
   ),
-
   --- CTE for COGS of shopify warranties, excluding orders already in cte_cs or cte_returnlogic
   cte_shopify AS (
     SELECT DISTINCT
@@ -99,20 +98,41 @@ WITH
       gl.account_number = 5000
       AND posting_flag
       AND NOT EXISTS (
-        SELECT 1
-        FROM cte_cs cs
-        WHERE cs.cs_order_id_ns = gl.order_id_ns
+        SELECT
+          1
+        FROM
+          cte_cs cs
+        WHERE
+          cs.cs_order_id_ns = gl.order_id_ns
       )
       AND NOT EXISTS (
-        SELECT 1
-        FROM cte_returnlogic rl
-        WHERE rl.returnlogic_order_id_ns = gl.order_id_ns
+        SELECT
+          1
+        FROM
+          cte_returnlogic rl
+        WHERE
+          rl.returnlogic_order_id_ns = gl.order_id_ns
       )
   )
-
---- Combine all warranties without double-counting
-SELECT * FROM cte_cs
+  --- Combine all warranties without double-counting
+SELECT
+  order_id_edw,
+  cs_order_id_ns as order_id_ns,
+  transaction_number_ns,
+  channel,
+  transaction_date,
+  posting_period,
+  cogs,
+  display_name
+FROM
+  cte_cs
 UNION
-SELECT * FROM cte_returnlogic
+SELECT
+  *
+FROM
+  cte_returnlogic
 UNION
-SELECT * FROM cte_shopify;
+SELECT
+  *
+FROM
+  cte_shopify;
