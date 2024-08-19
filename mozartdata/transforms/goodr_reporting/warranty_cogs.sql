@@ -18,7 +18,7 @@ WITH
       gl.account_number = 5000
       AND (
         gl.order_id_ns ILIKE 'CI%'
-        OR gl.order_id_ns ILIKE 'CS%'
+        OR gl.order_id_ns ILIKE 'CS-DMG%'
       )
       AND posting_flag
       AND o.is_exchange = 'false'
