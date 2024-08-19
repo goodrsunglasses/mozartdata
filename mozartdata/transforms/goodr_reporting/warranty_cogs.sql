@@ -1,7 +1,7 @@
---- get the cogs for CS orders that have warrenty prefixes per the CS ORDER NUMBERS deck (less is_exchange true)
 WITH
+  --- CTE to get COGS for CS orders (less is_exchange = true)
   cte_cs AS (
-    SELECT
+    SELECT DISTINCT
       gl.order_id_edw,
       gl.order_id_ns AS cs_order_id_ns,
       gl.transaction_number_ns,
@@ -13,29 +13,30 @@ WITH
     FROM
       fact.gl_transaction gl
       LEFT JOIN dim.product p ON p.item_id_ns = gl.item_id_ns
-      left join fact.orders o on o.order_id_ns = gl.order_id_ns
+      LEFT JOIN fact.orders o ON o.order_id_ns = gl.order_id_ns
     WHERE
       gl.account_number = 5000
       AND (
-        gl.order_id_ns iLIKE 'CI%'
-        OR gl.order_id_ns iLIKE 'CS%'
+        gl.order_id_ns ILIKE 'CI%'
+        OR gl.order_id_ns ILIKE 'CS%'
       )
       AND posting_flag
-      and o.is_exchange = 'false'
-  )
-  --- select the order_id_ns's for warrenties that came through shopify (returnlogic) - aka marked with rma
-, 
-  cte_rma_ids as (
-  select 
-    o.order_id_ns 
-  from 
-    fact.orders o
-  where is_exchange 
-  )
+      AND o.is_exchange = 'false'
+  ),
   
-  --- get cogs for shopify (returnlogic) warranties
-,   cte_returnlogic AS (
-    SELECT
+  --- CTE to select the order_id_ns for warranties via Shopify (returnlogic)
+  cte_rma_ids AS (
+    SELECT DISTINCT 
+      o.order_id_ns 
+    FROM 
+      fact.orders o
+    WHERE 
+      o.is_exchange = 'false'
+  ),
+
+  --- CTE for COGS of returnlogic warranties, excluding orders already in cte_cs
+  cte_returnlogic AS (
+    SELECT DISTINCT
       gl.order_id_edw,
       gl.order_id_ns AS returnlogic_order_id_ns,
       gl.transaction_number_ns,
@@ -51,37 +52,37 @@ WITH
     WHERE
       gl.account_number = 5000
       AND posting_flag
-  )
+      AND NOT EXISTS (
+        SELECT 1
+        FROM cte_cs cs
+        WHERE cs.cs_order_id_ns = gl.order_id_ns
+      )
+  ),
 
-  --- select the order_id_ns's for warrenties that came through shopify (parcellab)
-,
+  --- CTE to select the order_id_ns for warranties via Shopify (parcellab)
   cte_shopify_warranty_ids AS (
-    SELECT
-      name
+    SELECT DISTINCT
+      so.name
     FROM
       shopify."ORDER" so
       LEFT JOIN shopify.discount_application d ON so.id = d.order_id
     WHERE
-      (
-        d.description ILIKE 'war%'
-        OR d.description ILIKE 'exc%'
-      )
+      d.description ILIKE 'war%' OR d.description ILIKE 'exc%'
+    
     UNION
-    SELECT
-      name
+
+    SELECT DISTINCT
+      so.name
     FROM
       goodr_canada_shopify."ORDER" so
       LEFT JOIN goodr_canada_shopify.discount_application d ON so.id = d.order_id
     WHERE
-      (
-        d.description ILIKE 'war%'
-        OR d.description ILIKE 'exc%'
-      )
-  )
-  --- get cogs for shopify (parcellab) warranties
-,
+      d.description ILIKE 'war%' OR d.description ILIKE 'exc%'
+  ),
+
+  --- CTE for COGS of shopify warranties, excluding orders already in cte_cs or cte_returnlogic
   cte_shopify AS (
-    SELECT
+    SELECT DISTINCT
       gl.order_id_edw,
       gl.order_id_ns AS shopify_order_id_ns,
       gl.transaction_number_ns,
@@ -97,18 +98,21 @@ WITH
     WHERE
       gl.account_number = 5000
       AND posting_flag
+      AND NOT EXISTS (
+        SELECT 1
+        FROM cte_cs cs
+        WHERE cs.cs_order_id_ns = gl.order_id_ns
+      )
+      AND NOT EXISTS (
+        SELECT 1
+        FROM cte_returnlogic rl
+        WHERE rl.returnlogic_order_id_ns = gl.order_id_ns
+      )
   )
-  --- show all warranties
-SELECT
-*
-FROM
-  cte_cs
+
+--- Combine all warranties without double-counting
+SELECT * FROM cte_cs
 UNION
-SELECT
-*
-FROM
-  cte_shopify
-union 
-select 
-*
-from cte_returnlogic
+SELECT * FROM cte_returnlogic
+UNION
+SELECT * FROM cte_shopify;
