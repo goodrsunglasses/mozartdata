@@ -1,5 +1,5 @@
-CREATE OR REPLACE TABLE fact.netsuite_inventory_reservations
-  COPY GRANTS  as
+--CREATE OR REPLACE TABLE fact.netsuite_inventory_reservations
+--  COPY GRANTS  as
 SELECT --The idea I have here is to strip away the confusing ID fields from the staging table, and further to join to the dim tables we have to further flesh this table out
 	   reserv.transaction_id_ns,
 	   reserv.title           AS transaction_name,
