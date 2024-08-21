@@ -125,3 +125,32 @@ WHERE
   gl.account_number = 5000
   AND gl.posting_flag 
   )
+
+--- THIS IS WHERE IT STARTS BEING WRONG
+--- 
+, cte_combined_ids as(
+  select distinct * 
+  from 
+    (select transaction_line_id from cte_defectives
+  UNION
+    select transaction_line_id  from cte_cs
+  union 
+    select transaction_line_id  from cte_rl 
+  union 
+     select transaction_line_id  from cte_pl
+  )
+  )
+
+select 
+  t.channel,
+  t.posting_period,
+  t.item_id_ns,
+  p.sku,
+  p.display_name,
+  sum(net_amount) as cogs
+from cte_combined_ids ids
+left join fact.gl_transaction t on ids.transaction_line_id = t.transaction_line_id
+  left join dim.product p on p.item_id_ns = t.item_id_ns
+where t.posting_flag
+  and t.posting_period like '%24'
+group by all
