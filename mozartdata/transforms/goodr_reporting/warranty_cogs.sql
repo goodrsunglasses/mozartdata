@@ -1,44 +1,127 @@
---- grab all the order numbers
-WITH
-  defective_ids AS (
-    SELECT
-      order_id_ns
-    FROM
-      fact.gl_transaction
-    WHERE
-      account_number = 4220
-  ),
-  by_order AS (
+--- get the cogs for orders that are assocaited with the defectives/damages gl account 4220
+with cte_defectives as (
+  SELECT
+  gl.channel,
+  gl.posting_period,
+  gl.order_id_ns,
+  gl.transaction_number_ns,
+  gl.transaction_line_id,
+  p.sku,
+  gl.item_id_ns,
+  p.display_name,
+  gl.net_amount AS cogs
+FROM
+  fact.gl_transaction gl
+  LEFT JOIN dim.product p ON p.item_id_ns = gl.item_id_ns
+  INNER JOIN (
+    SELECT order_id_ns
+    FROM fact.gl_transaction
+    WHERE account_number = 4220
+  ) defective_ids ON defective_ids.order_id_ns = gl.order_id_ns
+WHERE
+  gl.account_number = 5000
+  AND gl.posting_flag
+  AND gl.posting_period LIKE '%2024'
+ORDER BY
+  gl.posting_period,
+  gl.channel,
+  p.sku
+  )
+
+--- get the cogs for CS orders (have CI or CS-DMG prefixes per the CS ORDER NUMBERS deck)
+,
+  cte_cs AS (
     SELECT
       gl.order_id_edw,
-      gl.order_id_ns AS returnlogic_order_id_ns,
+      gl.order_id_ns AS cs_order_id_ns,
       gl.transaction_number_ns,
+      gl.transaction_line_id,
       gl.channel,
       gl.transaction_date,
       gl.posting_period,
       gl.net_amount AS cogs,
+      gl.item_id_ns,
       p.display_name,
       p.sku
     FROM
       fact.gl_transaction gl
       LEFT JOIN dim.product p ON p.item_id_ns = gl.item_id_ns
-      INNER JOIN defective_ids id ON id.order_id_ns = gl.order_id_ns
+      left join fact.orders o on o.order_id_ns = gl.order_id_ns
     WHERE
       gl.account_number = 5000
+      AND (
+        gl.order_id_ns iLIKE 'CI%'
+        OR gl.order_id_ns iLIKE 'CS-DMG%'
+      )
       AND posting_flag
-      AND posting_period LIKE '%2024'
   )
-SELECT
-  channel,
-  posting_period,
-  sku,
-  display_name,
-  sum(cogs) AS cogs
+
+--- get the cogs for returnlogic orders (where is_exchange is true)
+, cte_rl as (
+  SELECT
+  gl.order_id_edw,
+  gl.order_id_ns AS returnlogic_order_id_ns,
+  gl.transaction_number_ns,
+  gl.transaction_line_id,
+  gl.channel,
+  gl.transaction_date,
+  gl.posting_period,
+  gl.net_amount AS cogs,
+  gl.item_id_ns,
+  p.display_name,
+  p.sku
 FROM
-  by_order
-GROUP BY
-  ALL
-ORDER BY
-  posting_period,
-  channel,
-  sku
+  fact.gl_transaction gl
+  LEFT JOIN dim.product p ON p.item_id_ns = gl.item_id_ns
+  INNER JOIN (
+    SELECT order_id_ns
+    FROM fact.orders
+    WHERE is_exchange
+  ) cte_rma_ids ON cte_rma_ids.order_id_ns = gl.order_id_ns
+WHERE
+  gl.account_number = 5000
+  AND gl.posting_flag
+  )
+, 
+---- get the cogs for parcellab orders (where war / exc is in the shopify discount code)
+ cte_pl as (
+SELECT
+  gl.order_id_edw,
+  gl.order_id_ns AS shopify_order_id_ns,
+  gl.transaction_number_ns,
+  gl.transaction_line_id,
+  gl.channel,
+  gl.transaction_date,
+  gl.posting_period,
+  gl.item_id_ns,
+  gl.net_amount AS cogs,
+  p.display_name,
+  p.sku
+FROM
+  fact.gl_transaction gl
+  LEFT JOIN dim.product p ON p.item_id_ns = gl.item_id_ns
+  INNER JOIN (
+    SELECT
+      name
+    FROM
+      shopify."ORDER" so
+      LEFT JOIN shopify.discount_application d ON so.id = d.order_id
+    WHERE
+      d.description ILIKE 'war%'
+      OR d.description ILIKE 'exc%'
+    
+    UNION
+    
+    SELECT
+      name
+    FROM
+      goodr_canada_shopify."ORDER" so
+      LEFT JOIN goodr_canada_shopify.discount_application d ON so.id = d.order_id
+    WHERE
+      d.description ILIKE 'war%'
+      OR d.description ILIKE 'exc%'
+  ) cte_shopify_warranty_ids ON cte_shopify_warranty_ids.name = gl.order_id_ns
+WHERE
+  gl.account_number = 5000
+  AND gl.posting_flag 
+  )
