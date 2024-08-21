@@ -43,7 +43,8 @@ SELECT
   iid.plain_name,
   iid.quantity,
   period,
-  sum(gt.net_amount) net_amount
+  sum(gt.net_amount) net_amount,
+  gt.account_number
 FROM
   fact.netsuite_inventory_item_detail iid
 INNER JOIN
@@ -58,6 +59,7 @@ WHERE
   iid.record_type = 'inventoryadjustment'
 GROUP BY
   iid.transaction_id_ns,
+    gt.account_number,
   iid.transaction_number_ns,
   iid.record_type,
   iid.channel,
