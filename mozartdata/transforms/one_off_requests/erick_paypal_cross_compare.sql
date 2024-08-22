@@ -1,18 +1,21 @@
 SELECT
-  pay.id,
+  pay.id as paypal_id,
   pay.initiation_date,
   pay.updated_date,
   pay.currency_code,
-  pay.amount,
+  pay.amount as paypal_amount,
   pay.invoice_id,
-  gl.order_id_ns,
-  gl.transaction_number_ns,
-  net_amount,
-  round(abs(pay.amount)-abs(gl.net_amount),2) as abs_diff
+  tran.custbody_goodr_shopify_order,
+  tran.tranid,
+  tran.recordtype,
+  tranline.netamount as netsuite_amount,
+  round(abs(pay.amount)-abs(tranline.netamount),2) as abs_diff
 FROM
   paypal.transaction pay
-  LEFT OUTER JOIN fact.gl_transaction gl ON gl.memo = pay.id
+  left outer join netsuite.transactionline tranline on tranline.memo=pay.id
+  left outer join netsuite.transaction tran on tran.id = tranline.transaction 
 WHERE
-  transaction_line_id_ns = 0
-  AND record_type IN ('cashsale', 'cashrefund', 'invoice')
-  and abs_diff != 0
+  tranline.id = 0
+  AND tran.recordtype IN ('cashsale', 'cashrefund', 'invoice')
+  and abs_diff != 0 
+  and date(tranline._fivetran_synced)> '2024-06-01'
