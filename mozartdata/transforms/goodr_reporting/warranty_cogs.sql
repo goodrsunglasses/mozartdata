@@ -65,7 +65,7 @@ WITH
     FROM
       fact.orders o
     WHERE
-      o.is_exchange = 'false'
+      o.is_exchange
   ),
   --- CTE for COGS of returnlogic warranties, excluding orders already in cte_cs
   cte_rl AS (
@@ -126,15 +126,8 @@ WITH
     WHERE
       gl.account_number = 5000
       AND posting_flag
-      AND NOT EXISTS (
-        SELECT
-          1
-        FROM
-          cte_cs cs
-        WHERE
-          cs.cs_order_id_ns = gl.order_id_ns
       )
-  )
+  
   --- get unique ids
 , cte_combined_ids as(
   select distinct * 
