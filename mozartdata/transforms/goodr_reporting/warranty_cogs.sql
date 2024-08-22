@@ -1,4 +1,4 @@
---- get ids for orders that hit 4220
+--- 4220 defectives 
 WITH
   defective_ids AS (
     SELECT
@@ -7,48 +7,26 @@ WITH
       fact.gl_transaction
     WHERE
       account_number = 4220
-  ),
-
---- get cogs for orders that hit 4220  
+  )
+,
   cte_defectives AS (
     SELECT
-      gl.order_id_edw,
-      gl.order_id_ns AS returnlogic_order_id_ns,
-      gl.transaction_number_ns,
-      gl.transaction_line_id,
-      gl.channel,
-      gl.transaction_date,
-      gl.posting_period,
-      gl.net_amount AS cogs,
-      p.display_name,
-      p.sku
+      gl.order_id_ns,
+      gl.transaction_line_id
     FROM
       fact.gl_transaction gl
-      LEFT JOIN dim.product p ON p.item_id_ns = gl.item_id_ns
-      INNER JOIN defective_ids id ON id.order_id_ns = gl.order_id_ns
-    WHERE
-      gl.account_number = 5000
-      AND posting_flag
-      AND posting_period LIKE '%2024'
+      INNER JOIN defective_ids d ON d.order_id_ns = gl.order_id_ns
+    where gl.account_number = 5000
+    and posting_flag
   )
 
---- get the cogs for CS orders that have warrenty prefixes per the CS ORDER NUMBERS deck (less is_exchange true)
-, 
-  cte_cs AS (
-    SELECT DISTINCT
-      gl.order_id_edw,
-      gl.order_id_ns AS cs_order_id_ns,
-      gl.transaction_number_ns,
-      gl.transaction_line_id,
-      gl.channel,
-      gl.transaction_date,
-      gl.posting_period,
-      gl.net_amount AS cogs,
-      p.display_name
+---- cs orders (Ci and CS_DMG)
+,  cte_cs AS (
+    SELECT
+      gl.order_id_ns,
+      gl.transaction_line_id
     FROM
       fact.gl_transaction gl
-      LEFT JOIN dim.product p ON p.item_id_ns = gl.item_id_ns
-      LEFT JOIN fact.orders o ON o.order_id_ns = gl.order_id_ns
     WHERE
       gl.account_number = 5000
       AND (
@@ -56,10 +34,10 @@ WITH
         OR gl.order_id_ns ILIKE 'CS-DMG%'
       )
       AND posting_flag
-      AND o.is_exchange = 'false'
-  ),
-  --- CTE to select the order_id_ns for warranties via Shopify (returnlogic)
-  cte_rma_ids AS (
+  )
+
+----- returnlogic orders
+ ,   cte_rma_ids AS (
     SELECT DISTINCT
       o.order_id_ns
     FROM
@@ -67,29 +45,20 @@ WITH
     WHERE
       o.is_exchange
   ),
-  --- CTE for COGS of returnlogic warranties, excluding orders already in cte_cs
-  cte_rl AS (
-    SELECT DISTINCT
-      gl.order_id_edw,
-      gl.order_id_ns AS returnlogic_order_id_ns,
-      gl.transaction_number_ns,
-      gl.transaction_line_id,
-      gl.channel,
-      gl.transaction_date,
-      gl.posting_period,
-      gl.net_amount AS cogs,
-      p.display_name
+    cte_rl AS (
+    SELECT
+      gl.order_id_ns,
+      gl.transaction_line_id
     FROM
       fact.gl_transaction gl
-      LEFT JOIN dim.product p ON p.item_id_ns = gl.item_id_ns
-      INNER JOIN cte_rma_ids id ON id.order_id_ns = gl.order_id_ns
-    WHERE
-      gl.account_number = 5000
-      AND posting_flag
-  ),
-  --- CTE to select the order_id_ns for warranties via Shopify (parcellab)
-  cte_shopify_warranty_ids AS (
-    SELECT DISTINCT
+      INNER JOIN cte_rma_ids ON cte_rma_ids.order_id_ns = gl.order_id_ns
+    where gl.account_number = 5000
+    and posting_flag
+  )
+  
+------ parcellab + anything that came through shopify with warranty or exchange discount codes
+,  cte_shopify_warranty_ids AS (
+    SELECT 
       so.name
     FROM
       shopify."ORDER" so
@@ -98,7 +67,7 @@ WITH
       d.description ILIKE 'war%'
       OR d.description ILIKE 'exc%'
     UNION
-    SELECT DISTINCT
+    SELECT 
       so.name
     FROM
       goodr_canada_shopify."ORDER" so
@@ -107,28 +76,17 @@ WITH
       d.description ILIKE 'war%'
       OR d.description ILIKE 'exc%'
   ),
-  --- CTE for COGS of shopify warranties, excluding orders already in cte_cs or cte_rl
-  cte_pl AS (
-    SELECT DISTINCT
-      gl.order_id_edw,
-      gl.order_id_ns AS shopify_order_id_ns,
-      gl.transaction_number_ns,
-      gl.transaction_line_id,
-      gl.channel,
-      gl.transaction_date,
-      gl.posting_period,
-      gl.net_amount AS cogs,
-      p.display_name
+    cte_pl AS (
+    SELECT
+      gl.order_id_ns,
+      gl.transaction_line_id
     FROM
       fact.gl_transaction gl
-      LEFT JOIN dim.product p ON p.item_id_ns = gl.item_id_ns
-      INNER JOIN cte_shopify_warranty_ids id ON id.name = gl.order_id_ns
-    WHERE
-      gl.account_number = 5000
-      AND posting_flag
-      )
-  
-  --- get unique ids
+      INNER JOIN cte_shopify_warranty_ids w ON w.name = gl.order_id_ns
+    where gl.account_number = 5000
+    and posting_flag
+  )
+----- unqiue ids and cogs 
 , cte_combined_ids as(
   select distinct * 
   from 
@@ -143,15 +101,15 @@ WITH
   )
 --- get final cogs
 select 
-  t.channel,
-  t.posting_period,
-  t.item_id_ns,
+  gl.channel,
+  gl.posting_period,
+  gl.item_id_ns,
   p.sku,
   p.display_name,
   sum(net_amount) as cogs
 from cte_combined_ids ids
-left join fact.gl_transaction t on ids.transaction_line_id = t.transaction_line_id
-  left join dim.product p on p.item_id_ns = t.item_id_ns
-where t.posting_flag
-  and t.posting_period like '%24'
+left join fact.gl_transaction gl on ids.transaction_line_id = gl.transaction_line_id
+  left join dim.product p on p.item_id_ns = gl.item_id_ns
+where gl.posting_flag
+  and gl.posting_period like '%24'
 group by all
