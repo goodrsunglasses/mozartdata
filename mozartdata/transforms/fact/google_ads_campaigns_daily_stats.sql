@@ -1,34 +1,38 @@
-SELECT
+select
     camp_info.campaign_id_g_ads
-    , DATE_TRUNC('WEEK',
-        DATEADD('DAY',
-            MOD(
-                FLOOR(
-                    DATEDIFF('DAY', '2023-12-31'::date, date_trunc('week', camp_s.date))
-                / 7)
-            , 2)
-        * -7, camp_s.date)
-    ) as period_start
-    , 'WEEKS ' || WEEKOFYEAR(period_start) || ' / ' || WEEKOFYEAR(DATEADD('week', 1, period_start)) as week_nums
-    , camp_s.date
-    , camp_info.campaign_name
-    , round(sum(camp_s.conversions_value), 2) AS revenue
-    , round(sum(camp_s.cost_micros) / 1000000, 2) AS spend
-    , sum(camp_s.clicks) AS clicks
-    , round(sum(camp_s.conversions), 2) AS conversions
-    , sum(camp_s.impressions) AS impressions
-FROM
-    google_ads_us.campaign_stats AS camp_s
-INNER JOIN
-    dim.google_ads_campaign_names AS camp_info
-on
-    camp_s.id = camp_info.campaign_id_g_ads
+  , date_trunc('WEEK',
+               dateadd('DAY',
+                       mod(
+                           floor(
+                               datediff('DAY', '2023-12-31'::date, date_trunc('week', camp_s.date))
+                                   / 7)
+                           , 2)
+                           * -7, camp_s.date)
+    )                                                                                             as period_start
+  , 'WEEKS ' || weekofyear(period_start) || ' / ' || weekofyear(dateadd('week', 1, period_start)) as week_nums
+  , camp_s.date
+  , camp_info.campaign_name
+  , camp_info.account_id_g_ads
+  , camp_info.account_name
+  , round(sum(camp_s.conversions_value), 2)                                                       as revenue
+  , round(sum(camp_s.cost_micros) / 1000000, 2)                                                   as spend
+  , sum(camp_s.clicks)                                                                            as clicks
+  , round(sum(camp_s.conversions), 2)                                                             as conversions
+  , sum(camp_s.impressions)                                                                       as impressions
+from
+    google_ads_us.campaign_stats      as camp_s
+    inner join
+        dim.google_ads_campaign_names as camp_info
+            on
+            camp_s.id = camp_info.campaign_id_g_ads
 where
     camp_s.date >= '2023-12-31'
-GROUP BY
-    camp_info.campaign_id_g_ads
-    , camp_info.campaign_name
-    , camp_s.date
-ORDER BY
-    camp_s.date asc
-    , camp_info.campaign_name asc
+group by
+    camp_info.account_id_g_ads
+  , camp_info.account_name
+  , camp_info.campaign_id_g_ads
+  , camp_info.campaign_name
+  , camp_s.date
+order by
+    camp_s.date             asc
+  , camp_info.campaign_name asc
