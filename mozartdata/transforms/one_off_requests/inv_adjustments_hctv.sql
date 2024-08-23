@@ -44,7 +44,8 @@ SELECT
   iid.quantity,
   period,
   sum(gt.net_amount) net_amount,
-  gt.account_number
+  gt.account_number,
+  ga.account_display_name
 FROM
   fact.netsuite_inventory_item_detail iid
 INNER JOIN
@@ -52,9 +53,11 @@ INNER JOIN
   on iid.transaction_created_date_pst between period_start_date and period_end_date
 LEFT JOIN
   fact.gl_transaction gt
-  ON iid.transaction_id_ns = gt.transaction_id_ns
-  AND iid.transaction_line_id_ns = gt.transaction_line_id_ns
-  AND gt.posting_flag
+    ON iid.transaction_id_ns = gt.transaction_id_ns
+    AND iid.transaction_line_id_ns = gt.transaction_line_id_ns
+    AND gt.posting_flag
+left join 
+  dim.gl_account ga on gt.account_id_ns = ga.account_id_ns
 WHERE
   iid.record_type = 'inventoryadjustment'
 GROUP BY
@@ -70,4 +73,5 @@ GROUP BY
   iid.sku,
   iid.plain_name,
   iid.quantity,
-  period
+  period,
+  ga.account_display_name
