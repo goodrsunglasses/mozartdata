@@ -3,13 +3,15 @@ with ap_detail as
    SELECT
       gt.transaction_id_ns
     , gt.record_type
-    , null as transaction_reference
+    , transaction_id_ns as transaction_reference
     , gt.transaction_date
     , gt.account_number
     , ga.account_display_name as account_name
     , v.name as vendor_name
     , cnm.company_name
     , gt.channel
+    , gt.credit_amount
+    , gt.net_amount
    FROM
      fact.gl_transaction gt
    INNER JOIN
@@ -24,6 +26,7 @@ with ap_detail as
    WHERE
        gt.account_number in (2000)
    AND gt.posting_flag
+   AND gt.credit_amount != 0 --only capture transactions that add to AP
  )
 SELECT
   ap.transaction_id_ns
