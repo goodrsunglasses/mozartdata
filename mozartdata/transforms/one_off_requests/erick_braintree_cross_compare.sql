@@ -26,24 +26,24 @@ WITH
       braintree.transaction
   )
 SELECT
-  id AS braintree_transaction_id,
+  disbursement_date,
 TYPE,
-disbursement_date,
+transaction AS netsuite_transaction_id,
+tranid,
+recordtype,
+id AS braintree_transaction_id,
 CASE
   WHEN order_id_edw LIKE '%-CA%' THEN amount
   ELSE disbursement_settlement_amount
 END AS presentment_amount,
-transaction AS netsuite_transaction_id,
-tranid,
 order_id_edw,
-recordtype,
-netamount AS netsuite_netamount, 
+netamount AS netsuite_netamount,
 round(abs(presentment_amount) - abs(netamount), 2) AS difference
 FROM
   braintree_data
   LEFT OUTER JOIN netsuite_data ON netsuite_data.merch_auth = braintree_data.id
 WHERE
   abs(presentment_amount) != abs(netamount)
-  and disbursement_date> DATEADD(MONTH, -2, CURRENT_DATE)
+  AND disbursement_date > DATEADD(MONTH, -2, CURRENT_DATE)
 ORDER BY
 TYPE asc
