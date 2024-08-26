@@ -44,5 +44,6 @@ FROM
   LEFT OUTER JOIN netsuite_data ON netsuite_data.merch_auth = braintree_data.id
 WHERE
   abs(presentment_amount) != abs(netamount)
+  and disbursement_date> DATEADD(MONTH, -2, CURRENT_DATE)
 ORDER BY
 TYPE asc
