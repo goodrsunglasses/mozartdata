@@ -31,47 +31,31 @@ WITH
       '2024-05-31' AS period_end_date
   )
 SELECT
-  iid.transaction_id_ns,
-  iid.transaction_number_ns,
-  iid.record_type,
-  iid.channel,
-  iid.location_id_ns,
-  iid.location_name,
-  iid.transaction_created_date_pst,
-  iid.item_id_ns,
-  iid.sku,
-  iid.plain_name,
-  iid.quantity,
+  gt.transaction_line_id,
+  gt.transaction_id_ns,
+  gt.transaction_number_ns,
+  gt.record_type,
+  gt.channel,
+  gt.transaction_date,
+  gt.item_id_ns,
+  p.sku,
+  p.display_name,
+--  gt.quantity,
   period,
   sum(gt.net_amount) net_amount,
   gt.account_number,
   ga.account_display_name
 FROM
-  fact.netsuite_inventory_item_detail iid
+  fact.gl_transaction gt
 INNER JOIN
   periods
-  on iid.transaction_created_date_pst between period_start_date and period_end_date
-LEFT JOIN
-  fact.gl_transaction gt
-    ON iid.transaction_id_ns = gt.transaction_id_ns
-    AND iid.transaction_line_id_ns = gt.transaction_line_id_ns
-    AND gt.posting_flag
+  on gt.transaction_date between period_start_date and period_end_date
+left join 
+    dim.product p on p.item_id_ns = gt.item_id_ns
 left join 
   dim.gl_account ga on gt.account_id_ns = ga.account_id_ns
 WHERE
-  iid.record_type = 'inventoryadjustment'
+  gt.record_type = 'inventoryadjustment'
+  AND gt.posting_flag
 GROUP BY
-  iid.transaction_id_ns,
-    gt.account_number,
-  iid.transaction_number_ns,
-  iid.record_type,
-  iid.channel,
-  iid.location_id_ns,
-  iid.location_name,
-  iid.transaction_created_date_pst,
-  iid.item_id_ns,
-  iid.sku,
-  iid.plain_name,
-  iid.quantity,
-  period,
-  ga.account_display_name
+ all
