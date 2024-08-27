@@ -68,4 +68,5 @@ left join
     on gtl.next_transaction_id_ns = cc.transaction_id_ns
 WHERE
   gt.posting_flag
+  and gt.posting_period like '%24'
 GROUP BY ALL
