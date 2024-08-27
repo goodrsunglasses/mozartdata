@@ -2,7 +2,8 @@ with
   chase_checking as
 (
    SELECT
-      gt.transaction_id_ns
+      gt.transaction_line_id
+    , gt.transaction_id_ns
     , gt.posting_period
     , gt.record_type
     , gt.transaction_date
@@ -30,7 +31,8 @@ with
    AND gt.credit_amount >0 --only show cash payments
  )
 SELECT
-  cc.transaction_id_ns
+  gt.transaction_line_id
+, cc.transaction_id_ns
 , cc.transaction_number_ns
 , gt.posting_period
 , ap.period_end_date
