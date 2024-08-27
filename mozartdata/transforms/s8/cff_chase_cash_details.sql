@@ -46,9 +46,7 @@ SELECT
 , gt.transaction_id_ns as transaction_id_ns_2--concat(gt.record_type,': ',gt.transaction_number_ns) as transaction_reference_2
 , gt.transaction_number_ns as transaction_number_ns_2
 , t.memo
-, gtl.transaction_id_ns transaction_reference_id
-, gtl.transaction_number_ns transaction_reference_number
-, gtl.record_type transaction_reference_type
+, cc.transaction_id_ns transaction_reference_id
 , sum(gt.credit_amount) credit
 , sum(gt.debit_amount) debit
 , sum(gt.net_amount) net
@@ -63,9 +61,6 @@ inner join
 inner join
   netsuite.transaction t
   on gt.transaction_id_ns = t.id
-left join
-    fact.gl_transaction_link gtl
-    on gtl.next_transaction_id_ns = cc.transaction_id_ns
 WHERE
   gt.posting_flag
   and gt.posting_period like '%24'
