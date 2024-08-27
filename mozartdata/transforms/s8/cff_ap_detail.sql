@@ -35,6 +35,7 @@ SELECT
   ap.transaction_id_ns
 , ap.transaction_reference
 , gt.posting_period
+, acct.period_end_date
 , gt.record_type
 , t.accountbasednumber
 , gt.transaction_date
@@ -61,6 +62,9 @@ inner join
 inner join
   netsuite.transaction t
   on gt.transaction_id_ns = t.id
+left join
+  dim.accounting_period acct
+  on acct.posting_period = gt.posting_period
 WHERE
   gt.posting_flag
 GROUP BY ALL
