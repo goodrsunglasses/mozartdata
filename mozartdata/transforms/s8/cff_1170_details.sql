@@ -7,7 +7,7 @@ SELECT
     , gt.account_number
     , ga.account_display_name as account_name
     , cnm.company_name
-    , gt.channel
+    , cnm.category
     , gt.memo
     , sum(gt.credit_amount) credit
     , sum(gt.debit_amount) debit
