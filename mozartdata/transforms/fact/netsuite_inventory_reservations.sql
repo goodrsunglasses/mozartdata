@@ -7,7 +7,7 @@ SELECT --The idea I have here is to strip away the confusing ID fields from the 
 	   reserv.name                                                 AS sales_channel_ns,
 	   DATE(reserv.trandate)                                       AS tran_date,--from here on out using date() because every single one of these is imported via CSV and all the date fields are not timestamped besides '00:00:00.000000000 +00:00'
 	   reserv.transaction_status,
-	   reserv.CREATEDDATE,
+	   date(reserv.CREATEDDATE,) as created_date
 	   DATE(reserv.STARTDATE)                                      AS start_date,
 	   DATE(reserv.enddate)                                        AS end_date,
 	   loc.name                                                    AS location_name,
