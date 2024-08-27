@@ -56,7 +56,7 @@ SELECT
 FROM
   goodrwill_shopify."ORDER" b2b_shop
   LEFT OUTER JOIN goodrwill_shopify.order_line line ON line.order_id = b2b_shop.id
-  LEFT OUTER JOIN dim.product product ON product.product_id_b2b_shopify = line.product_id
+  LEFT OUTER JOIN dim.product product ON product.sku = line.sku
   UNION ALL
 SELECT
   b2b_shop.name order_id_edw,
@@ -76,7 +76,7 @@ SELECT
 FROM
   sellgoodr_canada_shopify."ORDER" b2b_shop
   LEFT OUTER JOIN sellgoodr_canada_shopify.order_line line ON line.order_id = b2b_shop.id
-  LEFT OUTER JOIN dim.product product ON product.product_id_b2b_shopify = line.product_id
+  LEFT OUTER JOIN dim.product product ON product.sku = line.sku
   UNION ALL
 SELECT
   b2b_shop.name order_id_edw,
@@ -96,7 +96,7 @@ SELECT
 FROM
   goodr_canada_shopify."ORDER" b2b_shop
   LEFT OUTER JOIN goodr_canada_shopify.order_line line ON line.order_id = b2b_shop.id
-  LEFT OUTER JOIN dim.product product ON product.product_id_b2b_shopify = line.product_id
+  LEFT OUTER JOIN dim.product product ON product.sku = line.sku
   UNION ALL
 SELECT
   b2b_shop.name order_id_edw,
@@ -116,4 +116,4 @@ SELECT
 FROM
   cabana."ORDER" b2b_shop
   LEFT OUTER JOIN cabana.order_line line ON line.order_id = b2b_shop.id
-  LEFT OUTER JOIN dim.product product ON product.product_id_b2b_shopify = line.product_id
+  LEFT OUTER JOIN dim.product product ON product.sku = line.sku
