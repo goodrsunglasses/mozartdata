@@ -1,6 +1,6 @@
 SELECT
       gt.transaction_id_ns
-    , coalesce(gt.record_type,': ', gt.transaction_number_ns) as transaction_reference
+    , concat(gt.record_type,': ', gt.transaction_number_ns) as transaction_reference
     , gt.transaction_date
     , ap.period_end_date
     , gt.posting_period
