@@ -3,7 +3,7 @@ with ap_detail as
    SELECT
       gt.transaction_id_ns
     , gt.record_type
-    , transaction_id_ns as transaction_reference
+    , gtl.next_transaction_id_ns as transaction_reference
     , gt.transaction_date
     , gt.account_number
     , ga.account_display_name as account_name
@@ -23,6 +23,9 @@ with ap_detail as
    left join
     fact.customer_ns_map cnm
     on gt.customer_id_ns = cnm.customer_id_ns
+   left join
+    fact.gl_transaction_link gtl
+    on gtl.transaction_id_ns = gt.transaction_id_ns
    WHERE
        gt.account_number in (2000)
    AND gt.posting_flag
