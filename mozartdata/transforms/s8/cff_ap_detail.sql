@@ -32,7 +32,8 @@ with ap_detail as
    AND gt.credit_amount != 0 --only capture transactions that add to AP
  )
 SELECT
-  ap.transaction_id_ns
+  gt.transaction_line_id  
+, ap.transaction_id_ns
 , ap.transaction_reference
 , gt.posting_period
 , acct.period_end_date
@@ -68,3 +69,4 @@ left join
 WHERE
   gt.posting_flag
 GROUP BY ALL
+ORDER BY 1
