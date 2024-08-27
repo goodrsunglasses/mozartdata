@@ -111,7 +111,7 @@ select
   , d.week_of_year
   , d.media_period_start_date
   , d.media_period_end_date
-  , d.media_week_label
+  , d.media_period_label
   , c.social_channel
   , c.marketing_strategy
   , sum(c.clicks)      as clicks
@@ -132,6 +132,6 @@ group by
   , d.week_of_year
   , d.media_period_start_date
   , d.media_period_end_date
-  , d.media_week_label
+  , d.media_period_label
   , c.social_channel
   , c.marketing_strategy
