@@ -33,6 +33,7 @@ SELECT
   cc.transaction_id_ns
 , cc.transaction_number_ns
 , gt.posting_period
+, ap.period_end_date
 , gt.record_type
 , t.accountbasednumber
 , gt.transaction_date
@@ -61,6 +62,9 @@ inner join
 inner join
   netsuite.transaction t
   on gt.transaction_id_ns = t.id
+left join
+  dim.accounting_period ap
+  on gt.posting_period = ap.posting_period
 WHERE
   gt.posting_flag
   and gt.posting_period like '%24'
