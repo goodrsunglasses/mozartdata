@@ -1,3 +1,5 @@
+--Gonna have to rework off of dim.orders and join to the respective tables so that I can make sure it will show both orders only in shopify and ones only in NS, so grab some samples from both
+
 SELECT
   shop.order_id_edw order_id_shopify,
   shop.store,
