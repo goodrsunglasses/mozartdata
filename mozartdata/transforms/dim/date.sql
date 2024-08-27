@@ -39,8 +39,8 @@ FROM CTE_MY_DATE
 select distinct
   dd.week_start_date as media_period_start
 , dateadd(day, 13, dd.week_start_date) as media_period_end
-, CEIL(week_of_year / 2.0) AS media_week_group
-, CONCAT('Week ', CEIL(week_of_year / 2.0) * 2 - 1, ' / ', CEIL(week_of_year / 2.0)  * 2) as media_week_label
+, CEIL(week_of_year / 2.0) AS media_period_group
+, CONCAT('Week ', CEIL(week_of_year / 2.0) * 2 - 1, ' / ', CEIL(week_of_year / 2.0)  * 2) as media_period_label
 , dd.week_year
 , dd.week_of_year
 from
@@ -50,10 +50,10 @@ from
     select
         wp.week_year
     ,   wp.week_of_year
-    ,   wp.media_week_group
-    ,   wp.media_week_label
-    ,   min(wp.media_period_start) over (partition by wp.media_week_group, wp.week_year) as media_period_start_date
-    ,   min(wp.media_period_end) over (partition by wp.media_week_group, wp.week_year) as media_period_end_date
+    ,   wp.media_period_group
+    ,   wp.media_period_label
+    ,   min(wp.media_period_start) over (partition by wp.media_period_group, wp.week_year) as media_period_start_date
+    ,   min(wp.media_period_end) over (partition by wp.media_period_group, wp.week_year) as media_period_end_date
     from
         week_periods wp
 )
