@@ -63,8 +63,8 @@ select
 , max(dd.date) over (partition by dd.sales_season, dd.year) as season_end_date
 , dw.media_period_start_date
 , dw.media_period_end_date
-, dw.media_week_group
-, dw.media_week_label
+, dw.media_period_group
+, dw.media_period_label
 from
     dim_date dd
 left join
