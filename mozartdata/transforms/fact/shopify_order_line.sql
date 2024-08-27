@@ -152,3 +152,34 @@ FROM
   goodrwill_shopify."ORDER" goodrwill
   LEFT OUTER JOIN goodrwill_shopify.order_line line ON line.order_id = goodrwill.id
   LEFT OUTER JOIN goodrwill_shopify.order_shipping_line ship ON ship.order_id = goodrwill.id
+UNION ALL
+SELECT DISTINCT
+  goodrwill.name order_id_edw,
+  goodrwill.id order_id_shopify,
+  'Goodrwill' AS store,
+  goodrwill.email,
+  goodrwill.total_line_items_price as amount_booked,
+  ship.price as shipping_sold,
+  goodrwill.total_tax as tax_sold,
+  goodrwill.total_price as amount_sold,
+  goodrwill.total_discounts as amount_discount,
+  goodrwill.created_at as order_created_timestamp,
+  DATE(goodrwill.created_at) as order_created_date,
+  CONVERT_TIMEZONE('America/Los_Angeles', goodrwill.created_at) AS order_created_timestamp_pst,
+  DATE(CONVERT_TIMEZONE('America/Los_Angeles', goodrwill.created_at)) AS order_created_date_pst,
+  DATE(CONVERT_TIMEZONE('America/Los_Angeles', goodrwill.created_at)) AS sold_date,
+  goodrwill.financial_status,
+  goodrwill.fulfillment_status,
+  goodrwill.total_line_items_price,
+  goodrwill.cart_token,
+  goodrwill.token,
+  goodrwill.checkout_token,
+  goodrwill.checkout_id as checkout_id_shopify,
+  SUM(quantity) over (
+    PARTITION BY
+      line.order_id
+  ) quantity_sold
+FROM
+  cabana."ORDER" goodrwill
+  LEFT OUTER JOIN cabana.order_line line ON line.order_id = goodrwill.id
+  LEFT OUTER JOIN cabana.order_shipping_line ship ON ship.order_id = goodrwill.id
