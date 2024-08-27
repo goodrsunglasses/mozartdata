@@ -68,5 +68,6 @@ left join
   on acct.posting_period = gt.posting_period
 WHERE
   gt.posting_flag
+  and gt.posting_period like '%24'
 GROUP BY ALL
 ORDER BY 1
