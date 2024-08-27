@@ -28,7 +28,6 @@ with
    WHERE
        gt.account_number in (1010)
    AND gt.posting_flag
-   AND gt.credit_amount >0 --only show cash payments
  )
 SELECT
   gt.transaction_line_id
