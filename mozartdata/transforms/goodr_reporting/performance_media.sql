@@ -22,7 +22,7 @@ with
             select
                 tmd.event_date
               , 'tiktok'             as social_channel
-              , 'goodr'              as account_name
+              , 'USA'                as account_country
               , case
                     when tc.funnel_stage in ('TOF', 'MOF')
                         then 'Awareness'
@@ -51,7 +51,13 @@ with
             select
                 ga.date      as event_date
               , 'google ads' as social_channel
-              , ga.account_name
+              , case
+                    when lower(ga.account_name) = 'goodr canada'
+                        then 'CAN'
+                    when lower(ga.account_name) = 'goodr sunglasses'
+                        then 'USA'
+                    else 'Other'
+                end          as account_country
               , case
                     when ga.funnel_stage not in ('Awareness', 'Performance')
                         then 'Other'
@@ -69,7 +75,7 @@ with
             select
                 scmd.report_date            as event_date
               , 'snapchat'                  as social_channel
-              , 'goodr'                     as account_name
+              , 'USA'                       as account_country
               , scmd.marketing_strategy
               , round(sum(scmd.spend), 2)   as spend
               , round(sum(scmd.revenue), 2) as revenue
@@ -88,7 +94,13 @@ with
             select
                 macmd.date                    as event_date
               , 'meta'                        as social_channel
-              , mc.account_name
+              , case
+                    when lower(mc.account_name) = 'goodr canada'
+                        then 'CAN'
+                    when lower(mc.account_name) = 'goodr'
+                        then 'USA'
+                    else 'Other'
+                end                           as account_country
               , mc.media_strategy             as marketing_strategy
               , round(sum(macmd.spend), 2)    as spend
               , round(sum(macmd.revenue), 2)  as revenue
@@ -104,6 +116,7 @@ with
                 mc.funnel_stage in ('TOF', 'MOF', 'BOF')
             group by
                 macmd.date
+              , mc.account_name
               , mc.media_strategy
         )
   , combined as
@@ -133,8 +146,9 @@ select
   , d.week_of_year
   , d.media_period_start_date
   , d.media_period_end_date
-  , d.media_week_label
+  , d.media_period_label
   , c.social_channel
+  , c.account_country
   , c.marketing_strategy
   , sum(c.clicks)      as clicks
   , sum(c.conversions) as conversions
@@ -154,6 +168,7 @@ group by
   , d.week_of_year
   , d.media_period_start_date
   , d.media_period_end_date
-  , d.media_week_label
+  , d.media_period_label
   , c.social_channel
+  , c.account_country
   , c.marketing_strategy
