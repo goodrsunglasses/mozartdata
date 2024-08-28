@@ -34,6 +34,6 @@ SELECT
   mutually_exclusive.amount_sold
 FROM
   mutually_exclusive
-  left outer join dim.product prod on prod.sku = mutually_exclusive.sku
+  LEFT OUTER JOIN dim.product prod ON prod.sku = mutually_exclusive.sku
 WHERE
-  order_id_edw IN ('018814901', 'G1499687','SG-105507')
+  order_id_edw IN ('018814901', 'G1499687', 'SG-105507')
