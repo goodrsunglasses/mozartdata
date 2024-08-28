@@ -12,13 +12,19 @@ WITH
       coalesce(items.name, ordit.plain_name) AS display_name,
       coalesce(items.rate, ordit.rate_sold) AS rate_sold,
       coalesce(items.quantity_booked, ordit.quantity_sold) AS quantity_sold, --Yes this is confusing, but business wise PR said he wanted the "Booked" from Shopify and "Sold" from NS for like KA together
-      coalesce(items.amount_booked, ordit.amount_product_sold) AS amount_sold
+      coalesce(items.amount_booked, ordit.amount_product_sold) AS combined_amount_sold,
+      ordit.amount_discount_sold,
+      ordit.amount_product_refunded,
+      combined_amount_sold+ordit.amount_product_refunded as net_sales,
+  net_sales-ordit.amount_discount_sold net_sales_no_discount
     FROM
       dim.orders ord
       LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = ord.order_id_edw --going here for the order's channel via NS, the shopify store supersedes it for cases where its not in NS
       LEFT OUTER JOIN fact.shopify_order_item items ON items.order_id_edw = ord.order_id_edw
       LEFT OUTER JOIN fact.order_item ordit ON ordit.order_id_edw = ord.order_id_edw
       AND ord.order_id_shopify IS NULL
+    WHERE
+      ord.order_id_edw = 'G1826015'
   )
 SELECT
   mutually_exclusive.order_id_edw,
