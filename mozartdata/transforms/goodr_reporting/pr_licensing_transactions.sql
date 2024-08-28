@@ -3,6 +3,10 @@ WITH
     SELECT --The idea here is that these are the ones we can comfortable combine onto one line per sku, because they either only exist in NS or only in Shopify, orders wise generally its shopify, but for KA its not
       ord.order_id_edw,
       coalesce(ord.order_id_shopify, ord.transaction_id_ns) AS source_id,
+      CASE
+        WHEN ord.order_id_shopify IS NULL THEN 'Netsuite'
+        ELSE 'Shopify'
+      END AS source_system,
       coalesce(ord.store, orders.channel) AS channel,
       coalesce(items.sku, ordit.sku) AS sku,
       coalesce(items.name, ordit.plain_name) AS display_name,
@@ -16,4 +20,20 @@ WITH
       LEFT OUTER JOIN fact.order_item ordit ON ordit.order_id_edw = ord.order_id_edw
       AND ord.order_id_shopify IS NULL
   )
-select * from mutually_exclusive where order_id_edw in ('018814901','G1499687')
+SELECT
+  mutually_exclusive.order_id_edw,
+  mutually_exclusive.source_id,
+  mutually_exclusive.source_system,
+  mutually_exclusive.channel,
+  mutually_exclusive.sku,
+  mutually_exclusive.display_name,
+  prod.family,
+  prod.collection,
+  mutually_exclusive.rate_sold,
+  mutually_exclusive.quantity_sold,
+  mutually_exclusive.amount_sold
+FROM
+  mutually_exclusive
+  left outer join dim.product prod on prod.sku = mutually_exclusive.sku
+WHERE
+  order_id_edw IN ('018814901', 'G1499687','SG-105507')
