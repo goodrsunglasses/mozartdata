@@ -28,6 +28,7 @@ SELECT
   mutually_exclusive.sku,
   mutually_exclusive.display_name,
   prod.family,
+  map.licensor,
   prod.collection,
   mutually_exclusive.rate_sold,
   mutually_exclusive.quantity_sold,
@@ -43,5 +44,6 @@ FROM
     ordit.sku = mutually_exclusive.sku
     AND ordit.order_id_edw = mutually_exclusive.order_id_edw
   )--Rejoin because while its cool to see shopify data primarily, I wanna also always show some NS data
+  left outer join google_sheets.licensing_sku_mapping map on map.sku = mutually_exclusive.sku
 WHERE
   mutually_exclusive.order_id_edw IN ('G1826015')
