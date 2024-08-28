@@ -1,10 +1,10 @@
 select 
+  oid.plain_name,
   ics.location,
   c.name as channel,
   ap.periodname as posting_period,
   oid.item_id_ns,
   ics.sku,
-  oid.plain_name,
   p.family as product_category,
   p.merchandise_class as model,
   sum(oid.amount_revenue) as revenue,
