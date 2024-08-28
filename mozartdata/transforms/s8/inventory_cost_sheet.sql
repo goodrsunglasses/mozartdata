@@ -24,6 +24,8 @@ SELECT
   il.item AS item_id_ns,
   p.display_name,
   p.sku,
+  p.family as category,
+  p.merchandise_class as model,
   il.lastpurchasepricemli AS average_cost,
   COALESCE(
     CASE 
