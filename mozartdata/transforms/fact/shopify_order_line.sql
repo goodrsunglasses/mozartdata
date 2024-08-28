@@ -156,7 +156,7 @@ UNION ALL
 SELECT DISTINCT
   goodrwill.name order_id_edw,
   goodrwill.id order_id_shopify,
-  'Goodrwill' AS store,
+  'Cabana' AS store,
   goodrwill.email,
   goodrwill.total_line_items_price as amount_booked,
   ship.price as shipping_sold,
