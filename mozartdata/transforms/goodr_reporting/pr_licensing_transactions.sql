@@ -1,22 +1,15 @@
---Gonna have to rework off of dim.orders and join to the respective tables so that I can make sure it will show both orders only in shopify and ones only in NS, so grab some samples from both
-
 SELECT
-  shop.order_id_edw order_id_shopify,
-  shop.store,
-  shop.sku as shopsku,
-  shop.name shopname,
-  shop.rate as product_rate,
-  shop.quantity_booked as quantity_booked_shopify,
-  shop.amount_sold amount_sol,
-  prod.family,
-  prod.stage,
-  prod.merchandise_class,
-  prod.design_tier,
-  ord.quantity_booked,
-  ord.rate_booked,
-  
+  ord.order_id_edw,
+  ord.order_id_shopify,
+  ord.store,
+  ord.transaction_id_ns,
+  orders.channel,
+  items.sku,
+  items.name,
+  items.rate,
+  items.quantity_booked, --Since via shopify this is the amount they ordered, not the amount we hypothetically fulfilled, PR wants this
+  items.amount_booked
 FROM
-  fact.shopify_order_item shop
-left outer join dim.product prod on prod.sku = shop.sku
-left outer join fact.order_item ord on (ord.sku = shop.sku and ord.order_id_edw = shop.order_id_edw)
-where customer_id_edw is not null
+  dim.orders ord
+  LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = ord.order_id_edw --going here for the order's channel via NS, the shopify store supersedes it for cases where its not in NS
+  LEFT OUTER JOIN fact.shopify_order_item items ON items.order_id_edw = ord.order_id_edw
