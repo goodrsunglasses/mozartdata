@@ -16,3 +16,4 @@ WITH
       LEFT OUTER JOIN fact.order_item ordit ON ordit.order_id_edw = ord.order_id_edw
       AND ord.order_id_shopify IS NULL
   )
+select * from mutually_exclusive where order_id_edw in ('018814901','G1499687')
