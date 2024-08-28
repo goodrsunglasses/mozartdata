@@ -41,7 +41,7 @@ FROM
 SELECT
   b2b_shop.name order_id_edw,
   b2b_shop.id order_id_shopify,
-  'Specialty' AS store,
+  'Goodrwill' AS store,
   line.id AS order_line_id,
   product.product_id_edw,
   line.sku,
@@ -61,7 +61,7 @@ FROM
 SELECT
   b2b_shop.name order_id_edw,
   b2b_shop.id order_id_shopify,
-  'Specialty' AS store,
+  'Specialty Canada' AS store,
   line.id AS order_line_id,
   product.product_id_edw,
   line.sku,
@@ -81,7 +81,7 @@ FROM
 SELECT
   b2b_shop.name order_id_edw,
   b2b_shop.id order_id_shopify,
-  'Specialty' AS store,
+  'Canada D2C' AS store,
   line.id AS order_line_id,
   product.product_id_edw,
   line.sku,
@@ -101,7 +101,7 @@ FROM
 SELECT
   b2b_shop.name order_id_edw,
   b2b_shop.id order_id_shopify,
-  'Specialty' AS store,
+  'Cabana' AS store,
   line.id AS order_line_id,
   product.product_id_edw,
   line.sku,
