@@ -12,19 +12,13 @@ WITH
       coalesce(items.name, ordit.plain_name) AS display_name,
       coalesce(items.rate, ordit.rate_sold) AS rate_sold,
       coalesce(items.quantity_booked, ordit.quantity_sold) AS quantity_sold, --Yes this is confusing, but business wise PR said he wanted the "Booked" from Shopify and "Sold" from NS for like KA together
-      coalesce(items.amount_booked, ordit.amount_product_sold) AS combined_amount_sold,
-      ordit.amount_discount_sold,
-      ordit.amount_product_refunded,
-      combined_amount_sold+ordit.amount_product_refunded as net_sales,
-  net_sales-ordit.amount_discount_sold net_sales_no_discount
+      coalesce(items.amount_booked, ordit.amount_product_sold) AS combined_amount_sold
     FROM
       dim.orders ord
       LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = ord.order_id_edw --going here for the order's channel via NS, the shopify store supersedes it for cases where its not in NS
       LEFT OUTER JOIN fact.shopify_order_item items ON items.order_id_edw = ord.order_id_edw
       LEFT OUTER JOIN fact.order_item ordit ON ordit.order_id_edw = ord.order_id_edw
       AND ord.order_id_shopify IS NULL
-    WHERE
-      ord.order_id_edw = 'G1826015'
   )
 SELECT
   mutually_exclusive.order_id_edw,
@@ -37,9 +31,17 @@ SELECT
   prod.collection,
   mutually_exclusive.rate_sold,
   mutually_exclusive.quantity_sold,
-  mutually_exclusive.amount_sold
+  mutually_exclusive.combined_amount_sold,
+  ordit.amount_discount_sold,
+  ordit.amount_product_refunded,
+  ordit.amount_product_sold + ordit.amount_product_refunded AS net_sales,
+  net_sales - ordit.amount_discount_sold net_sales_no_discount
 FROM
   mutually_exclusive
   LEFT OUTER JOIN dim.product prod ON prod.sku = mutually_exclusive.sku
+  LEFT OUTER JOIN fact.order_item ordit ON (
+    ordit.sku = mutually_exclusive.sku
+    AND ordit.order_id_edw = mutually_exclusive.order_id_edw
+  )--Rejoin because while its cool to see shopify data primarily, I wanna also always show some NS data
 WHERE
-  order_id_edw IN ('018814901', 'G1499687', 'SG-105507')
+  mutually_exclusive.order_id_edw IN ('G1826015')
