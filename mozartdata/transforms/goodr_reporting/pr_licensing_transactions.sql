@@ -32,10 +32,10 @@ SELECT
   mutually_exclusive.rate_sold,
   mutually_exclusive.quantity_sold,
   mutually_exclusive.combined_amount_sold,
-  ordit.amount_discount_sold,
-  ordit.amount_product_refunded,
-  ordit.amount_product_sold + ordit.amount_product_refunded AS net_sales,
-  net_sales - ordit.amount_discount_sold net_sales_no_discount
+  ordit.amount_discount_sold as ns_amount_discount_sold,
+  ordit.amount_product_refunded as ns_amount_product_refunded,
+  ordit.amount_product_sold + ordit.amount_product_refunded AS ns_net_sales,
+  ns_net_sales - ordit.amount_discount_sold as ns_net_sales_no_discount
 FROM
   mutually_exclusive
   LEFT OUTER JOIN dim.product prod ON prod.sku = mutually_exclusive.sku
