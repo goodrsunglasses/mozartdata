@@ -1,7 +1,5 @@
 --Add shopify discounts??
 --Maybe Gl transaction accounts?
-
-
 WITH
   shopify_refunds AS ( --we dont yet have this as a fact table so here it is 
     SELECT -- you have to fuckin do this because for some stupid ass fucking reason shopify splits refund lines out 1 per sku per line example is G1993131
@@ -65,10 +63,11 @@ WITH
       (
         SELECT
           order_id_edw,
-          sku,
-          name AS display_name
+          prod.sku,
+          prod.display_name
         FROM
-          fact.shopify_order_item
+          fact.shopify_order_item items
+          LEFT OUTER JOIN dim.product prod ON prod.sku = items.sku --have to because shopify has diff names for diff skus idfk
         UNION ALL
         SELECT
           order_id_edw,
@@ -117,21 +116,21 @@ WITH
       )
       LEFT OUTER JOIN shopify_refunds ref ON ref.order_line_id = items.order_line_id
     WHERE
-      distinct_skus.sku IS NOT NULL and orders.order_id_edw is not null and shopify_store != 'Goodrwill'
+      distinct_skus.sku IS NOT NULL
+      AND orders.order_id_edw IS NOT NULL
+      AND shopify_store != 'Goodrwill'
   )
 SELECT
   map.licensor,
   prod.family,
   joined.*,
-  concat(joined.sku,'_',joined.order_id_edw) as primary_key_id -- need this for when the dim.product join splays
+  concat(joined.sku, '_', joined.order_id_edw) AS primary_key_id -- need this for when the dim.product join splays
 FROM
   joined
   LEFT OUTER JOIN dim.product prod ON prod.sku = joined.sku
   LEFT OUTER JOIN google_sheets.licensing_sku_mapping map ON map.sku = joined.sku
 WHERE
-  family= 'LICENSING'
- 
-
+  family = 'LICENSING'
   -- SELECT
   --   mutually_exclusive.order_id_edw,
   --   mutually_exclusive.source_id,
