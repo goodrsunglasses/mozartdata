@@ -1,3 +1,7 @@
+--Add shopify discounts??
+--Maybe Gl transaction accounts?
+
+
 WITH
   shopify_refunds AS ( --we dont yet have this as a fact table so here it is 
     SELECT -- you have to fuckin do this because for some stupid ass fucking reason shopify splits refund lines out 1 per sku per line example is G1993131
