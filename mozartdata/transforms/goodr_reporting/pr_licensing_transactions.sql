@@ -77,6 +77,8 @@ WITH
   joined AS (
     SELECT
       distinct_skus.*,
+      sold_date AS sold_tran_date,
+      booked_date_shopify,
       items.store AS shopify_store,
       orders.channel AS ns_channel,
       ordit.rate_sold ns_rate_sold,
@@ -97,10 +99,10 @@ WITH
         WHEN ref.total_amount_refunded IS NULL THEN 0
         ELSE ref.total_amount_refunded
       END AS total_amount_refunded_shopify,
-    amount_booked_shopify-total_amount_refunded_shopify as net_sales_shopify
-    FROM 
+      amount_booked_shopify - total_amount_refunded_shopify AS net_sales_shopify
+    FROM
       distinct_skus
-      LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = distinct_skus.order_id_edw --for NS channel
+      LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = distinct_skus.order_id_edw --for NS channel and dates
       LEFT OUTER JOIN fact.order_item ordit ON (
         ordit.sku = distinct_skus.sku
         AND ordit.order_id_edw = distinct_skus.order_id_edw
@@ -114,11 +116,16 @@ WITH
       distinct_skus.sku IS NOT NULL
   )
 SELECT
-  *
+  map.licensor,
+  prod.family,
+  joined.*
 FROM
   joined
+  LEFT OUTER JOIN dim.product prod ON prod.sku = joined.sku
+  LEFT OUTER JOIN google_sheets.licensing_sku_mapping map ON map.sku = joined.sku
 WHERE
-  order_id_edw in ('SG-100163','G1993131')
+  family= 'LICENSING'
+
   -- SELECT
   --   mutually_exclusive.order_id_edw,
   --   mutually_exclusive.source_id,
