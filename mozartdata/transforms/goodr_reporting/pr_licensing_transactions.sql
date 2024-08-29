@@ -113,12 +113,13 @@ WITH
       )
       LEFT OUTER JOIN shopify_refunds ref ON ref.order_line_id = items.order_line_id
     WHERE
-      distinct_skus.sku IS NOT NULL and orders.order_id_edw is not null
+      distinct_skus.sku IS NOT NULL and orders.order_id_edw is not null and shopify_store != 'Goodrwill'
   )
 SELECT
   map.licensor,
   prod.family,
-  joined.*
+  joined.*,
+  concat(joined.sku,'_',joined.order_id_edw) as primary_key_id -- need this for when the dim.product join splays
 FROM
   joined
   LEFT OUTER JOIN dim.product prod ON prod.sku = joined.sku
