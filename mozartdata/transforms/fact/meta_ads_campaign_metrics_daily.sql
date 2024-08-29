@@ -11,8 +11,8 @@ select
   , cc.impressions -- Number of impressions for the campaign on the specified date.
   , coalesce(cc.inline_link_clicks, 0) as inline_link_clicks -- Number of inline link clicks for the campaign on the specified date.
   , cc.spend -- Amount spent on the campaign on the specified date.
-  , cca.value -- Number of conversions (purchases) for the campaign on the specified date.
-  , ccav.value -- Revenue generated from conversions (purchases) for the campaign on the specified date.
+  , cca.value                          as conversions -- Number of conversions (purchases) for the campaign on the specified date.
+  , ccav.value                         as revenue -- Revenue generated from conversions (purchases) for the campaign on the specified date.
 from
     dim.meta_campaigns                                 as mc
     left join
