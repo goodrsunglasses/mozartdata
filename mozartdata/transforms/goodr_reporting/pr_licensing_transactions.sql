@@ -97,8 +97,8 @@ WITH
         WHEN ref.total_amount_refunded IS NULL THEN 0
         ELSE ref.total_amount_refunded
       END AS total_amount_refunded_shopify,
-  
-    FROM
+    amount_booked_shopify-total_amount_refunded_shopify as net_sales_shopify
+    FROM 
       distinct_skus
       LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = distinct_skus.order_id_edw --for NS channel
       LEFT OUTER JOIN fact.order_item ordit ON (
