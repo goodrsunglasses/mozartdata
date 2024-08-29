@@ -1,46 +1,60 @@
 WITH
-  shopify_refunds ( --we dont yet have this as a fact table so here it is 
-    SELECT
-      refund_id,
-      id,
-      quantity,
-      subtotal,
-      order_line_id
-  from shopify.order_line_refund
-  union all 
-      SELECT
-      refund_id,
-      id,
-      quantity,
-      subtotal,
-      order_line_id
-  from specialty_shopify.order_line_refund
-  union all 
-      SELECT
-      refund_id,
-      id,
-      quantity,
-      subtotal,
-      order_line_id
-  from sellgoodr_canada_shopify.order_line_refund
-  union all 
-      SELECT
-      refund_id,
-      id,
-      quantity,
-      subtotal,
-      order_line_id
-  from goodr_canada_shopify.order_line_refund
-  union all
+  shopify_refunds AS ( --we dont yet have this as a fact table so here it is 
+    SELECT -- you have to fuckin do this because for some stupid ass fucking reason shopify splits refund lines out 1 per sku per line example is G1993131
+      order_line_id,
+      sum(quantity) total_quantity_refunded,
+      sum(subtotal) total_amount_refunded
+    FROM
+      (
         SELECT
-      refund_id,
-      id,
-      quantity,
-      subtotal,
+          refund_id,
+          id,
+          quantity,
+          subtotal,
+          order_line_id
+        FROM
+          shopify.order_line_refund
+        UNION ALL
+        SELECT
+          refund_id,
+          id,
+          quantity,
+          subtotal,
+          order_line_id
+        FROM
+          specialty_shopify.order_line_refund
+        UNION ALL
+        SELECT
+          refund_id,
+          id,
+          quantity,
+          subtotal,
+          order_line_id
+        FROM
+          sellgoodr_canada_shopify.order_line_refund
+        UNION ALL
+        SELECT
+          refund_id,
+          id,
+          quantity,
+          subtotal,
+          order_line_id
+        FROM
+          goodr_canada_shopify.order_line_refund
+        UNION ALL
+        SELECT
+          refund_id,
+          id,
+          quantity,
+          subtotal,
+          order_line_id
+        FROM
+          cabana.order_line_refund
+      )
+    GROUP BY
       order_line_id
-  from cabana.order_line_refund
- 
-  ) distinct_skus AS ( --The idea here is to select a distinct list of all the SKU's in a given order from both NS and shopify to later join back to, JUST in case its in one but not the other
+  ),
+  distinct_skus AS ( --The idea here is to select a distinct list of all the SKU's in a given order from both NS and shopify to later join back to, JUST in case its in one but not the other
     SELECT DISTINCT
       *
     FROM
@@ -72,9 +86,18 @@ WITH
       ordit.amount_product_refunded AS ns_amount_product_refunded,
       ordit.amount_product_sold + ordit.amount_product_refunded AS ns_net_sales,
       ns_net_sales - ordit.amount_discount_sold AS ns_net_sales_no_discount,
-      items.rate,
-      items.quantity_booked,
-      items.amount_booked,
+      items.rate rate_shopify,
+      items.quantity_booked quantity_booked_shopify,
+      items.amount_booked amount_booked_shopify,
+      CASE
+        WHEN ref.total_quantity_refunded IS NULL THEN 0
+        ELSE ref.total_quantity_refunded
+      END AS total_quantity_refunded_shopify,
+      CASE
+        WHEN ref.total_amount_refunded IS NULL THEN 0
+        ELSE ref.total_amount_refunded
+      END AS total_amount_refunded_shopify,
+  
     FROM
       distinct_skus
       LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = distinct_skus.order_id_edw --for NS channel
@@ -86,6 +109,7 @@ WITH
         items.sku = distinct_skus.sku
         AND items.order_id_edw = distinct_skus.order_id_edw
       )
+      LEFT OUTER JOIN shopify_refunds ref ON ref.order_line_id = items.order_line_id
     WHERE
       distinct_skus.sku IS NOT NULL
   )
@@ -94,7 +118,7 @@ SELECT
 FROM
   joined
 WHERE
-  order_id_edw = 'SG-100163'
+  order_id_edw in ('SG-100163','G1993131')
   -- SELECT
   --   mutually_exclusive.order_id_edw,
   --   mutually_exclusive.source_id,
