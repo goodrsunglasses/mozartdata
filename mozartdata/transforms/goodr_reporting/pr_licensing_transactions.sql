@@ -113,7 +113,7 @@ WITH
       )
       LEFT OUTER JOIN shopify_refunds ref ON ref.order_line_id = items.order_line_id
     WHERE
-      distinct_skus.sku IS NOT NULL
+      distinct_skus.sku IS NOT NULL and orders.order_id_edw is not null
   )
 SELECT
   map.licensor,
@@ -125,6 +125,7 @@ FROM
   LEFT OUTER JOIN google_sheets.licensing_sku_mapping map ON map.sku = joined.sku
 WHERE
   family= 'LICENSING'
+ 
 
   -- SELECT
   --   mutually_exclusive.order_id_edw,
