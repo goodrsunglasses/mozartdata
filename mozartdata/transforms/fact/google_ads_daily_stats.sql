@@ -1,5 +1,7 @@
 select
     date
+  , account_id_g_ads
+  , account_name
   , case
         when campaign_name like '%BOF%'
             then 'Performance'
@@ -13,7 +15,9 @@ select
   , sum(clicks)                as clicks
   , round(sum(conversions), 2) as conversions
 from
-    fact.GOOGLE_ADS_CAMPAIGNS_DAILY_STATS
+    fact.google_ads_campaigns_daily_stats
 group by
     date
+  , account_id_g_ads
+  , account_name
   , funnel_stage

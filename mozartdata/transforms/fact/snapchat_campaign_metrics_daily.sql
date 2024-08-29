@@ -6,25 +6,28 @@
 
 -- The results are ordered by campaign ID and report date in descending order.
 
+-- used downstream in the performance_media table
+
 select
-    stats.campaign_id as campaign_id_snapchat,  -- Campaign ID from Snapchat
-    cam.CAMPAIGN_NAME_SNAPCHAT,  -- Campaign name on Snapchat
-    cam.marketing_strategy,  -- Campaign target audience
-    cam.funnel_stage,  -- Campaign type
-    cam.OBJECTIVE,  -- Campaign objective
-    cam.START_DATE,  -- Campaign start date
-    stats."DATE"::date as report_date,  -- Report date
-    stats.impressions,  -- Number of impressions
-    stats.swipes as clicks,  -- Number of clicks (swipes)
-    round(stats.spend / 1000000, 2) as spend,  -- Total spend (converted from microcurrency)
-    stats.CONVERSION_PURCHASES as conversions,  -- Number of conversions
-    round(stats.CONVERSION_PURCHASES_VALUE / 1000000, 2) as revenue  -- Total revenue (converted from microcurrency)
+    stats.campaign_id                                    as campaign_id_snapchat -- Campaign ID from Snapchat
+  , cam.campaign_name_snapchat -- Campaign name on Snapchat
+  , cam.marketing_strategy -- Campaign target audience
+  , cam.funnel_stage -- Campaign type
+  , cam.objective -- Campaign objective
+  , cam.start_date -- Campaign start date
+  , stats."DATE"::date                                   as report_date -- Report date
+  , stats.impressions -- Number of impressions
+  , stats.swipes                                         as clicks -- Number of clicks (swipes)
+  , round(stats.spend / 1000000, 2)                      as spend -- Total spend (converted from microcurrency)
+  , stats.conversion_purchases                           as conversions -- Number of conversions
+  , round(stats.conversion_purchases_value / 1000000, 2) as revenue -- Total revenue (converted from microcurrency)
 from
-    dim.SNAPCHAT_CAMPAIGNS as cam  -- Dimension table for Snapchat campaigns
-inner join
-    SNAPCHAT_ADS.CAMPAIGN_DAILY_REPORT as stats  -- Fact table for Snapchat campaign daily reports
-    on
-        cam.CAMPAIGN_ID_SNAPCHAT = stats.CAMPAIGN_ID  -- Join condition
+    dim.snapchat_campaigns                 as cam -- Dimension table for Snapchat campaigns
+    inner join
+        snapchat_ads.campaign_daily_report as stats -- Fact table for Snapchat campaign daily reports
+            on
+            cam.campaign_id_snapchat = stats.campaign_id -- Join condition
 order by
-    stats.CAMPAIGN_ID,  -- Order by campaign ID
-    stats."DATE"::date desc  -- Order by report date in descending order
+    stats.campaign_id
+  , -- Order by campaign ID
+    stats."DATE"::date desc -- Order by report date in descending order

@@ -8,6 +8,8 @@
 
 -- The result is ordered by campaign name in ascending order.
 
+-- Used downstream in the snapchat_ads_daily_stats table primarily
+
 WITH latest_account_ids AS (
     -- This CTE selects the latest account information for each account ID.
     SELECT DISTINCT
