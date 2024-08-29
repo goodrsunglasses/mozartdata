@@ -43,5 +43,7 @@ select distinct
   , date(ch.create_time) as create_date
 from
     tiktok_ads.campaign_history ch
+qualify
+  row_number() over (partition by campaign_id order by _fivetran_synced desc) = 1
 order by
     ch.campaign_id
