@@ -1,25 +1,47 @@
 WITH
-  mutually_exclusive AS (
-    SELECT --The idea here is that these are the ones we can comfortable combine onto one line per sku, because they either only exist in NS or only in Shopify, orders wise generally its shopify, but for KA its not
-      ord.order_id_edw,
-      coalesce(ord.order_id_shopify, ord.transaction_id_ns) AS source_id,
-      CASE
-        WHEN ord.order_id_shopify IS NULL THEN 'Netsuite'
-        ELSE 'Shopify'
-      END AS source_system,
-      coalesce(ord.store, orders.channel) AS channel,
-      coalesce(items.sku, ordit.sku) AS sku,
-      coalesce(items.name, ordit.plain_name) AS display_name,
-      coalesce(items.rate, ordit.rate_sold) AS rate_sold,
-      coalesce(items.quantity_booked, ordit.quantity_sold) AS quantity_sold, --Yes this is confusing, but business wise PR said he wanted the "Booked" from Shopify and "Sold" from NS for like KA together
-      coalesce(items.amount_booked, ordit.amount_product_sold) AS combined_amount_sold
+  distinct_skus AS ( --The idea here is to select a distinct list of all the SKU's in a given order from both NS and shopify to later join back to, JUST in case its in one but not the other
+    SELECT DISTINCT
+      *
     FROM
-      dim.orders ord
-      LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = ord.order_id_edw --going here for the order's channel via NS, the shopify store supersedes it for cases where its not in NS
-      LEFT OUTER JOIN fact.shopify_order_item items ON items.order_id_edw = ord.order_id_edw
-      LEFT OUTER JOIN fact.order_item ordit ON ordit.order_id_edw = ord.order_id_edw
-      AND ord.order_id_shopify IS NULL
-  )
+      (
+        SELECT
+          order_id_edw,
+          sku,
+          name AS display_name
+        FROM
+          fact.shopify_order_item
+        UNION ALL
+        SELECT
+          order_id_edw,
+          sku,
+          plain_name
+        FROM
+          fact.order_item
+      )
+  ) joined AS (
+    SELECT
+      distinct_skus.*,
+      ordit.rate_sold,
+      ordit.quantity_sold,
+      ordit.amount_product_sold,
+      items.rate,
+      items.quantity_booked,
+      items.amount_booked,
+    FROM
+      distinct_skus
+  left outer 
+      LEFT OUTER JOIN fact.order_item ordit ON (
+        ordit.sku = distinct_skus.sku
+        AND ordit.order_id_edw = distinct_skus.order_id_edw
+      )
+      LEFT OUTER JOIN fact.shopify_order_item items ON (
+        items.sku = distinct_skus.sku
+        AND items.order_id_edw = distinct_skus.order_id_edw
+      )
+  ) orders.channel,
+  items.rate,
+  items.quantity_booked,
+  items.amount_booked,
 SELECT
   mutually_exclusive.order_id_edw,
   mutually_exclusive.source_id,
@@ -33,17 +55,17 @@ SELECT
   mutually_exclusive.rate_sold,
   mutually_exclusive.quantity_sold,
   mutually_exclusive.combined_amount_sold,
-  ordit.amount_discount_sold as ns_amount_discount_sold,
-  ordit.amount_product_refunded as ns_amount_product_refunded,
+  ordit.amount_discount_sold AS ns_amount_discount_sold,
+  ordit.amount_product_refunded AS ns_amount_product_refunded,
   ordit.amount_product_sold + ordit.amount_product_refunded AS ns_net_sales,
-  ns_net_sales - ordit.amount_discount_sold as ns_net_sales_no_discount
+  ns_net_sales - ordit.amount_discount_sold AS ns_net_sales_no_discount
 FROM
   mutually_exclusive
   LEFT OUTER JOIN dim.product prod ON prod.sku = mutually_exclusive.sku
   LEFT OUTER JOIN fact.order_item ordit ON (
     ordit.sku = mutually_exclusive.sku
     AND ordit.order_id_edw = mutually_exclusive.order_id_edw
-  )--Rejoin because while its cool to see shopify data primarily, I wanna also always show some NS data
-  left outer join google_sheets.licensing_sku_mapping map on map.sku = mutually_exclusive.sku
+  ) --Rejoin because while its cool to see shopify data primarily, I wanna also always show some NS data
+  LEFT OUTER JOIN google_sheets.licensing_sku_mapping map ON map.sku = mutually_exclusive.sku
 WHERE
-  mutually_exclusive.order_id_edw IN ('G1826015')
+  family = 'LICENSING'
