@@ -34,3 +34,5 @@ from
         account_names              as an
             on
             ch.customer_id = an.id
+qualify
+  row_number() over (partition by ch.id order by ch._fivetran_synced desc) = 1
