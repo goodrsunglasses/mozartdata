@@ -22,7 +22,8 @@ left join
 left join 
   dim.gl_account ga on gt.account_id_ns = ga.account_id_ns
 WHERE
-  (gt.record_type = 'inventoryadjustment' or gt.transaction_id_ns = '17920796')
+  (gt.record_type = 'inventoryadjustment' 
+    or gt.transaction_id_ns in ('17920796','17929569','15594652')) --- specific JEs Sherry sent over to add
   AND gt.posting_flag
   and (posting_period like '%22' or posting_period like '%23' or posting_period in ('Jun 24', 'Jul 24'))
 GROUP BY
