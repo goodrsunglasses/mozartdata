@@ -25,6 +25,6 @@ WHERE
   (gt.record_type = 'inventoryadjustment' 
     or gt.transaction_id_ns in ('17920796','17929569','15594652')) --- specific JEs Sherry sent over to add
   AND gt.posting_flag
-  and (posting_period like '%22' or posting_period like '%23' or posting_period in ('Jun 24', 'Jul 24'))
+  and (posting_period like '%22' or posting_period like '%23' or posting_period in ('Jun 2024', 'Jul 2024'))
 GROUP BY
  all
