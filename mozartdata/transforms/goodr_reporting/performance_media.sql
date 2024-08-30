@@ -140,7 +140,8 @@ with
                 *
             from
                 meta_ads
-        )
+        ), pre_to_date as
+  (
 select
     d.date
   , d.week_of_year
@@ -179,4 +180,34 @@ group by
   , d.media_period_label
   , c.social_channel
   , c.account_country
-  , c.marketing_strategy
+  , c.marketing_strategy)
+SELECT
+    p.date
+  , p.week_of_year
+  , p.month
+  , p.year
+  , p.sales_season
+  , p.media_period_start_date
+  , p.media_period_end_date
+  , p.media_period_label
+  , p.social_channel
+  , p.account_country
+  , p.marketing_strategy
+  , p.spend
+  , p.revenue
+  , p.impressions
+  , p.clicks
+  , p.conversions
+  , sum(spend) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) spend_season_to_date
+  , sum(revenue) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) revenue_season_to_date
+  , sum(impressions) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) impressions_season_to_date
+  , sum(clicks) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) clicks_season_to_date
+  , sum(conversions) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) conversions_season_to_date
+  , sum(spend) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) spend_month_to_date
+  , sum(revenue) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) revenue_month_to_date
+  , sum(impressions) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) impressions_month_to_date
+  , sum(clicks) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) clicks_month_to_date
+  , sum(conversions) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) conversions_month_to_date
+
+FROM
+  pre_to_date p
