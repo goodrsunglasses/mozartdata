@@ -146,6 +146,7 @@ select
   , d.week_of_year
   , d.month
   , d.year
+  , d.sales_season
   , d.media_period_start_date
   , d.media_period_end_date
   , d.media_period_label
@@ -168,11 +169,12 @@ where
 group by
     d.date
   , d.week_of_year
+  , d.month
+  , d.sales_season
+  , d.year
   , d.media_period_start_date
   , d.media_period_end_date
   , d.media_period_label
   , c.social_channel
   , c.account_country
   , c.marketing_strategy
-  , d.month
-  , d.year
