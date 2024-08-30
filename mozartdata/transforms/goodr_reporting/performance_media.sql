@@ -144,6 +144,8 @@ with
 select
     d.date
   , d.week_of_year
+  , d.month
+  , d.year
   , d.media_period_start_date
   , d.media_period_end_date
   , d.media_period_label
@@ -172,3 +174,5 @@ group by
   , c.social_channel
   , c.account_country
   , c.marketing_strategy
+  , d.month
+  , d.year
