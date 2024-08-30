@@ -24,14 +24,13 @@ from
             on
             cc.campaign_id = cca.campaign_id
                 and cc.date = cca.date
+                and cca.action_type = 'purchase'
     left join
         facebook_ads.campaign_conversion_action_values as ccav
             on
             cc.campaign_id = ccav.campaign_id
                 and cc.date = ccav.date
-where
-      cca.action_type = 'purchase' -- Filter for conversions (purchases) only.
-  and ccav.action_type = 'purchase' -- Filter for revenue generated from conversions (purchases) only.
+                and ccav.action_type = 'purchase'
 order by
     cc.date        desc -- Sort the results by date in descending order.
   , cc.campaign_id asc -- Sort the results by campaign ID in ascending order.
