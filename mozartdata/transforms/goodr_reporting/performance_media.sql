@@ -153,11 +153,13 @@ select
   , c.social_channel
   , c.account_country
   , c.marketing_strategy
+  , sum(c.spend)       as spend
+  , sum(c.revenue)     as revenue
+  , sum(c.impressions) as impressions
   , sum(c.clicks)      as clicks
   , sum(c.conversions) as conversions
-  , sum(c.impressions) as impressions
-  , sum(c.revenue)     as revenue
-  , sum(c.spend)       as spend
+
+
 from
     dim.date     d
     left join
