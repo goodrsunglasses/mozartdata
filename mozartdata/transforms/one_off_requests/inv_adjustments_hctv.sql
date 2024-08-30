@@ -38,6 +38,8 @@ SELECT
   gt.channel,
   gt.transaction_date,
   gt.item_id_ns,
+  gt.memo,
+  gt.posting_period,
   p.sku,
   p.display_name,
 --  gt.quantity,
