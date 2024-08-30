@@ -24,6 +24,6 @@ left join
 WHERE
   (gt.record_type = 'inventoryadjustment' or transaction_number_ns = 'JE0025640')
   AND gt.posting_flag
-  and (posting_period like '%22' or posting_period like '23' or posting_period in ('Jun 24', 'Jul 24'))
+  and (posting_period like '%22' or posting_period like '%23' or posting_period in ('Jun 24', 'Jul 24'))
 GROUP BY
  all
