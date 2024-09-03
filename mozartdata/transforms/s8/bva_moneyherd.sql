@@ -19,3 +19,4 @@ WHERE
   t.department_id_ns in (25,18331,12,53241)
   and posting_period like '%2024'
   and t.account_number >= 5000
+  and posting_flag
