@@ -2,7 +2,7 @@ WITH
   jpm_agg AS (
     SELECT
       transaction_id,
-       'JPM' as bank,
+      'JPM' AS bank,
       account_given_name,
       amount,
       count(amount) over (
@@ -18,7 +18,7 @@ WITH
   amex_agg AS (
     SELECT
       reference,
-      'AMEX' as bank,
+      'AMEX' AS bank,
       card_member,
       amount,
       count(amount) over (
@@ -30,16 +30,19 @@ WITH
       google_sheets.amex_full_compare
     ORDER BY
       amount
-  ), unique_amounts as (
-SELECT
-  *
-FROM
-  jpm_agg
-WHERE
-  counter = 1
-union all SELECT
-  *
-FROM
-  amex_agg
-WHERE
-  counter = 1)
+  ),
+  unique_amounts AS (
+    SELECT
+      *
+    FROM
+      jpm_agg
+    WHERE
+      counter = 1
+    UNION ALL
+    SELECT
+      *
+    FROM
+      amex_agg
+    WHERE
+      counter = 1
+  )
