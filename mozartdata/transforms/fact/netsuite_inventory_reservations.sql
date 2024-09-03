@@ -19,7 +19,7 @@ SELECT --The idea I have here is to strip away the confusing ID fields from the 
 	   reserv.dayslate                                             AS days_late,
 	   CASE WHEN reserv.FULFILLABLE = 'T' THEN TRUE ELSE FALSE END AS fulfillable,
 	   reserv.ORDERALLOCATIONSTRATEGY                              AS order_allocation_strategy,
-	   DATE(reserv.REQUESTEDDATE)                                  AS REQUESTED_DATE,
+	   DATE(reserv.REQUESTEDDATE)                                  AS requested_date,
 	   reserv.source,
 	   DATE(reserv.LASTMODIFIEDDATE)                               AS LAST_MODIFIED_DATE
 FROM staging.netsuite_inventory_reservations reserv
