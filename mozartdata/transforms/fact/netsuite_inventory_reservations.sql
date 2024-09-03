@@ -21,7 +21,7 @@ SELECT --The idea I have here is to strip away the confusing ID fields from the 
 	   reserv.ORDERALLOCATIONSTRATEGY                              AS order_allocation_strategy,
 	   DATE(reserv.REQUESTEDDATE)                                  AS requested_date,
 	   reserv.source,
-	   DATE(reserv.LASTMODIFIEDDATE)                               AS LAST_MODIFIED_DATE
+	   DATE(reserv.LASTMODIFIEDDATE)                               AS last_modified_date
 FROM staging.netsuite_inventory_reservations reserv
 		 LEFT OUTER JOIN dim.product prod ON prod.item_id_ns = reserv.item
 		 LEFT OUTER JOIN dim.location loc ON loc.LOCATION_ID_NS = reserv.location
