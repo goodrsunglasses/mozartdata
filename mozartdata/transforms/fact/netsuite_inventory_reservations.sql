@@ -15,7 +15,7 @@ SELECT --The idea I have here is to strip away the confusing ID fields from the 
 	   prod.sku,
 	   prod.DISPLAY_NAME,
 	   reserv.quantity,
-	   reserv.QUANTITYSHIPRECV                                     AS QUANTITY_SHIP_REC,
+	   reserv.QUANTITYSHIPRECV                                     AS quantity_shipped_or_received,
 	   reserv.dayslate                                             AS days_late,
 	   CASE WHEN reserv.FULFILLABLE = 'T' THEN TRUE ELSE FALSE END AS fulfillable,
 	   reserv.ORDERALLOCATIONSTRATEGY                              AS order_allocation_strategy,
