@@ -60,7 +60,7 @@ WITH
   bank_agg AS (
     SELECT
       CASE
-        WHEN account_given_name = 'ALLIE' THEN 'Allison Lefton'--There aren't very many JPM holders, so I converted their names into the full ones to join to NS later 
+        WHEN account_given_name = 'ALLIE' THEN 'Allison Lefton' --There aren't very many JPM holders, so I converted their names into the full ones to join to NS later 
         WHEN account_given_name = 'ROBERTO' THEN 'Rob Federic'
         WHEN account_given_name = 'LAUREN' THEN 'Lauren Larvejo'
         ELSE account_given_name
@@ -93,9 +93,9 @@ WITH
       UPPER(card_agg.first_last) upper_case,
       card_agg.account_number,
       card_agg.bank,
-      round(card_agg.total_amount,2) rounded_total,
+      round(card_agg.total_amount, 2) rounded_total,
       agg_amnt,
-      abs(rounded_total) - abs(agg_amnt) as difference
+      abs(rounded_total) - abs(agg_amnt) AS difference
     FROM
       card_agg
       LEFT OUTER JOIN bank_agg ON (
@@ -128,6 +128,7 @@ WITH
   amex_direct_join AS ( --this one is basically joining based on when there is only one transaction of a given amount for a given person on a given day, its like 1/3rd as accurate rn
     SELECT
       transaction,
+      'AMEX' as bank,
       transaction_number_ns,
       net_amount,
       transaction_date,
@@ -143,9 +144,10 @@ WITH
     WHERE
       reference IS NOT NULL
   ),
-  jpm_direct_join AS ( 
+  jpm_direct_join AS (
     SELECT
       transaction,
+      'JPM' as bank,
       transaction_number_ns,
       net_amount,
       transaction_date,
@@ -153,14 +155,20 @@ WITH
       jpm.reference
     FROM
       first_list
-        LEFT OUTER JOIN fact.credit_card_merchant_map jpm ON (
+      LEFT OUTER JOIN fact.credit_card_merchant_map jpm ON (
         jpm.date = first_list.transaction_date
         AND first_list.net_amount = jpm.amount
         AND upper(jpm.clean_card_member) = upper(first_list.first_last)
       )
     WHERE
-      reference IS NOT NULL and source='JPM'
+      reference IS NOT NULL
+      AND source = 'JPM'
   )
+SELECT
+  *
+FROM
+  amex_direct_join
+union all 
 SELECT
   *
 FROM
