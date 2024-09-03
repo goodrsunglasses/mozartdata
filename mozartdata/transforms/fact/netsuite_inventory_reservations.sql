@@ -18,7 +18,7 @@ SELECT --The idea I have here is to strip away the confusing ID fields from the 
 	   reserv.QUANTITYSHIPRECV                                     AS QUANTITY_SHIP_REC,
 	   reserv.dayslate                                             AS days_late,
 	   CASE WHEN reserv.FULFILLABLE = 'T' THEN TRUE ELSE FALSE END AS fulfillable,
-	   reserv.ORDERALLOCATIONSTRATEGY                              AS ORDER_ALLOCATION_STRATEGY,
+	   reserv.ORDERALLOCATIONSTRATEGY                              AS order_allocation_strategy,
 	   DATE(reserv.REQUESTEDDATE)                                  AS REQUESTED_DATE,
 	   reserv.source,
 	   DATE(reserv.LASTMODIFIEDDATE)                               AS LAST_MODIFIED_DATE
