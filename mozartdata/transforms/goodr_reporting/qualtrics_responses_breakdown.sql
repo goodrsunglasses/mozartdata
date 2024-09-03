@@ -1,5 +1,6 @@
 select
-        survey.survey_name
+        survey.survey_id_qualtrics
+        , survey.survey_name
         , respondent.email_address
         , respondent.ip_address
         , respondent.recorded_date
