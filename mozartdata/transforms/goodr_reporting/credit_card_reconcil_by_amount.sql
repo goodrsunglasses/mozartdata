@@ -1,48 +1,29 @@
-WITH
-  jpm_agg AS (
-    SELECT
-      transaction_id,
-      'JPM' AS bank,
-      account_given_name,
-      amount,
-      count(amount) over (
-        PARTITION BY
-          account_given_name,
-          amount
-      ) counter
-    FROM
-      google_sheets.jpmastercard_upload
-    ORDER BY
-      amount
-  ),
-  amex_agg AS (
-    SELECT
-      reference,
-      'AMEX' AS bank,
-      card_member,
-      amount,
-      count(amount) over (
-        PARTITION BY
-          card_member,
-          amount
-      ) counter
-    FROM
-      google_sheets.amex_full_compare
-    ORDER BY
-      amount
-  ),
-  unique_amounts AS (
+per_amount_ns AS ( --
     SELECT
       *
     FROM
-      jpm_agg
+      s8.credit_card_reconciliation_transactions
     WHERE
-      counter = 1
-    UNION ALL
+      unique_amount_per_name_per_day = FALSE
+      AND unique_amount_per_name = TRUE
+  ),
+  per_amount_join AS (
     SELECT
-      *
+      map.reference,
+      map.source,
+      map.amount,
+      map.clean_card_member,
+      per_day_ns.transaction_number_ns,
+      per_day_ns.transaction_date,
+      per_day_ns.account_number,
+      per_day_ns.first_last
     FROM
-      amex_agg
+      fact.credit_card_merchant_map map
+      LEFT OUTER JOIN per_day_ns ON (
+        per_day_ns.bank = map.source
+        AND per_day_ns.net_amount = map.amount
+        AND upper(per_day_ns.first_last) = upper(map.clean_card_member)
+      )--Here you just join on when the names, and amounts are the same, theres a fair amount of time when 
     WHERE
-      counter = 1
-  )
+       map.unique_amount_per_name_per_day = FALSE
+      AND  map.unique_amount_per_name = TRUE
