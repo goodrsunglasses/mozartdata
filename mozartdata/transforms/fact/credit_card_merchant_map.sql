@@ -6,6 +6,27 @@ WITH
       card_member,
       DATE,
       amount,
+      CASE --The idea with these case whens is to make a boolean that tells us when ON THE BANK statement a transaction is unique in one of two ways, so we can direct join it to NS safely
+        WHEN (
+          count(amount) over (
+            PARTITION BY
+              card_member,
+              amount
+          )
+        ) > 1 THEN TRUE
+        ELSE FALSE
+      END AS unique_amount_per_name,
+      CASE
+        WHEN (
+          count(amount) over (
+            PARTITION BY
+              card_member,
+              amount,
+              DATE
+          )
+        ) > 1 THEN TRUE
+        ELSE FALSE
+      END AS unique_amount_per_name_per_day,
       'AMEX' AS source
     FROM
       google_sheets.amex_import
@@ -16,6 +37,27 @@ WITH
       account_given_name,
       post_date,
       amount,
+      CASE
+        WHEN (
+          count(amount) over (
+            PARTITION BY
+              account_given_name,
+              amount
+          )
+        ) > 1 THEN TRUE
+        ELSE FALSE
+      END AS unique_amount_per_name,
+      CASE
+        WHEN (
+          count(amount) over (
+            PARTITION BY
+              account_given_name,
+              amount,
+              post_DATE
+          )
+        ) > 1 THEN TRUE
+        ELSE FALSE
+      END AS unique_amount_per_name_per_day,
       'JPM' AS source
     FROM
       google_sheets.jpmastercard_upload
