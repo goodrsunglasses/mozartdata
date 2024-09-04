@@ -29,8 +29,14 @@ WITH
       map.unique_amount_per_name_per_day = TRUE
   )
 SELECT
-  *
+  per_day_join.*,
+  cardholder.difference AS aggregate_cardholder_diff
 FROM
   per_day_join
+  LEFT OUTER JOIN goodr_reporting.credit_reconcil_by_cardholder cardholder ON (
+    cardholder.bank = per_day_join.source
+    AND cardholder.statement_name_upper = upper(clean_card_member)
+  )
 WHERE
   transaction_number_ns IS NOT NULL
+  AND aggregate_cardholder_diff != 0 --Ok so the idea here is to cascade the logic, to not include the ones that could have been previously cleared via the first step found in the credit_reconcil_by_cardholder query
