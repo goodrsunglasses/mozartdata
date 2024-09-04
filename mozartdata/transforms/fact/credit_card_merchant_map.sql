@@ -13,8 +13,8 @@ WITH
               card_member,
               amount
           )
-        ) > 1 THEN TRUE
-        ELSE FALSE
+        ) > 1 THEN FALSE
+        ELSE TRUE
       END AS unique_amount_per_name,
       CASE
         WHEN (
@@ -24,8 +24,8 @@ WITH
               amount,
               DATE
           )
-        ) > 1 THEN TRUE
-        ELSE FALSE
+        ) > 1 THEN FALSE
+        ELSE TRUE
       END AS unique_amount_per_name_per_day,
       'AMEX' AS source
     FROM
@@ -44,8 +44,8 @@ WITH
               account_given_name,
               amount
           )
-        ) > 1 THEN TRUE
-        ELSE FALSE
+        ) > 1 THEN FALSE
+        ELSE TRUE
       END AS unique_amount_per_name,
       CASE
         WHEN (
@@ -55,8 +55,8 @@ WITH
               amount,
               post_DATE
           )
-        ) > 1 THEN TRUE
-        ELSE FALSE
+        )  > 1 THEN FALSE
+        ELSE TRUE
       END AS unique_amount_per_name_per_day,
       'JPM' AS source
     FROM
