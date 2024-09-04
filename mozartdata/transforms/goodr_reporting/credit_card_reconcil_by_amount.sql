@@ -9,3 +9,5 @@ WITH
     WHERE
       recon.transaction_number_ns IS NULL
   ),
+
+--to cont, check NS to make sure the amount is uniuqe per bank , then check the banks to make sure they are unique per bank then join them
