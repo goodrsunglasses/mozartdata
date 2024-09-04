@@ -23,7 +23,8 @@ WITH
         per_day_ns.bank = map.source
         AND per_day_ns.net_amount = map.amount
         AND upper(per_day_ns.first_last) = upper(map.clean_card_member)
-      )
+        AND map.date = per_day_ns.transaction_date
+      ) --Idea here is to basically join on when the banks are the same, the amounts are the sam, the names are the same and the days are the same, because boolean wise all these transactions from both ends are GUARANTEED to be unique per person per day.
     WHERE
       map.unique_amount_per_name_per_day = TRUE
   )
@@ -31,3 +32,5 @@ SELECT
   *
 FROM
   per_day_join
+WHERE
+  transaction_number_ns IS NOT NULL
