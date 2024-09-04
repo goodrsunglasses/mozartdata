@@ -15,17 +15,7 @@ SELECT
   emp.lastname,
   concat(firstname, ' ', lastname) AS first_last,
   line.cleared,
-  CASE --These case whens are basically the business logic that determines whether or not we can join a given NS transaction DIRECTLY to the bank transactions we import
-    WHEN (
-      count(altname) over (
-        PARTITION BY
-          net_amount,
-          altname
-      )
-    ) > 1 THEN FALSE
-    ELSE TRUE
-  END AS unique_amount_per_name,
-  CASE
+  CASE --This case whens is basically the business logic that determines whether or not we can join a given NS transaction DIRECTLY to the bank transactions we import
     WHEN (
       count(altname) over (
         PARTITION BY
