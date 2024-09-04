@@ -38,9 +38,9 @@ WITH
       clean_card_member AS statement_name_upper,
       first_last AS ns_name_upper,
       bank_agg.bank,
-      total_amount AS aggregate_amount_ns,
+      round(total_amount,2) AS aggregate_amount_ns,
       amount_sum AS aggregate_amount_statement,
-      
+      abs(aggregate_amount_statement)-abs(aggregate_amount_ns) as difference
     FROM
       bank_agg
       LEFT OUTER JOIN card_agg ON (
