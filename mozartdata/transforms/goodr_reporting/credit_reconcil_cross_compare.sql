@@ -7,6 +7,10 @@ WITH
       line.entity,
       line.expenseaccount,
       gl_tran.account_number,
+      CASE
+        WHEN gl_tran.account_number = '2020' THEN 'AMEX'
+        ELSE 'JPM'
+      END AS bank,
       gl_tran.net_amount,
       emp.altname,
       emp.firstname,
