@@ -55,7 +55,7 @@ WITH
               amount,
               post_DATE
           )
-        )  > 1 THEN FALSE
+        ) > 1 THEN FALSE
         ELSE TRUE
       END AS unique_amount_per_name_per_day,
       'JPM' AS source
@@ -140,6 +140,8 @@ SELECT
     WHEN card_member = 'ALLIE' THEN 'Allison Lefton'
     WHEN card_member = 'ROBERTO' THEN 'Rob Federic'
     WHEN card_member = 'LAUREN' THEN 'Lauren Larvejo'
+    WHEN card_member = 'DAN WEINSOFT' THEN 'Daniel Weinsoft'
+    WHEN card_member = 'MICHEAL EDDY' THEN 'Michael Eddy'
     ELSE card_member
   END AS clean_card_member
 FROM
