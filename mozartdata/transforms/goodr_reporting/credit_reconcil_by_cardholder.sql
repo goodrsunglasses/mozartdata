@@ -24,7 +24,7 @@ WITH
   ),
   bank_agg AS (
     SELECT
-      Upper(clean_card_member) AS clean_card_member --upper case to join to to the Netsuite transactions,
+      Upper(clean_card_member) AS clean_card_member, --upper case to join to to the Netsuite transactions,
       source AS bank,
       sum(amount) amount_sum
     FROM
@@ -35,10 +35,12 @@ WITH
   ),
   cardholder_compare AS ( --This is basically step one as of rn, you go ahead and compare the aggregations of a given cardholder's bank data to their NS data, meaning that when they match u can reconcile them.
     SELECT
-      first_last AS ns_name_upper,
       clean_card_member AS statement_name_upper,
+      first_last AS ns_name_upper,
       bank_agg.bank,
       total_amount AS aggregate_amount_ns,
+      amount_sum AS aggregate_amount_statement,
+      
     FROM
       bank_agg
       LEFT OUTER JOIN card_agg ON (
@@ -50,3 +52,4 @@ SELECT
   *
 FROM
   cardholder_compare
+where ns_name_upper is not null
