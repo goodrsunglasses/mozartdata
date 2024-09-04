@@ -17,6 +17,16 @@ WITH
       emp.lastname,
       concat(firstname, ' ', lastname) AS first_last,
       line.cleared,
+      CASE--These case whens are basically the business logic that determines whether or not we can join a given NS transaction DIRECTLY to the bank transactions we import
+        WHEN (
+          count(altname) over (
+            PARTITION BY
+              net_amount,
+              altname
+          )
+        ) > 1 THEN FALSE
+        ELSE TRUE
+      END AS unique_amount_per_name,
       CASE
         WHEN (
           count(altname) over (
@@ -27,7 +37,7 @@ WITH
           )
         ) > 1 THEN FALSE
         ELSE TRUE
-      END AS splay_counter
+      END AS unique_amount_per_name_per_day
     FROM
       netsuite.transactionline line
       LEFT OUTER JOIN fact.gl_transaction gl_tran ON (
