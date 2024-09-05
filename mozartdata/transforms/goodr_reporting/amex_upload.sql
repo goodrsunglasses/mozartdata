@@ -8,6 +8,7 @@ WITH
         WHEN upped LIKE 'SERATO%' THEN 'SERATO DJ PRO'
         WHEN upped LIKE 'SNAP%' THEN 'SNAP INC'
         WHEN upped LIKE 'TIKTOK%' THEN 'TIKTOK'
+        WHEN upped LIKE '%DIN TAI FUNG%' THEN 'DIN TAI FUNG'
         WHEN upped LIKE '%ELK MARKETING%' THEN 'ELK MARKETING'
         WHEN upped LIKE '%ADOBE%' THEN 'ADOBE'
         WHEN upped LIKE '%AMERICAN EXPRESS%' THEN 'AMERICAN EXPRESS'
@@ -68,6 +69,9 @@ WITH
         WHEN upped LIKE 'AUCTANE%' THEN 'SHIPSTATION'
         WHEN upped LIKE 'AMAZON.COM%' THEN 'Amazon.com-Ads'
         WHEN upped LIKE 'PAY.AMAZON.COM%' THEN 'AMAZON PAY'
+        WHEN upped LIKE 'CORPORATE FILINGS LLC%' THEN 'CORPORATE FILINGS LLC'
+        WHEN upped LIKE '%WISTIA%' THEN 'WISTIA'
+        WHEN upped LIKE '%CITYINGLEWO%' THEN 'City of Inglewood'
         ELSE NULL
       END AS clean_merchant,
       reference,
@@ -82,15 +86,25 @@ WITH
       clean_merchant
   )
 SELECT
-  reference,
+  concat(
+    'AMEX',
+    TO_VARCHAR(LAST_DAY(TO_DATE(DATE, 'MM/DD/YYYY'), 'MONTH'), 'MMDDYYYY')
+  ) || LPAD(
+    ROW_NUMBER() OVER (
+      ORDER BY
+        DATE
+    ),
+    3,
+    '0'
+  ) AS external_id,
   appears_on_your_statement_as,
-  clean_merchant,
+  clean_merchant as memo,
   DATE,
   amount,
   Vendor,
   GL,
   Internal,
-  Description,
+  Description line_memo,
   Department,
   Department_id,
 FROM
