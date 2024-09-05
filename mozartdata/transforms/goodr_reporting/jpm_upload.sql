@@ -1,7 +1,7 @@
 SELECT
   concat(
     'JPM',
-    TO_VARCHAR(TO_DATE(post_date, 'MM/DD/YYYY'), 'MMDDYYYY')
+    TO_VARCHAR(LAST_DAY(TO_DATE(post_date, 'MM/DD/YYYY'), 'MONTH'), 'MMDDYYYY')
   ) || LPAD(
     ROW_NUMBER() OVER (
       ORDER BY
@@ -10,7 +10,7 @@ SELECT
     3,
     '0'
   ) AS external_id,
-  merchant_name AS memo,
+  Vendor AS memo,
   post_date,
   amount,
   Vendor,
@@ -18,7 +18,7 @@ SELECT
   Internal,
   Account_Name,
   map.Department,
-  ID,
+  ID as Department_id,
   Line_Memo
 FROM
   google_sheets.jpmastercard_upload import
