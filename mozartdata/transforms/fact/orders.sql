@@ -212,7 +212,7 @@ SELECT
   aggregates.quantity_booked AS quantity_booked_ns,
   aggregates.quantity_sold,
   CASE WHEN aggregate_netsuite.channel NOT IN
-				('Key Account', 'Global', 'Prescription', 'Key Account CAN', 'Amazon Canada', 'Amazon Prime', 'Cabana',
+				('Key Account','Key Accounts', 'Global', 'Prescription', 'Key Account CAN', 'Amazon Canada', 'Amazon Prime', 'Cabana',
 				 'Amazon')
        THEN (COALESCE(fulfillment_info.total_QUANTITY_STORD, 0) + COALESCE(fulfillment_info.total_QUANTITY_SS, 0))
 		   ELSE aggregates.quantity_fulfilled END              AS quantity_fulfilled,--As per notes from our meeting, the idea is that on orders not in the channels, we dont want this column to show Netsuite IF information if its lacking from Stord/SS
