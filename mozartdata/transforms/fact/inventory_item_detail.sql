@@ -4,7 +4,7 @@ WITH netsuite_culmative
 		 AS (SELECT --the idea with this CTE is to create the culmative quantity after, and before a given inventory transaction, seperated for ease of comprehension
 					transaction_id_ns,
 					transaction_created_timestamp_pst,
-					tran_date,
+					transaction_date,
 					location_name,
 					transaction_number_ns,
 					sku,
