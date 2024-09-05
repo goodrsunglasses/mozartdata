@@ -9,7 +9,7 @@ FROM
   fact.order_line ol
   LEFT JOIN fact.customer_ns_map c on c.customer_id_ns = ol.customer_id_ns
 WHERE
-  ol.channel = 'Key Account'
+  ol.channel = 'Key Accounts'
   and record_type = 'itemfulfillment'
   and transaction_status_ns = 'Item Fulfillment : Shipped'
   and transaction_created_timestamp_pst >= DATEADD(DAY, -30, CURRENT_DATE)
