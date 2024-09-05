@@ -14,7 +14,7 @@ WITH netsuite_culmative
 							sku,
 							location_name
 						ORDER BY
-							tran_date,transaction_created_timestamp_pst ROWS BETWEEN UNBOUNDED PRECEDING --This is a bit weird, we're ordering by trandate first because it can be backdated-
+							transaction_date,transaction_created_timestamp_pst ROWS BETWEEN UNBOUNDED PRECEDING --This is a bit weird, we're ordering by transaction_date first because it can be backdated-
 						-- and is technically more correct, but its not hour/minute specific which can lead to disordering so we use the timestamp also
 							AND CURRENT ROW
 						)                AS culmative,
