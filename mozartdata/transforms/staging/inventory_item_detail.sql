@@ -16,7 +16,7 @@ SELECT -- the idea of this staging table is to select all the inventory affectin
 	   DATE(
 			   CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)
 	   )                                                         AS transaction_created_date_pst,
-	date(tran.trandate) as tran_date,
+	date(tran.trandate) as transaction_date,
 	   tran.recordtype                                           AS record_type,
 	   tran.tranid as transaction_number_ns,
 	   tranline.entity as customer_id_ns,
