@@ -6,6 +6,7 @@ SELECT
     WHEN name IN (
       'Specialty',
       'Key Account',
+      'Key Accounts', 
       'Global',
       'Key Account CAN',
       'Specialty CAN'
@@ -35,6 +36,7 @@ SELECT
     WHEN name IN (
       'Specialty',
       'Key Account',
+      'Key Accounts',
       'Key Account CAN',
       'Specialty CAN'
     ) THEN 'Wholesale'
