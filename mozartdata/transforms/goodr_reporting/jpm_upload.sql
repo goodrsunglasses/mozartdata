@@ -7,7 +7,7 @@ SELECT
       ORDER BY
         post_date
     ),
-    4,
+    3,
     '0'
   ) AS external_id,
   merchant_name AS memo,
