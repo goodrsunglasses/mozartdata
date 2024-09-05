@@ -1,6 +1,6 @@
 SELECT
-  transaction_id,
-  merchant_name statement_merchant,
+  concat('JPM',transaction_id)as external_id,
+  merchant_name as memo,
   post_date,
   amount,
   Vendor,
