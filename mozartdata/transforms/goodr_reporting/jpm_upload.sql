@@ -1,6 +1,16 @@
 SELECT
-  concat('JPM',transaction_id)as external_id,
-  merchant_name as memo,
+  concat(
+    'JPM',
+    TO_VARCHAR(TO_DATE(post_date, 'MM/DD/YYYY'), 'MMDDYYYY')
+  ) || LPAD(
+    ROW_NUMBER() OVER (
+      ORDER BY
+        post_date
+    ),
+    4,
+    '0'
+  ) AS external_id,
+  merchant_name AS memo,
   post_date,
   amount,
   Vendor,
