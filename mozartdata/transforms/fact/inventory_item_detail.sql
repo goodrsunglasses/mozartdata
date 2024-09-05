@@ -32,7 +32,7 @@ SELECT detail.transaction_id_ns,
 	   culmative AS quantity_after,
 	   detail.location_name,
 	   detail.TRANSACTION_CREATED_TIMESTAMP_PST,
-	   detail.tran_date
+	   detail.transaction_date
 FROM fact.NETSUITE_INVENTORY_ITEM_DETAIL detail
 		 LEFT OUTER JOIN netsuite_culmative culm ON (culm.TRANSACTION_ID_NS = detail.transaction_id_ns AND culm.sku =
 																										   detail.sku) --Double join because 1 transaction can and will impact inventory for multiple skus
