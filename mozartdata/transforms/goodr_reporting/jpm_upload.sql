@@ -1,25 +1,15 @@
 WITH
   cleaned_list AS (
     SELECT
-      CASE
-        WHEN merchant_name LIKE 'FACEBK%' THEN 'FACEBOOK'
-        WHEN merchant_name LIKE 'GOOGL%' THEN 'GOOGLE'
-        WHEN merchant_name LIKE 'SERATO%' THEN 'SERATO DJ PRO'
-        WHEN merchant_name LIKE 'SNAP%' THEN 'SNAP INC'
-        WHEN merchant_name LIKE 'TIKTOK%' THEN 'TIKTOK'
-        WHEN merchant_name LIKE '%DIN TAI FUNG%' THEN 'DIN TAI FUNG'
-        WHEN merchant_name LIKE 'USPS STAMPS%' THEN 'USA Postal Service'
-        ELSE merchant_name
-      END AS clean_merchant,
-      post_date,
       transaction_id,
-      amount
+      post_date,
+      merchant_name,
+      map.*
     FROM
-      google_sheets.jpmastercard_upload
+      google_sheets.jpmastercard_upload import
+      LEFT OUTER JOIN google_sheets.jpmc_mapping map ON map.statement_name = import.merchant_name
     WHERE
       account_given_name = 'JANE'
-    ORDER BY
-      clean_merchant
   )
 SELECT
   transaction_id,
