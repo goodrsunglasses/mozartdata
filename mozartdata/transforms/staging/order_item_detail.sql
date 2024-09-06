@@ -1,3 +1,5 @@
+-- CREATE OR REPLACE TABLE staging.order_item_detail
+--             COPY GRANTS  as
 WITH orphan_transactions as
 (
   SELECT distinct
@@ -95,7 +97,8 @@ SELECT
   tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference as warranty_order_id_ns,
   tran.entity as customer_id_ns,
-  tran.cseg7 as channel_id_ns
+  tran.cseg7 as channel_id_ns,
+  tranline.ratepercent as rate_percent
 FROM
   all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -163,7 +166,8 @@ GROUP BY
   tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference,
   tran.entity,
-  tran.cseg7
+  tran.cseg7,
+  rate_percent
   -- Shipping and Tax and Discount
 UNION ALL
 SELECT
@@ -208,7 +212,8 @@ SELECT
   tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference as warranty_order_id_ns,
   tran.entity as customer_id_ns,
-  tran.cseg7 as channel_id_ns
+  tran.cseg7 as channel_id_ns,
+  tranline.RATEPERCENT as rate_percent
 FROM
   all_transactions tran
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.transaction = tran.id
@@ -248,7 +253,8 @@ GROUP BY
   tran.SHIPPINGADDRESS,
   tran.custbodywarranty_reference,
   tran.entity,
-  tran.cseg7
+  tran.cseg7,
+  rate_percent
 ORDER BY
   transaction_id_ns asc
 

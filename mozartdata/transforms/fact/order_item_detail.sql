@@ -1,3 +1,5 @@
+-- CREATE OR REPLACE TABLE fact.order_item_detail
+-- 	COPY GRANTS AS
 with net_amount as
           (select gt.transaction_id_ns
                 , gt.item_id_ns
@@ -71,6 +73,7 @@ with net_amount as
         , cnm.tier
         , exceptions.exception_flag
         , c.name as channel
+   		, staging.rate_percent
    FROM dim.parent_transactions parents
           LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns
           LEFT OUTER JOIN exceptions.order_item_detail exceptions
