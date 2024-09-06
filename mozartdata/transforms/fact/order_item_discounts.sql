@@ -10,26 +10,47 @@ WITH parent_discounts AS (SELECT --Ok so this is one row per NS transaction sinc
 								 CASE WHEN rate_percent IS NOT NULL THEN TRUE ELSE FALSE END AS is_percent
 						  FROM fact.order_item_detail
 						  WHERE item_type = 'Discount'
-							AND is_parent
-							AND ORDER_ID_EDW IN ('G3346515', 'SG-91785')
-						  ORDER BY ORDER_ID_EDW),
+							AND is_parent),
 	 subtotal AS (SELECT --Apparently you need to calculate this manually so here we are lmao
-	                  order_id_edw,
+						 order_id_edw,
 						 SUM(rate) AS agg_subtotal
 				  FROM fact.ORDER_ITEM_DETAIL
 				  WHERE item_type NOT IN ('Discount', 'TaxItem', 'ShipItem')
 					AND IS_PARENT
 				  GROUP BY order_id_edw)
---      ,
--- 	 application AS (SELECT--First do the math for percentage based ones, then the flat ones
--- 	                     parent_discounts.order_id_edw,
--- 	                      parent_discounts.rate_percent
--- 					 FROM parent_discounts
--- 					 WHERE is_percent and item_type !='Discount'--According to Alex, discounts apply to EVERY line item except themselves obvs
--- 					 UNION ALL
--- 					 SELECT *
--- 					 FROM parent_discounts
--- 					 WHERE is_percent = FALSE)
+		,
+	 application AS (SELECT--First do the math for percentage based ones, then the flat ones
+						   parent_discounts.order_id_edw,
+						   subtotal.agg_subtotal                             AS order_subtotal,
+						   agg_subtotal * parent_discounts.rate_percent      AS flat_discount,
+						   detail.item_id_ns,
+						   detail.plain_name,
+						   detail.rate                                          item_rate,
+						   (item_rate / order_subtotal) * ABS(flat_discount) AS line_item_discount
+					 FROM parent_discounts
+							  LEFT OUTER JOIN subtotal ON subtotal.ORDER_ID_EDW = parent_discounts.ORDER_ID_EDW
+							  LEFT OUTER JOIN fact.ORDER_ITEM_DETAIL detail
+											  ON detail.ORDER_ID_EDW = parent_discounts.ORDER_ID_EDW
+					 WHERE is_percent
+					   AND IS_PARENT
+					   AND detail.item_type NOT IN ('Discount', 'TaxItem', 'ShipItem')
+					 UNION ALL
+					 SELECT parent_discounts.order_id_edw,
+							subtotal.agg_subtotal                             AS order_subtotal,
+							parent_discounts.rate                             AS flat_discount,
+							detail.item_id_ns,
+							detail.plain_name,
+							detail.rate                                          item_rate,
+							(item_rate / order_subtotal) * ABS(flat_discount) AS line_item_discount
+					 FROM parent_discounts
+							  LEFT OUTER JOIN subtotal ON subtotal.ORDER_ID_EDW = parent_discounts.ORDER_ID_EDW
+							  LEFT OUTER JOIN fact.ORDER_ITEM_DETAIL detail
+											  ON detail.ORDER_ID_EDW = parent_discounts.ORDER_ID_EDW
+					 WHERE is_percent = FALSE
+					   AND IS_PARENT
+					   AND detail.item_type NOT IN ('Discount', 'TaxItem', 'ShipItem'))
 SELECT *
-FROM subtotal
-WHERE ORDER_ID_EDW IN ('G3346515', 'SG-91785')
+FROM application
+WHERE ORDER_ID_EDW IN ('G3346515', 'SG-91785', '20096271', 'G2816404', 'G3069764', 'G3117529')
+
+ORDER BY order_id_edw
