@@ -34,6 +34,7 @@ WITH parent_discounts AS (SELECT --Ok so this is one row per NS transaction sinc
 					 WHERE is_percent
 					   AND IS_PARENT
 					   AND detail.item_type NOT IN ('Discount', 'TaxItem', 'ShipItem')
+					   AND agg_subtotal != 0
 					 UNION ALL
 					 SELECT parent_discounts.order_id_edw,
 							subtotal.agg_subtotal                             AS order_subtotal,
@@ -48,9 +49,8 @@ WITH parent_discounts AS (SELECT --Ok so this is one row per NS transaction sinc
 											  ON detail.ORDER_ID_EDW = parent_discounts.ORDER_ID_EDW
 					 WHERE is_percent = FALSE
 					   AND IS_PARENT
-					   AND detail.item_type NOT IN ('Discount', 'TaxItem', 'ShipItem'))
+					   AND detail.item_type NOT IN ('Discount', 'TaxItem', 'ShipItem')
+					   AND agg_subtotal != 0)
 SELECT *
 FROM application
-WHERE ORDER_ID_EDW IN ('G3346515', 'SG-91785', '20096271', 'G2816404', 'G3069764', 'G3117529')
-
 ORDER BY order_id_edw
