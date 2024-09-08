@@ -19,7 +19,7 @@ WITH
       END AS unique_amount_per_name_per_day,
       'AMEX' AS source
     FROM
-      google_sheets.amex_import
+      google_sheets.amex_full_compare
     UNION ALL
     SELECT
       transaction_id,
