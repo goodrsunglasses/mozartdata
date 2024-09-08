@@ -39,10 +39,27 @@ WITH
       ns_exclusion
     ORDER BY
       net_amount asc
+  ),
+  unique_bank AS (
+    SELECT
+      reference,
+      card_member,
+      amount,
+      source,
+      CASE
+        WHEN (
+          count(amount) over (
+            PARTITION BY
+              amount,
+              source
+          )
+        ) > 1 THEN FALSE
+        ELSE TRUE
+      END AS counter
+    FROM
+      bank_exclusion
   )
 SELECT
   *
 FROM
-  unique_ns
-WHERE
-  counter
+  unique_bank
