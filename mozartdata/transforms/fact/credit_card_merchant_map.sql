@@ -6,16 +6,6 @@ WITH
       card_member,
       DATE,
       amount,
-      CASE --The idea with these case whens is to make a boolean that tells us when ON THE BANK statement a transaction is unique in one of two ways, so we can direct join it to NS safely
-        WHEN (
-          count(amount) over (
-            PARTITION BY
-              card_member,
-              amount
-          )
-        ) > 1 THEN FALSE
-        ELSE TRUE
-      END AS unique_amount_per_name,
       CASE
         WHEN (
           count(amount) over (
@@ -37,16 +27,6 @@ WITH
       account_given_name,
       post_date,
       amount,
-      CASE
-        WHEN (
-          count(amount) over (
-            PARTITION BY
-              account_given_name,
-              amount
-          )
-        ) > 1 THEN FALSE
-        ELSE TRUE
-      END AS unique_amount_per_name,
       CASE
         WHEN (
           count(amount) over (
