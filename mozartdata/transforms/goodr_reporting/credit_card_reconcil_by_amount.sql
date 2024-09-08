@@ -22,11 +22,27 @@ WITH
   unique_ns AS (
     SELECT
       transaction,
+      transaction_number_ns,
+      bank,
+      first_last,
       net_amount,
-      case when (count(net_amount) over (partition by net_amount))>1 then false else true end as AS counter
+      CASE
+        WHEN (
+          count(net_amount) over (
+            PARTITION BY
+              net_amount
+          )
+        ) > 1 THEN FALSE
+        ELSE TRUE
+      END AS counter
     FROM
       ns_exclusion
     ORDER BY
       net_amount asc
   )
-select * from unique_ns where counter >1
+SELECT
+  *
+FROM
+  unique_ns
+WHERE
+  counter
