@@ -19,7 +19,7 @@ WITH
     WHERE
       recon.reference IS NULL
   ),
-  unique_ns AS (
+  unique_ns AS ( --This is where we determine what the unique amounts are PER BANK out of NS 
     SELECT
       transaction,
       transaction_number_ns,
@@ -30,17 +30,19 @@ WITH
         WHEN (
           count(net_amount) over (
             PARTITION BY
-              net_amount
+              net_amount,
+              bank
           )
         ) > 1 THEN FALSE
         ELSE TRUE
-      END AS counter
+      END AS ns_counter
     FROM
       ns_exclusion
+  where first_last not like '%JANE%'
     ORDER BY
       net_amount asc
   ),
-  unique_bank AS (
+  unique_bank AS ( --This is where we determine what the unique amounts are PER BANK out of the bank statements 
     SELECT
       reference,
       card_member,
@@ -58,8 +60,23 @@ WITH
       END AS counter
     FROM
       bank_exclusion
+  where card_member not like '%JANE%'
   )
 SELECT
-  *
+  unique_ns.transaction,
+  unique_ns.transaction_number_ns,
+  unique_ns.bank,
+  unique_ns.first_last,
+  unique_ns.net_amount,
+  unique_bank.reference,
+  unique_bank.card_member,
+  unique_bank.amount,
+  unique_bank.source
 FROM
-  unique_bank
+  unique_ns
+  LEFT OUTER JOIN unique_bank ON (unique_bank.amount = unique_ns.net_amount and unique_bank.source = unique_ns.bank)
+WHERE
+  counter
+  AND ns_counter 
+ORDER BY
+  amount
