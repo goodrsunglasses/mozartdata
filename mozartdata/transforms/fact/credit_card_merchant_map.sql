@@ -1,3 +1,4 @@
+--Ok so the idea with this table is to both union and stage both credit card statement's worth of data, and standardize a couple fields like card_member and such
 WITH
   joined AS (
     SELECT
@@ -115,7 +116,7 @@ SELECT
     WHEN upped LIKE 'CORPORATE FILINGS LLC%' THEN 'CORPORATE FILINGS LLC'
     ELSE NULL
   END AS clean_merchant,
-  CASE
+  CASE --This is to make it match to the Netsuite Statements names and make sure that they can subsequently join
     WHEN card_member LIKE 'JANE%' THEN 'JANE WU'
     WHEN card_member = 'ALLIE' THEN 'Allison Lefton'
     WHEN card_member = 'ROBERTO' THEN 'Rob Federic'
