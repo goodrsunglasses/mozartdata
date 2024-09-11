@@ -25,7 +25,7 @@ SELECT
   Department_id,
 FROM
   fact.credit_card_merchant_map statement
-  LEFT OUTER JOIN google_sheets.amex_mapping map ON upper(map.vendor) = upper(statement.clean_merchant)
+  LEFT OUTER JOIN google_sheets.amex_ns_vendor_map map ON upper(map.vendor) = upper(statement.clean_merchant)
 WHERE
   source = 'AMEX'
   AND card_member = 'JANE WU'
