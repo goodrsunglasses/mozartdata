@@ -1,27 +1,34 @@
 SELECT
   concat(
     'JPM',
-    TO_VARCHAR(LAST_DAY(TO_DATE(post_date, 'MM/DD/YYYY'), 'MONTH'), 'MMDDYYYY')
+    TO_VARCHAR(
+      LAST_DAY(TO_DATE(DATE, 'MM/DD/YYYY'), 'MONTH'),
+      'MMDDYYYY'
+    )
   ) || LPAD(
     ROW_NUMBER() OVER (
       ORDER BY
-        post_date
+        DATE
     ),
     3,
     '0'
   ) AS external_id,
-  Vendor AS memo,
-  post_date,
+  appears_on_your_statement_as,
+  clean_merchant AS memo,
+  DATE,
   amount,
-  Vendor,
   GL,
   Internal,
   Account_Name,
   map.Department,
-  ID as Department_id,
+  ID AS Department_id,
   Line_Memo
 FROM
-  google_sheets.jpmastercard_upload import
-  LEFT OUTER JOIN google_sheets.jpmc_mapping map ON map.statement_name = import.merchant_name
+  fact.credit_card_merchant_map statement
+  LEFT OUTER JOIN google_sheets.jpm_ns_vendor_map map ON map.statmement_name = import.merchant_name
 WHERE
-  account_given_name = 'JANE'
+  card_member = 'JANE'
+  AND source = 'JPM'
+
+
+select * from google_sheets.jpm_ns_vendor_map
