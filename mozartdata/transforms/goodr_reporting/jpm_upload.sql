@@ -29,8 +29,8 @@ FROM
 WHERE
   card_member = 'JANE'
   AND source = 'JPM'
-and map.vendor is not null
-union all 
+  AND map.vendor IS NOT NULL
+UNION ALL
 SELECT
   concat(
     'JPM',
@@ -47,7 +47,7 @@ SELECT
     '0'
   ) AS external_id,
   appears_on_your_statement_as,
-  clean_merchant AS memo,
+  vendor AS memo,
   DATE,
   amount,
   GL,
@@ -62,4 +62,4 @@ FROM
 WHERE
   card_member = 'JANE'
   AND source = 'JPM'
-and  statement.clean_merchant is null
+  AND statement.clean_merchant IS NULL
