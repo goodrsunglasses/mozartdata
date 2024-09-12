@@ -1,5 +1,3 @@
--- CREATE OR REPLACE TABLE fact.inventory_location
---             COPY GRANTS  as
 SELECT sku,
 	   display_name,
 	   LOCATION_NAME,
