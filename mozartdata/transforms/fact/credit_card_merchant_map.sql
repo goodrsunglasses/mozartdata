@@ -42,10 +42,11 @@ WITH
       'JPM' AS source
     FROM
       google_sheets.jpmastercard_upload
-  )
-SELECT
-  joined.*,
-  Upper(appears_on_your_statement_as) upped,
+  ),
+  first_map AS (
+    SELECT
+      joined.*,
+      Upper(appears_on_your_statement_as) upped,
       CASE
         WHEN upped LIKE 'FACEBK%' THEN 'FACEBOOK'
         WHEN upped LIKE 'GOOGL%' THEN 'GOOGLE'
@@ -118,14 +119,32 @@ SELECT
         WHEN upped LIKE '%CITYINGLEWO%' THEN 'City of Inglewood'
         ELSE NULL
       END AS clean_merchant,
-  CASE --This is to make it match to the Netsuite Statements names and make sure that they can subsequently join
-    WHEN card_member LIKE 'JANE%' THEN 'JANE WU'
-    WHEN card_member = 'ALLIE' THEN 'Allison Lefton'
-    WHEN card_member = 'ROBERTO' THEN 'Rob Federic'
-    WHEN card_member = 'LAUREN' THEN 'Lauren Larvejo'
-    WHEN card_member = 'DAN WEINSOFT' THEN 'Daniel Weinsoft'
-    WHEN card_member = 'MICHEAL EDDY' THEN 'Michael Eddy'
-    ELSE card_member
-  END AS clean_card_member
+      CASE --This is to make it match to the Netsuite Statements names and make sure that they can subsequently join
+        WHEN card_member LIKE 'JANE%' THEN 'JANE WU'
+        WHEN card_member = 'ALLIE' THEN 'Allison Lefton'
+        WHEN card_member = 'ROBERTO' THEN 'Rob Federic'
+        WHEN card_member = 'LAUREN' THEN 'Lauren Larvejo'
+        WHEN card_member = 'DAN WEINSOFT' THEN 'Daniel Weinsoft'
+        WHEN card_member = 'MICHEAL EDDY' THEN 'Michael Eddy'
+        ELSE card_member
+      END AS clean_card_member
+    FROM
+      joined
+  )
+SELECT
+  first_map.reference,
+  first_map.appears_on_your_statement_as,
+  first_map.card_member,
+  first_map.date,
+  first_map.amount,
+  first_map.unique_amount_per_name_per_day,
+  first_map.source,
+  first_map.upped,
+  coalesce(first_map.clean_merchant,ammap.vendor,jpmmap.vendor) as clean_merchant,
+  first_map.clean_card_member
 FROM
-  joined
+  first_map
+  LEFT OUTER JOIN google_sheets.amex_ns_vendor_map ammap ON upper(ammap.statement_name) = upper(first_map.appears_on_your_statement_as)
+  AND first_map.source = 'AMEX'
+LEFT OUTER JOIN google_sheets.jpm_ns_vendor_map jpmmap ON upper(jpmmap.statement_name) = upper(first_map.appears_on_your_statement_as)
+  AND first_map.source = 'JPM'
