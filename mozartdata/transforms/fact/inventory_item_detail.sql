@@ -1,5 +1,3 @@
---CREATE OR REPLACE TABLE fact.inventory_item_detail
---COPY GRANTS  as
 WITH netsuite_culmative
 		 AS (SELECT --the idea with this CTE is to create the culmative quantity after, and before a given inventory transaction, seperated for ease of comprehension
 					transaction_id_ns,
