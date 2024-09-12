@@ -1,3 +1,4 @@
+--This one is not a union because I didn't get to editing it until after I added mapping join logic to fact.credit_card_merchant.
 SELECT
   concat(
     'AMEX',
