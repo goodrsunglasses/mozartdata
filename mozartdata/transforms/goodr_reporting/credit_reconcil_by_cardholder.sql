@@ -1,6 +1,16 @@
 WITH
-  card_agg AS ( --This one is to attempt to aggregate the totals by cardholder to eliminate any easy ones
+  dates AS (
     SELECT
+      source,
+      max(DATE) date_max,
+      min(DATE) date_min
+    FROM
+      fact.credit_card_merchant_map
+    GROUP BY
+      source
+  ),
+  card_agg AS ( --This one is to attempt to aggregate the totals by cardholder to eliminate any easy ones
+    SELECT DISTINCT
       entity,
       altname,
       firstname,
@@ -8,19 +18,21 @@ WITH
       upper(first_last) AS first_last, --Upper it for later joining to the bank statements
       account_number,
       bank,
-      sum(net_amount) total_amount
+      sum(
+        CASE
+          WHEN transaction_date BETWEEN date_min AND date_max  THEN net_amount
+          ELSE 0
+        END
+      ) over (
+        PARTITION BY
+          altname,
+          bank
+      ) AS total_amount
     FROM
-      s8.credit_card_reconciliation_transactions
+      s8.credit_card_reconciliation_transactions tran
+      LEFT OUTER JOIN dates ON dates.source = tran.bank
     WHERE
       firstname IS NOT NULL
-    GROUP BY
-      altname,
-      first_last,
-      entity,
-      firstname,
-      lastname,
-      account_number,
-      bank
   ),
   bank_agg AS (
     SELECT
@@ -38,9 +50,9 @@ WITH
       clean_card_member AS statement_name_upper,
       first_last AS ns_name_upper,
       bank_agg.bank,
-      round(total_amount,2) AS aggregate_amount_ns,
+      round(total_amount, 2) AS aggregate_amount_ns,
       amount_sum AS aggregate_amount_statement,
-      abs(aggregate_amount_statement)-abs(aggregate_amount_ns) as difference
+      abs(aggregate_amount_statement) - abs(aggregate_amount_ns) AS difference
     FROM
       bank_agg
       LEFT OUTER JOIN card_agg ON (
@@ -52,4 +64,5 @@ SELECT
   *
 FROM
   cardholder_compare
-where ns_name_upper is not null
+WHERE
+  ns_name_upper IS NOT NULL
