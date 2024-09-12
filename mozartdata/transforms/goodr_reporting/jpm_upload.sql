@@ -1,3 +1,5 @@
+--This one is a union due to the fact that at one point I didn't have logic in fact.credit_card_merchants to catch and attempt to join the mapping data to the statement data after it had been adjusted
+--However now, once the mapping is updated, it will be handled in fact.credit_card_merchant_map instead of needing to be handled in the uploads
 WITH
   unioned AS (
     SELECT
