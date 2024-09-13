@@ -95,7 +95,7 @@ WITH
       distinct_rt rt
     left join
       fact.gl_transaction gt
-      on rt.order_id_ns = gt.order_id_ns
+      on rt.order_id_edw = gt.order_id_edw
     left join
       dim.accounting_period ap
       on gt.posting_period = ap.posting_period
@@ -118,7 +118,7 @@ WITH
       distinct_rt rt
     left join
       fact.gl_transaction gt
-      on rt.order_id_ns = gt.order_id_ns
+      on rt.order_id_edw = gt.order_id_edw
     left join
       dim.accounting_period ap
       on gt.posting_period = ap.posting_period
@@ -127,7 +127,8 @@ WITH
     and gt.account_number = 5000
     and gt.posting_flag
     group by all
-  ),
+  )
+ ,
 first_if as
 (
   select
