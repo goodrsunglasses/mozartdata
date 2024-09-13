@@ -30,7 +30,7 @@ WITH
       WHERE
           gt.account_number like '4%'
       AND gt.posting_flag = TRUE
-      AND gt.posting_period = 'Jul 2024'
+      AND gt.posting_period = 'Jul 2023'
       GROUP BY ALL
       )
 , cs_inv as
@@ -127,8 +127,19 @@ WITH
     and gt.account_number = 5000
     and gt.posting_flag
     group by all
-  )
- ,
+  ),
+order_status as
+(
+  SELECT distinct
+    rt.order_id_edw
+  , ol.transaction_status_ns as order_status
+  FROM
+    revenue_transactions rt
+  left join
+    fact.order_line ol
+  on rt.order_id_edw = ol.order_id_edw
+  and ol.record_type = 'salesorder'
+),
 first_if as
 (
   select
@@ -188,6 +199,7 @@ select
 SELECT
   rt.order_id_edw
 , rt.order_id_ns
+, os.order_status
 , rt.channel
 , rt.transaction_id_ns
 , rt.transaction_number_ns
@@ -206,23 +218,27 @@ SELECT
 , fr.ref_amount first_refund_amount
 , sr.posting_period second_refund_posting_period
 , sr.ref_amount second_refund_amount
+-- sum(net_amount)
 FROM
   revenue_transactions rt
 left join
   first_ref fr
-  on rt.order_id_ns = fr.order_id_ns
+  on rt.order_id_edw = fr.order_id_edw
 left join
   second_ref sr
-  on rt.order_id_ns = sr.order_id_ns
+  on rt.order_id_edw = sr.order_id_edw
 left join
   first_if fif
-  on rt.order_id_ns = fif.order_id_ns
+  on rt.order_id_edw = fif.order_id_edw
 left join
   second_if sif
-  on rt.order_id_ns = sif.order_id_ns
+  on rt.order_id_edw = sif.order_id_edw
 left join
   third_if tif
-  on rt.order_id_ns = tif.order_id_ns
+  on rt.order_id_edw = tif.order_id_edw
 left join
   cs_cogs cc
-  on rt.order_id_ns = cc.order_id_ns
+  on rt.order_id_edw = cc.order_id_edw
+left join
+  order_status os
+  on rt.order_id_edw = os.order_id_edw
