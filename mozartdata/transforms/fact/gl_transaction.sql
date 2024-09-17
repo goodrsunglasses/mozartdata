@@ -56,6 +56,7 @@ use createdate converted instead of trandate
     , tl.department as department_id_ns
     , d.name as department
     , tran.memo as memo
+    , tl.memo as line_memo
     , case when tl.cleared = 'T' then true else false end as cleared_flag
     , date(tl.cleareddate) AS cleared_date
     from
