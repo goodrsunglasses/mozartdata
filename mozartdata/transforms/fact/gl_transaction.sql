@@ -57,8 +57,10 @@ use createdate converted instead of trandate
     , d.name as department
     , tran.memo as memo
     , tl.memo as line_memo
+    , c.fullname as line_class
     , case when tl.cleared = 'T' then true else false end as cleared_flag
     , date(tl.cleareddate) AS cleared_date
+    , tran.custbody_boomi_orderid as order_id_shopify
     from
       netsuite.transactionaccountingline tal
     inner join
@@ -89,6 +91,8 @@ use createdate converted instead of trandate
     left join
       fact.customer_ns_map cnm
       on tran.entity = cnm.customer_id_ns
+    left join netsuite.classification c
+      on c.id = tl.class
     where
         date(tran.trandate) >= '2022-01-01' --limit the row count
     and (tran._fivetran_deleted = false or tran._fivetran_deleted is null)
@@ -119,5 +123,8 @@ use createdate converted instead of trandate
     , tl.item
     , d.name
     , tran.memo
+    , tl.memo
+    , c.fullname
     , tl.cleared
     , tl.cleareddate
+    , tran.custbody_boomi_orderid
