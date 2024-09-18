@@ -12,7 +12,7 @@ SELECT
   t.channel,
   t.memo,
   t.line_memo,
-  t.line_memo,
+  t.line_class,
   a.account_display_name
 FROM
   fact.gl_transaction t
