@@ -11,6 +11,8 @@ SELECT
   t.budget_category,
   t.channel,
   t.memo,
+  t.line_memo,
+  t.line_memo,
   a.account_display_name
 FROM
   fact.gl_transaction t
