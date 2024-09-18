@@ -10,6 +10,7 @@ SELECT
   t.department,
   t.budget_category,
   t.channel,
+  t.memo,
   a.account_display_name,
   t.line_memo,
   t.line_class,
