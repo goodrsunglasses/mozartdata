@@ -16,9 +16,7 @@ WITH
           ON il.sku = p.sku
       WHERE
         p.family = 'INLINE'
-      AND p.stage = 'ACTIVE'
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          AND p.merchandise_department = 'SUNGLASSES'
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      AND DATE_TRUNC(MONTH, snapshot_date) < DATE_TRUNC(MONTH, CURRENT_DATE)
+      AND p.stage = 'ACTIVE'                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         AND DATE_TRUNC(MONTH, snapshot_date) < DATE_TRUNC(MONTH, CURRENT_DATE)
       ORDER BY
         sku, snapshot_date ASC
       )
@@ -62,18 +60,33 @@ WITH
 , avg_sales        AS
     (
       SELECT
-        sold_month
-      , store
-      , sku
-      , display_name
+        il.inventory_month
+      , il.snapshot_date
+      , il.store
+      , il.sku
+      , il.display_name
+      , il.starting_quantity
+      , il.oos_flag
       , AVG(ds.quantity_sold) AS avg_sales
       FROM
+        inventory_levels il
+      LEFT JOIN
         daily_sales ds
+        ON ds.sold_date between dateadd(days,-30,il.snapshot_date) and il.snapshot_date
+          AND il.sku = ds.sku
+          AND il.store = CASE
+                           WHEN ds.store = 'Canada D2C' THEN 'Goodr.ca'
+                           WHEN ds.store = 'Specialty Canada' THEN 'Specialty CAN'
+                           ELSE ds.store END
+          AND ds.quantity_sold >0
       GROUP BY
-        sold_month
-      , store
-      , sku
-      , display_name
+        il.inventory_month
+      , il.snapshot_date
+      , il.store
+      , il.sku
+      , il.display_name
+      , il.starting_quantity
+      , il.oos_flag
       )
 , final            AS
     (
@@ -99,17 +112,14 @@ WITH
         inventory_levels il
         LEFT JOIN
           avg_sales a
-          ON il.inventory_month = a.sold_month
+          ON il.snapshot_date = a.snapshot_date
             AND il.sku = a.sku
-            AND il.store = CASE
-                             WHEN a.store = 'Canada D2C' THEN 'Goodr.ca'
-                             WHEN a.store = 'Specialty Canada' THEN 'Specialty CAN'
-                             ELSE a.store END
+            AND il.store = a.store
         LEFT JOIN
           total_quantity tq
           ON il.snapshot_date = tq.snapshot_date
             AND il.sku = tq.sku
-      ) --select * from inventory_levels where
+      )
 SELECT
   inventory_month
 , store
