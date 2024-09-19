@@ -243,5 +243,6 @@ FROM
         ON i.id = agg.parentitem
     LEFT JOIN stord.stord_products_8589936822                      stord
         ON stord.sku = prod_inv.sku
-    LEFT JOIN shipstation_portable.shipstation_products_8589936627 shipstation
+    LEFT JOIN staging.shipstation_product shipstation
         ON shipstation.sku = prod_inv.sku
+        AND shipstation.primary_item_id_flag = true
