@@ -150,7 +150,7 @@ SELECT DISTINCT
   , prod_inv.inventory_item_id_goodrwill_shopify
   , prod_inv.inventory_item_id_d2c_can_shopify
   , prod_inv.inventory_item_id_b2b_can_shopify
-  , shipstation.productid                            AS item_id_shipstation
+  , shipstation.item_id_shipstation                  AS item_id_shipstation
   , i.displayname                                    AS display_name
   , i.itemtype                                       AS item_type
   , i.custitem5                                      AS collection
