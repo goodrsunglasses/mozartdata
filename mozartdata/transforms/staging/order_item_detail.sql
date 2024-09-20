@@ -70,7 +70,7 @@ SELECT
       'NonInvtPart',
       'Payment',
       'Discount'
-    ) THEN tranline.item
+    ) THEN tranline.itemid
   END AS product_id_edw,
   tranline.item AS item_id_ns,
   date(tran.trandate) as transaction_date,
@@ -178,7 +178,7 @@ SELECT
       'NonInvtPart',
       'Payment',
       'Discount'
-    ) THEN tranline.item
+    ) THEN tranline.itemid
   END AS product_id_edw,
   tranline.item AS item_id_ns,
   date(tran.trandate) as transaction_date,

@@ -16,7 +16,7 @@ WITH
                            stord.STORD_PRODUCTS_8589936822
                        UNION ALL
                        SELECT
-                           itemid
+                           itemid as sku
                        FROM
                            netsuite.item
                        UNION ALL
@@ -132,12 +132,13 @@ WITH
                                 'Assembly',
                                 'OthCharge',
                                 'NonInvtPart',
-                                'Payment'
+                                'Payment',
+                                'Discount'
                        )
            )
 SELECT DISTINCT
     prod_inv.sku
-  , i.id                                             AS product_id_edw
+  , prod_inv.sku                                     AS product_id_edw
   , i.id                                             AS item_id_ns
   , stord.id                                         AS item_id_stord
   , prod_inv.product_id_d2c_shopify
@@ -208,8 +209,8 @@ SELECT DISTINCT
   , ga.account_number
   , ga.account_display_name
 FROM
-    products_and_invty_ids_cte                                     prod_inv
-    LEFT OUTER JOIN actual_ns_products                             i
+    products_and_invty_ids_cte                                    prod_inv
+    LEFT OUTER JOIN actual_ns_products                            i
         ON i.itemid = prod_inv.sku
     LEFT OUTER JOIN dim.gl_account                                 ga
         ON i.incomeaccount = ga.account_id_ns

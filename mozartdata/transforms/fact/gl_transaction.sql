@@ -50,6 +50,7 @@ use createdate converted instead of trandate
       end,0)) as net_amount
     , tl.createdfrom as parent_transaction_id_ns
     , tl.item as item_id_ns
+    , p.product_id_edw
     , tran.entity as customer_id_ns
     , cnm.customer_id_edw
     , cnm.tier
@@ -91,8 +92,12 @@ use createdate converted instead of trandate
     left join
       fact.customer_ns_map cnm
       on tran.entity = cnm.customer_id_ns
-    left join netsuite.classification c
+    left join
+      netsuite.classification c
       on c.id = tl.class
+    left join
+      dim.product p
+      on p.item_id_ns = tl.item
     where
         date(tran.trandate) >= '2022-01-01' --limit the row count
     and (tran._fivetran_deleted = false or tran._fivetran_deleted is null)
@@ -121,6 +126,7 @@ use createdate converted instead of trandate
     , cnm.tier
     , tl.department
     , tl.item
+    , p.product_id_edw
     , d.name
     , tran.memo
     , tl.memo

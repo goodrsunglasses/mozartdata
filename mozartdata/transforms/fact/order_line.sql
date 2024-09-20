@@ -68,7 +68,7 @@ SELECT DISTINCT
       item_detail.order_id_edw,
       item_detail.transaction_id_ns
     ORDER BY
-      item_detail.product_id_edw
+      item_detail.item_id_ns
   ) location
 FROM
   fact.order_item_detail item_detail
