@@ -26,8 +26,9 @@ WITH
         il.inventory_month
       , il.snapshot_date
       , il.sku
-      , MAX(il.starting_quantity) AS                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    max_quantity
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        , SUM(CASE WHEN il.store = 'Goodrwill' THEN il.starting_quantity ELSE 0 END) AS goodrwill_max_quantity
+      , MAX(il.starting_quantity) AS max_quantity
+      , MAX(CASE WHEN il.store != 'Goodrwill' THEN il.starting_quantity ELSE 0 END) AS no_goodrwill_max_quantity
+      , SUM(CASE WHEN il.store = 'Goodrwill' THEN il.starting_quantity ELSE 0 END) AS goodrwill_max_quantity
       FROM
         inventory_levels il
       GROUP BY
@@ -103,6 +104,12 @@ WITH
           WHEN tq.max_quantity >= il.oos_flag * a.avg_sales AND il.oos_flag = 1 THEN il.oos_flag * a.avg_sales
           ELSE 0 END              AS quantity_avoidable_missed_sale
       , CASE
+          WHEN tq.no_goodrwill_max_quantity >= il.oos_flag * a.avg_sales AND il.oos_flag = 1 THEN 1
+          ELSE 0 END              AS avoidable_missed_sale_flag_no_goodrwill
+      , CASE
+          WHEN tq.no_goodrwill_max_quantity >= il.oos_flag * a.avg_sales AND il.oos_flag = 1 THEN il.oos_flag * a.avg_sales
+          ELSE 0 END              AS quantity_avoidable_missed_sale_no_goodrwill
+      , CASE
           WHEN tq.goodrwill_max_quantity >= il.oos_flag * a.avg_sales AND il.oos_flag = 1 THEN 1
           ELSE 0 END              AS goodrwill_avoidable_missed_sale_flag
       , CASE
@@ -127,10 +134,12 @@ SELECT
 , display_name
 , SUM(oos_flag)                                 AS days_oos
 , COALESCE(SUM(quantity_missed_sales), 0)       AS missed_sales
-, SUM(avoidable_missed_sale_flag)               AS days_avoidable_missed_sales
-, SUM(goodrwill_avoidable_missed_sale_flag)     AS days_avoidable_missed_sales_goodrwill
-, SUM(quantity_avoidable_missed_sale)           AS quantity_avoidable_missed_sale
-, SUM(quantity_goodrwill_avoidable_missed_sale) AS quantity_goodrwill_avoidable_missed_sale
+, SUM(avoidable_missed_sale_flag)               AS days_avoidable_missed_sales_all_channels
+, SUM(avoidable_missed_sale_flag_no_goodrwill)  AS days_avoidable_missed_sales_no_goodrwill
+, SUM(goodrwill_avoidable_missed_sale_flag)     AS days_avoidable_missed_sales_goodrwill_only
+, SUM(quantity_avoidable_missed_sale)           AS quantity_avoidable_missed_sale_all_channels
+, SUM(quantity_avoidable_missed_sale_no_goodrwill)  AS quantity_avoidable_missed_sale_no_goodrwill
+, SUM(quantity_goodrwill_avoidable_missed_sale) AS quantity_avoidable_missed_sale_goodrwill_only
 FROM
   final
 WHERE
