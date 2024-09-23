@@ -7,6 +7,8 @@ WITH
       card_member,
       DATE,
       amount,
+      min_date AS date_min,
+      max_date AS date_max,
       CASE
         WHEN (
           count(amount) over (
@@ -28,6 +30,8 @@ WITH
       account_given_name,
       post_date,
       amount,
+      NULL AS date_min,
+      NULL AS date_max,
       CASE
         WHEN (
           count(amount) over (
@@ -140,11 +144,17 @@ SELECT
   first_map.unique_amount_per_name_per_day,
   first_map.source,
   first_map.upped,
-  coalesce(first_map.clean_merchant,ammap.vendor,jpmmap.vendor) as clean_merchant,
-  first_map.clean_card_member
+  coalesce(
+    first_map.clean_merchant,
+    ammap.vendor,
+    jpmmap.vendor
+  ) AS clean_merchant,
+  first_map.clean_card_member,
+  date_min,
+  date_max
 FROM
   first_map
   LEFT OUTER JOIN google_sheets.amex_ns_vendor_map ammap ON upper(ammap.statement_name) = upper(first_map.appears_on_your_statement_as)
   AND first_map.source = 'AMEX'
-LEFT OUTER JOIN google_sheets.jpm_ns_vendor_map jpmmap ON upper(jpmmap.statement_name) = upper(first_map.appears_on_your_statement_as)
+  LEFT OUTER JOIN google_sheets.jpm_ns_vendor_map jpmmap ON upper(jpmmap.statement_name) = upper(first_map.appears_on_your_statement_as)
   AND first_map.source = 'JPM'
