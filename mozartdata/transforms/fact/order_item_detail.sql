@@ -1,5 +1,3 @@
--- CREATE OR REPLACE TABLE fact.order_item_detail
--- 	COPY GRANTS AS
 with net_amount as
           (select gt.transaction_id_ns
                 , gt.item_id_ns
