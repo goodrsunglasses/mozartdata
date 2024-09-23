@@ -1,5 +1,3 @@
--- CREATE OR REPLACE TABLE staging.order_item_detail
---             COPY GRANTS  as
 WITH orphan_transactions as
 (
   SELECT distinct
