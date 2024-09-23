@@ -29,6 +29,7 @@ SELECT location_name,
 				   transaction_created_date_pst DESC
 			   ) = 1 THEN TRUE
 		   ELSE FALSE
-		   END AS is_most_recent
+		   END AS is_most_recent,
+       md5(concat(location_name,transaction_created_date_pst,sku)) as inventory_to_date_id
 FROM grouped_data
 ORDER BY transaction_created_date_pst DESC
