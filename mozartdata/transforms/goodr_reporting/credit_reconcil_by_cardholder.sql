@@ -2,8 +2,8 @@ WITH
   dates AS (
     SELECT
       source,
-      max(DATE) date_max,
-      min(DATE) date_min
+      max(date_min) AS date_min,
+      min(date_max) AS date_max
     FROM
       fact.credit_card_merchant_map
     GROUP BY
