@@ -1,5 +1,3 @@
---CREATE OR REPLACE TABLE fact.inventory_item_detail
---COPY GRANTS  as
 WITH netsuite_culmative
 		 AS (SELECT --the idea with this CTE is to create the culmative quantity after, and before a given inventory transaction, seperated for ease of comprehension
 					transaction_id_ns,
@@ -32,7 +30,8 @@ SELECT detail.transaction_id_ns,
 	   culmative AS quantity_after,
 	   detail.location_name,
 	   detail.TRANSACTION_CREATED_TIMESTAMP_PST,
-	   detail.transaction_date
+	   detail.transaction_date,
+       md5(concat(detail.transaction_id_ns,'_',detail.sku)) as inventory_item_detail_id
 FROM fact.NETSUITE_INVENTORY_ITEM_DETAIL detail
 		 LEFT OUTER JOIN netsuite_culmative culm ON (culm.TRANSACTION_ID_NS = detail.transaction_id_ns AND culm.sku =
 																										   detail.sku) --Double join because 1 transaction can and will impact inventory for multiple skus
@@ -49,5 +48,6 @@ SELECT detail.ADJUSTMENT_SEQUENCE,
 	   detail.UPDATED_QUANTITY,
 	   detail.LOCATION_NAME_STORD,
 	   ADJUSTED_TIMESTAMP,
-	   adjusted_date
+	   adjusted_date,
+       md5(concat(ADJUSTMENT_SEQUENCE,'_',detail.sku)) as inventory_item_detail_id
 FROM fact.STORD_INVENTORY_ITEM_DETAIL detail

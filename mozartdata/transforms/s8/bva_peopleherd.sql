@@ -11,7 +11,9 @@ SELECT
   t.budget_category,
   t.channel,
   t.memo,
-  a.account_display_name
+  a.account_display_name,
+  t.line_memo,
+  t.line_class,
 FROM
   fact.gl_transaction t
   left join dim.gl_account a on a.account_id_edw = t.account_id_edw
