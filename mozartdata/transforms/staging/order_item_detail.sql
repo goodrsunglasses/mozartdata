@@ -165,7 +165,7 @@ GROUP BY
   tran.custbodywarranty_reference,
   tran.entity,
   tran.cseg7,
-  rate_percent
+  tranline.RATEPERCENT
   -- Shipping and Tax and Discount
 UNION ALL
 SELECT
@@ -252,7 +252,7 @@ GROUP BY
   tran.custbodywarranty_reference,
   tran.entity,
   tran.cseg7,
-  rate_percent
+ tranline.RATEPERCENT
 ORDER BY
   transaction_id_ns asc
 
