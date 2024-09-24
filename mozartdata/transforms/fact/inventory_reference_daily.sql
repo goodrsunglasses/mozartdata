@@ -4,7 +4,7 @@ with
                                 sku
                               , display_name
                               , snapshot_date
-                              , lower(location_name) || ' - shopify atp' as channel
+                              , lower(location_name) || ' - shopify inv' as channel
                               , quantity
                             from
                                 fact.inventory_location
@@ -35,7 +35,7 @@ netsuite_locations as (
     sku
     , display_name
     , snapshot_date
-    , lower(location_name) || ' - netsuite inventory' as location
+    , lower(location_name) || ' - netsuite inv' as location
     , quantity
   from
     fact.inventory_location
@@ -44,6 +44,11 @@ netsuite_locations as (
     and display_name is not null
     and lower(display_name) not like '%pre-pack%'
     and lower(display_name) not like '%pre pack%'
+    and lower(location_name) != 'hq dc - goodrglobal - do not use'
+    and lower(location_name) != 'hq damaged'
+    and lower(location_name) != 'hq dc - rei - do not use'
+    and lower(location_name) != 'pyramid'
+
 ),
 
 netsuite_locations_pivot as (
@@ -66,7 +71,7 @@ stord_locations as (
     sku
     , display_name
     , snapshot_date
-    , lower(location_name) || ' - stord inventory' as location
+    , lower(location_name) || ' - stord inv' as location
     , quantity
   from
     fact.inventory_location
@@ -97,7 +102,7 @@ stord_reservations as (
     sku
     , name
     , snapshot_date
-    , lower(channel) || ' - stord reservations' as channel
+    , lower(channel) || ' - stord resv' as channel
     , reservation_quantity
   from
     fact.stord_inventory_reservations
