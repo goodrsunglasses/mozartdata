@@ -24,6 +24,7 @@ WITH parent_discounts AS (SELECT --Ok so this is one row per NS transaction sinc
 						   subtotal.agg_subtotal                             AS order_subtotal,
 						   agg_subtotal * parent_discounts.rate_percent      AS flat_discount,
 						   detail.item_id_ns,
+						   detail.PRODUCT_ID_EDW,
 						   detail.plain_name,
 						   detail.rate                                          item_rate,
 						   (item_rate / order_subtotal) * ABS(flat_discount) AS line_item_discount
@@ -40,6 +41,7 @@ WITH parent_discounts AS (SELECT --Ok so this is one row per NS transaction sinc
 							subtotal.agg_subtotal                             AS order_subtotal,
 							parent_discounts.rate                             AS flat_discount,
 							detail.item_id_ns,
+							detail.PRODUCT_ID_EDW,
 							detail.plain_name,
 							detail.rate                                          item_rate,
 							(item_rate / order_subtotal) * ABS(flat_discount) AS line_item_discount
