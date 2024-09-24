@@ -21,13 +21,13 @@ WITH parent_discounts AS (SELECT --Ok so this is one row per NS transaction sinc
 		,
 	 application AS (SELECT--First do the math for percentage based ones, then the flat ones
 						   parent_discounts.order_id_edw,
-						   subtotal.agg_subtotal                             AS order_subtotal,
-						   agg_subtotal * parent_discounts.rate_percent      AS flat_discount,
+						   subtotal.agg_subtotal                             AS order_subtotal_discount,
+						   agg_subtotal * parent_discounts.rate_percent      AS order_flat_discount,
 						   detail.item_id_ns,
 						   detail.PRODUCT_ID_EDW,
 						   detail.plain_name,
 						   detail.rate                                          item_rate,
-						   (item_rate / order_subtotal) * ABS(flat_discount) AS line_item_discount
+						   (item_rate / order_subtotal_discount) * ABS(order_flat_discount) AS line_item_discount
 					 FROM parent_discounts
 							  LEFT OUTER JOIN subtotal ON subtotal.ORDER_ID_EDW = parent_discounts.ORDER_ID_EDW
 							  LEFT OUTER JOIN fact.ORDER_ITEM_DETAIL detail
@@ -38,13 +38,13 @@ WITH parent_discounts AS (SELECT --Ok so this is one row per NS transaction sinc
 					   AND agg_subtotal != 0
 					 UNION ALL
 					 SELECT parent_discounts.order_id_edw,
-							subtotal.agg_subtotal                             AS order_subtotal,
-							parent_discounts.rate                             AS flat_discount,
+							subtotal.agg_subtotal                             AS order_subtotal_discount,
+							parent_discounts.rate                             AS order_flat_discount,
 							detail.item_id_ns,
 							detail.PRODUCT_ID_EDW,
 							detail.plain_name,
 							detail.rate                                          item_rate,
-							(item_rate / order_subtotal) * ABS(flat_discount) AS line_item_discount
+							(item_rate / order_subtotal_discount) * ABS(order_flat_discount) AS line_item_discount
 					 FROM parent_discounts
 							  LEFT OUTER JOIN subtotal ON subtotal.ORDER_ID_EDW = parent_discounts.ORDER_ID_EDW
 							  LEFT OUTER JOIN fact.ORDER_ITEM_DETAIL detail
