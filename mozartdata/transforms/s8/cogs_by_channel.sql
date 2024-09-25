@@ -18,9 +18,8 @@ SELECT
 FROM
   s8.cogs_transactions c
   LEFT JOIN dim.product p ON p.item_id_ns = c.item_id_ns
---WHERE
---  p.sku = 'OG-BK-BL1'
---  AND posting_period = 'Jun 2024'
---  AND channel = 'Goodr.com'
+WHERE
+  p.merchandise_department = "SUNGLASSES"
+
 GROUP BY
   ALL
