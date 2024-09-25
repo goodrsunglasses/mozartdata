@@ -19,7 +19,7 @@ FROM
   s8.cogs_transactions c
   LEFT JOIN dim.product p ON p.item_id_ns = c.item_id_ns
 WHERE
-  p.merchandise_department = "SUNGLASSES"
+  p.merchandise_department = 'SUNGLASSES'
 
 GROUP BY
   ALL
