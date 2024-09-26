@@ -20,7 +20,7 @@ SELECT
       on gt.posting_period = ap.posting_period
     LEFT JOIN
       dim.product p
-      ON gt.item_id_ns = p.product_id_edw
+      ON gt.product_id_edw = p.product_id_edw
     LEFT OUTER JOIN
       netsuite.transactionline tranline
       ON tranline.transaction = gt.transaction_id_ns

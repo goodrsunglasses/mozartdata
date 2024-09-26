@@ -16,7 +16,7 @@ WITH
                            stord.STORD_PRODUCTS_8589936822
                        UNION ALL
                        SELECT
-                           itemid
+                           itemid as sku
                        FROM
                            netsuite.item
                        UNION ALL
@@ -132,12 +132,13 @@ WITH
                                 'Assembly',
                                 'OthCharge',
                                 'NonInvtPart',
-                                'Payment'
+                                'Payment',
+                                'Discount'
                        )
            )
 SELECT DISTINCT
     prod_inv.sku
-  , i.id                                             AS product_id_edw
+  , prod_inv.sku                                     AS product_id_edw
   , i.id                                             AS item_id_ns
   , stord.id                                         AS item_id_stord
   , prod_inv.product_id_d2c_shopify
@@ -150,7 +151,7 @@ SELECT DISTINCT
   , prod_inv.inventory_item_id_goodrwill_shopify
   , prod_inv.inventory_item_id_d2c_can_shopify
   , prod_inv.inventory_item_id_b2b_can_shopify
-  , shipstation.productid                            AS item_id_shipstation
+  , shipstation.item_id_shipstation                  AS item_id_shipstation
   , i.displayname                                    AS display_name
   , i.itemtype                                       AS item_type
   , i.custitem5                                      AS collection
@@ -208,8 +209,8 @@ SELECT DISTINCT
   , ga.account_number
   , ga.account_display_name
 FROM
-    products_and_invty_ids_cte                                     prod_inv
-    LEFT OUTER JOIN actual_ns_products                             i
+    products_and_invty_ids_cte                                    prod_inv
+    LEFT OUTER JOIN actual_ns_products                            i
         ON i.itemid = prod_inv.sku
     LEFT OUTER JOIN dim.gl_account                                 ga
         ON i.incomeaccount = ga.account_id_ns
@@ -243,5 +244,6 @@ FROM
         ON i.id = agg.parentitem
     LEFT JOIN stord.stord_products_8589936822                      stord
         ON stord.sku = prod_inv.sku
-    LEFT JOIN shipstation_portable.shipstation_products_8589936627 shipstation
+    LEFT JOIN staging.shipstation_product shipstation
         ON shipstation.sku = prod_inv.sku
+        AND shipstation.primary_item_id_flag = true

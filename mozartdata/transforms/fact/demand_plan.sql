@@ -14,7 +14,7 @@ inner join
   on dd.itemdemandplan = dp.demandplanid
 left join
   dim.product p
-  on dp.item = p.product_id_edw
+  on dp.item = p.item_id_ns
 left join
   dim.location l
   on dp.location = l.location_id_ns
