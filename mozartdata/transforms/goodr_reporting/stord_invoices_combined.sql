@@ -86,7 +86,7 @@ UNION
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    shipment_id as tracking_or_shipping_id,
+    tracking_number as tracking_or_shipping_id,
     total_cost,
     case
       when origin_facility = 'ATLANTA' then 'ATL'
@@ -102,7 +102,7 @@ union
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    shipment_id as tracking_or_shipping_id,
+    tracking_number as tracking_or_shipping_id,
     total_cost,
     CASE
       WHEN LEFT(source_file, 3) = 'ATL' THEN 'ATL'
@@ -117,7 +117,7 @@ UNION
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    shipment_id as tracking_or_shipping_id,
+    tracking_number as tracking_or_shipping_id,
     total_cost,
     CASE
       WHEN LEFT(source_file, 3) = 'ATL' THEN 'ATL'
@@ -132,7 +132,7 @@ UNION
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    shipment_id as tracking_or_shipping_id,
+    tracking_number as tracking_or_shipping_id,
     total_cost,
     CASE
       when origin_facility = 'ATLANTA' then 'ATL'
@@ -148,7 +148,7 @@ UNION
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    shipment_id as tracking_or_shipping_id,
+    tracking_number as tracking_or_shipping_id,
     total_cost,
     CASE
       WHEN LEFT(source_file, 3) = 'ATL' THEN 'ATL'
