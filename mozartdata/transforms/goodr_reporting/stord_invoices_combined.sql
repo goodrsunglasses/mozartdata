@@ -38,7 +38,7 @@ union
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_customer as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking_or_shipping_id,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     to_date(invoice_date, 'mm/dd/yyyy hh:mi:ss AM') as billed_date, 
@@ -64,7 +64,7 @@ union
   SELECT
     job_date as ship_date,
     reference_1 as goodr_order_number,
-    tracking_number_customer as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking_or_shipping_id,
     total_charge as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     invoice_date as billed_date,
@@ -75,7 +75,7 @@ union
   SELECT
     job_date as ship_date,
     reference_1 as goodr_order_number,
-    tracking_number_customer as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking_or_shipping_id,
     null_column_name as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     invoice_date as billed_date,
@@ -163,7 +163,7 @@ UNION
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_customer as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking_or_shipping_id,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     bill_date as billed_date, 
@@ -174,7 +174,7 @@ UNION
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_customer as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking_or_shipping_id,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     to_date(invoice_date, 'mm/dd/yyyy hh:mi:ss AM') as billed_date, 
@@ -185,7 +185,7 @@ UNION
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_customer as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking_or_shipping_id,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     to_date(invoice_date, 'mm/dd/yyyy hh:mi:ss AM') as billed_date, 
@@ -196,7 +196,7 @@ UNION
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_customer as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking_or_shipping_id,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     date_from_parts(2024, 04, 11) as billed_date, 
@@ -207,7 +207,7 @@ UNION
   SELECT
     ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_customer as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking_or_shipping_id,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     invoice_date as billed_date, 
