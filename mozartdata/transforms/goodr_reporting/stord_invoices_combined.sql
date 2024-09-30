@@ -1,7 +1,7 @@
 SELECT
     ship_date,
     order_number_wms as goodr_order_number,
-    shipment_tracking_number as tracking_or_shipping_id,
+    shipment_tracking_number as tracking,
     total_shipping_less_duties as total_cost,
     location,
     billed_date,
@@ -12,7 +12,7 @@ UNION
   SELECT
     ship_date,
     order_number_wms as goodr_order_number,
-    shipment_tracking_number as tracking_or_shipping_id,
+    shipment_tracking_number as tracking,
     total_shipping_less_duties  as total_cost,
     CASE
       WHEN LEFT(source_file, 3) = 'ATL' THEN 'ATL'
@@ -27,7 +27,7 @@ union
   SELECT
     ship_date,
     order_number_wms as goodr_order_number,
-    shipment_tracking_number as  tracking_or_shipping_id,
+    shipment_tracking_number as  tracking,
     total_shipping_less_duties  as total_cost,
     location,
     billed_date,
@@ -38,7 +38,7 @@ union
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_vendor as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     to_date(invoice_date, 'mm/dd/yyyy hh:mi:ss AM') as billed_date, 
@@ -49,7 +49,7 @@ union
   SELECT
     ship_date,
     order_number_wms as goodr_order_number,
-    shipment_tracking_number as tracking_or_shipping_id,
+    shipment_tracking_number as tracking,
     total_shipping_less_duties as total_cost,
     CASE
       WHEN LEFT(source_file, 3) = 'ATL' THEN 'ATL'
@@ -64,7 +64,7 @@ union
   SELECT
     job_date as ship_date,
     reference_1 as goodr_order_number,
-    tracking_number_vendor as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking,
     total_charge as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     invoice_date as billed_date,
@@ -75,7 +75,7 @@ union
   SELECT
     job_date as ship_date,
     reference_1 as goodr_order_number,
-    tracking_number_vendor as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking,
     null_column_name as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     invoice_date as billed_date,
@@ -86,7 +86,7 @@ UNION
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    tracking_number as tracking_or_shipping_id,
+    tracking_number as tracking,
     total_cost,
     case
       when origin_facility = 'ATLANTA' then 'ATL'
@@ -102,7 +102,7 @@ union
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    tracking_number as tracking_or_shipping_id,
+    tracking_number as tracking,
     total_cost,
     CASE
       WHEN LEFT(source_file, 3) = 'ATL' THEN 'ATL'
@@ -117,7 +117,7 @@ UNION
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    tracking_number as tracking_or_shipping_id,
+    tracking_number as tracking,
     total_cost,
     CASE
       WHEN LEFT(source_file, 3) = 'ATL' THEN 'ATL'
@@ -132,7 +132,7 @@ UNION
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    tracking_number as tracking_or_shipping_id,
+    tracking_number as tracking,
     total_cost,
     CASE
       when origin_facility = 'ATLANTA' then 'ATL'
@@ -148,7 +148,7 @@ UNION
   SELECT
     ship_date,
     order_number as goodr_order_number,
-    tracking_number as tracking_or_shipping_id,
+    tracking_number as tracking,
     total_cost,
     CASE
       WHEN LEFT(source_file, 3) = 'ATL' THEN 'ATL'
@@ -163,7 +163,7 @@ UNION
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_vendor as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     bill_date as billed_date, 
@@ -174,7 +174,7 @@ UNION
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_vendor as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     to_date(invoice_date, 'mm/dd/yyyy hh:mi:ss AM') as billed_date, 
@@ -185,7 +185,7 @@ UNION
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_vendor as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     to_date(invoice_date, 'mm/dd/yyyy hh:mi:ss AM') as billed_date, 
@@ -196,7 +196,7 @@ UNION
   SELECT
     to_date(job_date, 'mm/dd/yyyy hh:mi:ss AM') as ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_vendor as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     date_from_parts(2024, 04, 11) as billed_date, 
@@ -207,7 +207,7 @@ UNION
   SELECT
     ship_date, 
     reference_1 as goodr_order_number,
-    tracking_number_vendor as  tracking_or_shipping_id,
+    tracking_number_vendor as  tracking,
     total_charge  as total_cost,
     concat(processing_facility, '-',customer_name ) as location,
     invoice_date as billed_date, 
