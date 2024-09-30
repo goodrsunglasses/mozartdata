@@ -19,7 +19,9 @@ FROM
   s8.cogs_transactions c
   LEFT JOIN dim.product p ON p.item_id_ns = c.item_id_ns
 WHERE
-  p.merchandise_department in ('SUNGLASSES','ACCESSORIES')
+  (p.merchandise_department = 'SUNGLASSES' 
+    or p.sku in ('G12107-YL', 'G12114', 'G12113', 'G12108-TL')) --- cases
+  and transaction_type = 'SKU Cogs'
 
 GROUP BY
   ALL
