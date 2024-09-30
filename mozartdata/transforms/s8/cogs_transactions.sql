@@ -27,8 +27,8 @@ SELECT
       AND tranline.id = gt.transaction_line_id_ns
       AND tranline.item = gt.item_id_ns
       AND tranline.mainline = 'F'
-      AND tranline.accountinglinetype in ('COGS','CUSTOMERRETURNVARIANCE')
-      AND tranline.iscogs = 'T'
+      AND ((tranline.accountinglinetype in ('COGS','CUSTOMERRETURNVARIANCE','DROPSHIPEXPENSE') AND tranline.iscogs = 'T')
+           OR tranline.accountinglinetype in ('DROPSHIPEXPENSE'))
       AND (tranline._FIVETRAN_DELETED = false or tranline._FIVETRAN_DELETED is null)
   WHERE
       gt.posting_flag
