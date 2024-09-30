@@ -29,7 +29,12 @@ union
     order_number_wms as goodr_order_number,
     shipment_tracking_number as  tracking,
     total_shipping_less_duties  as total_cost,
-    location,
+    CASE
+      when location = 'ATLANTA' then 'ATL'
+      when location = 'LAS VEGAS 2' then 'LAS 2'
+      when location =  'LAS VEGAS' then 'LAS'
+      else 'OTHER'
+      END as location,
     billed_date,
     source_file
   FROM
