@@ -241,7 +241,23 @@ SELECT
   total_cost,
   location,
   billed_date,
-  source_file
+  source_file,
+  CASE
+    WHEN left(goodr_order_number, 3) = 'GCA' THEN 'goodr.ca'
+    WHEN left(goodr_order_number, 3) = 'GW-' THEN 'goodrwill'
+    WHEN left(goodr_order_number, 3) = 'CAB' THEN 'cabana'
+    WHEN left(goodr_order_number, 2) = 'SG' THEN 'sellgoodr'
+    WHEN left(goodr_order_number, 1) = 'G' THEN 'goodr.com'
+    WHEN left(goodr_order_number, 3) = 'POP' THEN 'sellgoodr pop'
+    WHEN left(goodr_order_number, 2) = 'TO' THEN 'transfer order'
+    WHEN left(goodr_order_number, 2) = 'CS' THEN 'customer service'
+    WHEN left(goodr_order_number, 3) = 'SD-' THEN 'marketing - seeding'
+    WHEN left(goodr_order_number, 3) = 'PR-' THEN 'marketing - pr'
+    WHEN left(goodr_order_number, 3) = 'SIG' THEN 'signage'
+    WHEN left(goodr_order_number, 3) = 'BRA' THEN 'branded tape'
+    WHEN left(goodr_order_number, 3) = 'PO-' THEN 'sellgoodr'
+    ELSE 'other'
+    END AS channel_guess,
 FROM ranked
 WHERE rn = 1
 ORDER BY tracking, total_cost
