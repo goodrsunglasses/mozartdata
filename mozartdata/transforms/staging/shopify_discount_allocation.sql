@@ -62,4 +62,19 @@ SELECT
 , da._fivetran_synced
 FROM
   SELLGOODR_CANADA_SHOPIFY.discount_allocation da
+UNION ALL
+SELECT
+  'Cabana' as store
+, 'D2C' as category
+, da.order_line_id
+, da.index
+, da.discount_application_index
+, da.amount
+, da.amount_set_shop_money_amount
+, da.amount_set_shop_money_currency_code
+, da.amount_set_presentment_money_amount
+, da.amount_set_presentment_money_currency_code
+, da._fivetran_synced
+FROM
+  cabana.discount_allocation da
 

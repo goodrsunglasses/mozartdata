@@ -74,4 +74,22 @@ SELECT
 , da._fivetran_synced
 FROM
   sellgoodr_canada_shopify.discount_application da
+UNION ALL
+SELECT
+  'Cabana' AS store
+, 'D2C'           AS category
+, da.order_id as order_id_shopify
+, da.index
+, da.type
+, da.title
+, da.code as discount_code
+, da.description
+, da.value
+, da.value_type
+, da.allocation_method
+, da.target_selection
+, da.target_type
+, da._fivetran_synced
+FROM
+  cabana.discount_application da
 

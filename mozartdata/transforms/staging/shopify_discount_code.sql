@@ -62,4 +62,19 @@ SELECT
 , dc._fivetran_synced
 FROM
   sellgoodr_canada_shopify.discount_code dc
+UNION ALL
+SELECT
+  'Cabana' as store
+, 'D2C' as category
+, dc.id as discount_code_id_shopify
+, dc.price_rule_id
+, dc.code as discount_code
+, dc.created_at as created_timestamp
+, date(dc.created_at) as created_date
+, dc.updated_at as updated_timestamp
+, date(dc.updated_at) as updated_date
+, dc.usage_count
+, dc._fivetran_synced
+FROM
+  cabana.discount_code dc
 
