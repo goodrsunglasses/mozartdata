@@ -1,5 +1,6 @@
 /*
-Create a staging table for discount_allocation to union all the shopify stores
+Create a staging table for discount_allocation to union all the shopify stores.
+excludes Goodrwill, no discounts on that store.
 */
 
 SELECT
