@@ -1,5 +1,5 @@
 with
-    month_starts_cte as (
+    week_starts_cte as (
                             select
                                 *
                             from
@@ -167,6 +167,6 @@ select
                 )
         , 0)      as lass002_stord_inv_wow_diff
 from
-    month_starts_cte
+    week_starts_cte
 order by
     sku
