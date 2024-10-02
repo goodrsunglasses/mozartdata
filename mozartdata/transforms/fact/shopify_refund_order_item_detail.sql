@@ -1,5 +1,6 @@
 select detail.refund_id,
               detail.order_id,
+              ord.ORDER_ID_EDW,
        detail.created_at,
        date(detail.created_at) as refund_created_date,
        detail.source,
@@ -17,3 +18,4 @@ select detail.refund_id,
         reason as adjustment_reason,
         note as refund_note
 from staging.shopify_refund_order_item_detail detail
+left outer join dim.orders ord on ord.ORDER_ID_SHOPIFY = detail.ORDER_ID
