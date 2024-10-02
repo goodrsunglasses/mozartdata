@@ -1,12 +1,12 @@
 select detail.refund_id,
-              detail.order_id,
-              ord.ORDER_ID_EDW,
+       detail.order_id,
+       ord.ORDER_ID_EDW,
        detail.created_at,
        date(detail.created_at) as refund_created_date,
        detail.source,
-       detail.amount as adjustment_amount,
-        detail.tax_amount as adjustment_tax_amount,
-        detail.TOTAL_ADJ_AMNT as adjustment_total,
+       detail.amount           as adjustment_amount,
+       detail.tax_amount       as adjustment_tax_amount,
+       detail.TOTAL_ADJ_AMNT   as adjustment_total,
        detail.sku,
        detail.name             as display_name,
        detail.refund_line_id,
@@ -15,7 +15,7 @@ select detail.refund_id,
        detail.total_tax        as refund_line_tax,
        detail.total_line_amnt  as refund_line_total,
        detail.order_line_id,
-        reason as adjustment_reason,
-        note as refund_note
+       reason                  as adjustment_reason,
+       note                    as refund_note
 from staging.shopify_refund_order_item_detail detail
-left outer join dim.orders ord on ord.ORDER_ID_SHOPIFY = detail.ORDER_ID
+         left outer join dim.orders ord on ord.ORDER_ID_SHOPIFY = detail.ORDER_ID
