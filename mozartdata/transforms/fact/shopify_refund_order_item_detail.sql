@@ -1,2 +1,19 @@
-select *
-from staging.shopify_refund_order_item_detail
+select detail.refund_id,
+              detail.order_id,
+       detail.created_at,
+       date(detail.created_at) as refund_created_date,
+       detail.source,
+       detail.amount as adjustment_amount,
+        detail.tax_amount as adjustment_tax_amount,
+        detail.TOTAL_ADJ_AMNT as adjustment_total,
+       detail.sku,
+       detail.name             as display_name,
+       detail.refund_line_id,
+       detail.quantity         as quantity_refund_line,
+       detail.subtotal         as refund_line_subtotal,
+       detail.total_tax        as refund_line_tax,
+       detail.total_line_amnt  as refund_line_total,
+       detail.order_line_id,
+        reason as adjustment_reason,
+        note as refund_note
+from staging.shopify_refund_order_item_detail detail
