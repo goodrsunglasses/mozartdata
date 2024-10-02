@@ -12,7 +12,7 @@ SELECT
   line.fulfillable_quantity as quantity_unfulfilled,
   line.price * line.quantity as amount_booked,
   line.price * (line.quantity - line.fulfillable_quantity) as amount_sold,
-  da.amount as amount_discount,
+  coalesce(da.amount,0) as amount_discount,
   line.fulfillment_status
 FROM
   shopify."ORDER" d2c_shop
@@ -34,7 +34,7 @@ SELECT
   line.fulfillable_quantity as quantity_unfulfilled,
   line.price * line.quantity as amount_booked,
   line.price * (line.quantity - line.fulfillable_quantity) as amount_sold,
-  da.amount as amount_discount,
+  coalesce(da.amount,0) as amount_discount,
   line.fulfillment_status
 FROM
   specialty_shopify."ORDER" b2b_shop
@@ -77,7 +77,7 @@ SELECT
   line.fulfillable_quantity as quantity_unfulfilled,
   line.price * line.quantity as amount_booked,
   line.price * (line.quantity - line.fulfillable_quantity) as amount_sold,
-  da.amount as amount_discount,
+  coalesce(da.amount,0) as amount_discount,
   line.fulfillment_status
 FROM
   sellgoodr_canada_shopify."ORDER" b2b_shop
@@ -99,7 +99,7 @@ SELECT
   line.fulfillable_quantity as quantity_unfulfilled,
   line.price * line.quantity as amount_booked,
   line.price * (line.quantity - line.fulfillable_quantity) as amount_sold,
-  da.amount as amount_discount,
+  coalesce(da.amount,0) as amount_discount,
   line.fulfillment_status
 FROM
   goodr_canada_shopify."ORDER" b2b_shop
@@ -121,7 +121,7 @@ SELECT
   line.fulfillable_quantity as quantity_unfulfilled,
   line.price * line.quantity as amount_booked,
   line.price * (line.quantity - line.fulfillable_quantity) as amount_sold,
-  da.amount as amount_discount,
+  coalesce(da.amount,0) as amount_discount,
   line.fulfillment_status
 FROM
   cabana."ORDER" b2b_shop
