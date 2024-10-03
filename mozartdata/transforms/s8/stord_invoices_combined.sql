@@ -221,6 +221,7 @@ with combined as (
       FROM
           stord_invoices.seventeen_combined
  )
+  
 , ranked  AS (
     SELECT *,
            ROW_NUMBER() OVER (
@@ -260,5 +261,5 @@ SELECT
     ELSE 'other'
     END AS channel_guess,
 FROM ranked
-WHERE rn = 1
+--WHERE rn = 1
 ORDER BY tracking, total_cost
