@@ -41,23 +41,18 @@ SELECT
 FROM
   s8.cogs_transactions c
   LEFT JOIN dim.product p ON p.item_id_ns = c.item_id_ns
+  LEFT JOIN fucked_up_amazon_ca ac
+    ON c.transaction_number_ns = ac.transaction_number_ns
+  LEFT JOIN fucked_up_amazon a
+    ON c.transaction_number_ns = a.transaction_number_ns
 WHERE
-  c.transaction_number_ns NOT IN (
-        SELECT
-          transaction_number_ns
-        FROM
-          fucked_up_amazon_ca
-        UNION ALL
-        SELECT
-          transaction_number_ns
-        FROM
-          fucked_up_amazon
-      )
+  a.transaction_number_ns is NULL
+  and  ac.transaction_number_ns IS NULL
   and ( p.merchandise_department = 'SUNGLASSES'
     OR p.sku IN ('G12107-YL', 'G12114', 'G12113', 'G12108-TL')  --- cases
       ) 
 
   AND c.transaction_type = 'SKU Cogs'
-  and total_cogs >= 0   --- added per pr (remvoing from both revenue and cogs)
+  --and total_cogs >= 0   --- added per pr (remvoing from both revenue and cogs)
 GROUP BY
   ALL
