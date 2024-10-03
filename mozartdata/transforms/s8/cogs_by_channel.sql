@@ -53,6 +53,6 @@ WHERE
       ) 
 
   AND c.transaction_type = 'SKU Cogs'
-  and total_cogs >= 0   --- added per pr (remvoing from both revenue and cogs)
+  and c.total_cogs >= 0   --- added per pr (remvoing from both revenue and cogs)
 GROUP BY
   ALL
