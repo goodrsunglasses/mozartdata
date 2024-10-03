@@ -1,9 +1,9 @@
 -- CREATE OR REPLACE TABLE fact.shopify_refund_order_line
 -- 	COPY GRANTS AS
-SELECT order_id,
+SELECT order_id as order_id_shopify,
 	   ORDER_ID_EDW,
 	   source,
-	   COUNT(refund_id)           AS refund_count,
+	   refund_id,
 	   SUM(ADJUSTMENT_AMOUNT)     AS adjustment_amount_sum,
 	   SUM(ADJUSTMENT_TAX_AMOUNT) AS ADJUSTMENT_TAX_AMOUNT_sum,
 	   SUM(ADJUSTMENT_TOTAL)      AS ADJUSTMENT_TOTAL_sum,
@@ -14,4 +14,5 @@ SELECT order_id,
 FROM fact.shopify_refund_order_item_detail
 GROUP BY order_id,
 		 ORDER_ID_EDW,
-		 source
+		 source,
+		 refund_id
