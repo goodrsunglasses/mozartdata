@@ -75,10 +75,7 @@ WITH
         daily_sales ds
         ON ds.sold_date between dateadd(days,-30,il.snapshot_date) and il.snapshot_date
           AND il.sku = ds.sku
-          AND il.store = CASE
-                           WHEN ds.store = 'Canada D2C' THEN 'Goodr.ca'
-                           WHEN ds.store = 'Specialty Canada' THEN 'Specialty CAN'
-                           ELSE ds.store END
+          AND il.store = ds.store
           AND ds.quantity_sold >0
       GROUP BY
         il.inventory_month

@@ -63,7 +63,7 @@ UNION ALL
 SELECT DISTINCT
   d2c_can_shop.name order_id_edw,
   d2c_can_shop.id order_id_shopify,
-  'Canada D2C' AS store,
+  'Goodr.ca' AS store,
   d2c_can_shop.email,
   d2c_can_shop.total_line_items_price as amount_booked,
   ship.price as shipping_sold,
@@ -94,7 +94,7 @@ UNION ALL
 SELECT DISTINCT
   b2b_can_shop.name order_id_edw,
   b2b_can_shop.id order_id_shopify,
-  'Specialty Canada' AS store,
+  'Specialty CAN' AS store,
   b2b_can_shop.email,
   b2b_can_shop.total_line_items_price as amount_booked,
   ship.price as shipping_sold,
