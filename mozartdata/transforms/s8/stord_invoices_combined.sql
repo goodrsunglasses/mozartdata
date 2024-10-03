@@ -255,7 +255,7 @@ SELECT
     WHEN left(goodr_order_number, 3) = 'SD-' THEN 'marketing'
     WHEN left(goodr_order_number, 3) = 'PR-' THEN 'marketing'
     WHEN left(goodr_order_number, 3) = 'SIG' THEN 'marketing'
-    WHEN left(goodr_order_number, 3) = 'BRA' THEN 'sellgododr'
+    WHEN left(goodr_order_number, 3) = 'BRA' THEN 'sellgoodr'
     WHEN left(goodr_order_number, 3) = 'PO-' THEN 'sellgoodr'
     ELSE 'other'
     END AS channel_guess,
