@@ -243,6 +243,7 @@ SELECT
   location,
   billed_date,
   source_file,
+  rn,
   CASE
     WHEN left(goodr_order_number, 3) is null then 'sellgoodr ca'
     WHEN left(goodr_order_number, 3) = 'GCA' THEN 'goodr.ca'
