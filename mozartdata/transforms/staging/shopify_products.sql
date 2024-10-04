@@ -24,7 +24,7 @@ SELECT
   , variant.weight
   , variant.weight_unit
   , variant.option_1
-  , 'd2c'         AS shopify_store
+  , 'Goodr.com'         AS shopify_store
 FROM
     shopify.PRODUCT_VARIANT variant
     LEFT OUTER JOIN
@@ -56,7 +56,7 @@ SELECT
   , variant.weight
   , variant.weight_unit
   , variant.option_1
-  , 'b2b'         AS shopify_store
+  , 'Specialty'         AS shopify_store
 FROM
     SPECIALTY_SHOPIFY.PRODUCT_VARIANT         variant
     LEFT OUTER JOIN SPECIALTY_SHOPIFY.PRODUCT prod
@@ -87,7 +87,7 @@ SELECT
   , variant.weight
   , variant.weight_unit
   , variant.option_1
-  , 'goodrwill'         AS shopify_store
+  , 'Goodrwill'         AS shopify_store
 FROM
     GOODRWILL_SHOPIFY.PRODUCT_VARIANT         variant
     LEFT OUTER JOIN GOODRWILL_SHOPIFY.PRODUCT prod
@@ -118,7 +118,7 @@ SELECT
   , variant.weight
   , variant.weight_unit
   , variant.option_1
-  , 'b2b_can'         AS shopify_store
+  , 'Specialty CAN'         AS shopify_store
 FROM
     SELLGOODR_CANADA_SHOPIFY.PRODUCT_VARIANT         variant
     LEFT OUTER JOIN SELLGOODR_CANADA_SHOPIFY.PRODUCT prod
@@ -149,7 +149,7 @@ SELECT
   , variant.weight
   , variant.weight_unit
   , variant.option_1
-  , 'd2c_can'         AS shopify_store
+  , 'Goodr.ca'         AS shopify_store
 FROM
     GOODR_CANADA_SHOPIFY.PRODUCT_VARIANT         variant
     LEFT OUTER JOIN GOODR_CANADA_SHOPIFY.PRODUCT prod

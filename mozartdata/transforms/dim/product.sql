@@ -32,70 +32,70 @@ WITH
                    up.sku
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'd2c'
+                                   shop_prod.shopify_store = 'Goodr.com'
                                , shop_prod.product_id
                                , null
                            )
                    ) as product_id_d2c_shopify
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'b2b'
+                                   shop_prod.shopify_store = 'Specialty'
                                , shop_prod.product_id
                                , null
                            )
                    ) as product_id_b2b_shopify
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'goodrwill'
+                                   shop_prod.shopify_store = 'Goodrwill'
                                , shop_prod.product_id
                                , null
                            )
                    ) as product_id_goodrwill_shopify
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'd2c_can'
+                                   shop_prod.shopify_store = 'Goodr.ca'
                                , shop_prod.product_id
                                , null
                            )
                    ) as product_id_d2c_can_shopify
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'b2b_can'
+                                   shop_prod.shopify_store = 'Specialty CAN'
                                , shop_prod.product_id
                                , null
                            )
                    ) as product_id_b2b_can_shopify
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'd2c'
+                                   shop_prod.shopify_store = 'Goodr.com'
                                , shop_prod.inventory_item_id
                                , null
                            )
                    ) as inventory_item_id_d2c_shopify
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'b2b'
+                                   shop_prod.shopify_store = 'Specialty'
                                , shop_prod.inventory_item_id
                                , null
                            )
                    ) as inventory_item_id_b2b_shopify
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'goodrwill'
+                                   shop_prod.shopify_store = 'Goodrwill'
                                , shop_prod.inventory_item_id
                                , null
                            )
                    ) as inventory_item_id_goodrwill_shopify
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'd2c_can'
+                                   shop_prod.shopify_store = 'Goodr.ca'
                                , shop_prod.inventory_item_id
                                , null
                            )
                    ) as inventory_item_id_d2c_can_shopify
                  , max(
                            iff(
-                                   shop_prod.shopify_store = 'b2b'
+                                   shop_prod.shopify_store = 'Specialty'
                                , shop_prod.inventory_item_id
                                , null
                            )
