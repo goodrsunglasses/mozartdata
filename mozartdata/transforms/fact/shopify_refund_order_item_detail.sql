@@ -1,12 +1,12 @@
-CREATE OR REPLACE TABLE fact.shopify_refund_order_item_detail
-	COPY GRANTS AS
+-- CREATE OR REPLACE TABLE fact.shopify_refund_order_item_detail
+-- 	COPY GRANTS AS
 select detail.refund_id,
        detail.order_id,
        ord.ORDER_ID_EDW,
        detail.created_at,
        date(detail.created_at) as refund_created_date,
        detail.source,
-       detail.amount           as adjustment_amount,
+       detail.amount           as adjustment_amount,--IMPORTANT any and all adjustment fields are at the ORDER level refund wise, rather than at the item level
        detail.tax_amount       as adjustment_tax_amount,
        detail.TOTAL_ADJ_AMNT   as adjustment_total,
        detail.sku,
