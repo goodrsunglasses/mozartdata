@@ -5,6 +5,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      total_price,
       fulfillment_status,
       'goodr.com' AS channel
     FROM
@@ -16,6 +17,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      total_price,
       fulfillment_status,
       'goodr can' AS channel
     FROM
@@ -27,6 +29,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      total_price,
       fulfillment_status,
       'goodrwill' AS channel
     FROM
@@ -38,6 +41,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      total_price,
       fulfillment_status,
       'sellgoodr can' AS channel
     FROM
@@ -49,6 +53,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      total_price,
       fulfillment_status,
       'cabana' AS channel
     FROM
@@ -60,6 +65,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      total_price,
       fulfillment_status,
       'sellgoodr' AS channel
     FROM
@@ -84,3 +90,4 @@ WHERE
     fulfillment_status IS NULL
     OR fulfillment_status IN ('restocked', 'partial')
   )
+ORDER BY created_at desc
