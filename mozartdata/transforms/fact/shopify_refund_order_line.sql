@@ -7,13 +7,13 @@ SELECT order_id                   as order_id_shopify,
        refund_id,
        array_agg(adjustment_reason) adjustment_reason_array,--SADLY THIS HAS TO BE AN ARRAY BECAUSE WE HAVE MULTIPLE ADJUSTMENTS PER ORDER ¯\_(ツ)_/¯
        array_agg(refund_note) refund_note_array,
-       SUM(ADJUSTMENT_AMOUNT)     AS adjustment_amount_sum,
-       SUM(ADJUSTMENT_TAX_AMOUNT) AS ADJUSTMENT_TAX_AMOUNT_sum,
-       SUM(ADJUSTMENT_TOTAL)      AS ADJUSTMENT_TOTAL_sum,
-       sum(QUANTITY_REFUND_LINE)  as QUANTITY_REFUND_LINE_sum,
-       sum(REFUND_LINE_SUBTOTAL)  as REFUND_LINE_SUBTOTAL_sum,
-       sum(REFUND_LINE_TAX)       as REFUND_LINE_TAX_sum,
-       sum(REFUND_LINE_TOTAL)     as REFUND_LINE_TOTAL_sum
+       SUM(ADJUSTMENT_AMOUNT)     AS amount_adjustment,
+       SUM(ADJUSTMENT_TAX_AMOUNT) AS amount_adjustment_tax,
+       SUM(ADJUSTMENT_TOTAL)      AS amount_adjustment_total,
+       sum(QUANTITY_REFUND_LINE)  as quantity_refund_line,
+       sum(REFUND_LINE_SUBTOTAL)  as amount_refund_subtotal,
+       sum(REFUND_LINE_TAX)       as amount_refund_tax,
+       sum(REFUND_LINE_TOTAL)     as amount_refund_total
 FROM fact.shopify_refund_order_item_detail
 GROUP BY order_id,
          refund_created_date,
