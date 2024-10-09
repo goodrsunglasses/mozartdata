@@ -4,55 +4,67 @@ WITH
       name,
       created_at,
       updated_at,
+      email as customer,
       fulfillment_status,
       'goodr.com' AS channel
     FROM
       shopify."ORDER" g
+    WHERE cancelled_at is not null
     UNION
     SELECT
       name,
       created_at,
       updated_at,
+      email as customer,
       fulfillment_status,
       'goodr can' AS channel
     FROM
       goodr_canada_shopify."ORDER"
+    WHERE cancelled_at is not null
     UNION
     SELECT
       name,
       created_at,
       updated_at,
+      email as customer,
       fulfillment_status,
       'goodrwill' AS channel
     FROM
       goodrwill_shopify."ORDER"
+    WHERE cancelled_at is not null
     UNION
     SELECT
       name,
       created_at,
       updated_at,
+      email as customer,
       fulfillment_status,
       'sellgoodr can' AS channel
     FROM
       sellgoodr_canada_shopify."ORDER"
+    WHERE cancelled_at is not null
     UNION
     SELECT
       name,
       created_at,
       updated_at,
+      email as customer,
       fulfillment_status,
       'cabana' AS channel
     FROM
       cabana."ORDER"
+    WHERE cancelled_at is not null
     UNION
     SELECT
       name,
       created_at,
       updated_at,
+      email as customer,
       fulfillment_status,
       'sellgoodr' AS channel
     FROM
       specialty_shopify."ORDER"
+    WHERE cancelled_at is not null
   )
 SELECT
   *
