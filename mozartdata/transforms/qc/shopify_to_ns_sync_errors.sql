@@ -5,6 +5,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      customer_id,
       total_price,
       fulfillment_status,
       'goodr.com' AS channel
@@ -17,6 +18,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      customer_id,
       total_price,
       fulfillment_status,
       'goodr can' AS channel
@@ -29,6 +31,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      customer_id,
       total_price,
       fulfillment_status,
       'goodrwill' AS channel
@@ -41,6 +44,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      customer_id,
       total_price,
       fulfillment_status,
       'sellgoodr can' AS channel
@@ -53,6 +57,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      customer_id,
       total_price,
       fulfillment_status,
       'cabana' AS channel
@@ -65,6 +70,7 @@ WITH
       created_at,
       updated_at,
       email as customer,
+      customer_id,
       total_price,
       fulfillment_status,
       'sellgoodr' AS channel
@@ -73,7 +79,8 @@ WITH
     WHERE cancelled_at is not null
   )
 SELECT
-  *
+  *,
+  case WHEN customer IS NULL OR TRIM(customer) = '' then 'CS needs to update customer information' else 'Alex needs to resync' end as to_do
 FROM
   combined
 WHERE
