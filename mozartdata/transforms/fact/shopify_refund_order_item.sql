@@ -11,7 +11,7 @@ SELECT
     refund_line_id,
     order_line_id,
     quantity_refund_line,
-    refund_line_subtotal,
-    refund_line_tax,
-    refund_line_total
+    amount_refund_line_subtotal,
+    amount_refund_line_tax,
+    amount_refund_line_total
 FROM fact.shopify_refund_order_item_detail
