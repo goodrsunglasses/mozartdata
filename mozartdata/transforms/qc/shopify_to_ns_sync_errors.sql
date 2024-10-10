@@ -11,7 +11,7 @@ WITH
       'goodr.com' AS channel
     FROM
       shopify."ORDER" g
-    WHERE cancelled_at is not null
+    WHERE cancelled_at is null
     UNION
     SELECT
       name,
@@ -24,7 +24,7 @@ WITH
       'goodr can' AS channel
     FROM
       goodr_canada_shopify."ORDER"
-    WHERE cancelled_at is not null
+    WHERE cancelled_at is null
     UNION
     SELECT
       name,
@@ -37,7 +37,7 @@ WITH
       'goodrwill' AS channel
     FROM
       goodrwill_shopify."ORDER"
-    WHERE cancelled_at is not null
+    WHERE cancelled_at is null
     UNION
     SELECT
       name,
@@ -50,7 +50,7 @@ WITH
       'sellgoodr can' AS channel
     FROM
       sellgoodr_canada_shopify."ORDER"
-    WHERE cancelled_at is not null
+    WHERE cancelled_at is null
     UNION
     SELECT
       name,
@@ -63,7 +63,7 @@ WITH
       'cabana' AS channel
     FROM
       cabana."ORDER"
-    WHERE cancelled_at is not null
+    WHERE cancelled_at is null
     UNION
     SELECT
       name,
@@ -76,7 +76,7 @@ WITH
       'sellgoodr' AS channel
     FROM
       specialty_shopify."ORDER"
-    WHERE cancelled_at is not null
+    WHERE cancelled_at is null
   )
 SELECT
   *,
