@@ -6,9 +6,9 @@ select detail.refund_id,
        detail.created_at,
        date(detail.created_at) as refund_created_date,
        detail.source,
-       detail.amount           as adjustment_amount,--IMPORTANT any and all adjustment fields are at the ORDER level refund wise, rather than at the item level
-       detail.tax_amount       as adjustment_tax_amount,
-       detail.TOTAL_ADJ_AMNT   as adjustment_total,
+       detail.amount           as amount_adjustment,--IMPORTANT any and all adjustment fields are at the ORDER level refund wise, rather than at the item level
+       detail.tax_amount       as amount_adjustment_tax,
+       detail.TOTAL_ADJ_AMNT   as amount_adjustment_total,
        detail.sku,
        detail.name             as display_name,
        detail.refund_line_id,
