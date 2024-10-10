@@ -11,9 +11,9 @@ SELECT order_id                   as order_id_shopify,
        SUM(amount_adjustment_tax) AS amount_adjustment_tax,
        SUM(amount_adjustment_total)      AS amount_adjustment_total,
        sum(QUANTITY_REFUND_LINE)  as quantity_refund_line,
-       sum(REFUND_LINE_SUBTOTAL)  as amount_refund_subtotal,
-       sum(REFUND_LINE_TAX)       as amount_refund_tax,
-       sum(REFUND_LINE_TOTAL)     as amount_refund_total
+       sum(amount_refund_line_subtotal)  as amount_refund_subtotal,
+       sum(amount_refund_line_tax)       as amount_refund_tax,
+       sum(amount_refund_line_total)     as amount_refund_total
 FROM fact.shopify_refund_order_item_detail
 GROUP BY order_id,
          refund_created_date,
