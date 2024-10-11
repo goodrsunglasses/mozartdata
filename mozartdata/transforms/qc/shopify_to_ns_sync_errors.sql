@@ -2,6 +2,7 @@ WITH
   combined AS (
     SELECT
       name,
+      id,
       created_at,
       updated_at,
       email as customer,
@@ -15,6 +16,7 @@ WITH
     UNION
     SELECT
       name,
+      id,
       created_at,
       updated_at,
       email as customer,
@@ -28,6 +30,7 @@ WITH
     UNION
     SELECT
       name,
+      id,
       created_at,
       updated_at,
       email as customer,
@@ -41,6 +44,7 @@ WITH
     UNION
     SELECT
       name,
+      id,
       created_at,
       updated_at,
       email as customer,
@@ -54,6 +58,7 @@ WITH
     UNION
     SELECT
       name,
+      id,
       created_at,
       updated_at,
       email as customer,
@@ -67,6 +72,7 @@ WITH
     UNION
     SELECT
       name,
+      id,
       created_at,
       updated_at,
       email as customer,
