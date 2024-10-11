@@ -58,6 +58,10 @@ use createdate converted instead of trandate
     , d.name as department
     , tran.memo as memo
     , tl.memo as line_memo
+    , eline.altname as line_entity   
+    , eline.type as line_entity_type  
+    , e.altname as entity 
+    , e.type as entity_type
     , c.fullname as line_class
     , case when tl.cleared = 'T' then true else false end as cleared_flag
     , date(tl.cleareddate) AS cleared_date
@@ -98,6 +102,12 @@ use createdate converted instead of trandate
     left join
       dim.product p
       on p.item_id_ns = tl.item
+    left join     
+      netsuite.entity eline
+      on tl.entity = eline.id
+    left join     
+      netsuite.entity e
+      on tran.entity = e.id
     where
         date(tran.trandate) >= '2022-01-01' --limit the row count
     and (tran._fivetran_deleted = false or tran._fivetran_deleted is null)
@@ -134,3 +144,7 @@ use createdate converted instead of trandate
     , tl.cleared
     , tl.cleareddate
     , tran.custbody_boomi_orderid
+    , e.altname   
+    , e.type
+    , eline.altname
+    , eline.type
