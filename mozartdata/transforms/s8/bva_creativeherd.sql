@@ -12,10 +12,12 @@ SELECT
   t.channel,
   t.memo,
   a.account_display_name,
-  t.entity,
-  t.entity_type,
   t.line_memo,
   t.line_class,
+  t.line_entity,
+  t.line_entity_type,
+  t.entity,
+  t.entity_type
 FROM
   fact.gl_transaction t
   left join dim.gl_account a on a.account_id_edw = t.account_id_edw
