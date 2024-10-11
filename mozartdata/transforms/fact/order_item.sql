@@ -139,7 +139,7 @@ SELECT DISTINCT
   sold.amount_product_sold,
   sold.amount_discount_sold as amount_discount_sold_ns,
   si.amount_discount as amount_discount_shopify,
-  coalesce(sold.amount_discount_sold_ns,si.amount_discount) as amount_discount_sold,
+  coalesce(sold.amount_discount_sold,si.amount_discount) as amount_discount_sold,
   sold.amount_shipping_sold,
   sold.amount_tax_sold,
   sold.amount_paid_sold,
@@ -174,7 +174,7 @@ FROM
   )
   LEFT OUTER JOIN shopify_info si ON (
     si.order_id_edw = detail.order_id_edw
-    AND si.sku = detail.sku
+    AND si.sku = p.sku
         )
 WHERE
   detail.record_type IN (
