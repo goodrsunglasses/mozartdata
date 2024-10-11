@@ -99,6 +99,17 @@ WITH
       item_id_ns,
       order_item_id,
       plain_name
+  ), shopify_info as
+  (
+    SELECT
+      oi.order_id_shopify
+    , oi.order_id_edw
+    , oi.product_id_edw
+    , oi.sku
+    , oi.amount_discount
+    FROM
+      fact.shopify_order_item oi
+    limit 100
   )
 SELECT DISTINCT
   detail.order_id_edw,
@@ -126,7 +137,9 @@ SELECT DISTINCT
   booked.amount_paid_booked,
   sold.amount_revenue_sold,
   sold.amount_product_sold,
-  sold.amount_discount_sold,
+  sold.amount_discount_sold as amount_discount_sold_ns,
+  si.amount_discount as amount_discount_shopify,
+  coalesce(sold.amount_discount_sold_ns,si.amount_discount) as amount_discount_sold,
   sold.amount_shipping_sold,
   sold.amount_tax_sold,
   sold.amount_paid_sold,
@@ -159,6 +172,10 @@ FROM
     refunded.order_id_edw = detail.order_id_edw
     AND refunded.item_id_ns = detail.item_id_ns
   )
+  LEFT OUTER JOIN shopify_info si ON (
+    si.order_id_edw = detail.order_id_edw
+    AND si.sku = detail.sku
+        )
 WHERE
   detail.record_type IN (
     'cashsale',
