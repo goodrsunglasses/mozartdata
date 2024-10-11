@@ -109,7 +109,6 @@ WITH
     , oi.amount_discount
     FROM
       fact.shopify_order_item oi
-    limit 100
   )
 SELECT DISTINCT
   detail.order_id_edw,
@@ -138,8 +137,8 @@ SELECT DISTINCT
   sold.amount_revenue_sold,
   sold.amount_product_sold,
   sold.amount_discount_sold as amount_discount_sold_ns,
-  si.amount_discount as amount_discount_sold_shopify,
-  coalesce(sold.amount_discount_sold,si.amount_discount) as amount_discount_sold,
+  si.amount_discount*-1 as amount_discount_sold_shopify,
+  sold.amount_discount_sold,
   sold.amount_shipping_sold,
   sold.amount_tax_sold,
   sold.amount_paid_sold,
