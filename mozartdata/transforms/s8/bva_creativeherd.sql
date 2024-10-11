@@ -12,6 +12,8 @@ SELECT
   t.channel,
   t.memo,
   a.account_display_name,
+  t.entity,
+  t.entity_type,
   t.line_memo,
   t.line_class,
 FROM
