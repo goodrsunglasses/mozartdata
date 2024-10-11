@@ -138,7 +138,7 @@ SELECT DISTINCT
   sold.amount_revenue_sold,
   sold.amount_product_sold,
   sold.amount_discount_sold as amount_discount_sold_ns,
-  si.amount_discount as amount_discount_shopify,
+  si.amount_discount as amount_discount_sold_shopify,
   coalesce(sold.amount_discount_sold,si.amount_discount) as amount_discount_sold,
   sold.amount_shipping_sold,
   sold.amount_tax_sold,
