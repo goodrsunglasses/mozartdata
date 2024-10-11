@@ -123,7 +123,10 @@ WITH
   )
 SELECT
   *,
-  case WHEN customer IS NULL OR TRIM(customer) = '' then 'CS needs to update customer information' else 'Alex needs to resync' end as to_do
+  case 
+    WHEN customer IS NULL OR TRIM(customer) = '' then 'CS needs to update customer information'
+    when has_pl_exchange = 'yes' and total_price > 0 then 'CS needs to add discount to zero out the order'
+    else 'Alex needs to resync' end as to_do
 FROM
   combined
 WHERE
