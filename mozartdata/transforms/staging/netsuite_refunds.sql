@@ -17,6 +17,7 @@ SELECT
 	   )                                                         AS transaction_created_date_pst,
 	date(tran.trandate) as transaction_date,
 	   tran.recordtype                                           AS record_type,
+	   tran.memo,
 	   tran.tranid as transaction_number_ns,
 	   tranline.entity as customer_id_ns,
 	   tranline.item as item_id_ns,
@@ -33,3 +34,4 @@ FROM netsuite.transactionline tranline
 		 LEFT OUTER JOIN netsuite.item item ON item.id = tranline.item
 WHERE record_type = 'cashrefund'
   AND tranline._FIVETRAN_DELETED = FALSE
+and transaction_id_ns = 27783209
