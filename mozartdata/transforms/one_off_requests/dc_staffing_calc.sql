@@ -1,8 +1,9 @@
 SELECT
   order_id_edw,
   channel,
-  customer_id_ns,
-  tier,
+  ord.customer_id_ns,
+  customer_name,
+  ord.tier,
   location,
   booked_date,
   shipping_window_start_date,
@@ -18,7 +19,7 @@ SELECT
   END AS is_today
 FROM
   fact.orders ord 
-  left outer join fact.customer_ns_map map on map.customer_id_ns = 
+  left outer join fact.customer_ns_map map on map.customer_id_ns = ord.customer_id_ns
 WHERE
   channel = 'Key Accounts'
-  AND order_id_edw = '4530505893'
+and customer_name like '%Dick%'
