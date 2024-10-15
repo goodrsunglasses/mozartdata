@@ -26,5 +26,6 @@ WHERE
   and posting_period like '%2024'
   and t.account_number >= 5000
   and posting_flag
+  and t.account_number != 6016
 
 --select distinct (DEPARTMENT), department_id_ns FROM  fact.gl_transaction
