@@ -1,5 +1,5 @@
-CREATE OR REPLACE TABLE staging.netsuite_refunds
-          COPY GRANTS  as
+CREATE OR REPLACE TABLE staging.netsuite_refund_item_detail
+          COPY GRANTS as
 SELECT
 	   transaction as transaction_id_ns,
        tranline.id as transaction_line_id_ns,

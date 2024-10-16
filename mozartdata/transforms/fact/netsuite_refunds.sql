@@ -1,4 +1,4 @@
--- CREATE OR REPLACE TABLE fact.netsuite_refunds
+-- CREATE OR REPLACE TABLE fact.netsuite_refund_item_detail
 -- 	COPY GRANTS AS
 SELECT
 	  staging.transaction_id_ns,
@@ -24,7 +24,7 @@ SELECT
 	  staging.rateamount,
 	  staging.customer_id_ns,
 	  staging.createdfrom
-FROM staging.netsuite_refunds staging
+FROM staging.netsuite_refund_item_detail staging
 		 LEFT OUTER JOIN dim.PARENT_TRANSACTIONS parents ON parents.TRANSACTION_ID_NS = staging.transaction_id_ns
 		 LEFT OUTER JOIN dim.product prod ON prod.ITEM_ID_NS = staging.item_id_ns
 		 LEFT OUTER JOIN dim.channel chan ON chan.CHANNEL_ID_NS = staging.channel_id_ns
