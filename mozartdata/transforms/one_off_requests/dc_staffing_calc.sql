@@ -19,4 +19,3 @@ FROM
   left outer join fact.customer_ns_map map on map.customer_id_ns = ord.customer_id_ns
 WHERE
   channel = 'Key Accounts'
-and shipping_window_boolean
