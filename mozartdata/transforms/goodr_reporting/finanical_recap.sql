@@ -56,7 +56,9 @@ SELECT
     SUM(labor) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS labor_ytd,
     SUM(g_and_a) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS g_and_a_ytd,
     (revenue_ytd - cogs_ytd) / revenue_ytd AS gross_margin_ytd,
-    (net_income_ytd / revenue_ytd) AS net_margin_ytd
+    (net_income_ytd / revenue_ytd) AS net_margin_ytd,
+    quarter(posting_period_date) as quarter,
+    date(date_trunc(quarter, posting_period_date)) as quarter_date
 FROM (
     SELECT
         *,
