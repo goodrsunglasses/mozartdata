@@ -3,9 +3,12 @@ SELECT
   ord.purchase_date,
   event.posted_date,
   event.event_type,
+  item.seller_sku,
+  item.item_kind
 FROM
   amazon_selling_partner.orders ord
   left outer join amazon_selling_partner.FINANCIAL_SHIPMENT_EVENT event on event.amazon_order_id = ord.amazon_order_id
+  left outer join amazon_selling_partner.FINANCIAL_SHIPMENT_EVENT_ITEM item on item.financial_shipment_event_id = event._fivetran_id
 WHERE
   amazon_order_id = '113-1653928-2853051'
 SELECT
