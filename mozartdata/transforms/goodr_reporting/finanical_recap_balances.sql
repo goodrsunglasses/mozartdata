@@ -18,9 +18,10 @@ SELECT
   current_assets - current_liabilities as net_working_capital,
   current_assets / current_liabilities as current_ratio,
   (cash + receivables) / current_liabilities as quick_ratio,
-  cash / current_liabilities as cash_ration
+  cash / current_liabilities as cash_ration,
+  quarter(posting_period_date) as quarter
 FROM
-  fact.gl_balances
+  fact.gl_balances b
 GROUP BY
   1,
   2
