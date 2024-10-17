@@ -20,35 +20,41 @@ WITH
       details.payment_id != '/'
     ORDER BY
       order_adjustment_id
+  ),
+  default_payments AS (
+    SELECT
+      'Cash Sale' AS type,
+      first.*,
+      sum(fees) over (
+        PARTITION BY
+          payment_id
+      ) payment_total_fees,
+      sum(customer_paid_shipping_fee_refund) over (
+        PARTITION BY
+          payment_id
+      ) shipping_refund_total,
+      sum(net_sales) over (
+        PARTITION BY
+          payment_id
+      ) net_sales_total,
+      sum(shipping) over (
+        PARTITION BY
+          payment_id
+      ) shipping_total,
+      sum(order_sales) over (
+        PARTITION BY
+          payment_id
+      ) payment_total_sales,
+      - round(
+        shipping_refund_total + shipping_total + net_sales_total + payment_total_fees + payment_amount,
+        2
+      ) AS reserve_fee
+    FROM
+      first
+    ORDER BY
+      payment_id
   )
 SELECT
-  'Cash Sale' AS type,
-  first.*,
-  sum(fees) over (
-    PARTITION BY
-      payment_id
-  ) payment_total_fees,
-  sum(customer_paid_shipping_fee_refund) over (
-    PARTITION BY
-      payment_id
-  ) shipping_refund_total,
-  sum(net_sales) over (
-    PARTITION BY
-      payment_id
-  ) net_sales_total,
-  sum(shipping) over (
-    PARTITION BY
-      payment_id
-  ) shipping_total,
-  sum(order_sales) over (
-    PARTITION BY
-      payment_id
-  ) payment_total_sales,
-  - round(
-    shipping_refund_total + shipping_total + net_sales_total + payment_total_fees + payment_amount,
-    2
-  ) AS reserve_fee
+  *
 FROM
-  first
-ORDER BY
-  payment_id
+  default_payments
