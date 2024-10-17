@@ -23,6 +23,7 @@ WITH
   )
 SELECT
   first.*,
+  'Cash Sale' as type,
   sum(fees) over (
     PARTITION BY
       payment_id
