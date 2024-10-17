@@ -10,6 +10,7 @@ SELECT
 , TO_VARCHAR(MY_DATE::DATE, 'YYYYMM')                                                     as yrmo
 , concat(YEAR(MY_DATE), 'Q', QUARTER(MY_DATE))                                            as yrq
 , YEAR(MY_DATE)                                                                           as year
+, quarter(my_date)                                                                        as quarter
 , MONTH(MY_DATE)                                                                          as month
 , MONTHNAME(MY_DATE)                                                                      as month_name
 , DAY(MY_DATE)                                                                            as day
