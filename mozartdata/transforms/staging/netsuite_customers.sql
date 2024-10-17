@@ -42,7 +42,7 @@ SELECT cust.id                                                                 A
      coalesce(parent_tier.id,tiers.id) as tier_id_ns,
      coalesce(parent_tier.name,tiers.name) as tier_ns,
      case when coalesce(parent_tier.name,tiers.name) = 'Named' then
-       case when lower(cust.companyname) like '%fleet feet%' then 'Fleet Feet' else cust.companyname
+       case when lower(cust.companyname) like '%fleet feet%' or lower(cust.email) like '%fleetfeet%' then 'Fleet Feet' else cust.companyname
        end else coalesce(parent_tier.name,tiers.name)  end as tier,
      cust.custentityam_doors as doors,
      cust.custentityam_buyer_name as buyer_name,
