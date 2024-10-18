@@ -6,6 +6,8 @@ About this data: This shows when a user is added to an exclusion list and why. G
 as spam or unsubscribing.
 
 I am doing a distinct, because portable extracts a single event multiple times.
+
+10/18/2024 - This end point is no longer supported. So this table is no longer being scheduled.
 */
 SELECT DISTINCT
   e.timestamp as exclusion_timestamp
