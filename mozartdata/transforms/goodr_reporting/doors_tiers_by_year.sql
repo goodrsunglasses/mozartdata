@@ -2,42 +2,49 @@
 --Ideally this query will also link to order level information so that we can grab "Dates" for these customers to add the _year part but for right now thats a whole other thing.
 --ASSUMPTIONS MADE WITHIN THIS QUERY: Since NS doors' field is manually updated, and not maintained strictly by any one team, its fair to "fix" it using business logic
 WITH
-  cust_info AS (
+  parent_doors AS ( --Parent doors isn't on the table lmao
     SELECT
-      customer_id_edw,
-      customer_id_ns,
-      customer_name,
-      customer_number,
-      parent_id_ns,
-      parent_customer_number,
-      parent_name,
-      category,
-      CASE
-        WHEN tier IS NULL
-        AND company_name = 'Target' THEN 'Target' --Seems stupid that target has 400+ doors but no tier.
-        ELSE tier
-      END AS tier,
-      tier_ns,
-      doors,
-      CASE
-        WHEN tier_ns != 'Named'
-        AND doors IS NULL
-        AND tier IS NOT NULL
-        AND parent_name IS NULL THEN 1 --This is for when a customer record has a tier, but no doors, we add 1 door by default
-        WHEN tier = 'Fleet Feet'
-        AND parent_name IS NOT NULL
-        AND doors IS NULL THEN 1 --this is so that fleet feet children that are not parents can still count towards the doors
-        ELSE doors
-      END AS fixed_doors
+      *
     FROM
       fact.customer_ns_map
     WHERE
-      category IN ('Specialty', 'Key Account') --Tiers and doors only matter for specialty
+      is_parent_flag
+  ),
+  cust_info AS (
+    SELECT
+      map.customer_id_edw,
+      map.customer_id_ns,
+      map.customer_name,
+      map.customer_number,
+      map.parent_id_ns,
+      map.parent_customer_number,
+      map.parent_name,
+      parent_doors.doors parent_doors,
+      map.category,
+      CASE
+        WHEN map.tier IS NULL
+        AND map.company_name = 'Target' THEN 'Target' --Seems stupid that target has 400+ doors but no tier.
+        ELSE map.tier
+      END AS tier,
+      map.tier_ns,
+      map.doors,
+      CASE
+        WHEN map.tier_ns != 'Named'
+        AND map.doors IS NULL
+        AND map.tier IS NOT NULL
+        AND map.parent_name IS NULL THEN 1 --This is for when a customer record has a tier, but no doors, we add 1 door by default
+        WHEN map.tier = 'Fleet Feet'
+        AND map.parent_name IS NOT NULL
+        AND map.doors IS NULL THEN 1 --this is so that fleet feet children that are not parents can still count towards the doors
+        ELSE map.doors
+      END AS fixed_doors
+    FROM
+      fact.customer_ns_map map
+      LEFT OUTER JOIN parent_doors ON parent_doors.customer_id_ns = map.parent_id_ns
+    WHERE
+      map.category IN ('Specialty', 'Key Account') --Tiers and doors only matter for specialty
   )
 SELECT
-  tier,
-  sum(fixed_doors) fixed_sum
+  *
 FROM
   cust_info
-GROUP BY
-  tier
