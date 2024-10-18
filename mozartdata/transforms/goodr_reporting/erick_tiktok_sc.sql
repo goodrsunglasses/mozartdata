@@ -40,7 +40,6 @@ WITH
   payment_level AS (
     SELECT
       payment_id,
-      statement_date,
       payment_amount,
       sum(order_sales) sum_sales,
       sum(order_fees) sum_fees
@@ -48,19 +47,15 @@ WITH
       order_level
     GROUP BY
       payment_id,
-      statement_date,
       payment_amount
   )
 SELECT
   payment_level.payment_id,
   'Cash Sale' as type,
-  order_adjustment_id,
-  payment_level.statement_date,
   payment_level.payment_amount,
   round(sum_fees,2) payment_fees,
   - round(sum_sales + sum_fees + payment_level.payment_amount, 2) AS reserve_fee
 FROM
   payment_level
-  left outer join order_level on order_level.payment_id = payment_level.payment_id
-WHERE
-  payment_level.payment_id = 3459278238115927000
+
+where payment_level.payment_id = 3459296959742841816
