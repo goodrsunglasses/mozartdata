@@ -53,7 +53,10 @@ WITH
 SELECT
   payment_level.payment_id,
   'Cash Sale' AS type,
+  order_adjustment_id,
+  order_sales,
   date_max,
+  order_level.statement_date,
   payment_level.payment_amount,
   round(sum_fees, 2) payment_fees,
   - round(
@@ -62,3 +65,6 @@ SELECT
   ) AS reserve_fee
 FROM
   payment_level
+  LEFT OUTER JOIN order_level ON order_level.payment_id = payment_level.payment_id
+ORDER BY
+  payment_id
