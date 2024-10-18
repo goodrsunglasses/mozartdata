@@ -41,6 +41,7 @@ WITH
     SELECT
       payment_id,
       payment_amount,
+      max(statement_date) date_max,
       sum(order_sales) sum_sales,
       sum(order_fees) sum_fees
     FROM
@@ -51,9 +52,13 @@ WITH
   )
 SELECT
   payment_level.payment_id,
-  'Cash Sale' as type,
+  'Cash Sale' AS type,
+  date_max,
   payment_level.payment_amount,
-  round(sum_fees,2) payment_fees,
-  - round(sum_sales + sum_fees + payment_level.payment_amount, 2) AS reserve_fee
+  round(sum_fees, 2) payment_fees,
+  - round(
+    sum_sales + sum_fees + payment_level.payment_amount,
+    2
+  ) AS reserve_fee
 FROM
   payment_level
