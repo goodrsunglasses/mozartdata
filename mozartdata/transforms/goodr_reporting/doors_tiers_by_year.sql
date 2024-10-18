@@ -12,7 +12,11 @@ WITH
       parent_customer_number,
       parent_name,
       category,
-      tier,
+      CASE
+        WHEN tier IS NULL
+        AND company_name = 'Target' THEN 'Target' --Seems stupid that target has 400+ doors but no tier.
+        ELSE tier
+      END AS tier,
       tier_ns,
       doors,
       CASE
@@ -28,9 +32,12 @@ WITH
     FROM
       fact.customer_ns_map
     WHERE
-      category IN ('Specialty', 'Key Accounts') --Tiers and doors only matter for specialty
+      category IN ('Specialty', 'Key Account') --Tiers and doors only matter for specialty
   )
 SELECT
-  *
+  tier,
+  sum(fixed_doors) fixed_sum
 FROM
   cust_info
+GROUP BY
+  tier
