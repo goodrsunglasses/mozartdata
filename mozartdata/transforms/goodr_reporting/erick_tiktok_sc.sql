@@ -57,5 +57,3 @@ SELECT
   - round(sum_sales + sum_fees + payment_level.payment_amount, 2) AS reserve_fee
 FROM
   payment_level
-
-where payment_level.payment_id = 3459296959742841816
