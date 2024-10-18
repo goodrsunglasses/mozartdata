@@ -1,17 +1,8 @@
 SELECT
-  count(DISTINCT so.customer_id) AS shopify_customer_count,
-  year(so.created_at) year_of_first_order,
-  sum(
-    CASE
-      WHEN nsmap.doors IS NULL THEN 1
-      ELSE nsmap.doors
-    END
-  ) AS door_count,
-  tier
+  tier,
+  sum(case when doors is null then 1 else doors end) door_sum
 FROM
-  specialty_shopify."ORDER" so
-  LEFT JOIN fact.customer_shopify_map smap ON so.customer_id = smap.id
-  LEFT JOIN fact.customer_ns_map nsmap ON smap.customer_id_edw = nsmap.customer_id_edw
+  fact.customer_ns_map
+  where tier is not null and category in ('Specialty','Key Account')
 GROUP BY
-  year(so.created_at),
   tier
