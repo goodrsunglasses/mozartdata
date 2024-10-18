@@ -21,6 +21,9 @@ WITH
     ORDER BY
       order_adjustment_id
   ),
+  by_order_adjustment as(
+  select * from first
+  ),
   default_payments AS (
     SELECT
       'Cash Sale' AS type,
