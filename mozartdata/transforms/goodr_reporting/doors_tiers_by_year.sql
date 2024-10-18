@@ -1,7 +1,12 @@
 SELECT
   count(DISTINCT so.customer_id) AS shopify_customer_count,
   year(so.created_at) year_of_first_order,
-  sum(nsmap.doors) AS door_count,
+  sum(
+    CASE
+      WHEN nsmap.doors IS NULL THEN 1
+      ELSE nsmap.doors
+    END
+  ) AS door_count,
   tier
 FROM
   specialty_shopify."ORDER" so
