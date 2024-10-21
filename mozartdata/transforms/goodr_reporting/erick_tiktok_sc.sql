@@ -97,4 +97,4 @@ WITH
 SELECT
   *
 FROM
-  combined_rows
+  default_format
