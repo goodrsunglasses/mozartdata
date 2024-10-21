@@ -10,6 +10,10 @@ WITH
       fees,
       customer_paid_shipping_fee AS shipping,
       customer_paid_shipping_fee_refund,
+      customer_paid_shipping_fee_before_discounts AS cust_discounts,
+      tik_tok_shop_shipping_fee_discount_to_customer AS cust_ship_discounts,
+      limited_time_sign_up_shipping_incentive AS limited_time,
+      shipping_fee_subsidy,
       net_sales,
       net_sales + shipping + customer_paid_shipping_fee_refund AS order_sales,
       - payment_amount AS payment_amount
@@ -27,8 +31,15 @@ WITH
       order_adjustment_id,
       statement_date,
       payment_amount,
+      sum(shipping) AS shipping_sum,
+      sum(CUSTOMER_PAID_SHIPPING_FEE_REFUND) AS ship_ref_sum,
+      sum(net_sales) net_sales_sum,
       sum(fees) AS order_fees,
-      sum(order_sales) order_sales
+      sum(order_sales) AS order_sales,
+      sum(cust_discounts) AS cust_discounts_sum,
+      sum(cust_ship_discounts) AS cust_ship_discounts_sum,
+      sum(limited_time) AS limited_time_sum,
+      sum(shipping_fee_subsidy) AS shipping_fee_subsidy_sum
     FROM
       first
     GROUP BY
@@ -70,13 +81,7 @@ WITH
       order_adjustment_id,
       order_sales,
       date_max,
-      order_level.statement_date,
-      payment_level.payment_amount,
-      round(sum_fees, 2) payment_fees,
-      - round(
-        sum_sales + sum_fees + payment_level.payment_amount,
-        2
-      ) AS reserve_fee
+      order_level.statement_date
     FROM
       payment_level
       LEFT OUTER JOIN order_level ON order_level.payment_id = payment_level.payment_id
@@ -96,10 +101,7 @@ WITH
       CASE
         WHEN s.row_num = 1 THEN payment_amount
         WHEN s.row_num = 2 THEN round(sum_fees, 2)
-        WHEN s.row_num = 3 THEN - round(
-          sum_sales + sum_fees + d.payment_amount,
-          2
-        )
+        WHEN s.row_num = 3 THEN - round(sum_sales + sum_fees + d.payment_amount, 2)
       END AS order_sales,
     FROM
       payment_level d
@@ -108,4 +110,4 @@ WITH
 SELECT
   *
 FROM
-  combined_rows
+  order_level
