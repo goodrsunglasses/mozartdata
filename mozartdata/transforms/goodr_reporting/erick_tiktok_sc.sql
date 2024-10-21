@@ -87,14 +87,20 @@ WITH
     SELECT
       payment_id,
       date_max,
-        s.type,
+      s.type,
       CASE
-        WHEN s.row_num = 1 THEN concat('PAYMENT_TOTAL ', payment_id)
+        WHEN s.row_num = 1 THEN concat('PAYMENT_AMOUNT ', payment_id)
+        WHEN s.row_num = 2 THEN concat('PAYMENT_TOTAL ', payment_id)
+        WHEN s.row_num = 3 THEN concat('RESERVE_FEE ', payment_id)
       END AS order_adjustment_id,
       CASE
-        WHEN s.row_num = 1 THEN round(sum_fees, 2)
+        WHEN s.row_num = 1 THEN payment_amount
+        WHEN s.row_num = 2 THEN round(sum_fees, 2)
+        WHEN s.row_num = 3 THEN - round(
+          sum_sales + sum_fees + d.payment_amount,
+          2
+        )
       END AS order_sales,
-
     FROM
       payment_level d
       INNER JOIN standard_rows s ON 1 = 1
@@ -103,4 +109,5 @@ SELECT
   *
 FROM
   combined_rows
-where payment_id = 3459279949059822552
+WHERE
+  payment_id = 3459279949059822552
