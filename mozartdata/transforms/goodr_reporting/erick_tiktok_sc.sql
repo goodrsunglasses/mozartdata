@@ -87,12 +87,12 @@ WITH
     SELECT
       payment_id,
       row_num,
-      s.type
+     sum_sales
     FROM
-      default_format d
+      payment_level d
       INNER JOIN standard_rows s ON 1 = 1
   )
 SELECT
   *
 FROM
-  default_format
+  combined_rows
