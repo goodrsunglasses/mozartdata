@@ -86,8 +86,15 @@ WITH
   combined_rows AS (
     SELECT
       payment_id,
-      row_num,
-     sum_sales
+      date_max,
+        s.type,
+      CASE
+        WHEN s.row_num = 1 THEN concat('PAYMENT_TOTAL ', payment_id)
+      END AS order_adjustment_id,
+      CASE
+        WHEN s.row_num = 1 THEN round(sum_fees, 2)
+      END AS order_sales,
+
     FROM
       payment_level d
       INNER JOIN standard_rows s ON 1 = 1
@@ -96,3 +103,4 @@ SELECT
   *
 FROM
   combined_rows
+where payment_id = 3459279949059822552
