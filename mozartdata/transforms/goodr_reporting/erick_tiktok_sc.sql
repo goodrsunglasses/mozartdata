@@ -109,5 +109,3 @@ SELECT
   *
 FROM
   combined_rows
-WHERE
-  payment_id = 3459279949059822552
