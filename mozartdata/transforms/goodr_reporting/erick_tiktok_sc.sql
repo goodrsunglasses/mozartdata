@@ -29,8 +29,8 @@ WITH
     SELECT
       payment_id,
       order_adjustment_id,
-      statement_date,
       payment_amount,
+      statement_date,
       sum(shipping) AS shipping_sum,
       sum(CUSTOMER_PAID_SHIPPING_FEE_REFUND) AS ship_ref_sum,
       sum(net_sales) net_sales_sum,
@@ -81,7 +81,15 @@ WITH
       order_adjustment_id,
       order_sales,
       date_max,
-      order_level.statement_date
+      order_level.statement_date,
+      order_level.shipping_sum,
+      order_level.ship_ref_sum,
+      order_level.net_sales_sum,
+      order_level.order_fees,
+      order_level.cust_discounts_sum,
+      order_level.cust_ship_discounts_sum,
+      order_level.limited_time_sum,
+      order_level.shipping_fee_subsidy_sum
     FROM
       payment_level
       LEFT OUTER JOIN order_level ON order_level.payment_id = payment_level.payment_id
@@ -110,4 +118,4 @@ WITH
 SELECT
   *
 FROM
-  order_level
+  default_format
