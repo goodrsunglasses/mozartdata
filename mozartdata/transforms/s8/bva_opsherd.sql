@@ -25,7 +25,8 @@ WHERE
   t.department_id_ns in (9,53138,23,11,18332,14,17)
   and transaction_date >= '2024-08-01'
   and posting_period like '%2024'
-  and t.account_number >= 5000
+  and t.account_number >= 5000 
+  and t.account_number <> 6016
   and posting_flag
   
 --select distinct (DEPARTMENT), department_id_ns FROM  fact.gl_transaction order by department
