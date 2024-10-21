@@ -82,17 +82,15 @@ WITH
       LEFT OUTER JOIN order_level ON order_level.payment_id = payment_level.payment_id
     ORDER BY
       payment_id
-  ), combined_rows as
-  (
+  ),
+  combined_rows AS (
     SELECT
-      payment_id
-    , row_num
-    , s.type
-    from
+      payment_id,
+      row_num,
+      s.type
+    FROM
       default_format d
-    inner join
-      standard_rows s
-    on 1=1
+      INNER JOIN standard_rows s ON 1 = 1
   )
 SELECT
   *
