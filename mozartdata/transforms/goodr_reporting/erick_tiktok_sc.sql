@@ -49,22 +49,52 @@ WITH
     GROUP BY
       payment_id,
       payment_amount
+  ),
+  standard_rows AS (
+    SELECT
+      1 AS row_num,
+      'Disb' AS type
+    UNION ALL
+    SELECT
+      2 AS row_num,
+      'Debit' AS type
+    UNION ALL
+    SELECT
+      3 AS row_num,
+      'Debit' AS type
+  ),
+  default_format AS (
+    SELECT
+      payment_level.payment_id,
+      'Cash Sale' AS type,
+      order_adjustment_id,
+      order_sales,
+      date_max,
+      order_level.statement_date,
+      payment_level.payment_amount,
+      round(sum_fees, 2) payment_fees,
+      - round(
+        sum_sales + sum_fees + payment_level.payment_amount,
+        2
+      ) AS reserve_fee
+    FROM
+      payment_level
+      LEFT OUTER JOIN order_level ON order_level.payment_id = payment_level.payment_id
+    ORDER BY
+      payment_id
+  ), combined_rows as
+  (
+    SELECT
+      payment_id
+    , row_num
+    , s.type
+    from
+      default_format d
+    inner join
+      standard_rows s
+    on 1=1
   )
 SELECT
-  payment_level.payment_id,
-  'Cash Sale' AS type,
-  order_adjustment_id,
-  order_sales,
-  date_max,
-  order_level.statement_date,
-  payment_level.payment_amount,
-  round(sum_fees, 2) payment_fees,
-  - round(
-    sum_sales + sum_fees + payment_level.payment_amount,
-    2
-  ) AS reserve_fee
+  *
 FROM
-  payment_level
-  LEFT OUTER JOIN order_level ON order_level.payment_id = payment_level.payment_id
-ORDER BY
-  payment_id
+  combined_rows
