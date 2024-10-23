@@ -8,9 +8,9 @@ SELECT transaction_id_ns,
 	   transaction_date,
 	   transaction_number_ns,
 	   memo,
-	   SUM(quantity)        total_quantity,
-	   SUM(rate)            total_rate,
-	   SUM(RATEAMOUNT)      total_rateamount,
+	   SUM(quantity)       as quantity_refunded,
+	   SUM(rate)            as rate_refunded,
+	   SUM(RATEAMOUNT)     as rate_amount_refunded,
 	   ARRAY_AGG(line_memo) line_memos
 
 FROM fact.netsuite_refund_item_detail
