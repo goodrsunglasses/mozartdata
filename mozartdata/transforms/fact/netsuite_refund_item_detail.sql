@@ -2,6 +2,7 @@
 -- 	COPY GRANTS AS
 SELECT staging.transaction_id_ns,
 	   staging.transaction_line_id_ns,
+	   staging.order_id_ns,		
 	   COALESCE(parents.ORDER_ID_EDW, staging.order_id_ns)                                          AS order_id_edw, --A bunch of amazon CR's were created via a trantype not found in dim.parent_transactions
 	   staging.RECORD_TYPE,
 	   chan.name                                                                                    AS channel,
