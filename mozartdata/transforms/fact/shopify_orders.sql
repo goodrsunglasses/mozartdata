@@ -27,4 +27,4 @@ SELECT DISTINCT
 FROM
   staging.shopify_orders o
   LEFT OUTER JOIN staging.shopify_order_line line ON line.order_id_shopify = o.order_id_shopify and o.store = line.store
-  LEFT OUTER JOIN shopify.order_shipping_line ship ON ship.order_id = o.order_id_shopify
+  LEFT OUTER JOIN staging.shopify_order_shipping_line ship ON ship.order_id_shopify = o.order_id_shopify and o.store = ship.store
