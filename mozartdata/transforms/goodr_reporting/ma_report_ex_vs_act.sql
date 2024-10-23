@@ -18,5 +18,5 @@ FROM
   fact.orders ord
   LEFT OUTER JOIN fact.customer_ns_map map ON map.customer_id_ns = ord.customer_id_ns
 WHERE
-  channel = 'Key Accounts'
+  channel in ('Key Accounts','Key Account CAN')
   AND booked_date >= '2023-01-01'
