@@ -8,3 +8,5 @@ FROM
   LEFT OUTER JOIN fact.orders ord ON ord.order_id_edw = item.order_id_edw
   LEFT OUTER JOIN dim.date days ON days.date = ord.booked_date
   LEFT OUTER JOIN dim.product prod ON prod.product_id_edw = item.product_id_edw
+WHERE
+  prod.family = 'Licensing'
