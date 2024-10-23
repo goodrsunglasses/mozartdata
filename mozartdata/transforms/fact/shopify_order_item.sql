@@ -1,4 +1,3 @@
-create or replace table fact.shopify_order_item copy GRANTS  as
 SELECT
   o.order_id_edw,
   o.order_id_shopify,
