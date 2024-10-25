@@ -2,6 +2,7 @@ WITH
   ns_sourced AS (
     SELECT
       item.product_id_edw,
+      licmap.licensor,
       item.plain_name,
       ord.channel,
       concat(days.month_name, ' ', days.year) AS month_year,
@@ -17,6 +18,7 @@ WITH
       LEFT OUTER JOIN fact.orders ord ON ord.order_id_edw = item.order_id_edw
       LEFT OUTER JOIN dim.date days ON days.date = ord.booked_date
       LEFT OUTER JOIN dim.product prod ON prod.product_id_edw = item.product_id_edw
+      LEFT OUTER JOIN google_sheets.licensing_sku_mapping licmap ON licmap.sku = prod.product_id_edw
       LEFT OUTER JOIN fact.netsuite_order_item_discounts discount ON (
         discount.order_id_edw = item.order_id_edw
         AND discount.product_id_edw = item.product_id_edw
@@ -31,6 +33,7 @@ WITH
       item.product_id_edw,
       item.plain_name,
       ord.channel,
+      licmap.licensor,
       month_year
   )
 SELECT
