@@ -4,6 +4,7 @@ SELECT
   o.store,
   line.order_line_id_shopify,
   line.product_id_shopify,
+  line.sku as product_id_edw,
   line.sku,
   line.display_name,
   line.price as rate,
