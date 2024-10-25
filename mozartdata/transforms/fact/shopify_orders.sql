@@ -20,10 +20,14 @@ SELECT DISTINCT
   o.token,
   o.checkout_token,
   o.checkout_id as checkout_id_shopify,
-  SUM(quantity) over (
+  SUM(line.quantity - line.fulfillable_quantity) over (
     PARTITION BY
       line.order_id_shopify
-  ) quantity_sold
+  ) quantity_sold,
+  SUM(line.quantity) over (
+    PARTITION BY
+      line.order_id_shopify
+  ) quantity_booked
 FROM
   staging.shopify_orders o
   LEFT OUTER JOIN staging.shopify_order_line line ON line.order_id_shopify = o.order_id_shopify and o.store = line.store
