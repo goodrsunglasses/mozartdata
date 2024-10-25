@@ -5,6 +5,7 @@ WITH
       licmap.licensor,
       item.plain_name,
       ord.channel,
+      ord.b2b_d2c,
       concat(days.month_name, ' ', days.year) AS month_year,
       sum(item.quantity_booked) total_quantity_booked,
       sum(item.rate_booked) total_rate_booked,
@@ -32,6 +33,7 @@ WITH
     GROUP BY
       item.product_id_edw,
       item.plain_name,
+  b2b_d2c,
       ord.channel,
       licmap.licensor,
       month_year
