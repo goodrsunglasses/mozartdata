@@ -31,7 +31,8 @@ WITH
       shopify.amount_booked+shopify.shipping_sold-shopify.amount_discount AS amount_revenue_booked_shop,
       shopify.amount_booked+shopify.shipping_sold+shopify.amount_tax_sold-shopify.amount_discount AS amount_paid_booked_shop,
       shopify.order_created_date_pst,
-      shopify.quantity_booked AS total_quantity_shopify
+      shopify.quantity_booked AS quantity_booked_shopify,
+      shopify.quantity_sold AS quantity_sold_shopify
     FROM
       dim.orders orders
       LEFT OUTER JOIN fact.shopify_orders shopify ON shopify.order_id_shopify = orders.order_id_shopify
@@ -205,11 +206,13 @@ SELECT
   b2b_d2c,
   aggregate_netsuite.model,
   coalesce(
-    shopify_info.total_quantity_shopify,
+    shopify_info.quantity_booked_shopify,
     aggregates.quantity_booked
   ) as quantity_booked,-- source of truth column for quantities also comes from shopify
-  shopify_info.total_quantity_shopify as quantity_booked_shopify,
+  shopify_info.quantity_booked_shopify as quantity_booked_shopify,
   aggregates.quantity_booked AS quantity_booked_ns,
+  shopify_info.quantity_sold_shopify as quantity_sold_shopify,
+  aggregates.quantity_sold as quantity_sold_ns,
   aggregates.quantity_sold,
   CASE WHEN aggregate_netsuite.channel NOT IN
 				('Key Account','Key Accounts', 'Global', 'Prescription', 'Key Account CAN', 'Amazon Canada', 'Amazon Prime', 'Cabana',
