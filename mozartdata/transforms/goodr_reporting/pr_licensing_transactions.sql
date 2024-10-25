@@ -9,7 +9,9 @@ WITH
       sum(item.rate_booked) total_rate_booked,
       sum(item.revenue) total_revenue,
       sum(item.gross_profit_estimate) total_gross_profit_estimate,
-      - round(sum(line_item_discount), 2) total_line_discount
+      - round(sum(line_item_discount), 2) total_line_discount,
+      sum(ref.quantity) AS total_quantity_refunded,
+      sum(ref.rate) AS total_rate_refunded
     FROM
       fact.order_item item
       LEFT OUTER JOIN fact.orders ord ON ord.order_id_edw = item.order_id_edw
@@ -19,6 +21,10 @@ WITH
         discount.order_id_edw = item.order_id_edw
         AND discount.product_id_edw = item.product_id_edw
       )
+      LEFT OUTER JOIN fact.netsuite_refund_item_detail ref ON (
+        item.item_id_ns = ref.item_id_ns
+        AND item.order_id_edw = ref.order_id_edw
+      )
     WHERE
       prod.family = 'LICENSING'
     GROUP BY
@@ -27,3 +33,7 @@ WITH
       ord.channel,
       month_year
   )
+SELECT
+  *
+FROM
+  ns_sourced
