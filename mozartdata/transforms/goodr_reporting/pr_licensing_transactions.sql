@@ -42,6 +42,7 @@ WITH
       month_year
   )
 SELECT
-  ns_sourced.*
+  ns_sourced.*,
+  total_rate_sold + total_line_discount AS total_no_discounts
 FROM
   ns_sourced
