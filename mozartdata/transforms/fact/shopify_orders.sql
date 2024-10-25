@@ -7,6 +7,7 @@ SELECT DISTINCT
   ship.price as shipping_sold,
   o.amount_tax_sold as amount_tax_sold,
   o.amount_sold as amount_sold,
+  round(o.amount_sold - o.amount_tax_sold - ship.price,2) as amount_product_sold,
   o.amount_discount as amount_discount,
   o.created_at as order_created_timestamp,
   DATE(o.created_at) as order_created_date,
