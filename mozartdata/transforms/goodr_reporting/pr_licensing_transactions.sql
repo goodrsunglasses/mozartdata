@@ -30,10 +30,11 @@ WITH
       )
     WHERE
       prod.family = 'LICENSING'
+      AND ord.booked_date >= '2022-01-01'
     GROUP BY
       item.product_id_edw,
       item.plain_name,
-  b2b_d2c,
+      b2b_d2c,
       ord.channel,
       licmap.licensor,
       month_year
