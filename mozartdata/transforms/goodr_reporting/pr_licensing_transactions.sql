@@ -1,5 +1,6 @@
 WITH
   ns_sourced AS (
+    --bas
     SELECT
       item.product_id_edw,
       licmap.licensor,
@@ -9,6 +10,7 @@ WITH
       concat(days.month_name, ' ', days.year) AS month_year,
       sum(item.quantity_booked) total_quantity_booked,
       sum(item.rate_booked) total_rate_booked,
+      sum(item.rate_sold) total_rate_sold,
       sum(item.revenue) total_revenue,
       sum(item.gross_profit_estimate) total_gross_profit_estimate,
       - round(sum(line_item_discount), 2) total_line_discount,
@@ -40,6 +42,6 @@ WITH
       month_year
   )
 SELECT
-  *
+  ns_sourced.*
 FROM
   ns_sourced
