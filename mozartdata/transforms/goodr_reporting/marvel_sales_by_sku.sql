@@ -7,7 +7,7 @@ SELECT
   p.family,
   p.collection,
   SUM(oi.quantity_sold) as quantity_sold,
-  round(sum(oi.cost_estimate)/SUM(oi.quantity_sold),2) as gross_unit_price,
+  round(sum(oi.rate_sold)/SUM(oi.quantity_sold),2) as gross_unit_price,
   SUM(oi.amount_revenue_sold) as gross_sales_amount,
   sum(oi.amount_discount_sold) as discount_deductions,
   sum(oi.amount_product_refunded) as refund_deductions,
