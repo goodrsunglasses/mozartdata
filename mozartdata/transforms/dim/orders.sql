@@ -45,7 +45,7 @@ SELECT
   END AS shipstation_id --done as per the exact same logic on fact.fulfillment_order, in order to get shipstation's order's tables down to one row per order number.
 FROM
   orders
-  LEFT OUTER JOIN fact.shopify_order_line shopify ON shopify.order_id_edw = orders.order_id_edw
+  LEFT OUTER JOIN fact.shopify_orders shopify ON shopify.order_id_edw = orders.order_id_edw
   LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord ON stord.order_number = orders.order_id_edw
   LEFT OUTER JOIN shipstation_portable.shipstation_orders_8589936627 shipstation ON shipstation.ordernumber = orders.order_id_edw
   LEFT OUTER JOIN parents ON parents.order_id_edw = orders.order_id_edw

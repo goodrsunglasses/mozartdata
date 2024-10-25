@@ -22,19 +22,19 @@ WITH
       orders.transaction_id_ns IS NOT NULL -- no need for checking if its a parent as the only transaction_id_ns's that are in dim.orders are parents
   ),
   shopify_info AS ( --Grab any and all shopify info from this CTE
-    SELECT
+       SELECT
       orders.order_id_edw,
-      shopify_line.amount_booked AS amount_product_booked_shop,
-      shopify_line.shipping_sold AS amount_shipping_booked_shop,
-      shopify_line.tax_sold AS amount_tax_booked_shop,
-      shopify_line.amount_discount AS amount_discount_booked_shop,
-      shopify_line.amount_booked+shopify_line.shipping_sold-shopify_line.amount_discount AS amount_revenue_booked_shop,
-      shopify_line.amount_booked+shopify_line.shipping_sold+shopify_line.tax_sold-shopify_line.amount_discount AS amount_paid_booked_shop,
+      shopify.amount_booked AS amount_product_booked_shop,
+      shopify.shipping_sold AS amount_shipping_booked_shop,
+      shopify.tax_sold AS amount_tax_booked_shop,
+      shopify.amount_discount AS amount_discount_booked_shop,
+      shopify.amount_booked+shopify.shipping_sold-shopify.amount_discount AS amount_revenue_booked_shop,
+      shopify.amount_booked+shopify.shipping_sold+shopify.tax_sold-shopify.amount_discount AS amount_paid_booked_shop,
       order_created_date_pst,
       quantity_sold AS total_quantity_shopify
     FROM
       dim.orders orders
-      LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
+      LEFT OUTER JOIN fact.shopify_orders shopify ON shopify.order_id_shopify = orders.order_id_shopify
   ),
   fulfillment_info AS ( --Grab any and all shopify info from this CTE
 		 SELECT orders.order_id_edw,

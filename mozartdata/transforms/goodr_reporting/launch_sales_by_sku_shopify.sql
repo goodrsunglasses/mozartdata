@@ -41,7 +41,7 @@ grid_days as
       on ld.product_id_edw = oi.product_id_edw
       -- and ld.earliest_d2c_sale >= '2023-01-01'
     inner join
-      fact.shopify_order_line o
+      fact.shopify_orders o
       on oi.order_id_shopify = o.order_id_shopify
     group by
       oi.order_id_shopify
