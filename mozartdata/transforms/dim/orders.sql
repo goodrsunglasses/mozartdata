@@ -13,7 +13,7 @@ WITH
         SELECT DISTINCT
           order_id_edw
         FROM
-          fact.shopify_order_line
+          fact.shopify_orders
       )
   ),
   parents AS ( -- select just the parents from fact order line to join after, this is a cte because filtering the entire query for just parent = true ignores the ones that dont come from NS
