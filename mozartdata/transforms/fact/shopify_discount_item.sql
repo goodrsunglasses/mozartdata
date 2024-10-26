@@ -19,5 +19,3 @@ FROM
     alloc.order_line_id = line.order_line_id_shopify
     AND alloc.discount_application_index = appl.index
   )
-WHERE
-  appl.order_id_shopify = 5349398511674
