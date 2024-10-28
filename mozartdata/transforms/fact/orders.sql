@@ -22,19 +22,20 @@ WITH
       orders.transaction_id_ns IS NOT NULL -- no need for checking if its a parent as the only transaction_id_ns's that are in dim.orders are parents
   ),
   shopify_info AS ( --Grab any and all shopify info from this CTE
-    SELECT
+       SELECT
       orders.order_id_edw,
-      shopify_line.amount_booked AS amount_product_booked_shop,
-      shopify_line.shipping_sold AS amount_shipping_booked_shop,
-      shopify_line.tax_sold AS amount_tax_booked_shop,
-      shopify_line.amount_discount AS amount_discount_booked_shop,
-      shopify_line.amount_booked+shopify_line.shipping_sold-shopify_line.amount_discount AS amount_revenue_booked_shop,
-      shopify_line.amount_booked+shopify_line.shipping_sold+shopify_line.tax_sold-shopify_line.amount_discount AS amount_paid_booked_shop,
-      order_created_date_pst,
-      quantity_sold AS total_quantity_shopify
+      shopify.amount_booked AS amount_product_booked_shop,
+      shopify.shipping_sold AS amount_shipping_booked_shop,
+      shopify.amount_tax_sold AS amount_tax_booked_shop,
+      shopify.amount_discount AS amount_discount_booked_shop,
+      shopify.amount_booked+shopify.shipping_sold-shopify.amount_discount AS amount_revenue_booked_shop,
+      shopify.amount_booked+shopify.shipping_sold+shopify.amount_tax_sold-shopify.amount_discount AS amount_paid_booked_shop,
+      shopify.order_created_date_pst,
+      shopify.quantity_booked AS quantity_booked_shopify,
+      shopify.quantity_sold AS quantity_sold_shopify
     FROM
       dim.orders orders
-      LEFT OUTER JOIN fact.shopify_order_line shopify_line ON shopify_line.order_id_shopify = orders.order_id_shopify
+      LEFT OUTER JOIN fact.shopify_orders shopify ON shopify.order_id_shopify = orders.order_id_shopify
   ),
   fulfillment_info AS ( --Grab any and all shopify info from this CTE
 		 SELECT orders.order_id_edw,
@@ -205,11 +206,13 @@ SELECT
   b2b_d2c,
   aggregate_netsuite.model,
   coalesce(
-    shopify_info.total_quantity_shopify,
+    shopify_info.quantity_booked_shopify,
     aggregates.quantity_booked
   ) as quantity_booked,-- source of truth column for quantities also comes from shopify
-  shopify_info.total_quantity_shopify as quantity_booked_shopify,
+  shopify_info.quantity_booked_shopify as quantity_booked_shopify,
   aggregates.quantity_booked AS quantity_booked_ns,
+  shopify_info.quantity_sold_shopify as quantity_sold_shopify,
+  aggregates.quantity_sold as quantity_sold_ns,
   aggregates.quantity_sold,
   CASE WHEN aggregate_netsuite.channel NOT IN
 				('Key Account','Key Accounts', 'Global', 'Prescription', 'Key Account CAN', 'Amazon Canada', 'Amazon Prime', 'Cabana',
