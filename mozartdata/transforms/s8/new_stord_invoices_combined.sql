@@ -9,7 +9,7 @@ select
 UNION
   select 
     invoice_number as invoice,
-    billed_date,
+    coalesce(try_to_date(billed_date, 'yyyy-mm-dd'),try_to_date(billed_date,  'mm/dd/yyyy')) as billed_date,
     ship_date,
     order_number_wms as goodr_order_number,
     total_shipping_less_duties as total_paid,
