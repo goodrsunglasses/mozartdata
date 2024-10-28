@@ -1,5 +1,3 @@
--- CREATE OR REPLACE TABLE fact.shopify_discount_item
---            COPY GRANTS  as
 SELECT
   appl.order_id_shopify,
   line.store,
