@@ -43,7 +43,7 @@ WITH
       , ol.sold_date
       , ol.store
       , oi.sku
-      , oi.name                         AS display_name
+      , oi.display_name                         AS display_name
       , SUM(oi.quantity_sold)           AS quantity_sold
       , SUM(oi.quantity_booked)         AS quantity_booked
       FROM
@@ -56,7 +56,7 @@ WITH
       , ol.sold_date
       , ol.store
       , oi.sku
-      , oi.name
+      , oi.display_name
       )
 , avg_sales        AS
     (
