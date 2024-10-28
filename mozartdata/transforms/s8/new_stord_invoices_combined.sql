@@ -51,7 +51,3 @@ UNION
     total_shipping_less_duties as total_paid,
     source_file
   from stord_invoices.f_combined
-
-
-------
-select * from stord_invoices.a_combined  where billed_date like '%AM%' or ship_date like '%AM%'
