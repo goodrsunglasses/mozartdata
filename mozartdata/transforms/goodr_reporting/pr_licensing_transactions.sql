@@ -40,9 +40,40 @@ WITH
       ord.channel,
       licmap.licensor,
       month_year
+  ),
+  shopify_sourced AS (
+    SELECT
+      item.product_id_edw,
+      licmap.licensor,
+      item.display_name,
+      item.store,
+      chan.customer_category,
+      concat(days.month_name, ' ', days.year) AS month_year,
+      sum(item.quantity_booked) AS total_quantity_booked,
+      sum(item.quantity_sold) AS total_quantity_sold,
+      sum(item.amount_booked) AS total_amount_booked,
+      sum(item.amount_sold) AS total_amount_sold,
+      sum(ref.quantity_refund_line) AS total_quantity_refunded,
+      sum(ref.amount_refund_line_subtotal) AS total_amount_refunded
+    FROM
+      fact.shopify_order_item item
+      LEFT OUTER JOIN fact.shopify_order_line line ON line.order_id_shopify = item.order_id_shopify
+      LEFT OUTER JOIN dim.channel chan ON chan.name = item.store
+      LEFT OUTER JOIN fact.shopify_refund_order_item ref ON ref.order_line_id = item.order_line_id_shopify
+      LEFT OUTER JOIN dim.date days ON days.date = line.order_created_date
+      LEFT OUTER JOIN dim.product prod ON prod.product_id_edw = item.product_id_edw
+      LEFT OUTER JOIN google_sheets.licensing_sku_mapping licmap ON licmap.sku = prod.product_id_edw
+    WHERE
+      prod.family = 'LICENSING'
+    GROUP BY
+      ALL
   )
 SELECT
-  ns_sourced.*,
-  total_rate_sold + total_line_discount AS total_no_discounts
+  *
 FROM
-  ns_sourced
+  shopify_sourced
+  -- SELECT
+  --   ns_sourced.*,
+  --   total_rate_sold + total_line_discount AS total_no_discounts
+  -- FROM
+  --   ns_sourced
