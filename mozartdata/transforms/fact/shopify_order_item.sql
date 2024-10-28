@@ -12,12 +12,9 @@ SELECT o.order_id_edw,
 	   line.fulfillable_quantity                                               AS quantity_unfulfilled,
 	   line.price * line.quantity                                              AS amount_booked,
 	   line.price * (line.quantity - line.fulfillable_quantity)                AS amount_sold,
-	   SUM(CASE
-			   WHEN da.discount_code NOT LIKE 'YOTPO%' THEN da.amount
-			   WHEN da.discount_code IS NULL AND da.TITLE IS NOT NULL THEN da.amount
-			   ELSE 0 END)                                                     AS amount_discount_regular,
-	   SUM(CASE WHEN da.discount_code LIKE 'YOTPO%' THEN da.amount ELSE 0 END) AS amount_yotpo,
-	   SUM(da.amount)                                                          AS total_amount_discounted,
+	  da.amount_standard_discount,
+	  amount_yotpo_discount,
+	   amount_total_discount,
 	   line.fulfillment_status
 FROM staging.shopify_orders o
 		 LEFT OUTER JOIN staging.shopify_order_line line
