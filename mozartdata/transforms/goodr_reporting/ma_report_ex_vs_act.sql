@@ -20,6 +20,6 @@ FROM
 WHERE
   channel IN ('Key Accounts', 'Key Account CAN')
   AND (
-    YEAR(shipping_window_end_date) = YEAR(CURRENT_DATE)
-    AND MONTH(shipping_window_end_date) = MONTH(CURRENT_DATE)
+    YEAR(sold_date) = YEAR(CURRENT_DATE)
+    AND MONTH(sold_date) = MONTH(CURRENT_DATE)
   )
