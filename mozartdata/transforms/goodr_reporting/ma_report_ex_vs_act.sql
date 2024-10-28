@@ -13,7 +13,8 @@ SELECT
   rate_sold,
   amount_revenue_booked_ns,
   amount_revenue_sold,
-  revenue
+  revenue,
+  quantity_sold
 FROM
   fact.orders ord
   LEFT OUTER JOIN fact.customer_ns_map map ON map.customer_id_ns = ord.customer_id_ns
