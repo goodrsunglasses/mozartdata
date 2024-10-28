@@ -2,6 +2,7 @@
 --            COPY GRANTS  as
 SELECT
   appl.order_id_shopify,
+  line.store,
   line.order_line_id_shopify,
   line.display_name,
   line.sku,
