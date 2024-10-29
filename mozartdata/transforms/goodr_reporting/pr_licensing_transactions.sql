@@ -7,7 +7,7 @@ WITH
       fact.gl_transaction
     WHERE
       posting_flag
-      AND record_type IN ('cashale', 'invoice')
+      AND record_type IN ('cashsale', 'invoice')
   ),
   ns_sourced AS (
     --bas
