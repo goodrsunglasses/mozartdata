@@ -17,6 +17,7 @@ SELECT
 , SUM(coalesce(da.amount_yotpo_discount,0))                            AS amount_yotpo_discount
 , SUM(coalesce(da.amount_total_discount,0))                            AS amount_total_discount
 , line.fulfillment_status
+, case when line.sku like 'GC%' then line.price * (line.quantity - line.fulfillable_quantity) else 0 end amount_gift_card
 FROM
   staging.shopify_orders o
   LEFT OUTER JOIN staging.shopify_order_line line
