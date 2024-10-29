@@ -1,4 +1,14 @@
 WITH
+  order_posting AS ( --Basically because one order_id_edw doesn't have one posting period I need to find all the cashsale posting periods
+    SELECT DISTINCT
+      order_id_edw,
+      posting_period
+    FROM
+      fact.gl_transaction
+    WHERE
+      posting_flag
+      AND record_type IN ('cashale', 'invoice')
+  ),
   ns_sourced AS (
     --bas
     SELECT
@@ -7,7 +17,7 @@ WITH
       item.plain_name,
       ord.channel,
       ord.b2b_d2c,
-      concat(days.month_name, ' ', days.year) AS month_year,
+  posting_period,
       sum(item.quantity_booked) total_quantity_booked,
       sum(item.rate_booked) total_rate_booked,
       sum(item.rate_sold) total_rate_sold,
@@ -19,7 +29,7 @@ WITH
     FROM
       fact.order_item item
       LEFT OUTER JOIN fact.orders ord ON ord.order_id_edw = item.order_id_edw
-      LEFT OUTER JOIN dim.date days ON days.date = ord.booked_date
+      LEFT OUTER JOIN order_posting ON order_posting.order_id_edw = item.order_id_edw
       LEFT OUTER JOIN dim.product prod ON prod.product_id_edw = item.product_id_edw
       LEFT OUTER JOIN google_sheets.licensing_sku_mapping licmap ON licmap.sku = prod.product_id_edw
       LEFT OUTER JOIN fact.netsuite_order_item_discounts discount ON (
@@ -39,7 +49,7 @@ WITH
       b2b_d2c,
       ord.channel,
       licmap.licensor,
-      month_year
+      posting_period
   ),
   shopify_sourced AS (
     SELECT
@@ -71,7 +81,7 @@ WITH
 SELECT
   *
 FROM
-  shopify_sourced
+  ns_sourced
   -- SELECT
   --   ns_sourced.*,
   --   total_rate_sold + total_line_discount AS total_no_discounts
