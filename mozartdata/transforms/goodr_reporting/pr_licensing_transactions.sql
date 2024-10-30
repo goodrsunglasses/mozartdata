@@ -21,7 +21,7 @@ WITH
       sum(item.amount_revenue_sold) total_amount_revenue_sold,
       - round(sum(line_item_discount), 2) total_line_discount,
       sum(ref.quantity) AS total_quantity_refunded,
-      sum(item.amount_revenue_refunded)
+      sum(item.amount_revenue_refunded) total_amount_revenue_refunded
     FROM
       fact.order_item item
       LEFT OUTER JOIN fact.orders ord ON ord.order_id_edw = item.order_id_edw
