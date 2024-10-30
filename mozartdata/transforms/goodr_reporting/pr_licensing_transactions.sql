@@ -74,11 +74,8 @@ WITH
       ALL
   )
 SELECT
-  *
+  ns_sourced.*,
+  total_amount_revenue_sold - total_amount_revenue_refunded - total_line_discount AS net_sales,
+  total_amount_revenue_sold - total_amount_revenue_refunded AS net_sales_no_discount
 FROM
   ns_sourced
-  -- SELECT
-  --   ns_sourced.*,
-  --   total_rate_sold + total_line_discount AS total_no_discounts
-  -- FROM
-  --   ns_sourced
