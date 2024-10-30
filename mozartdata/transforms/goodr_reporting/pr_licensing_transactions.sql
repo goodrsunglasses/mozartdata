@@ -9,7 +9,7 @@ WITH
       posting_flag
       AND record_type IN ('cashsale', 'invoice')
   ),
-  ns_sourced AS (--Just the data using NS as the only Source
+  ns_sourced AS ( --Just the data using NS as the only Source
     SELECT
       item.product_id_edw,
       licmap.licensor,
@@ -20,7 +20,8 @@ WITH
       sum(item.quantity_booked) total_quantity_booked,
       sum(item.amount_revenue_sold) total_amount_revenue_sold,
       - round(sum(line_item_discount), 2) total_line_discount,
-      sum(ref.quantity) AS total_quantity_refunded
+      sum(ref.quantity) AS total_quantity_refunded,
+      sum(item.amount_revenue_refunded)
     FROM
       fact.order_item item
       LEFT OUTER JOIN fact.orders ord ON ord.order_id_edw = item.order_id_edw
