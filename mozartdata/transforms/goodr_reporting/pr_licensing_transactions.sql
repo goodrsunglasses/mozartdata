@@ -9,23 +9,18 @@ WITH
       posting_flag
       AND record_type IN ('cashsale', 'invoice')
   ),
-  ns_sourced AS (
-    --bas
+  ns_sourced AS (--Just the data using NS as the only Source
     SELECT
       item.product_id_edw,
       licmap.licensor,
       item.plain_name,
       ord.channel,
       ord.b2b_d2c,
-  posting_period,
+      posting_period,
       sum(item.quantity_booked) total_quantity_booked,
-      sum(item.rate_booked) total_rate_booked,
-      sum(item.rate_sold) total_rate_sold,
-      sum(item.revenue) total_revenue,
-      sum(item.gross_profit_estimate) total_gross_profit_estimate,
+      sum(item.amount_revenue_sold) total_amount_revenue_sold,
       - round(sum(line_item_discount), 2) total_line_discount,
-      sum(ref.quantity) AS total_quantity_refunded,
-      sum(ref.rate) AS total_rate_refunded
+      sum(ref.quantity) AS total_quantity_refunded
     FROM
       fact.order_item item
       LEFT OUTER JOIN fact.orders ord ON ord.order_id_edw = item.order_id_edw
@@ -42,7 +37,6 @@ WITH
       )
     WHERE
       prod.family = 'LICENSING'
-
     GROUP BY
       item.product_id_edw,
       item.plain_name,
