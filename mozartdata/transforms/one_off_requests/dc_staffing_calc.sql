@@ -29,6 +29,8 @@ SELECT
     WHEN customer_name LIKE 'Fleet Feet%' THEN 'Fleet Feet'
     ELSE customer_name
   END AS normalized_name,
+  per_order,
+  per_100_units,
   ord.tier,
   location,
   booked_date,
@@ -47,7 +49,7 @@ SELECT
 FROM
   fact.orders ord
   LEFT OUTER JOIN fact.customer_ns_map map ON map.customer_id_ns = ord.customer_id_ns
-  left outer join pack_times on lower(pack_times.fixed_retailer) = normalized_name
+  left outer join pack_times on lower(pack_times.fixed_retailer) = lower(normalized_name)
 WHERE
   channel = 'Key Accounts'
   AND location NOT LIKE '%Stord%'
