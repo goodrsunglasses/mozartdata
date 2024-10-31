@@ -10,11 +10,11 @@ WITH
         WHEN retailer LIKE 'Road%' THEN 'Road Runner Sports'
         WHEN retailer LIKE 'Scheels%' THEN 'Scheels Fargo'
         WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-   WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-   WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-   WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-   WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-   WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
+        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
+        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
+        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
+        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
+        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
         ELSE retailer
       END AS fixed_retailer
     FROM
@@ -23,7 +23,10 @@ WITH
 SELECT
   order_id_edw,
   channel,
-  customer_name,
+  CASE
+    WHEN customer_name LIKE 'Fleet Feet%' THEN 'Fleet Feet'
+    ELSE customer_name
+  END AS normalized_name,
   ord.tier,
   location,
   booked_date,
