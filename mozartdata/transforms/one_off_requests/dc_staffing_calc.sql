@@ -16,7 +16,9 @@ WITH
         WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
         WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
         ELSE retailer
-      END AS fixed_retailer
+      END AS fixed_retailer,
+  total_additional_time_per_order_in_minutes_ as per_order,
+  total_per_100_units_in_minutes_ as per_100_units
     FROM
       google_sheets.dc_calc_times
   )
@@ -45,6 +47,7 @@ SELECT
 FROM
   fact.orders ord
   LEFT OUTER JOIN fact.customer_ns_map map ON map.customer_id_ns = ord.customer_id_ns
+  left outer join pack_times on lower(pack_times.fixed_retailer) = normalized_name
 WHERE
   channel = 'Key Accounts'
   AND location NOT LIKE '%Stord%'
