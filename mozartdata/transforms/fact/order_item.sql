@@ -106,7 +106,7 @@ WITH
     , oi.order_id_edw
     , oi.product_id_edw
     , oi.sku
-    , oi.amount_discount
+    , oi.amount_total_discount
     FROM
       fact.shopify_order_item oi
   )
