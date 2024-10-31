@@ -33,7 +33,10 @@ SELECT
   shipping_window_start_date,
   shipping_window_end_date,
   quantity_booked,
-  round((quantity_booked / per_100_units) + per_order, 2) AS total_time_minutes,
+  round(
+    ((quantity_booked / 100) * per_100_units) + per_order,
+    2
+  ) AS total_time_minutes,
   CASE
     WHEN CURRENT_DATE BETWEEN shipping_window_start_date AND shipping_window_end_date  THEN TRUE
     ELSE FALSE
