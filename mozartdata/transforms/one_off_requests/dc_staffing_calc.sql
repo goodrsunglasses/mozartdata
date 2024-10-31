@@ -9,12 +9,7 @@ WITH
         WHEN retailer LIKE 'Specialized%' THEN 'Specialized Miami Wynwood'
         WHEN retailer LIKE 'Road%' THEN 'Road Runner Sports'
         WHEN retailer LIKE 'Scheels%' THEN 'Scheels Fargo'
-        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
-        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
+        WHEN retailer LIKE 'Dunham%' THEN 'Dunham''s Sports'
         ELSE retailer
       END AS fixed_retailer,
   total_additional_time_per_order_in_minutes_ as per_order,
