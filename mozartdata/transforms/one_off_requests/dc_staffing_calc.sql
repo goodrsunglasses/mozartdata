@@ -1,3 +1,20 @@
+WITH
+  pack_times AS (
+    SELECT
+      retailer,
+      CASE
+        WHEN retailer LIKE 'Dick%' THEN 'Dicks Sporting Goods'
+        WHEN retailer LIKE 'Duluth%' THEN 'Duluth Trading Co.'
+        WHEN retailer LIKE 'Running%' THEN 'Running Room Canada Inc.'
+        WHEN retailer LIKE 'Specialized%' THEN 'Specialized Miami Wynwood'
+        WHEN retailer LIKE 'Road%' THEN 'Road Runner Sports'
+        WHEN retailer LIKE 'Scheels%' THEN 'Scheels Fargo'
+        WHEN retailer LIKE 'Glik%' THEN 'Glik''s'
+        ELSE retailer
+      END AS fixed_retailer
+    FROM
+      google_sheets.dc_calc_times
+  )
 SELECT
   order_id_edw,
   channel,
@@ -14,7 +31,7 @@ SELECT
     ELSE FALSE
   END AS shipping_window_boolean,
   CASE
-    WHEN fulfillment_date IS not null THEN TRUE
+    WHEN fulfillment_date IS NOT NULL THEN TRUE
     ELSE FALSE
   END AS fullfilled_boolean
 FROM
