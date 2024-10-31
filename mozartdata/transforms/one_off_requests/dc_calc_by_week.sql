@@ -7,12 +7,12 @@ SELECT
     'MM/DD/YY'
   ) AS week_range,
   customer_name,
-  sum(quantity_booked) total_booked
+  sum(quantity_booked) total_booked,
+  sum((total_time_minutes/60)) as total_hours
 FROM
   one_off_requests.dc_staffing_calc calc
 WHERE
   week_range IS NOT NULL
-  
 GROUP BY
   ALL
 order by week_range
