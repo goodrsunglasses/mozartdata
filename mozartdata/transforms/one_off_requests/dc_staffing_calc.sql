@@ -12,8 +12,8 @@ WITH
         WHEN retailer LIKE 'Dunham%' THEN 'Dunham''s Sports'
         ELSE retailer
       END AS fixed_retailer,
-  total_additional_time_per_order_in_minutes_ as per_order,
-  total_per_100_units_in_minutes_ as per_100_units
+      total_additional_time_per_order_in_minutes_ AS per_order,
+      total_per_100_units_in_minutes_ AS per_100_units
     FROM
       google_sheets.dc_calc_times
   )
@@ -33,6 +33,7 @@ SELECT
   shipping_window_start_date,
   shipping_window_end_date,
   quantity_booked,
+  round((quantity_booked / per_100_units) + per_order, 2) AS total_time_minutes,
   CASE
     WHEN CURRENT_DATE BETWEEN shipping_window_start_date AND shipping_window_end_date  THEN TRUE
     ELSE FALSE
@@ -44,7 +45,7 @@ SELECT
 FROM
   fact.orders ord
   LEFT OUTER JOIN fact.customer_ns_map map ON map.customer_id_ns = ord.customer_id_ns
-  left outer join pack_times on lower(pack_times.fixed_retailer) = lower(normalized_name)
+  LEFT OUTER JOIN pack_times ON lower(pack_times.fixed_retailer) = lower(normalized_name)
 WHERE
   channel = 'Key Accounts'
   AND location NOT LIKE '%Stord%'
