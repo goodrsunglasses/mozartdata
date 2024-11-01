@@ -81,6 +81,7 @@ WITH
           product_id_edw,
           posting_period,
           store AS channel,
+          display_name,
           licensor
         FROM
           shopify_sourced
@@ -89,6 +90,7 @@ WITH
           product_id_edw,
           posting_period,
           channel,
+    plain_name,
           licensor
         FROM
           ns_sourced
@@ -112,6 +114,8 @@ WITH
   )
 SELECT
   sku_periods.*,
+  calc_ns.total_amount_revenue_sold,
+  calc_shopify.total_amount_sold
 FROM
   sku_periods
   LEFT OUTER JOIN calc_ns ON (
