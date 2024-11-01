@@ -114,8 +114,14 @@ SELECT
   sku_periods.*,
   calc_ns.total_quantity_booked AS total_quantity_booked_ns,
   calc_shopify.total_quantity_booked AS total_quantity_booked_shop,
-  calc_ns.total_amount_revenue_sold,
-  calc_shopify.total_amount_sold
+  calc_ns.total_amount_revenue_sold AS total_amount_revenue_sold_ns,
+  calc_shopify.total_amount_sold AS total_amount_sold_shop,
+  total_line_discount AS total_discount_shop,
+  total_standard_discount AS total_discount_ns,
+  calc_ns.total_quantity_refunded AS total_quantity_refunded_ns,
+  calc_shopify.total_quantity_refunded AS total_quantity_refunded_shop,
+  total_amount_revenue_refunded,
+  total_amount_refunded
 FROM
   sku_periods
   LEFT OUTER JOIN calc_ns ON (
