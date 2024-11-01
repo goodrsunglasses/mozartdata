@@ -94,19 +94,19 @@ WITH
           ns_sourced
       )
   ),
-  calc_shopify AS (
+ calc_shopify AS (
     SELECT
       shopify_sourced.*,
-      total_amount_sold - total_amount_refunded + total_standard_discount AS net_sales,
-      total_amount_sold - total_amount_refunded AS net_sales_no_discount
+      total_amount_sold - coalesce(total_amount_refunded,0) + coalesce(total_standard_discount,0) AS net_sales,
+      total_amount_sold -  coalesce(total_amount_refunded,0) AS net_sales_no_discount
     FROM
       shopify_sourced
   ),
   calc_ns AS (
     SELECT
       ns_sourced.*,
-      total_amount_revenue_sold - total_amount_revenue_refunded + total_line_discount AS net_sales,
-      total_amount_revenue_sold - total_amount_revenue_refunded AS net_sales_no_discount
+      total_amount_revenue_sold - coalesce(total_amount_revenue_refunded,0) + total_line_discount AS net_sales,
+      total_amount_revenue_sold -  coalesce(total_amount_revenue_refunded,0) AS net_sales_no_discount
     FROM
       ns_sourced
   )
