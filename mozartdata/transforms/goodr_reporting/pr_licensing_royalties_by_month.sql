@@ -18,7 +18,7 @@ SELECT
   detail.product_id_edw,
   detail.posting_period,
   detail.channel,
-  calc_clean.rate,
+  calc_clean.rate as calc_method,
   calc_clean.rate_percent,
   detail.net_sales_ns,
   detail.net_sales_shop,
