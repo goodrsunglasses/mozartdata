@@ -81,7 +81,6 @@ WITH
           product_id_edw,
           posting_period,
           store AS channel,
-          display_name,
           licensor
         FROM
           shopify_sourced
@@ -90,7 +89,6 @@ WITH
           product_id_edw,
           posting_period,
           channel,
-          plain_name,
           licensor
         FROM
           ns_sourced
