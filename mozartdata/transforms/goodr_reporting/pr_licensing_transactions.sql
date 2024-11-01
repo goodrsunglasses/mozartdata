@@ -71,7 +71,8 @@ WITH
       prod.family = 'LICENSING'
     GROUP BY
       ALL
-  ), sku_periods AS (--Basically since we care about data only in one system, but want to include shopify/NS stuff on one line then we wanna go ahead and select the distinct month/year periods a given sku was sold
+  ),
+  sku_periods AS ( --Basically since we care about data only in one system, but want to include shopify/NS stuff on one line then we wanna go ahead and select the distinct month/year periods a given sku was sold
     SELECT DISTINCT
       *
     FROM
@@ -79,29 +80,40 @@ WITH
         SELECT
           product_id_edw,
           posting_period,
-          store
+      store,
+  licensor
         FROM
           shopify_sourced
         UNION ALL
         SELECT
           product_id_edw,
           posting_period,
-  channel
+  channelm
+  licensor
         FROM
           ns_sourced
       )
+  ),
+  calc_shopify AS (
+    SELECT
+      shopify_sourced.*,
+      total_amount_sold - total_amount_refunded + total_standard_discount AS net_sales,
+      total_amount_sold - total_amount_refunded AS net_sales_no_discount
+    FROM
+      shopify_sourced
+  ),
+  calc_ns AS (
+    SELECT
+      ns_sourced.*,
+      total_amount_revenue_sold - total_amount_revenue_refunded + total_line_discount AS net_sales,
+      total_amount_revenue_sold - total_amount_revenue_refunded AS net_sales_no_discount
+    FROM
+      ns_sourced
   )
-  select * from sku_periods
--- SELECT
---   shopify_sourced.*,
---   total_amount_sold - total_amount_refunded + total_standard_discount AS net_sales,
---   total_amount_sold - total_amount_refunded AS net_sales_no_discount
--- FROM
---   shopify_sourced
--- UNION ALL
--- SELECT
---   ns_sourced.*,
---   total_amount_revenue_sold - total_amount_revenue_refunded + total_line_discount AS net_sales,
---   total_amount_revenue_sold - total_amount_revenue_refunded AS net_sales_no_discount
--- FROM
---   ns_sourced
+SELECT
+  sku_periods.*,
+  
+FROM
+  sku_periods
+  LEFT OUTER JOIN calc_ns ON (calc_ns.product_id_edw = sku_periods.product_id_edw and calc_ns.posting_period = sku_periods.posting_period)
+  LEFT OUTER JOIN calc_shopify ON (calc_shopify.product_id_edw = sku_periods.product_id_edw and calc_shopify.posting_period = sku_periods.posting_period)
