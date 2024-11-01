@@ -120,8 +120,12 @@ SELECT
   total_standard_discount AS total_discount_ns,
   calc_ns.total_quantity_refunded AS total_quantity_refunded_ns,
   calc_shopify.total_quantity_refunded AS total_quantity_refunded_shop,
-  total_amount_revenue_refunded,
-  total_amount_refunded
+  total_amount_revenue_refunded AS total_amount_revenue_refunded_ns,
+  total_amount_refunded AS total_amount_refunded_shop,
+  calc_ns.net_sales AS net_sales_ns,
+  calc_shopify.net_sales AS net_sales_shop,
+  calc_ns.net_sales_no_discount AS net_sales_no_discount_ns,
+  calc_shopify.net_sales_no_discount AS net_sales_no_discount_shop
 FROM
   sku_periods
   LEFT OUTER JOIN calc_ns ON (
