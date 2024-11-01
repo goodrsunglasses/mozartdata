@@ -80,16 +80,16 @@ WITH
         SELECT
           product_id_edw,
           posting_period,
-      store,
-  licensor
+          store AS channel,
+          licensor
         FROM
           shopify_sourced
         UNION ALL
         SELECT
           product_id_edw,
           posting_period,
-  channelm
-  licensor
+          channel,
+          licensor
         FROM
           ns_sourced
       )
@@ -112,8 +112,15 @@ WITH
   )
 SELECT
   sku_periods.*,
-  
 FROM
   sku_periods
-  LEFT OUTER JOIN calc_ns ON (calc_ns.product_id_edw = sku_periods.product_id_edw and calc_ns.posting_period = sku_periods.posting_period)
-  LEFT OUTER JOIN calc_shopify ON (calc_shopify.product_id_edw = sku_periods.product_id_edw and calc_shopify.posting_period = sku_periods.posting_period)
+  LEFT OUTER JOIN calc_ns ON (
+    calc_ns.product_id_edw = sku_periods.product_id_edw
+    AND calc_ns.posting_period = sku_periods.posting_period
+    AND calc_ns.channel = sku_periods.channel
+  )
+  LEFT OUTER JOIN calc_shopify ON (
+    calc_shopify.product_id_edw = sku_periods.product_id_edw
+    AND calc_shopify.posting_period = sku_periods.posting_period
+  AND calc_shopify.store = sku_periods.channel
+  )
