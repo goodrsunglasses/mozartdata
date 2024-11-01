@@ -61,7 +61,6 @@ WITH
       sum(ref.amount_refund_line_subtotal) AS total_amount_refunded
     FROM
       fact.shopify_order_item item
-      LEFT OUTER JOIN fact.shopify_order_line line ON line.order_id_shopify = item.order_id_shopify
       LEFT OUTER JOIN dim.channel chan ON chan.name = item.store
       LEFT OUTER JOIN fact.shopify_refund_order_item ref ON ref.order_line_id = item.order_line_id_shopify
       LEFT OUTER JOIN dim.date days ON days.date = line.order_created_date
