@@ -90,7 +90,7 @@ WITH
           product_id_edw,
           posting_period,
           channel,
-    plain_name,
+          plain_name,
           licensor
         FROM
           ns_sourced
@@ -114,6 +114,8 @@ WITH
   )
 SELECT
   sku_periods.*,
+  calc_ns.total_quantity_booked AS total_quantity_booked_ns,
+  calc_shopify.total_quantity_booked AS total_quantity_booked_shop,
   calc_ns.total_amount_revenue_sold,
   calc_shopify.total_amount_sold
 FROM
@@ -126,5 +128,8 @@ FROM
   LEFT OUTER JOIN calc_shopify ON (
     calc_shopify.product_id_edw = sku_periods.product_id_edw
     AND calc_shopify.posting_period = sku_periods.posting_period
-  AND calc_shopify.store = sku_periods.channel
+    AND calc_shopify.store = sku_periods.channel
   )
+WHERE
+  sku_periods.posting_period = 'Apr 2024'
+  AND sku_periods.product_id_edw = 'G00155-OG-CH4-RF'
