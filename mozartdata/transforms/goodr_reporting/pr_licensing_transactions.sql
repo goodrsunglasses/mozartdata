@@ -54,10 +54,9 @@ WITH
       item.store,
       chan.customer_category,
       concat(days.month_name, ' ', days.year) AS month_year,
-      sum(item.quantity_booked) AS total_quantity_booked,
-      sum(item.quantity_sold) AS total_quantity_sold,
-      sum(item.amount_booked) AS total_amount_booked,
+      sum(item.quantity_sold) AS total_quantity_booked,
       sum(item.amount_sold) AS total_amount_sold,
+      - sum(amount_standard_discount) AS total_standard_discount,
       sum(ref.quantity_refund_line) AS total_quantity_refunded,
       sum(ref.amount_refund_line_subtotal) AS total_amount_refunded
     FROM
@@ -74,8 +73,15 @@ WITH
       ALL
   )
 SELECT
+  shopify_sourced.*,
+  total_amount_sold - total_amount_refunded + total_standard_discount AS net_sales,
+  total_amount_sold - total_amount_refunded AS net_sales_no_discount
+FROM
+  shopify_sourced
+UNION ALL
+SELECT
   ns_sourced.*,
-  total_amount_revenue_sold - total_amount_revenue_refunded - total_line_discount AS net_sales,
+  total_amount_revenue_sold - total_amount_revenue_refunded + total_line_discount AS net_sales,
   total_amount_revenue_sold - total_amount_revenue_refunded AS net_sales_no_discount
 FROM
   ns_sourced
