@@ -53,7 +53,7 @@ WITH
       item.display_name,
       item.store,
       chan.customer_category,
-      concat(days.month_name, ' ', days.year) AS month_year,
+      days.posting_period,
       sum(item.quantity_sold) AS total_quantity_booked,
       sum(item.amount_sold) AS total_amount_sold,
       - sum(amount_standard_discount) AS total_standard_discount,
@@ -71,17 +71,37 @@ WITH
       prod.family = 'LICENSING'
     GROUP BY
       ALL
+  ), sku_periods AS (--Basically since we care about data only in one system, but want to include shopify/NS stuff on one line then we wanna go ahead and select the distinct month/year periods a given sku was sold
+    SELECT DISTINCT
+      *
+    FROM
+      (
+        SELECT
+          product_id_edw,
+          posting_period,
+          store
+        FROM
+          shopify_sourced
+        UNION ALL
+        SELECT
+          product_id_edw,
+          posting_period,
+  channel
+        FROM
+          ns_sourced
+      )
   )
-SELECT
-  shopify_sourced.*,
-  total_amount_sold - total_amount_refunded + total_standard_discount AS net_sales,
-  total_amount_sold - total_amount_refunded AS net_sales_no_discount
-FROM
-  shopify_sourced
-UNION ALL
-SELECT
-  ns_sourced.*,
-  total_amount_revenue_sold - total_amount_revenue_refunded + total_line_discount AS net_sales,
-  total_amount_revenue_sold - total_amount_revenue_refunded AS net_sales_no_discount
-FROM
-  ns_sourced
+  select * from sku_periods
+-- SELECT
+--   shopify_sourced.*,
+--   total_amount_sold - total_amount_refunded + total_standard_discount AS net_sales,
+--   total_amount_sold - total_amount_refunded AS net_sales_no_discount
+-- FROM
+--   shopify_sourced
+-- UNION ALL
+-- SELECT
+--   ns_sourced.*,
+--   total_amount_revenue_sold - total_amount_revenue_refunded + total_line_discount AS net_sales,
+--   total_amount_revenue_sold - total_amount_revenue_refunded AS net_sales_no_discount
+-- FROM
+--   ns_sourced
