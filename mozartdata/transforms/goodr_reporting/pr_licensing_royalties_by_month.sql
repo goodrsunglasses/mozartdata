@@ -21,4 +21,6 @@ FROM
   goodr_reporting.pr_licensing_transactions detail
   LEFT OUTER JOIN calc_clean ON lower(calc_clean.licensor) = lower(detail.licensor)
   AND lower(calc_clean.clean_channel) = lower(detail.channel)
-where detail.licensor is not null and rate is null AND b2b_d2c !='INDIRECT'
+WHERE
+  detail.licensor IS NOT NULL
+  AND rate IS NULL
