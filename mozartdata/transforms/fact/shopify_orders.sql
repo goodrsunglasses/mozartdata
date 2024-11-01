@@ -12,6 +12,7 @@ SELECT DISTINCT
   o.amount_discount*-1 as amount_discount,
   sum(line.amount_yotpo_discount) as amount_yotpo_discount,
   sum(line.amount_standard_discount) as amount_standard_discount,
+  sum(line.amount_total_discount) as amount_total_discount,
   o.created_at as order_created_timestamp,
   DATE(o.created_at) as order_created_date,
   CONVERT_TIMEZONE('America/Los_Angeles', o.created_at) AS order_created_timestamp_pst,
