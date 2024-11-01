@@ -138,6 +138,3 @@ FROM
     AND calc_shopify.posting_period = sku_periods.posting_period
     AND calc_shopify.store = sku_periods.channel
   )
-WHERE
-  sku_periods.posting_period = 'Apr 2024'
-  AND sku_periods.product_id_edw = 'G00155-OG-CH4-RF'
