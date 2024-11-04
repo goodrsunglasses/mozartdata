@@ -28,6 +28,6 @@ t.channel,
   from
 period_map pm 
 LEFT JOIN targets t on t.posting_period = pm.posting_period 
-  LEFT JOIN google_sheets.november_2024_revenue_dist bf on bf.transaction_date = pm.date and channel in ('Goodr.com','goodr.ca')
+  LEFT JOIN google_sheets.november_2024_revenue_dist bf on bf.transaction_date = pm.date and channel in ('Goodr.com','goodr.ca','Amazon')
   where budget_version LIKE '2024%' and channel is not null 
 order by date, channel
