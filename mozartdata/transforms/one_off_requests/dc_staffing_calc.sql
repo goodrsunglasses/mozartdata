@@ -53,3 +53,4 @@ WHERE
   channel = 'Key Accounts'
   AND location NOT LIKE '%Stord%'
   AND booked_date >= '2024-01-01'
+  AND ord.order_id_edw not like 'BPO%'
