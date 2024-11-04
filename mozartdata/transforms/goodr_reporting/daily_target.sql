@@ -23,9 +23,11 @@ group by 1,2,3)
 SELECT 
 budget_version as year, pm.date,
 t.channel,
-  target/pm.days as revenue
+  
+  coalesce(target*bf.percent,target/pm.days) as revenue,
   from
 period_map pm 
 LEFT JOIN targets t on t.posting_period = pm.posting_period 
-  where budget_version LIKE '2024%' and channel is not null
+  LEFT JOIN google_sheets.november_2024_revenue_dist bf on bf.transaction_date = pm.date and channel in ('Goodr.com','goodr.ca')
+  where budget_version LIKE '2024%' and channel is not null 
 order by date, channel
