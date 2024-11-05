@@ -17,12 +17,15 @@ SELECT
   bank,
   sum(
     CASE
-      WHEN transaction_date BETWEEN date_min AND date_max  THEN net_amount
+      WHEN transaction_date BETWEEN dates.date_min AND dates.date_max  THEN net_amount
+      WHEN bank = 'JPM' THEN net_amount
       ELSE 0
     END
-  ) AS total_credit_amt_ns
+  ) AS total_credit_amt_ns,
+  sum(amount) AS bank_amount
 FROM
   s8.credit_card_reconciliation_transactions tran
   LEFT OUTER JOIN dates ON dates.source = tran.bank
+  LEFT OUTER JOIN fact.credit_card_merchant_map bank_tran ON bank_tran.netsuite_account_num = tran.expenseaccount
 GROUP BY
   ALL
