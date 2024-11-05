@@ -20,7 +20,7 @@ SELECT
       WHEN bank = 'JPM' THEN net_amount
       ELSE 0
     END
-  ),2) AS total_credit_amt_ns,
+  ),2) AS total_credit_amount_ns,
   sum(amount) AS bank_statement_amount
 FROM
   s8.credit_card_reconciliation_transactions tran
