@@ -45,8 +45,8 @@ WHERE
     'check'
   )
   AND (
-    to_varchar(account_number) LIKE '2020%'
-    OR to_varchar(account_number) LIKE '2021%'
+    to_varchar(gl_tran.account_number) LIKE '2020%'
+    OR to_varchar(gl_tran.account_number) LIKE '2021%'
   )
   AND voided = 'F'
   AND net_amount != 0
