@@ -4,6 +4,7 @@ SELECT
   gl_tran.transaction_date,
   line.entity,
   line.expenseaccount,
+  acc.account_display_name,
   gl_tran.account_number,
   CASE
     WHEN gl_tran.account_number = '2020' THEN 'AMEX'
@@ -34,6 +35,7 @@ FROM
   )
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = line.transaction
   LEFT OUTER JOIN netsuite.entity emp ON emp.id = line.entity
+  left outer join dim.gl_account acc on acc.account_id_ns = line.expenseaccount
 WHERE
   cleared_flag = FALSE
   AND record_type IN (
