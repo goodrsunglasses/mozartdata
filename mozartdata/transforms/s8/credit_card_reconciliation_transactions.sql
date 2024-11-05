@@ -7,7 +7,7 @@ SELECT
   acc.account_display_name,
   gl_tran.account_number,
   CASE
-    WHEN gl_tran.account_number = '2020' THEN 'AMEX'
+    WHEN to_varchar(gl_tran.account_number) LIKE '2020%' THEN 'AMEX'
     ELSE 'JPM'
   END AS bank,
   gl_tran.net_amount,
