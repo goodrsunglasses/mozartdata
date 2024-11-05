@@ -24,7 +24,5 @@ SELECT
 FROM
   s8.credit_card_reconciliation_transactions tran
   LEFT OUTER JOIN dates ON dates.source = tran.bank
-WHERE
-  firstname IS NOT NULL
 GROUP BY
   ALL
