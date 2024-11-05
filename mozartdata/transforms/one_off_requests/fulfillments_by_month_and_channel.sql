@@ -6,4 +6,5 @@ SELECT
 FROM
   fact.fulfillment f
   LEFT JOIN fact.orders o ON o.order_id_edw = f.order_id_edw
+WHERE ship_date >= '2023-01-01'
 GROUP BY ALL
