@@ -59,7 +59,7 @@ SELECT
     (net_income_ytd / revenue_ytd) AS net_margin_ytd,
     quarter(posting_period_date) as quarter,
     date(date_trunc(quarter, posting_period_date)) as quarter_date,
-    date(date_trunc(year, posting_period_date)) as year_date
+    date_part(year, posting_period_date) as year
 FROM (
     SELECT
         *,
