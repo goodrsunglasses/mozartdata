@@ -14,13 +14,13 @@ SELECT
   account_display_name,
   account_number,
   bank,
-  sum(
+  round(sum(
     CASE
       WHEN transaction_date BETWEEN dates.date_min AND dates.date_max  THEN net_amount
       WHEN bank = 'JPM' THEN net_amount
       ELSE 0
     END
-  ) AS total_credit_amt_ns,
+  ),2) AS total_credit_amt_ns,
   sum(amount) AS bank_statement_amount
 FROM
   s8.credit_card_reconciliation_transactions tran
