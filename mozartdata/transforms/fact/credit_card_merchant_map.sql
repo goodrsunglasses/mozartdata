@@ -3,6 +3,7 @@ WITH
   joined AS (
     SELECT
       reference,
+      account_ as account_num,
       appears_on_your_statement_as,
       card_member,
       DATE,
@@ -26,6 +27,7 @@ WITH
     UNION ALL
     SELECT
       transaction_id,
+      REPLACE(account_number, '*', '') AS account_number,
       merchant_name,
       account_given_name,
       post_date,
@@ -137,6 +139,8 @@ WITH
   )
 SELECT
   first_map.reference,
+  first_map.account_num,
+  bankmap.ns_acc as netsuite_account_num,
   first_map.appears_on_your_statement_as,
   first_map.card_member,
   first_map.date,
@@ -158,3 +162,4 @@ FROM
   AND first_map.source = 'AMEX'
   LEFT OUTER JOIN google_sheets.jpm_ns_vendor_map jpmmap ON upper(jpmmap.statement_name) = upper(first_map.appears_on_your_statement_as)
   AND first_map.source = 'JPM'
+left outer join google_sheets.bank_to_ns_map bankmap on bankmap.bank = first_map.source and bankmap.account_ = first_map.account_num
