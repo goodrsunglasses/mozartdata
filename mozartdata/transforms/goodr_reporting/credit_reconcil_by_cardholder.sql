@@ -12,7 +12,6 @@ WITH
 SELECT
   expenseaccount,
   account_display_name,
-  first_last,
   account_number,
   bank,
   sum(
@@ -27,5 +26,8 @@ FROM
   s8.credit_card_reconciliation_transactions tran
   LEFT OUTER JOIN dates ON dates.source = tran.bank
   LEFT OUTER JOIN fact.credit_card_merchant_map bank_tran ON bank_tran.netsuite_account_num = tran.expenseaccount
+WHERE
+  account_number NOT IN (2020, 2021)
 GROUP BY
   ALL
+order by account_display_name
