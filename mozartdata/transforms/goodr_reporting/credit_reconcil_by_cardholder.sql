@@ -22,7 +22,7 @@ SELECT
       ELSE 0
     END
   ) AS total_credit_amt_ns,
-  sum(amount) AS bank_amount
+  sum(amount) AS bank_statement_amount
 FROM
   s8.credit_card_reconciliation_transactions tran
   LEFT OUTER JOIN dates ON dates.source = tran.bank
