@@ -1,5 +1,5 @@
 WITH
-  dates AS (
+  dates AS (--min date max date logic for AMEX because we're doing a huge import, and want to make sure to only display values for this that are not used for the jane import
     SELECT
       source,
       max(date_min) AS date_min,
