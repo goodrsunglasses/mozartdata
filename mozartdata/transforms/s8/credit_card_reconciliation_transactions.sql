@@ -42,7 +42,10 @@ WHERE
     'vendorpayment',
     'check'
   )
-  AND account_number IN (2020, 2021)
+  AND (
+    to_varchar(account_number) LIKE '2020%'
+    OR to_varchar(account_number) LIKE '2021%'
+  )
   AND voided = 'F'
   AND net_amount != 0
   AND posting_flag = TRUE
