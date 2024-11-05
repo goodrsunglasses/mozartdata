@@ -31,7 +31,7 @@ WITH
       LEFT OUTER JOIN dates ON dates.source = tran.bank
       LEFT OUTER JOIN fact.credit_card_merchant_map bank_tran ON bank_tran.netsuite_account_num = tran.expenseaccount
     WHERE
-      account_number NOT IN (2020, 2021)
+      account_number NOT IN (2020, 2021) --pointedly ignoring these two accounts, because going forward all the expenses should be reclassed into a sub account, and may be double homed in the old big one, only jane transactions should stay there.
     GROUP BY
       ALL
     ORDER BY
