@@ -8,26 +8,37 @@ WITH
       fact.credit_card_merchant_map
     GROUP BY
       source
+  ),
+  aggregates AS (
+    SELECT
+      expenseaccount,
+      account_display_name,
+      account_number,
+      bank,
+      round(
+        sum(
+          CASE
+            WHEN transaction_date BETWEEN dates.date_min AND dates.date_max  THEN net_amount
+            WHEN bank = 'JPM' THEN net_amount
+            ELSE 0
+          END
+        ),
+        2
+      ) AS total_credit_amount_ns,
+      sum(amount) AS bank_statement_amount
+    FROM
+      s8.credit_card_reconciliation_transactions tran
+      LEFT OUTER JOIN dates ON dates.source = tran.bank
+      LEFT OUTER JOIN fact.credit_card_merchant_map bank_tran ON bank_tran.netsuite_account_num = tran.expenseaccount
+    WHERE
+      account_number NOT IN (2020, 2021)
+    GROUP BY
+      ALL
+    ORDER BY
+      account_display_name
   )
 SELECT
-  expenseaccount,
-  account_display_name,
-  account_number,
-  bank,
-  round(sum(
-    CASE
-      WHEN transaction_date BETWEEN dates.date_min AND dates.date_max  THEN net_amount
-      WHEN bank = 'JPM' THEN net_amount
-      ELSE 0
-    END
-  ),2) AS total_credit_amount_ns,
-  sum(amount) AS bank_statement_amount
+  aggregates.*,
+  round(abs(total_credit_amount_ns - bank_statement_amount),2) AS difference
 FROM
-  s8.credit_card_reconciliation_transactions tran
-  LEFT OUTER JOIN dates ON dates.source = tran.bank
-  LEFT OUTER JOIN fact.credit_card_merchant_map bank_tran ON bank_tran.netsuite_account_num = tran.expenseaccount
-WHERE
-  account_number NOT IN (2020, 2021)
-GROUP BY
-  ALL
-order by account_display_name
+  aggregates
