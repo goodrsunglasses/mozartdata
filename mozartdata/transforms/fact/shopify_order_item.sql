@@ -22,9 +22,9 @@ SELECT
 , sum(case when line.fulfillment_status = 'fulfilled' then line.quantity - line.fulfillable_quantity else 0 end) as quantity_fulfilled
 , sum(line.price * line.quantity)                          AS amount_booked
 , sum(line.price * (line.quantity - line.fulfillable_quantity)) AS amount_sold
-, SUM(da.amount_standard_discount)                         AS amount_standard_discount
-, SUM(da.amount_yotpo_discount)                            AS amount_yotpo_discount
-, SUM(da.amount_total_discount)                            AS amount_total_discount
+, SUM(coalesce(da.amount_standard_discount,0))                         AS amount_standard_discount
+, SUM(coalesce(da.amount_yotpo_discount,0))                            AS amount_yotpo_discount
+, SUM(coalesce(da.amount_total_discount,0))                            AS amount_total_discount
 FROM
   staging.shopify_orders o
   LEFT OUTER JOIN staging.shopify_order_line line
