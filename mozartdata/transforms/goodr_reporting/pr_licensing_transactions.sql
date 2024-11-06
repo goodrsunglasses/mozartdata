@@ -94,23 +94,24 @@ WITH
           ns_sourced
       )
   ),
- calc_shopify AS (
+  calc_shopify AS (
     SELECT
       shopify_sourced.*,
-      total_amount_sold - coalesce(total_amount_refunded,0) + coalesce(total_standard_discount,0) AS net_sales,
-      total_amount_sold -  coalesce(total_amount_refunded,0) AS net_sales_no_discount
+      total_amount_sold - coalesce(total_amount_refunded, 0) + coalesce(total_standard_discount, 0) AS net_sales,
+      total_amount_sold - coalesce(total_amount_refunded, 0) AS net_sales_no_discount
     FROM
       shopify_sourced
   ),
   calc_ns AS (
     SELECT
       ns_sourced.*,
-      total_amount_revenue_sold - coalesce(total_amount_revenue_refunded,0) + total_line_discount AS net_sales,
-      total_amount_revenue_sold -  coalesce(total_amount_revenue_refunded,0) AS net_sales_no_discount
+      total_amount_revenue_sold - coalesce(total_amount_revenue_refunded, 0) + total_line_discount AS net_sales,
+      total_amount_revenue_sold - coalesce(total_amount_revenue_refunded, 0) AS net_sales_no_discount
     FROM
       ns_sourced
   )
 SELECT
+  prod.display_name,
   sku_periods.*,
   calc_ns.total_quantity_booked AS total_quantity_booked_ns,
   calc_shopify.total_quantity_booked AS total_quantity_booked_shop,
@@ -128,6 +129,7 @@ SELECT
   calc_shopify.net_sales_no_discount AS net_sales_no_discount_shop
 FROM
   sku_periods
+  LEFT OUTER JOIN dim.product prod ON prod.product_id_edw = sku_periods.product_id_edw
   LEFT OUTER JOIN calc_ns ON (
     calc_ns.product_id_edw = sku_periods.product_id_edw
     AND calc_ns.posting_period = sku_periods.posting_period
