@@ -20,8 +20,8 @@ FROM
 WHERE
   channel IN ('Key Accounts', 'Key Account CAN')
   AND (
-    shipping_window_end_date BETWEEN DATEADD(DAY, -1, DATE_TRUNC('month', CURRENT_DATE)) AND DATEADD(DAY, 1, LAST_DAY(CURRENT_DATE, 'month'))
-    AND YEAR(shipping_window_end_date) = YEAR(CURRENT_DATE)
+    YEAR(shipping_window_end_date) = YEAR(CURRENT_DATE)
+    AND MONTH(shipping_window_end_date) = MONTH(CURRENT_DATE)
   )
   AND fulfillment_date IS NULL
-  AND order_id_edw NOT LIKE '%BPO%'
+  AND order_id_edw not like '%BPO%'
