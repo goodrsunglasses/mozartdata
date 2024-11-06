@@ -19,9 +19,11 @@ FROM
   LEFT OUTER JOIN fact.customer_ns_map map ON map.customer_id_ns = ord.customer_id_ns
 WHERE
   channel IN ('Key Accounts', 'Key Account CAN')
-  AND (
-    YEAR(shipping_window_end_date) = YEAR(CURRENT_DATE)
-    AND MONTH(shipping_window_end_date) = MONTH(CURRENT_DATE)
+   AND (
+    shipping_window_end_date BETWEEN 
+      DATEADD(day, -1, DATE_TRUNC('month', CURRENT_DATE)) 
+      AND 
+      DATEADD(day, 1, LAST_DAY(CURRENT_DATE, 'month'))
   )
   AND fulfillment_date IS NULL
   AND order_id_edw not like '%BPO%'
