@@ -105,7 +105,7 @@ WITH
   calc_ns AS (
     SELECT
       ns_sourced.*,
-      total_amount_revenue_sold - coalesce(total_amount_revenue_refunded, 0) + total_line_discount AS net_sales,
+      total_amount_revenue_sold - coalesce(total_amount_revenue_refunded, 0) + coalesce(total_line_discount, 0) AS net_sales,
       total_amount_revenue_sold - coalesce(total_amount_revenue_refunded, 0) AS net_sales_no_discount
     FROM
       ns_sourced
