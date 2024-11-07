@@ -17,7 +17,7 @@ select detail.refund_id,
        detail.total_tax        as amount_refund_line_tax,
        detail.total_line_amnt  as amount_refund_line_total,
        detail.order_line_id,
-       reason                  as adjustment_reason,
-       note                    as refund_note
+       detail.reason                  as adjustment_reason,
+       detail.note                    as refund_note
 from staging.shopify_refund_order_item_detail detail
          left outer join dim.orders ord on ord.ORDER_ID_SHOPIFY = detail.ORDER_ID
