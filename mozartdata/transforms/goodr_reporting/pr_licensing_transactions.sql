@@ -9,6 +9,19 @@ WITH
       posting_flag
       AND record_type IN ('cashsale', 'invoice')
   ),
+  shop_refunds AS (
+    SELECT
+      days.posting_period,
+      ref.sku AS product_id_edw,
+      ref.source AS store,
+      sum(ref.quantity_refund_line) AS total_quantity_refunded,
+      sum(ref.amount_refund_line_subtotal) AS total_amount_refunded
+    FROM
+      fact.shopify_refund_order_item_detail ref
+      LEFT JOIN dim.date days ON ref.refund_created_date = days.date
+    GROUP BY
+      ALL
+  ),
   ns_sourced AS ( --Just the data using NS as the only Source
     SELECT
       item.product_id_edw,
@@ -50,21 +63,23 @@ WITH
     SELECT
       item.product_id_edw,
       licmap.licensor,
-      item.display_name,
+      prod.display_name,
       item.store,
       chan.customer_category,
       days.posting_period,
       sum(item.quantity_sold) AS total_quantity_booked,
       sum(item.amount_sold) AS total_amount_sold,
       - sum(amount_standard_discount) AS total_standard_discount,
-      sum(ref.quantity_refund_line) AS total_quantity_refunded,
-      sum(ref.amount_refund_line_subtotal) AS total_amount_refunded
+      ref.total_quantity_refunded AS total_quantity_refunded,
+      ref.total_amount_refunded AS total_amount_refunded
     FROM
       fact.shopify_order_item item
       LEFT OUTER JOIN fact.shopify_orders ord ON ord.order_id_shopify = item.order_id_shopify
       LEFT OUTER JOIN dim.channel chan ON chan.name = item.store
-      LEFT OUTER JOIN fact.shopify_refund_order_item ref ON ref.order_line_id = item.order_line_id_shopify
       LEFT OUTER JOIN dim.date days ON days.date = ord.order_created_date
+      LEFT OUTER JOIN shop_refunds ref ON ref.product_id_edw = item.product_id_edw
+      AND ref.posting_period = days.posting_period
+      AND ref.store = item.store
       LEFT OUTER JOIN dim.product prod ON prod.product_id_edw = item.product_id_edw
       LEFT OUTER JOIN google_sheets.licensing_sku_mapping licmap ON licmap.sku = prod.product_id_edw
     WHERE
