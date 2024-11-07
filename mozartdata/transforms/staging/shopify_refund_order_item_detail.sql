@@ -47,7 +47,7 @@ FROM SPECIALTY_SHOPIFY.refund ref
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
-     'Specialty CAN' as store,
+       'Specialty CAN' as store,
        ref.note,
        ref.order_id,
        ord.sku,
@@ -69,7 +69,7 @@ FROM sellgoodr_canada_shopify.refund ref
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
- 'Goodr.ca' as store,
+       'Goodr.ca' as store,
        ref.note,
        ref.order_id,
        ord.sku,
@@ -91,7 +91,7 @@ FROM goodr_canada_shopify.refund ref
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
-           'Cabana' as store,
+       'Cabana' as store,
        ref.note,
        ref.order_id,
        ord.sku,
