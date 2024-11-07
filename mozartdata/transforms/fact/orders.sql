@@ -28,8 +28,8 @@ WITH
       shopify.shipping_sold AS amount_shipping_booked_shop,
       shopify.amount_tax_sold AS amount_tax_booked_shop,
       shopify.amount_discount AS amount_discount_booked_shop,
-      shopify.amount_booked+shopify.shipping_sold-shopify.amount_discount AS amount_revenue_booked_shop,
-      shopify.amount_booked+shopify.shipping_sold+shopify.amount_tax_sold-shopify.amount_discount AS amount_paid_booked_shop,
+      shopify.amount_booked+shopify.shipping_sold+shopify.amount_discount AS amount_revenue_booked_shop,
+      shopify.amount_booked+shopify.shipping_sold+shopify.amount_tax_sold+shopify.amount_discount AS amount_paid_booked_shop,
       shopify.order_created_date_pst,
       shopify.quantity_booked AS quantity_booked_shopify,
       shopify.quantity_sold AS quantity_sold_shopify
