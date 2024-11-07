@@ -1,5 +1,3 @@
--- CREATE OR REPLACE TABLE fact.shopify_refund_order_line
--- 	COPY GRANTS AS
 SELECT order_id_shopify,
        ORDER_ID_EDW,
        store,

@@ -1,5 +1,3 @@
--- CREATE OR REPLACE TABLE staging.shopify_refund_order_item_detail
--- 	COPY GRANTS AS
 SELECT ref.id                         as refund_id,
        ref.created_at,
        'Goodr.com'                    as store,

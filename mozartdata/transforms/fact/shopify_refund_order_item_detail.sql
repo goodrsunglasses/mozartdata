@@ -1,5 +1,3 @@
--- CREATE OR REPLACE TABLE fact.shopify_refund_order_item_detail
--- 	COPY GRANTS AS
 select detail.refund_id as refund_id_shopify,
        detail.order_id as order_id_shopify,
        ord.ORDER_ID_EDW,
