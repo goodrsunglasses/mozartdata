@@ -3,12 +3,12 @@
 -- CREATE OR REPLACE TABLE fact.shopify_refund_order_line
 -- 	COPY GRANTS AS
 SELECT
-    refund_id,
+    refund_id_shopify,
     order_id_edw,
     store,
     sku,
     display_name,
-    quantity_refund_line,
+    sum(quantity_refund_line) as quantity_refunded,
     sum(amount_refund_line_subtotal) as amount_refund_line_subtotal,
     sum(amount_refund_line_tax) as amount_refund_line_tax,
     sum(amount_refund_line_total) as amount_refund_line_total
