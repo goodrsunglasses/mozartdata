@@ -2,7 +2,7 @@
 -- 	COPY GRANTS AS
 SELECT order_id                   as order_id_shopify,
        ORDER_ID_EDW,
-       source,
+       store,
        refund_created_date,
        refund_id,
        array_agg(adjustment_reason) adjustment_reason_array,--SADLY THIS HAS TO BE AN ARRAY BECAUSE WE HAVE MULTIPLE ADJUSTMENTS PER ORDER ¯\_(ツ)_/¯

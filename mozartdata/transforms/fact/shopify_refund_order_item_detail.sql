@@ -5,7 +5,7 @@ select detail.refund_id,
        ord.ORDER_ID_EDW,
        detail.created_at,
        date(detail.created_at) as refund_created_date,
-       detail.source,
+       detail.store,
        detail.amount           as amount_adjustment,--IMPORTANT any and all adjustment fields are at the ORDER level refund wise, rather than at the item level
        detail.tax_amount       as amount_adjustment_tax,
        detail.TOTAL_ADJ_AMNT   as amount_adjustment_total,

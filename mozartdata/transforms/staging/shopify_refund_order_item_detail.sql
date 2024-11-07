@@ -2,7 +2,7 @@
 -- 	COPY GRANTS AS
 SELECT ref.id                         as refund_id,
        ref.created_at,
-       'Goodr.com'                    as source,
+       'Goodr.com'                    as store,
        ref.note,
        ref.order_id,
        ord.sku,
@@ -24,7 +24,7 @@ FROM shopify.refund ref
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
-       'Specialty'                    as source,
+       'Specialty'                    as store,
        ref.note,
        ref.order_id,
        ord.sku,
@@ -47,7 +47,7 @@ FROM SPECIALTY_SHOPIFY.refund ref
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
-     'Specialty CAN' as source,
+     'Specialty CAN' as store,
        ref.note,
        ref.order_id,
        ord.sku,
@@ -69,7 +69,7 @@ FROM sellgoodr_canada_shopify.refund ref
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
- 'Goodr.ca' as source,
+ 'Goodr.ca' as store,
        ref.note,
        ref.order_id,
        ord.sku,
@@ -91,7 +91,7 @@ FROM goodr_canada_shopify.refund ref
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
-           'Cabana' as source,
+           'Cabana' as store,
        ref.note,
        ref.order_id,
        ord.sku,

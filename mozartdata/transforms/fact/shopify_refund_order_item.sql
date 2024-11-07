@@ -5,13 +5,12 @@
 SELECT
     refund_id,
     order_id_edw,
-    source,
+    store,
     sku,
     display_name,
-    refund_line_id,
-    order_line_id,
     quantity_refund_line,
-    amount_refund_line_subtotal,
-    amount_refund_line_tax,
-    amount_refund_line_total
+    sum(amount_refund_line_subtotal) as amount_refund_line_subtotal,
+    sum(amount_refund_line_tax) as amount_refund_line_tax,
+    sum(amount_refund_line_total) as amount_refund_line_total
 FROM fact.shopify_refund_order_item_detail
+GROUP BY ALL
