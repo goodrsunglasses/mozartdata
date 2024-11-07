@@ -1,3 +1,8 @@
+/*
+This table is at the refund, order and line level. This will split skus into multiple rows.
+This also includes adjustments as well as line item refunds.
+*/
+
 SELECT order_id_shopify,
        ORDER_ID_EDW,
        store,

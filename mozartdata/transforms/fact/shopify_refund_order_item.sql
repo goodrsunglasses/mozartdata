@@ -8,6 +8,7 @@ SELECT
     concat(roid.store,'_',roid.refund_id_shopify,'_',roid.order_id_edw,'_',roid.sku) refund_order_item_id_edw, --primary_key
     roid.refund_id_shopify,
     roid.order_id_edw,
+    roid.order_id_shopify,
     roid.store,
     roid.sku,
     p.display_name,
