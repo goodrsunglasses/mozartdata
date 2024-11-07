@@ -87,5 +87,6 @@ select
   , pr.transaction_number_ns
   , pr.amount_2430 as net_amount
   , case when transaction_number_ns like 'CR%' then pr.yotpo_amt  else null end as partial_refund_yotpo
+  , pr.amount_2430 - case when transaction_number_ns like 'CR%' then pr.yotpo_amt  else null end as partial_refund_ldw
 from
   partial_refunds pr
