@@ -12,10 +12,10 @@ SELECT
     roid.store,
     roid.sku,
     p.display_name,
-    sum(roid.quantity_refund_line) as quantity_refunded,
-    sum(roid.amount_refund_line_subtotal) as amount_refund_line_subtotal,
-    sum(roid.amount_refund_line_tax) as amount_refund_line_tax,
-    sum(roid.amount_refund_line_total) as amount_refund_line_total
+    sum(coalesce(roid.quantity_refund_line,0)) as quantity_refunded,
+    sum(coalesce(roid.amount_refund_line_subtotal,0)) as amount_refund_line_subtotal,
+    sum(coalesce(roid.amount_refund_line_tax,0)) as amount_refund_line_tax,
+    sum(coalesce(roid.amount_refund_line_total,0)) as amount_refund_line_total
 FROM fact.shopify_refund_order_item_detail roid
 LEFT JOIN
   dim.product p

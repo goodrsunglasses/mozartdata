@@ -25,6 +25,7 @@ SELECT
 , SUM(line.price * line.quantity)                                                                                AS amount_booked
 , SUM(line.price * (line.quantity - line.fulfillable_quantity))                                                  AS amount_sold
 , SUM(COALESCE(da.amount_standard_discount, 0))                                                                  AS amount_standard_discount
+, SUM(line.price * (line.quantity - line.fulfillable_quantity)) -SUM(COALESCE(da.amount_standard_discount, 0))   AS amount_sold_revenue
 , SUM(COALESCE(da.amount_yotpo_discount, 0))                                                                     AS amount_yotpo_discount
 , SUM(COALESCE(da.amount_total_discount, 0))                                                                     AS amount_total_discount
 , SUM(COALESCE(rol.quantity_refund_line, 0))                                                                     AS quantity_refund_line
