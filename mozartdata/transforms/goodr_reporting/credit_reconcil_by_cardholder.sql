@@ -38,16 +38,28 @@ WITH
   bank_agg AS (
     SELECT
       netsuite_account_num,
-      sum(amount) total_amount
+      round(
+        sum(
+          CASE
+            WHEN DATE BETWEEN dates.date_min AND dates.date_max
+            AND tran.source = 'AMEX' THEN amount
+            WHEN tran.source = 'JPM' THEN amount
+            ELSE 0
+          END
+  
+        ),
+        2
+      ) AS total_amount
     FROM
-      fact.credit_card_merchant_map
+      fact.credit_card_merchant_map tran
+  LEFT OUTER JOIN dates ON dates.source = tran.source
     GROUP BY
       ALL
   )
 SELECT
   ns_aggregates.*,
-  bank_agg.total_amount as total_amount_statement,
-  total_credit_amount_ns - total_amount_statement as difference
+  bank_agg.total_amount AS total_amount_statement,
+  total_credit_amount_ns - total_amount_statement AS difference
 FROM
   ns_aggregates
-left outer join bank_agg on bank_agg.netsuite_account_num =  ns_aggregates.expenseaccount
+  LEFT OUTER JOIN bank_agg ON bank_agg.netsuite_account_num = ns_aggregates.expenseaccount
