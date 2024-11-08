@@ -10,6 +10,5 @@ SELECT
        ref.note,
        ref.reason
 from
-  staging.shopify_refund_order_adjustment ref
+  staging.shopify_refund_order_adjustments ref
   left join dim.orders o on ref.order_id = o.order_id_shopify
-where order_id_edw = 'G1509643'
