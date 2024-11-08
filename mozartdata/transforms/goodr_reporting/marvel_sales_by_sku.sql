@@ -14,13 +14,13 @@ SELECT
   sum(oi.gross_profit_estimate) as net_sales_amount,
   c.customer_name,
   o.channel
-FROM fact.order_item oi 
+FROM fact.order_item oi
 LEFT JOIN fact.orders o on o.order_id_edw = oi.order_id_edw
 LEFT JOIN dim.product p on p.sku = oi.sku
 LEFT JOIN fact.customer_ns_map c on o.customer_id_ns = c.customer_id_ns
 WHERE (collection like '%MARVEL%' OR collection like '%AVENGERS%') and family = 'LICENSING'
 group by all
-), address as 
+), address as
 (
 SELECT DISTINCT
   ol.order_id_edw
@@ -46,12 +46,50 @@ LEFT JOIN
     on csa.nkey = t.shippingaddress
     and ol.record_type = 'cashsale'
   where ol.record_type in ('itemfulfillment','invoice','cashsale')
+), refunds as
+(
+  select distinct
+  oi.sku
+, oi.order_id_edw
+, oi.quantity_sold
+, oi.quantity_refund_line
+, coalesce(oi.amount_refund_subtotal,0) as amount_refund_subtotal
+, oi.amount_standard_discount
+from
+  fact.shopify_order_item oi
+inner join
+    dim.product p
+on oi.sku = p.sku
+left join
+    fact.shopify_orders o
+  on oi.order_id_shopify = o.order_id_shopify
+WHERE
+  (collection like '%MARVEL%' OR collection like '%AVENGERS%') and family = 'LICENSING'
+
 )
-select 
-  o.* 
-, a.shipping_country
+select
+  o.sku,
+  o.name,
+  o.transaction_date,
+  o.order_id_edw,
+  o.family,
+  o.collection,
+  o.quantity_sold,
+  r.quantity_refund_line as quantity_refunded,
+  o.gross_unit_price,
+  o.gross_sales_amount,
+  r.amount_standard_discount as discount_deductions,
+  r.amount_refund_subtotal as refund_deductions,
+  o.net_sales_amount,
+  o.customer_name,
+  o.channel,
+  a.shipping_country
 from
   orders o
 left join
   address a
   on o.order_id_edw= a.order_id_edw
+left join
+  refunds r
+  on o.order_id_edw = r.order_id_edw
+  and o.sku = r.sku
