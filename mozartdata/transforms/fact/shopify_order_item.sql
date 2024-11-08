@@ -6,6 +6,19 @@ As of 11/1/2024 there are only 207 instances where this isn't unique:
 Most are from 2019, largely due to some oddity where there are multiple order_id_shopify for a single order_id_edw
 
 */
+with discounts as
+  (
+    select
+      order_line_id_shopify
+    , store
+    , sku
+    , sum(coalesce(amount_standard_discount,0)) as amount_standard_discount
+    , sum(coalesce(amount_yotpo_discount,0)) as amount_yotpo_discount
+    , sum(coalesce(amount_total_discount,0)) as amount_total_discount
+    from
+      fact.shopify_discount_item
+    group by all
+  )
 SELECT
   o.order_id_edw
 , o.order_id_shopify
@@ -36,7 +49,7 @@ FROM
   staging.shopify_orders o
   LEFT OUTER JOIN staging.shopify_order_line line
                   ON line.order_id_shopify = o.order_id_shopify AND line.store = o.store
-  LEFT OUTER JOIN fact.shopify_discount_item da
+  LEFT OUTER JOIN discounts da
                   ON da.order_line_id_shopify = line.order_line_id_shopify AND da.store = o.store
   LEFT OUTER JOIN dim.product p ON p.product_id_edw = line.sku
   LEFT OUTER JOIN fact.shopify_refund_order_line rol
