@@ -10,15 +10,10 @@ SELECT ref.id                         as refund_id,
        line.subtotal,
        line.total_tax,
        line.subtotal + line.total_tax as total_line_amnt,
-       line.order_line_id,
-       adj.amount,
-       adj.tax_amount,
-       adj.amount + adj.tax_amount    as total_adj_amnt,
-       adj.reason
+       line.order_line_id
 FROM shopify.refund ref
          left outer join shopify.order_line_refund line on line.refund_id = ref.id
          left outer join shopify.order_line ord on ord.id = line.order_line_id
-         left outer join shopify.order_adjustment adj on adj.refund_id = ref.id
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
@@ -32,16 +27,10 @@ SELECT ref.id                         as refund_id,
        line.subtotal,
        line.total_tax,
        line.subtotal + line.total_tax as total_line_amnt,
-       line.order_line_id,
-       adj.amount,
-       adj.tax_amount,
-       adj.amount + adj.tax_amount    as total_adj_amnt,
-       adj.reason
+       line.order_line_id
 FROM SPECIALTY_SHOPIFY.refund ref
          left outer join SPECIALTY_SHOPIFY.order_line_refund line on line.refund_id = ref.id
          left outer join SPECIALTY_SHOPIFY.order_line ord on ord.id = line.order_line_id
-         left outer join SPECIALTY_SHOPIFY.order_adjustment adj on adj.refund_id = ref.id
-
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
@@ -55,15 +44,10 @@ SELECT ref.id                         as refund_id,
        line.subtotal,
        line.total_tax,
        line.subtotal + line.total_tax as total_line_amnt,
-       line.order_line_id,
-       adj.amount,
-       adj.tax_amount,
-       adj.amount + adj.tax_amount    as total_adj_amnt,
-       adj.reason
+       line.order_line_id
 FROM sellgoodr_canada_shopify.refund ref
          left outer join sellgoodr_canada_shopify.order_line_refund line on line.refund_id = ref.id
          left outer join sellgoodr_canada_shopify.order_line ord on ord.id = line.order_line_id
-         left outer join sellgoodr_canada_shopify.order_adjustment adj on adj.refund_id = ref.id
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
@@ -77,15 +61,10 @@ SELECT ref.id                         as refund_id,
        line.subtotal,
        line.total_tax,
        line.subtotal + line.total_tax as total_line_amnt,
-       line.order_line_id,
-       adj.amount,
-       adj.tax_amount,
-       adj.amount + adj.tax_amount    as total_adj_amnt,
-       adj.reason
+       line.order_line_id
 FROM goodr_canada_shopify.refund ref
          left outer join goodr_canada_shopify.order_line_refund line on line.refund_id = ref.id
          left outer join goodr_canada_shopify.order_line ord on ord.id = line.order_line_id
-         left outer join goodr_canada_shopify.order_adjustment adj on adj.refund_id = ref.id
 UNION ALL
 SELECT ref.id                         as refund_id,
        ref.created_at,
@@ -99,12 +78,7 @@ SELECT ref.id                         as refund_id,
        line.subtotal,
        line.total_tax,
        line.subtotal + line.total_tax as total_line_amnt,
-       line.order_line_id,
-       adj.amount,
-       adj.tax_amount,
-       adj.amount + adj.tax_amount    as total_adj_amnt,
-       adj.reason
+       line.order_line_id
 FROM cabana.refund ref
          left outer join cabana.order_line_refund line on line.refund_id = ref.id
          left outer join cabana.order_line ord on ord.id = line.order_line_id
-         left outer join cabana.order_adjustment adj on adj.refund_id = ref.id
