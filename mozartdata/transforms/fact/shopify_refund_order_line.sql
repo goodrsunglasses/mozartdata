@@ -9,8 +9,6 @@ SELECT order_id_shopify,
        refund_id_shopify,
        refund_line_id_shopify,
        order_line_id_shopify,
-       array_agg(adjustment_reason) adjustment_reason_array,--SADLY THIS HAS TO BE AN ARRAY BECAUSE WE HAVE MULTIPLE ADJUSTMENTS PER ORDER ¯\_(ツ)_/¯
-       array_agg(refund_note) refund_note_array,
        sum(QUANTITY_REFUND_LINE)  as quantity_refund_line,
        sum(amount_refund_line_subtotal)  as amount_refund_subtotal,
        sum(amount_refund_line_tax)       as amount_refund_tax,
