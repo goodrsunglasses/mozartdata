@@ -143,7 +143,7 @@ SELECT
   bankmap.ns_acc as netsuite_account_num,
   first_map.appears_on_your_statement_as,
   first_map.card_member,
-  first_map.date,
+  date(first_map.date) date,
   first_map.amount,
   first_map.unique_amount_per_name_per_day,
   first_map.source,
