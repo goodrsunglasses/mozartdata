@@ -13,7 +13,7 @@ WITH
     SELECT
       days.posting_period,
       ref.sku AS product_id_edw,
-      ref.source AS store,
+      ref.store,
       sum(ref.quantity_refund_line) AS total_quantity_refunded,
       sum(ref.amount_refund_line_subtotal) AS total_amount_refunded
     FROM
