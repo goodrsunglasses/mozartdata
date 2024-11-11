@@ -13,14 +13,16 @@ SELECT distinct
   sum(oi.amount_product_refunded) as refund_deductions,
   SUM(oi.amount_revenue_sold)-sum(oi.amount_discount_sold)-sum(oi.amount_product_refunded) as net_sales_amount,
   o.amount_revenue_sold order_revenue_sold,
-  o.amount_revenue_refunded order_revenue_refunded
+  o.amount_revenue_refunded order_revenue_refunded,
+ o.amount_discount_sold,
 --   c.customer_name,
---   o.channel
+   o.channel
 FROM fact.order_item oi
 LEFT JOIN fact.orders o on o.order_id_edw = oi.order_id_edw
 LEFT JOIN dim.product p on p.sku = oi.sku
 -- LEFT JOIN fact.customer_ns_map c on o.customer_id_ns = c.customer_id_ns
 WHERE (collection like '%MARVEL%' OR collection like '%AVENGERS%') and family = 'LICENSING'
+and channel != 'Key Accounts'
 --and oi.quantity_sold != oi.quantity_booked
 group by all
 ), shopify_orders as
@@ -58,11 +60,14 @@ SELECT
 , o.gross_sales_amount as marvel_sku_gross_sales_amount
 , o.net_sales_amount as marvel_sku_net_sales_amount
 , o.order_revenue_sold as NS_amount_revenue_sold
--- , o.order_revenue_refunded
+
 , so.amount_revenue_sold as shopify_amount_revenue_sold
+, o.order_revenue_refunded ns_refunded
 -- , so.amount_sold as shopify_amount_sold
 -- , so.amount_discount as shopify_amount_discount
--- , so.amount_refund_subtotal as shopify_amount_refund_subtotal
+ , so.amount_refund_subtotal as shopify_amount_refund_subtotal
+, o.amount_discount_sold as ns_discount
+, so.amount_discount as shopify_discount
 -- , so.amount_standard_discount as amount_standard_discount
 -- , so.amount_yotpo_discount as amount_yotpo_discount
 from
