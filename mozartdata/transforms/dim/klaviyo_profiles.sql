@@ -27,7 +27,7 @@ SELECT
 , p.location:LATITUDE::varchar as latitude
 , p.location:LONGITUDE::varchar as longitude
 , p.phone_number
-, p._organization as company
+, p."ORGANIZATION" as company
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"Accepts Marketing"')::boolean as accepts_marketing_flag
 , nullif(JSON_EXTRACT_PATH_TEXT(p.properties,'"Expected Date Of Next Order"'),'*n/a*')::date as expected_next_order_date
 , JSON_EXTRACT_PATH_TEXT(p.properties,'"First Purchase Date"')::date as first_purchase_date
