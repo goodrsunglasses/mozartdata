@@ -2,11 +2,11 @@ with orders as (
 SELECT
   p.sku,
   p.display_name as name,
-  o.sold_date as transaction_date,
+  coalesce(o.sold_date,o.booked_date) as transaction_date,
   o.order_id_edw,
   p.family,
   p.collection,
-  SUM(oi.quantity_sold) as quantity_sold,
+  SUM(oi.quantity_booked) as quantity_sold,
   round(sum(oi.rate_sold)/SUM(oi.quantity_sold),2) as gross_unit_price,
   SUM(oi.amount_revenue_sold) as gross_sales_amount,
   sum(oi.amount_discount_sold) as discount_deductions,
