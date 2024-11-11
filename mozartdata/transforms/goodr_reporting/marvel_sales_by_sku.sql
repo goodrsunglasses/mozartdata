@@ -11,7 +11,7 @@ SELECT
   SUM(oi.amount_revenue_sold) as gross_sales_amount,
   sum(oi.amount_discount_sold) as discount_deductions,
   sum(oi.amount_product_refunded) as refund_deductions,
-  sum(oi.gross_profit_estimate) as net_sales_amount,
+  SUM(oi.amount_revenue_sold)-sum(oi.amount_discount_sold)-sum(oi.amount_product_refunded) as net_sales_amount,
   c.customer_name,
   o.channel
 FROM fact.order_item oi
