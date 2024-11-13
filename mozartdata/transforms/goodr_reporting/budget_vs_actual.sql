@@ -83,6 +83,7 @@ with
   , pm.posting_period_date
   , pm.posting_period_month
   , pm.posting_period_year
+  , date(date_trunc(quarter, pm.posting_period_date)) as quarter_date,
   --, sum(bc2.amount)over (partition by bc2.budget_version, bc2.account_id_ns, bc.channel, pm.posting_period_date) ytd
   -- , sum(bc2.amount) ytd (3/4/2024 removed YTD)
   from

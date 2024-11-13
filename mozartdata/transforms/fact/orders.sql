@@ -28,8 +28,8 @@ WITH
       shopify.shipping_sold AS amount_shipping_booked_shop,
       shopify.amount_tax_sold AS amount_tax_booked_shop,
       shopify.amount_discount AS amount_discount_booked_shop,
-      shopify.amount_booked+shopify.shipping_sold-shopify.amount_discount AS amount_revenue_booked_shop,
-      shopify.amount_booked+shopify.shipping_sold+shopify.amount_tax_sold-shopify.amount_discount AS amount_paid_booked_shop,
+      shopify.amount_booked+shopify.shipping_sold+shopify.amount_discount AS amount_revenue_booked_shop,
+      shopify.amount_booked+shopify.shipping_sold+shopify.amount_tax_sold+shopify.amount_discount AS amount_paid_booked_shop,
       shopify.order_created_date_pst,
       shopify.quantity_booked AS quantity_booked_shopify,
       shopify.quantity_sold AS quantity_sold_shopify
@@ -266,7 +266,10 @@ SELECT
   aggregates.revenue,
   aggregates.amount_paid_total,
   aggregates.gross_profit_estimate,
-  aggregates.cost_estimate
+  aggregates.cost_estimate,
+  case when aggregate_netsuite.tier like '%O' then true
+       when cust.first_order_id_edw_ns is not null and cust.customer_category = 'D2C' then TRUE
+       else false end as customer_first_order_flag
 FROM
   dim.orders orders
   LEFT OUTER JOIN aggregate_netsuite ON aggregate_netsuite.order_id_edw = orders.order_id_edw
@@ -277,6 +280,7 @@ FROM
   LEFT OUTER JOIN dim.location location ON location.location_id_ns = aggregate_netsuite.location
   LEFT OUTER JOIN fact.currency_exchange_rate cer ON aggregate_netsuite.booked_date = cer.effective_date AND aggregate_netsuite.channel_currency_id_ns = cer.transaction_currency_id_ns
   LEFT OUTER JOIN fulfillment_info ON fulfillment_info.ORDER_ID_EDW = orders.ORDER_ID_EDW
+  LEFT OUTER JOIN fact.customers cust ON cust.first_order_id_edw_ns = orders.order_id_edw
 WHERE
   aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z' 
 ORDER BY

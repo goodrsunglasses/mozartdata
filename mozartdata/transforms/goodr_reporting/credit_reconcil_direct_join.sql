@@ -12,6 +12,7 @@ WITH
       map.reference,
       map.source,
       map.amount,
+      map.netsuite_account_num,
       map.clean_card_member,
       per_day_ns.transaction_number_ns,
       per_day_ns.transaction_date,
@@ -33,10 +34,7 @@ SELECT
   cardholder.difference AS aggregate_cardholder_diff
 FROM
   per_day_join
-  LEFT OUTER JOIN goodr_reporting.credit_reconcil_by_cardholder cardholder ON (
-    cardholder.bank = per_day_join.source
-    AND cardholder.statement_name_upper = upper(clean_card_member)
-  )
+  LEFT OUTER JOIN goodr_reporting.credit_reconcil_by_cardholder cardholder ON cardholder.expenseaccount = per_day_join.netsuite_account_num
 WHERE
   transaction_number_ns IS NOT NULL
   AND aggregate_cardholder_diff != 0 --Ok so the idea here is to cascade the logic, to not include the ones that could have been previously cleared via the first step found in the credit_reconcil_by_cardholder query

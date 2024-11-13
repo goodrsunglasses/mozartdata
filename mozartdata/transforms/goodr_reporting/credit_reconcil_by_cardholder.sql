@@ -1,5 +1,5 @@
 WITH
-  dates AS (
+  dates AS ( --min date max date logic for AMEX because we're doing a huge import, and want to make sure to only display values for this that are not used for the jane import
     SELECT
       source,
       max(date_min) AS date_min,
@@ -9,60 +9,57 @@ WITH
     GROUP BY
       source
   ),
-  card_agg AS ( --This one is to attempt to aggregate the totals by cardholder to eliminate any easy ones
-    SELECT DISTINCT
-      entity,
-      altname,
-      firstname,
-      lastname,
-      upper(first_last) AS first_last, --Upper it for later joining to the bank statements
+  ns_aggregates AS (
+    SELECT
+      expenseaccount,
+      account_display_name,
       account_number,
       bank,
-      sum(
-        CASE
-          WHEN transaction_date BETWEEN date_min AND date_max  THEN net_amount
-          ELSE 0
-        END
-      ) over (
-        PARTITION BY
-          altname,
-          bank
-      ) AS total_amount
+      round(
+        sum(
+          CASE
+            WHEN transaction_date BETWEEN dates.date_min AND dates.date_max  THEN net_amount
+            WHEN bank = 'JPM' THEN net_amount
+            ELSE 0
+          END
+        ),
+        2
+      ) AS total_credit_amount_ns
     FROM
       s8.credit_card_reconciliation_transactions tran
       LEFT OUTER JOIN dates ON dates.source = tran.bank
     WHERE
-      firstname IS NOT NULL
+      account_number NOT IN (2020, 2021) --pointedly ignoring these two accounts, because going forward all the expenses should be reclassed into a sub account, and may be double homed in the old big one, only jane transactions should stay there.
+    GROUP BY
+      ALL
+    ORDER BY
+      account_display_name
   ),
   bank_agg AS (
     SELECT
-      Upper(clean_card_member) AS clean_card_member, --upper case to join to to the Netsuite transactions,
-      source AS bank,
-      sum(amount) amount_sum
+      netsuite_account_num,
+      round(
+        sum(
+          CASE
+            WHEN DATE BETWEEN dates.date_min AND dates.date_max
+            AND tran.source = 'AMEX' THEN amount
+            WHEN tran.source = 'JPM' THEN amount
+            ELSE 0
+          END
+  
+        ),
+        2
+      ) AS total_amount
     FROM
-      fact.credit_card_merchant_map
+      fact.credit_card_merchant_map tran
+  LEFT OUTER JOIN dates ON dates.source = tran.source
     GROUP BY
-      clean_card_member,
-      bank
-  ),
-  cardholder_compare AS ( --This is basically step one as of rn, you go ahead and compare the aggregations of a given cardholder's bank data to their NS data, meaning that when they match u can reconcile them.
-    SELECT
-      clean_card_member AS statement_name_upper,
-      first_last AS ns_name_upper,
-      bank_agg.bank,
-      round(total_amount, 2) AS aggregate_amount_ns,
-      amount_sum AS aggregate_amount_statement,
-      abs(aggregate_amount_statement) - abs(aggregate_amount_ns) AS difference
-    FROM
-      bank_agg
-      LEFT OUTER JOIN card_agg ON (
-        bank_agg.clean_card_member = card_agg.first_last
-        AND bank_agg.bank = card_agg.bank
-      )
+      ALL
   )
 SELECT
-  *
+  ns_aggregates.*,
+  bank_agg.total_amount AS total_amount_statement,
+  total_credit_amount_ns - total_amount_statement AS difference
 FROM
-  cardholder_compare
-WHERE
-  ns_name_upper IS NOT NULL
+  ns_aggregates
+  LEFT OUTER JOIN bank_agg ON bank_agg.netsuite_account_num = ns_aggregates.expenseaccount
