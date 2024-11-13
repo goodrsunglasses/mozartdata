@@ -20,11 +20,12 @@ SELECT
   ns_line.channel AS channel_ns,
   ns_line.transaction_created_timestamp_pst timestamp_ns,
   stord.channel channel_stord,
-  CONVERT_TIMEZONE('America/Los_Angeles', stord.inserted_at) AS inserted_at_stord,
-  CONVERT_TIMEZONE('America/Los_Angeles', stord.completed_at) AS completed_at_stord,
+  CONVERT_TIMEZONE('UTC','America/Los_Angeles', stord.inserted_at) AS inserted_at_stord,
+  CONVERT_TIMEZONE('UTC','America/Los_Angeles', stord.completed_at) AS completed_at_stord,
   stord.status AS status_stord,
+  min_created_timestamp,
     CASE
-    WHEN inserted_at_stord IS NOT NULL THEN min_created_timestamp
+    WHEN inserted_at_stord IS NOT NULL THEN  CONVERT_TIMEZONE('America/Los_Angeles',min_created_timestamp)
     ELSE NULL
   END AS ns_stord_fulfillment_creation, --the idea is that we only care about fulfillments in NS, that were in stord in the first place, to compare them
   DATEDIFF(MINUTE, timestamp_shopify, timestamp_ns) difference_shopify_ns,
@@ -38,4 +39,4 @@ FROM
   left outer join ns_fulfill on ns_fulfill.order_id_edw = ord.order_id_edw
 WHERE
   date(coalesce(timestamp_shopify, timestamp_ns)) >= '2024-01-01'
-  AND channel_ns NOT IN ('Amazon', 'Amazon Canada')
+  AND channel_ns NOT IN ('Amazon', 'Amazon Canada') and ord.order_id_edw = 'G2942326'
