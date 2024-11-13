@@ -12,6 +12,7 @@ SELECT DISTINCT
   o.order_id_shopify,
   o.store,
   o.email,
+  o.customer_id as customer_id_shopify,
   o.total_line_items_price as amount_booked,
   coalesce(ship.price,0) as shipping_sold,
   o.amount_tax_sold as amount_tax_sold,
