@@ -9,8 +9,8 @@
  */
 
 select
-    upc.display_name -- Not recommended for joining but feasible for some tables
-  , upc.old_sku -- PRIMARY KEY, most recommended for joining
+    upc.old_sku -- PRIMARY KEY, most recommended for joining
+  , upc.display_name -- Not recommended for joining but feasible for some tables
   , upc.category
   , upc.tier
   , upc.due_date_for_new_skus as due_date_for_new_skus
