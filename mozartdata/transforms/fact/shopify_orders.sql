@@ -1,3 +1,4 @@
+create or replace table fact.shopify_orders copy grants as
 with gift_cards as
     (
         select
@@ -9,7 +10,7 @@ with gift_cards as
             oi.order_id_edw
 
     )
-with refunds as
+, refunds as
   (
     select
       r.order_id_shopify
@@ -55,7 +56,6 @@ FROM
   staging.shopify_orders o
   LEFT OUTER JOIN staging.shopify_order_line line ON line.order_id_shopify = o.order_id_shopify and o.store = line.store
   LEFT OUTER JOIN staging.shopify_order_shipping_line ship ON ship.order_id_shopify = o.order_id_shopify and o.store = ship.store
-  LEFT OUTER JOIN refunds r on o.order_id_shopify = r.order_id_shopify
   LEFT OUTER JOIN gift_cards gc ON o.ORDER_ID_EDW = gc.ORDER_ID_EDW
   LEFT OUTER JOIN refunds r on o.order_id_shopify = r.order_id_shopify
 GROUP BY ALL

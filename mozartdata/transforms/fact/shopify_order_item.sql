@@ -1,3 +1,21 @@
+create or replace table fact.shopify_order_item copy grants as
+with discounts as
+  (
+    select
+      order_line_id_shopify
+    , store
+    , sku
+    , sum(coalesce(amount_standard_discount,0)) as amount_standard_discount
+    , sum(coalesce(amount_yotpo_discount,0)) as amount_yotpo_discount
+    , sum(coalesce(amount_total_discount,0)) as amount_total_discount
+    from
+      fact.shopify_discount_item
+    group by all
+  ),
+  line_aggregates AS
+  (
+
+  )
 SELECT
   o.order_id_edw
 , o.order_id_shopify
@@ -17,7 +35,7 @@ SELECT
 , SUM(line.price * line.quantity)                                                                                AS amount_booked
 , SUM(line.price * (line.quantity - line.fulfillable_quantity))                                                  AS amount_sold
 , SUM(COALESCE(da.amount_standard_discount, 0))                                                                  AS amount_standard_discount
-, case when line.sku not like 'GC%' then round((line.price * (line.quantity - line.fulfillable_quantity)) - SUM(coalesce(da.amount_total_discount,0)), 2) else 0 end as amount_sales --similar to revenue
+, case when line.sku not like 'GC%' then round(sum(line.price * (line.quantity - line.fulfillable_quantity)) - SUM(coalesce(da.amount_total_discount,0)), 2) else 0 end as amount_sales --similar to revenue
 , case when line.sku like 'GC%' then sum(line.price * (line.quantity - line.fulfillable_quantity)) else 0 end AS amount_gift_card
 , SUM(COALESCE(da.amount_yotpo_discount, 0))                                                                     AS amount_yotpo_discount
 , SUM(COALESCE(da.amount_total_discount, 0))                                                                     AS amount_total_discount
