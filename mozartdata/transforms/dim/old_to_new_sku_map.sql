@@ -25,7 +25,7 @@ select
         when upc.poly_lam like '%✅%'
             then true
         else false
-    end                       as poly_lam
+    end                       as poly_lam_flag
   , case
         when upc.tac_niobium like '%✅%'
             then true
