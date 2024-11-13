@@ -13,7 +13,8 @@ select
   , upc.old_sku -- PRIMARY KEY, most recommended for joining
   , upc.category
   , upc.tier
-  , upc.due_date_for_new_skus as new_sku_due_date
+  , upc.due_date_for_new_skus as due_date_for_new_skus
+  , try_to_date(upc.due_date_for_new_skus) as new_sku_due_date
   , upc.new_skus              as new_sku -- Can be used to join new skus in product tables
   , upc.new_upcs              as new_upc
   , date(upc.po_placement) as po_placement_date
