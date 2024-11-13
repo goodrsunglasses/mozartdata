@@ -4,12 +4,13 @@ SELECT
   gl_tran.transaction_date,
   line.entity,
   line.expenseaccount,
+  acc.account_display_name,
   gl_tran.account_number,
   CASE
-    WHEN gl_tran.account_number = '2020' THEN 'AMEX'
+    WHEN to_varchar(gl_tran.account_number) LIKE '2020%' THEN 'AMEX'
     ELSE 'JPM'
   END AS bank,
-  gl_tran.net_amount,
+  gl_tran.credit_amount as net_amount,
   emp.altname,
   emp.firstname,
   emp.lastname,
@@ -34,6 +35,7 @@ FROM
   )
   LEFT OUTER JOIN netsuite.transaction tran ON tran.id = line.transaction
   LEFT OUTER JOIN netsuite.entity emp ON emp.id = line.entity
+  LEFT OUTER JOIN dim.gl_account acc ON acc.account_id_ns = line.expenseaccount
 WHERE
   cleared_flag = FALSE
   AND record_type IN (
@@ -42,7 +44,11 @@ WHERE
     'vendorpayment',
     'check'
   )
-  AND account_number IN (2020, 2021)
+  AND (
+    to_varchar(gl_tran.account_number) LIKE '2020%'
+    OR to_varchar(gl_tran.account_number) LIKE '2021%'
+  )
+  AND credit_amount > 0
   AND voided = 'F'
   AND net_amount != 0
   AND posting_flag = TRUE
