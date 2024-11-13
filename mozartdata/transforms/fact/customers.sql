@@ -20,6 +20,7 @@ WITH
         LEFT JOIN
           fact.customer_ns_map cnm
           ON o.customer_id_ns = cnm.customer_id_ns
+      WHERE c.customer_category != 'INDIRECT' --exclude CS/Marketing customers
       )
 , shopify_orders AS
     (
@@ -51,16 +52,18 @@ WITH
       , n.customer_category
       , n.email
       , n.phone_number
-      , MAX(CASE WHEN n.channel_rn = 1 THEN n.sold_date ELSE NULL END) AS first_order_date_ns
-      , MAX(CASE WHEN n.channel_rn = 2 THEN n.sold_date ELSE NULL END) AS second_order_date_ns
-      , CASE WHEN MAX(n.channel_rn) = 1 THEN TRUE ELSE FALSE END       AS new_customer_flag_ns
-      , NULL                                                           AS first_order_date_shopify
-      , NULL                                                           AS second_order_date_shopify
-      , NULL                                                           AS new_customer_flag_shopify
-      , MAX(n.channel_rn)                                              AS order_count_ns
-      , NULL                                                           AS order_count_shopify
-      , n.channel_revenue                                              AS channel_revenue_ns
-      , NULL                                                           AS channel_revenue_shopify
+      , MAX(CASE WHEN n.channel_rn = 1 THEN n.order_id_edw ELSE NULL END) AS first_order_id_edw_ns
+      , NULL                                                              AS first_order_id_edw_shopify
+      , MAX(CASE WHEN n.channel_rn = 1 THEN n.sold_date ELSE NULL END)    AS first_order_date_ns
+      , MAX(CASE WHEN n.channel_rn = 2 THEN n.sold_date ELSE NULL END)    AS second_order_date_ns
+      , CASE WHEN MAX(n.channel_rn) = 1 THEN TRUE ELSE FALSE END          AS new_customer_flag_ns
+      , NULL                                                              AS first_order_date_shopify
+      , NULL                                                              AS second_order_date_shopify
+      , NULL                                                              AS new_customer_flag_shopify
+      , MAX(n.channel_rn)                                                 AS order_count_ns
+      , NULL                                                              AS order_count_shopify
+      , n.channel_revenue                                                 AS channel_revenue_ns
+      , NULL                                                              AS channel_revenue_shopify
       FROM
         ns_orders n
       GROUP BY ALL
@@ -70,16 +73,18 @@ WITH
       , s.customer_category
       , s.email
       , s.phone_number
-      , NULL                                                         AS first_order_date_ns
-      , NULL                                                         AS second_order_date_ns
-      , NULL                                                         AS new_customer_flag_ns
-      , MAX(CASE WHEN s.store_rn = 1 THEN s.sold_date ELSE NULL END) AS first_order_date_shopify
-      , MAX(CASE WHEN s.store_rn = 2 THEN s.sold_date ELSE NULL END) AS second_order_date_shopify
-      , CASE WHEN MAX(s.store_rn) = 1 THEN TRUE ELSE FALSE END       AS new_customer_flag_shopify
-      , NULL                                                         AS order_count_ns
-      , MAX(s.store_rn)                                              AS order_count_shopify
-      , NULL                                                         AS channel_revenue_ns
-      , s.store_revenue                                              AS channel_revenue_shopify
+      , NULL                                                            AS first_order_id_edw_ns
+      , MAX(CASE WHEN s.store_rn = 1 THEN s.order_id_edw ELSE NULL END) AS first_order_id_edw_shopify
+      , NULL                                                            AS first_order_date_ns
+      , NULL                                                            AS second_order_date_ns
+      , NULL                                                            AS new_customer_flag_ns
+      , MAX(CASE WHEN s.store_rn = 1 THEN s.sold_date ELSE NULL END)    AS first_order_date_shopify
+      , MAX(CASE WHEN s.store_rn = 2 THEN s.sold_date ELSE NULL END)    AS second_order_date_shopify
+      , CASE WHEN MAX(s.store_rn) = 1 THEN TRUE ELSE FALSE END          AS new_customer_flag_shopify
+      , NULL                                                            AS order_count_ns
+      , MAX(s.store_rn)                                                 AS order_count_shopify
+      , NULL                                                            AS channel_revenue_ns
+      , s.store_revenue                                                 AS channel_revenue_shopify
       FROM
         shopify_orders s
       GROUP BY ALL
@@ -87,21 +92,22 @@ WITH
 SELECT
   customer_id_edw
 , customer_category
-, max(email) as email
-, max(phone_number) as phone_number
-, max(first_order_date_ns) as first_order_date_ns
-, max(second_order_date_ns) as second_order_date_ns
-, max(new_customer_flag_ns) as new_customer_flag_ns
-, max(first_order_date_shopify) as first_order_date_shopify
-, max(second_order_date_shopify) as second_order_date_shopify
-, max(new_customer_flag_shopify) as new_customer_flag_shopify
-, max(order_count_ns) as order_count_ns
-, max(order_count_shopify) as order_count_shopify
-, max(channel_revenue_ns) as channel_revenue_ns
-, max(channel_revenue_shopify) as channel_revenue_shopify
+, MAX(email)                     AS email
+, MAX(phone_number)              AS phone_number
+, MAX(first_order_id_edw_ns)      AS first_order_id_edw_ns
+, MAX(first_order_id_edw_shopify)      AS first_order_id_edw_shopify
+, MAX(first_order_date_ns)       AS first_order_date_ns
+, MAX(second_order_date_ns)      AS second_order_date_ns
+, MAX(new_customer_flag_ns)      AS new_customer_flag_ns
+, MAX(first_order_date_shopify)  AS first_order_date_shopify
+, MAX(second_order_date_shopify) AS second_order_date_shopify
+, MAX(new_customer_flag_shopify) AS new_customer_flag_shopify
+, MAX(order_count_ns)            AS order_count_ns
+, MAX(order_count_shopify)       AS order_count_shopify
+, MAX(channel_revenue_ns)        AS channel_revenue_ns
+, MAX(channel_revenue_shopify)   AS channel_revenue_shopify
 FROM
   final f
+GROUP BY ALL
 ORDER BY customer_id_edw
-
-
 
