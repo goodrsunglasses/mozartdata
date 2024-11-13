@@ -1,0 +1,37 @@
+/*
+ Purpose: Map old skus to new skus and new upcs
+ Granularity: One row per old sku
+ Primary key column: old_sku
+ Joining:
+    To old products: use column old_sku to sku
+    To new products: use column new_sku to sku
+ Notes: This data is human input. Please consider this when troubleshooting.
+ */
+
+select
+    upc.display_name -- Not recommended for joining but feasible for some tables
+  , upc.old_sku -- PRIMARY KEY, most recommended for joining
+  , upc.category
+  , upc.tier
+  , upc.due_date_for_new_skus as new_sku_due_date
+  , upc.new_skus              as new_sku -- Can be used to join new skus in product tables
+  , upc.new_upcs              as new_upc
+  , upc.po_placement
+  , upc.estimated_arrival
+  , upc.status
+  , upc.old_margin
+  , upc.lens_type
+  , case
+        when upc.poly_lam like '%✅%'
+            then true
+        else false
+    end                       as poly_lam
+  , case
+        when upc.tac_niobium like '%✅%'
+            then true
+        else false
+    end                       as tac_niobium
+  , upc.old_price
+  , upc.new_price
+from
+    google_sheets.upc_cutover_skus as upc
