@@ -19,7 +19,7 @@ SELECT DISTINCT
   o.amount_tax_sold as amount_tax_sold,
   o.amount_sold as amount_sold,
   round(o.amount_sold - o.amount_tax_sold - ship.price + o.amount_discount,2) as amount_product_sold,
-  round(o.amount_sold - o.amount_tax_sold - gc.amount_gift_card, 2) as amount_revenue_sold,
+  round(o.amount_sold - o.amount_tax_sold - gc.amount_gift_card, 2) as amount_sales, --similar to revenue
   o.amount_discount*-1 as amount_discount,
   sum(line.amount_yotpo_discount) as amount_yotpo_discount,
   sum(line.amount_standard_discount) as amount_standard_discount,
