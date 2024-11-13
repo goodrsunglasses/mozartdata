@@ -38,4 +38,4 @@ FROM
   left outer join ns_fulfill on ns_fulfill.order_id_edw = ord.order_id_edw
 WHERE
   date(coalesce(timestamp_shopify, timestamp_ns)) >= '2024-01-01'
-  AND channel_ns NOT IN ('Amazon', 'Amazon Canada')
+  AND channel_ns NOT IN ('Amazon', 'Amazon Canada','Customer Service')
