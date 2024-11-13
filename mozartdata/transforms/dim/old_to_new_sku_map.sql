@@ -30,7 +30,7 @@ select
         when upc.tac_niobium like '%✅%'
             then true
         else false
-    end                       as tac_niobium
+    end                       as tac_niobium_flag
   , upc.old_price
   , upc.new_price
 from
