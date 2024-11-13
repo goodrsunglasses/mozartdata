@@ -16,6 +16,7 @@ SELECT
 , SUM(coalesce(da.amount_standard_discount,0))                         AS amount_standard_discount
 , SUM(coalesce(da.amount_yotpo_discount,0))                            AS amount_yotpo_discount
 , SUM(coalesce(da.amount_total_discount,0))                            AS amount_total_discount
+, case when line.sku not like 'GC%' then round((line.price * (line.quantity - line.fulfillable_quantity)) - SUM(coalesce(da.amount_total_discount,0)), 2) else 0 end as amount_sales --similar to revenue
 , line.fulfillment_status
 , case when line.sku like 'GC%' then line.price * (line.quantity - line.fulfillable_quantity) else 0 end amount_gift_card
 FROM
