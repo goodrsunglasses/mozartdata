@@ -34,7 +34,8 @@ SELECT
                   account_number = '2601' or
                   account_number = '2602' THEN ending_balance END  ) AS other_liabilities,
   sum(  CASE     WHEN account_number LIKE '13%' or  
-                  account_number LIKE '18%'  THEN ending_balance END  ) AS other
+                  account_number LIKE '18%'  THEN ending_balance END  ) AS other,
+  sum(  CASE     WHEN account_number LIKE '35%'  THEN ending_balance END  ) AS equity
 FROM
   fact.gl_balances b
 GROUP BY
