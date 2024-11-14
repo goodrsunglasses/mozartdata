@@ -79,9 +79,6 @@ with
   )
   select
     bc.*
-  , pm.posting_period_date
-  , pm.posting_period_month
-  , pm.posting_period_year
   from
     ba_combined bc
   inner join
