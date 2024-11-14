@@ -76,6 +76,7 @@ with
     *
   FROM
     budget b
+  where budget_version not in ('2024 - V1','2024 - V2','2024 - V3','2024 - V4')
   )
   select
     bc.*
