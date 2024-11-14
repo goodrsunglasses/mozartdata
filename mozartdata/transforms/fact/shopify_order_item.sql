@@ -1,3 +1,10 @@
+/*
+This table is effectively 1 row per order_id_edw and sku (product_id_edw). However, there are cases where a single sku
+in shopify has multiple product_ids in shopify, or multiple order_id_shopify for a single order_id_edw
+As of 11/1/2024 there are only 207 instances where this isn't unique:
+Most are from 2019, largely due to some oddity where there are multiple order_id_shopify for a single order_id_edw
+
+*/
 WITH
   discounts       AS
     (

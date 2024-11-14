@@ -1,4 +1,3 @@
-create or replace table fact.shopify_orders copy grants as
 with gift_cards as
     (
         select
