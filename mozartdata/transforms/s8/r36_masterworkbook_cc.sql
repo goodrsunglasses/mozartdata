@@ -37,7 +37,7 @@ with
     where
       --gt.posting_period  in ('Jan 2023','Feb 2023','Mar 2023','Apr 2023','May 2023','Jun 2023','Jul 2023','Aug 2023','Sep 2023')
       posting_flag = true
-    and ga.account_number >= 5000 and ga.account_number < 9000
+    and ga.account_number >= 6000 and ga.account_number < 9000
     group by
       concat(pm.posting_period_year,' - Actual')  
     , ga.account_number
@@ -63,7 +63,7 @@ with
   inner join
     dim.gl_account ga
     on ga.account_id_edw = gb.account_id_edw
-    and ga.account_number >= 5000 and ga.account_number < 9000
+    and ga.account_number >= 6000 and ga.account_number < 9000
   ),
   ba_combined as 
   (
