@@ -37,6 +37,3 @@ FROM
   LEFT OUTER JOIN fact.order_line ns_line ON ns_line.transaction_id_ns = ord.transaction_id_ns
   LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord ON stord.order_id = ord.stord_id
   left outer join ns_fulfill on ns_fulfill.order_id_edw = ord.order_id_edw
-WHERE
-  date(coalesce(timestamp_shopify, timestamp_ns)) >= '2024-01-01'
-  AND channel_ns NOT IN ('Amazon', 'Amazon Canada','Customer Service')
