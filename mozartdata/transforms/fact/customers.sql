@@ -34,8 +34,8 @@ WITH
       , o.order_id_edw
       , ROW_NUMBER() OVER (PARTITION BY csm.customer_id_edw ORDER BY o.sold_date)                      AS lifetime_rn
       , ROW_NUMBER() OVER (PARTITION BY csm.customer_id_edw, c.customer_category ORDER BY o.sold_date) AS store_rn
-      , SUM(o.amount_revenue_sold) OVER (PARTITION BY csm.customer_id_edw)                             AS lifetime_revenue
-      , SUM(o.amount_revenue_sold) OVER (PARTITION BY csm.customer_id_edw, c.customer_category)        AS store_revenue
+      , SUM(o.amount_sales) OVER (PARTITION BY csm.customer_id_edw)                                    AS lifetime_revenue
+      , SUM(o.amount_sales) OVER (PARTITION BY csm.customer_id_edw, c.customer_category)               AS store_revenue
       FROM
         fact.shopify_orders o
         LEFT JOIN
@@ -110,4 +110,3 @@ FROM
   final f
 GROUP BY ALL
 ORDER BY customer_id_edw
-
