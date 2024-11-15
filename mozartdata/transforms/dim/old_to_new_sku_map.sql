@@ -17,8 +17,8 @@ select
   , try_to_date(upc.due_date_for_new_skus) as new_sku_due_date
   , upc.new_skus              as new_sku -- Can be used to join new skus in product tables
   , upc.new_upcs              as new_upc
-  , date(upc.po_placement) as po_placement_date
-  , date(upc.estimated_arrival) as estimated_arrival_date
+  , try_to_date(upc.po_placement) as po_placement_date
+  , try_to_date(upc.estimated_arrival) as estimated_arrival_date
   , upc.status
   , upc.old_margin
   , upc.lens_type
