@@ -13,7 +13,7 @@ SELECT
   --- discount,
   --- credit reason,
   --- exchnage rate,
-  customer_id_edw,
+  customer_id_edw
 --  c.customer_name,
   f.country
 FROM
