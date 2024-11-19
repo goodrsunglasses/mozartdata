@@ -14,14 +14,14 @@ SELECT
   --- credit reason,
   --- exchnage rate,
   gl.customer_id_edw,
---  c.customer_name,
+  c.customer_name,
   f.country
 FROM
   fact.gl_transaction gl
   left join dim.product p on gl.item_id_ns = p.item_id_ns
   left join fact.order_item oi on oi.order_id_edw = gl.order_id_edw and oi.product_id_edw = gl.product_id_edw
   left join fact.fulfillment f on f.order_id_edw = gl.order_id_edw 
---  left join fact.customer_ns_map c on c.customer_id_edw = gl.customer_id_edw
+  left join fact.customer_ns_map c on c.customer_id_edw = gl.customer_id_edw
 where 
   gl.account_number = 4000
   and posting_flag 
