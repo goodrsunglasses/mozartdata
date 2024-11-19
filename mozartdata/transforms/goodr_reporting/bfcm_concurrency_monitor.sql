@@ -1,5 +1,17 @@
 --Primary timestamp "key" will be from shopify
 SELECT
+  CASE
+    WHEN EXTRACT(
+      HOUR
+      FROM
+        coalesce(timestamp_shopify, timestamp_ns)
+    ) < 12 THEN DATE_TRUNC('DAY', coalesce(timestamp_shopify, timestamp_ns))
+    ELSE TIMESTAMPADD(
+      'HOUR',
+      12,
+      DATE_TRUNC('DAY', coalesce(timestamp_shopify, timestamp_ns))
+    )
+  END AS gabby_super_specific_logic_half_of_day,
   DATE_TRUNC('HOUR', coalesce(timestamp_shopify, timestamp_ns)) AS hour_of_day, --The idea with this is to create a mutally exclusive "Universal" timestamp because if an order isn't in Shopify, like KA and Amazon, it will be in NS 
   coalesce(channel_shopify, channel_ns) AS channel,
   count(order_id_edw) total_orders,
