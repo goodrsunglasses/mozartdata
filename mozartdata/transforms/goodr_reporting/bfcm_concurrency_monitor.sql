@@ -14,6 +14,6 @@ SELECT
 FROM
   fact.order_concurrency_monitor monitor
 WHERE
-  hour_of_day >= '2024-01-01T00:00:00-00:00'
+  hour_of_day >= '2024-11-01T00:00:00-00:00'
 GROUP BY
   ALL
