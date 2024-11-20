@@ -14,6 +14,7 @@ SELECT
   ord.order_id_edw,
   shop.store channel_shopify,
   shop.order_created_timestamp_pst timestamp_shopify,
+  date(shop.order_created_timestamp_pst) date_shopify,
   shop.financial_status financial_status_shopify,
   shop.fulfillment_status,
   ns_line.record_type,
