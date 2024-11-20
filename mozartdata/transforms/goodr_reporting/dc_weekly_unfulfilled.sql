@@ -10,5 +10,5 @@ WHERE
   channel != 'Key Accounts'
   AND location LIKE '%DC%'
   AND fulfillment_date IS NULL
-  AND order_date >= '2024-01-01'
+  AND order_date between '2024-01-01' and current_date()-1
 and status_flag_edw != True
