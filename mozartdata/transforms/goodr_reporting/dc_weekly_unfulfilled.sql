@@ -12,3 +12,4 @@ WHERE
   AND fulfillment_date IS NULL
   AND order_date between '2024-01-01' and current_date()-1--Offset so they don't see stuff from today that they may have fulfilled
 and status_flag_edw != True
+order by order_date desc
