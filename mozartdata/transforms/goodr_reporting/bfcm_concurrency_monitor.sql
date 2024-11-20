@@ -26,6 +26,6 @@ SELECT
 FROM
   fact.order_concurrency_monitor monitor
 WHERE
-  hour_of_day >= '2024-11-01T00:00:00-00:00' and channel not in('Customer Service','Goodrwill','Amazon Canada','Amazon')
+  hour_of_day >= '2024-11-10T00:00:00-00:00' and channel not in('Customer Service','Goodrwill','Amazon Canada','Amazon')
 GROUP BY
   ALL
