@@ -33,15 +33,18 @@ SELECT
 , SUM(line.quantity - line.fulfillable_quantity) AS quantity_sold
 , SUM(line.fulfillable_quantity) AS quantity_unfulfilled
 , SUM(CASE  WHEN line.fulfillment_status = 'fulfilled' THEN line.quantity - line.fulfillable_quantity ELSE 0 END) AS quantity_fulfilled
-, SUM(line.price * line.quantity) AS amount_booked
-, SUM(line.price * (line.quantity - line.fulfillable_quantity)) AS                                               amount_sold
+, SUM(line.price * line.quantity) AS amount_product_booked
+, CASE
+    WHEN line.sku NOT LIKE 'GC%' THEN ROUND(SUM(line.price * line.quantity) - SUM(COALESCE(da.amount_standard_discount, 0)), 2)
+    ELSE 0 END                                                                                                AS amount_sales_booked
+, SUM(line.price * (line.quantity - line.fulfillable_quantity)) AS                                               amount_product_sold
 , SUM(COALESCE(da.amount_standard_discount, 0))                                                               AS amount_standard_discount
 , CASE
     WHEN line.sku NOT LIKE 'GC%' THEN ROUND(SUM(line.price * (line.quantity - line.fulfillable_quantity)) - SUM(COALESCE(da.amount_standard_discount, 0)), 2)
     ELSE 0 END                                                                                                AS amount_sales --similar to revenue
 , CASE
     WHEN line.sku LIKE 'GC%' THEN SUM(line.price * (line.quantity - line.fulfillable_quantity))
-    ELSE 0 END                                                                                                AS amount_gift_card
+    ELSE 0 END                                                                                                AS amount_gift_card_sold
 , ROUND(SUM(line.price * (line.quantity - line.fulfillable_quantity)) - SUM(COALESCE(da.amount_total_discount, 0)), 2) AS amount_paid
 , SUM(COALESCE(da.amount_yotpo_discount, 0))                                                                  AS amount_yotpo_discount
 , SUM(COALESCE(da.amount_total_discount, 0))                                                                  AS amount_total_discount
