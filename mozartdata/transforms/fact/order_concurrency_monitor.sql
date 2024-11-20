@@ -27,10 +27,10 @@ SELECT
     WHEN inserted_at_stord IS NOT NULL THEN  min_created_timestamp
     ELSE NULL
   END AS ns_stord_fulfillment_creation, --the idea is that we only care about fulfillments in NS, that were in stord in the first place, to compare them
-  DATEDIFF(MINUTE, timestamp_shopify, timestamp_ns) difference_shopify_ns,
-  DATEDIFF(MINUTE, timestamp_shopify, inserted_at_stord) difference_shopify_stord,
-  DATEDIFF(MINUTE, completed_at_stord, ns_stord_fulfillment_creation) difference_stord_ns,
-  DATEDIFF(MINUTE, timestamp_shopify, completed_at_stord) shopify_click_stord_ship
+  DATEDIFF(MINUTE, timestamp_shopify, timestamp_ns) difference_shopify_ns_in_minutes,
+  DATEDIFF(MINUTE, timestamp_shopify, inserted_at_stord) difference_shopify_stord_in_minutes,
+  DATEDIFF(MINUTE, completed_at_stord, ns_stord_fulfillment_creation) difference_stord_ns_in_minutes,
+  DATEDIFF(MINUTE, timestamp_shopify, completed_at_stord) shopify_click_stord_ship_in_minutes
 FROM
   dim.orders ord
   LEFT OUTER JOIN fact.shopify_orders shop ON shop.order_id_shopify = ord.order_id_shopify
