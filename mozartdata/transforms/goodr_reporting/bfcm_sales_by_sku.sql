@@ -20,8 +20,8 @@ WITH
     , CASE WHEN o.sold_date BETWEEN '2023-11-22' AND '2023-11-28' THEN 'BFCM-2023' ELSE 'BFCM-2024' END AS bfcm_period
     , COUNT(DISTINCT oi.order_id_edw)                                                                   AS order_count
     , SUM(oi.quantity_booked)                                                                           AS quantity_booked
-    , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_product_sold) * avg(c.exchange_rate) else SUM(oi.amount_product_sold)              end                                                               AS amount_product
-    , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_sales)  * avg(c.exchange_rate) else SUM(oi.amount_sales) end                                                                        AS amount_sales
+    , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_product_booked) * avg(c.exchange_rate) else SUM(oi.amount_product_booked)              end                                                               AS amount_product
+    , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_sales_booked)  * avg(c.exchange_rate) else SUM(oi.amount_sales_booked) end                                                                        AS amount_sales
     , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_yotpo_discount)     * avg(c.exchange_rate) else  SUM(oi.amount_yotpo_discount) end                                                                AS amount_yotpo_discount
     , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_refund_product)       * avg(c.exchange_rate) else avg(c.exchange_rate) end                                                              AS amount_refunded
     , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_gift_card_sold) * avg(c.exchange_rate) else SUM(oi.amount_gift_card_sold) end as amount_gift_card
