@@ -9,6 +9,7 @@ SELECT
 , SUM(s.amount_yotpo_discount) AS amount_yotpo_discount
 , sum(s.amount_refunded) as amount_refunded
 , SUM(s.amount_sales) - sum(s.amount_refunded) as amount_net_sales
+, SUM(s.amount_gift_card) AS amount_gift_card
 
 FROM
   goodr_reporting.bfcm_sales_by_sku s
