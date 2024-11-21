@@ -2,7 +2,7 @@ with gift_cards as
     (
         select
             oi.order_id_edw
-        ,   sum(oi.amount_gift_card) amount_gift_card
+        ,   sum(oi.amount_gift_card_sold) amount_gift_card
         from
             fact.shopify_order_item oi
         group by
@@ -69,4 +69,3 @@ FROM
   LEFT OUTER JOIN gift_cards gc ON o.ORDER_ID_EDW = gc.ORDER_ID_EDW
   LEFT OUTER JOIN refunds r on o.order_id_shopify = r.order_id_shopify
 GROUP BY ALL
-
