@@ -25,6 +25,7 @@ WITH
     , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_yotpo_discount)     * avg(c.exchange_rate) else  SUM(oi.amount_yotpo_discount) end                                                                AS amount_yotpo_discount
     , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_refund_product)       * avg(c.exchange_rate) else avg(c.exchange_rate) end                                                              AS amount_refunded
     , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_gift_card_sold) * avg(c.exchange_rate) else SUM(oi.amount_gift_card_sold) end as amount_gift_card
+    , case when oi.sku like 'GC%' then true else false end gift_card_flag
     FROM
       fact.shopify_order_item oi
       INNER JOIN
