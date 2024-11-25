@@ -39,7 +39,7 @@ WITH
       ON 1=1
     WHERE
        (o.sold_date BETWEEN '2023-11-22' AND '2023-11-28')
-    OR (o.sold_date BETWEEN '2024-11-27' AND '2024-12-03')
+    OR (o.sold_date BETWEEN '2024-11-26' AND '2024-12-03')
         AND o.store NOT IN ('Goodrwill')
     GROUP BY
       oi.sku
