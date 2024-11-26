@@ -1,3 +1,17 @@
+/*
+Requirements: (per team data slack thread)
+For goodr.com and goodr.ca from Shopify 2018-2024:
+Unique transaction ID
+Unique customer ID
+Order date
+Product information (SKUs, Product Names, Price per Item, Discount, # of Items in Basket)
+Regional information (aka ‘Ship To’ data) --> zip code is sufficient here
+Any demographic information --> I don't believe we have anything here, correct?
+Returns ($$ amount) --> we can only accurately tie returns to their original purchase in a small proportion of cases, correct?
+Net sales
+Gross sales
+ 
+*/
 WITH
   conversion AS
     (
