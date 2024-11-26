@@ -1,18 +1,3 @@
-/*
-Requirements: (per team data slack thread)
-For goodr.com and goodr.ca from Shopify 2018-2024:
-Unique transaction ID
-Unique customer ID
-Order date
-Product information (SKUs, Product Names, Price per Item, Discount, # of Items in Basket)
-Regional information (aka ‘Ship To’ data) --> zip code is sufficient here
-Any demographic information --> I don't believe we have anything here, correct?
-Returns ($$ amount) --> we can only accurately tie returns to their original purchase in a small proportion of cases, correct?
-Net sales
-Gross sales
-
-*/
-
 WITH
   conversion AS
     (
@@ -29,6 +14,8 @@ WITH
         o.order_id_edw
       , o.customer_id_shopify
       , o.store                                                    AS channel
+      , so.shipping_address_country_code as shipping_country
+      , so.shipping_address_zip as shipping_zip_code
       , o.sold_date
       , oi.sku
       , oi.display_name
@@ -65,6 +52,10 @@ WITH
         LEFT JOIN
           conversion c
           ON o.sold_date = c.effective_date
+        LEFT JOIN
+          staging.shopify_orders so
+          ON o.order_id_shopify = so.order_id_shopify
+          AND o.store = so.store
       WHERE
         o.store IN ('Goodr.ca', 'Goodr.com')
       GROUP BY ALL
