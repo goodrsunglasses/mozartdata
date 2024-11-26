@@ -12,8 +12,8 @@ WITH
   p.*,
   ful.order_id_edw,
   ful.ship_date as ship_date_stord_api,
-  
-
+  o.channel
+/*
   CASE
     WHEN left(order_id_edw, 3) = 'GCA' THEN 'goodr.ca'
     WHEN left(order_id_edw, 3) = 'G-C' THEN 'goodr.ca'
@@ -33,10 +33,11 @@ WITH
     WHEN left(order_id_edw, 3) = 'POP' THEN 'pop'  -- seperated bc idk if these are sellgoodr or sellgoodr ca and they are very different parcel costs anyways
     ELSE 'other'
     END AS channel_guess
-  
+  */
 FROM
   stord_invoices.parcel_details p
   left join ful on p.shipment_tracking_number = ful.tracking_number
+  left join fact.orders o on p.order_number_wms = o.order_id_edw
 --WHERE
 --  detailed_carrier LIKE 'As%'  -- canada 
 --  and order_id_edw is null  --- qc (85 rows) and
