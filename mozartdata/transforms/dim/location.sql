@@ -1,3 +1,18 @@
+/*
+Purpose: to show the data related to locations in Netsuite. One row per netsuite location.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
+
 SELECT
   l.id location_id_ns,
   l.name as name,

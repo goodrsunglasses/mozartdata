@@ -1,7 +1,22 @@
-WITH CTE_MY_DATE AS (
+/*
+Purpose: provide information about each day in a calendar year. One row per date in a year.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
+    .CTE_MY_DATE as (
     SELECT DATEADD(DAY, SEQ4(), '2000-01-01') AS MY_DATE
     FROM TABLE(GENERATOR(ROWCOUNT=>100000))
-), dim_date as
+    )
+                      , dim_date as
 (
 SELECT
   MY_DATE                                                                                 as date_timestamp

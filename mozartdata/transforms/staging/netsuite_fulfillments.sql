@@ -1,3 +1,18 @@
+/*
+Purpose: Bring together all fulfillments from netsuite.
+One row per order id edw per tracking number.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
 SELECT --The idea for this table is to get a simple staging area for the myriad of tracking and fulfillment related info SPECIFICALLY coming out of Netsuite, for easy use later in the pipeline
 	   tran.id                           AS transaction_id_ns,
 	   tran.custbody_goodr_shopify_order AS order_id_ns,
