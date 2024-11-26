@@ -47,4 +47,4 @@ FROM
 --select distinct detailed_carrier from core where channel is null
 --select count (*) from core where detailed_carrier ilike 'Ase%'
 --select * from core
-select count (*) from core
+select * from core
