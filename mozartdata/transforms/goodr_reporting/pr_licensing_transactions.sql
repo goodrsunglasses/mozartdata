@@ -68,8 +68,8 @@ WITH
       chan.customer_category,
       days.posting_period,
       sum(item.quantity_sold) AS total_quantity_booked,
-      sum(item.amount_sold) AS total_amount_sold,
-      - sum(amount_standard_discount) AS total_standard_discount,
+      sum(item.amount_product_sold) AS total_amount_sold,
+      sum(item.amount_standard_discount) AS total_standard_discount,
       ref.total_quantity_refunded AS total_quantity_refunded,
       ref.total_amount_refunded AS total_amount_refunded
     FROM

@@ -76,6 +76,12 @@ baskets_agg as
   , sum(case when b2.merchandise_class = 'LFGS' then b2.quantity_booked else 0 end) lfgs_quantity
   , sum(case when b2.merchandise_class = 'POP GS' then b2.quantity_booked else 0 end) popgs_quantity
   , sum(case when b2.merchandise_class = 'RETRO GS' then b2.quantity_booked else 0 end) retrogs_quantity
+  , sum(case when b2.merchandise_class = 'GLAM G' then b2.quantity_booked else 0 end) glamgs_quantity
+  , sum(case when b2.merchandise_class = 'ASTRO GS' then b2.quantity_booked else 0 end) astrogs_quantity
+  , sum(case when b2.merchandise_class = 'BUG GS' then b2.quantity_booked else 0 end) buggs_quantity
+  , sum(case when b2.merchandise_class = 'BOLT GS' then b2.quantity_booked else 0 end) boltgs_quantity
+  , sum(case when b2.merchandise_class = 'FLEX GS' then b2.quantity_booked else 0 end) flexgs_quantity
+  , sum(case when b2.merchandise_class = 'FLY GS' then b2.quantity_booked else 0 end) flygs_quantity
   from
     baskets b1
   left join
@@ -127,6 +133,12 @@ SELECT
 , sum(ba.lfgs_quantity) lfgs_quantity
 , sum(ba.popgs_quantity) popgs_quantity
 , sum(ba.retrogs_quantity) retrogs_quantity
+, sum(ba.glamgs_quantity) glamgs_quantity
+, sum(ba.astrogs_quantity) astrogs_quantity
+, sum(ba.buggs_quantity) buggs_quantity
+, sum(ba.boltgs_quantity) boltgs_quantity
+, sum(ba.flexgs_quantity) flexgs_quantity
+, sum(ba.flygs_quantity) flygs_quantity
 from 
   customer_orders co
 left join

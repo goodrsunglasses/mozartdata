@@ -3,6 +3,6 @@ SELECT
   billed_date,
   channel_guess
 FROM
-  s8.stord_invoices_combined
+  archive.stord_invoices_combined
 GROUP BY
   ALL

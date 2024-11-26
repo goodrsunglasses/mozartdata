@@ -1,42 +1,31 @@
-WITH
-  ns_fulfill AS (
-    SELECT
-      order_id_edw,
-      min(transaction_created_timestamp_pst) min_created_timestamp --using min here because the idea is that this is the "First" time the fulfillment was created in ns from stord (there could technically be multiple)
-    FROM
-      fact.order_line
-    WHERE
-      record_type = 'itemfulfillment'
-    GROUP BY
-      ALL
-  )
+--Primary timestamp "key" will be from shopify
 SELECT
-  ord.order_id_edw,
-  shop.store channel_shopify,
-  shop.order_created_timestamp_pst timestamp_shopify,
-  shop.financial_status financial_status_shopify,
-  shop.fulfillment_status,
-  ns_line.record_type,
-  ns_line.channel AS channel_ns,
-  ns_line.transaction_created_timestamp_pst timestamp_ns,
-  stord.channel channel_stord,
-  CONVERT_TIMEZONE('UTC','America/Los_Angeles', stord.inserted_at) AS inserted_at_stord,
-  CONVERT_TIMEZONE('UTC','America/Los_Angeles', stord.completed_at) AS completed_at_stord,
-  stord.status AS status_stord,
-    CASE
-    WHEN inserted_at_stord IS NOT NULL THEN  min_created_timestamp
-    ELSE NULL
-  END AS ns_stord_fulfillment_creation, --the idea is that we only care about fulfillments in NS, that were in stord in the first place, to compare them
-  DATEDIFF(MINUTE, timestamp_shopify, timestamp_ns) difference_shopify_ns,
-  DATEDIFF(MINUTE, timestamp_shopify, inserted_at_stord) difference_shopify_stord,
-  DATEDIFF(MINUTE, completed_at_stord, ns_stord_fulfillment_creation) difference_stord_ns,
-  DATEDIFF(MINUTE, timestamp_shopify, completed_at_stord) shopify_click_stord_ship
+  CASE
+    WHEN EXTRACT(
+      HOUR
+      FROM
+        coalesce(timestamp_shopify, timestamp_ns)
+    ) < 12 THEN DATE_TRUNC('DAY', coalesce(timestamp_shopify, timestamp_ns))
+    ELSE TIMESTAMPADD(
+      'HOUR',
+      12,
+      DATE_TRUNC('DAY', coalesce(timestamp_shopify, timestamp_ns))
+    )
+  END AS gabby_super_specific_logic_half_of_day,
+  DATE_TRUNC('HOUR', coalesce(timestamp_shopify, timestamp_ns)) AS hour_of_day, --The idea with this is to create a mutally exclusive "Universal" timestamp because if an order isn't in Shopify, like KA and Amazon, it will be in NS 
+  coalesce(channel_shopify, channel_ns) AS channel,
+  count(order_id_edw) total_orders,
+  avg(difference_shopify_ns_in_minutes) difference_shopify_ns_avg,
+  avg(difference_shopify_stord_in_minutes) difference_shopify_stord_avg,
+  avg(difference_stord_ns_in_minutes) difference_stord_ns_avg,
+  avg(shopify_click_stord_ship_in_minutes) shopify_click_stord_ship_avg,
+  max(difference_shopify_ns_in_minutes) difference_shopify_ns_max,
+  max(difference_shopify_stord_in_minutes) difference_shopify_stord_max,
+  max(difference_stord_ns_in_minutes) difference_stord_ns_max,
+  max(shopify_click_stord_ship_in_minutes) shopify_click_stord_ship_max
 FROM
-  dim.orders ord
-  LEFT OUTER JOIN fact.shopify_orders shop ON shop.order_id_shopify = ord.order_id_shopify
-  LEFT OUTER JOIN fact.order_line ns_line ON ns_line.transaction_id_ns = ord.transaction_id_ns
-  LEFT OUTER JOIN stord.stord_sales_orders_8589936822 stord ON stord.order_id = ord.stord_id
-  left outer join ns_fulfill on ns_fulfill.order_id_edw = ord.order_id_edw
+  fact.order_concurrency_monitor monitor
 WHERE
-  date(coalesce(timestamp_shopify, timestamp_ns)) >= '2024-01-01'
-  AND channel_ns NOT IN ('Amazon', 'Amazon Canada','Customer Service')
+  hour_of_day >= '2024-11-10T00:00:00-00:00' and channel not in('Customer Service','Goodrwill','Amazon Canada','Amazon')
+GROUP BY
+  ALL

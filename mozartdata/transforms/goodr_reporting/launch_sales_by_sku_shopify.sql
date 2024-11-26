@@ -32,7 +32,7 @@ grid_days as
     , ld.collection
     , ld.family
     , ld.earliest_d2c_sale
-    , sum(oi.amount_sold) launch_product_sales
+    , sum(oi.amount_product_sold) launch_product_sales
     , sum(oi.quantity_sold) launch_product_quantity
     from
       fact.shopify_order_item oi
