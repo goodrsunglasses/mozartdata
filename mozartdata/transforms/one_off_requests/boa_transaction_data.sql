@@ -14,53 +14,63 @@ Gross sales
 */
 
 WITH
-  conversion as
+  conversion AS
     (
       SELECT
-        CURRENCY_EXCHANGE_RATE.effective_date
-        , CURRENCY_EXCHANGE_RATE.exchange_rate
+        currency_exchange_rate.effective_date
+      , currency_exchange_rate.exchange_rate
       FROM
         fact.currency_exchange_rate
-      where CURRENCY_EXCHANGE_RATE.transaction_currency_abbreviation = 'CAD'
-    ),
-  skus AS (
-    SELECT
-      o.order_id_edw
-    , o.customer_id_shopify
-    , oi.sku
-    , oi.display_name
-    , p.family
-    , p.collection
-    , o.sold_date
-    , o.store                                                                                           AS channel
-    , CASE WHEN o.sold_date BETWEEN '2023-11-22' AND '2023-11-28' THEN 'BFCM-2023' ELSE 'BFCM-2024' END AS bfcm_period
-    , COUNT(DISTINCT oi.order_id_edw)                                                                   AS order_count
-    , SUM(oi.quantity_booked)                                                                           AS quantity_booked
-    , case when o.store ='Goodr.ca' then SUM(oi.amount_product_booked) * avg(c.exchange_rate) else SUM(oi.amount_product_booked)              end                                                               AS amount_product
-    , case when o.store ='Goodr.ca' then SUM(oi.amount_sales_booked)  * avg(c.exchange_rate) else SUM(oi.amount_sales_booked) end                                                                        AS amount_sales
-    , case when o.store = 'Goodr.ca' then SUM(oi.amount_yotpo_discount)     * avg(c.exchange_rate) else  SUM(oi.amount_yotpo_discount) end                                                                AS amount_yotpo_discount
-    , case when o.store = 'Goodr.ca' then SUM(oi.amount_refund_product)       * avg(c.exchange_rate) else avg(c.exchange_rate) end                                                              AS amount_refunded
-    , case when o.store = 'Goodr.ca' then SUM(oi.amount_gift_card_sold) * avg(c.exchange_rate) else SUM(oi.amount_gift_card_sold) end as amount_gift_card
-    FROM
-      fact.shopify_order_item oi
-      INNER JOIN
-        dim.product p
-        ON oi.sku = p.product_id_edw
-      LEFT JOIN
-        fact.shopify_orders o
-        ON oi.order_id_edw = o.order_id_edw
-      LEFT JOIN
-        conversion c
-      ON o.sold_date = c.effective_date
-    WHERE
-      o.store IN ('Goodr.ca','Goodr.com')
-    GROUP BY
-      oi.sku
-    , oi.display_name
-    , p.family
-    , p.collection
-    , o.sold_date
-    , o.store
-    , c.exchange_rate
-    )
-select * from skus order by
+      WHERE
+        currency_exchange_rate.transaction_currency_abbreviation = 'CAD'
+      )
+, skus       AS (
+      SELECT
+        o.order_id_edw
+      , o.customer_id_shopify
+      , o.store                                                    AS channel
+      , o.sold_date
+      , oi.sku
+      , oi.display_name
+      , oi.quantity_booked                                         AS quantity_booked
+      , oi.rate                                                    AS unit_price
+      , sum(oi.amount_booked) as amount_booked
+      , sum(oi.quantity_sold) as quantity_sold
+      , sum(oi.amount_product_sold) as amount_sold
+      , sum(oi.amount_standard_discount) as amount_discount
+      , sum(oi.amount_refund_product) + sum(oi.amount_booked)-sum(oi.amount_product_sold) as amount_refund
+--       , CASE
+--           WHEN o.store = 'Goodr.ca' THEN SUM(oi.amount_booked) * AVG(c.exchange_rate)
+--           ELSE SUM(oi.amount_booked) END                           AS amount_sold
+--       , CASE
+--           WHEN o.store = 'Goodr.ca' THEN SUM(oi.amount_standard_discount) * AVG(c.exchange_rate)
+--           ELSE SUM(oi.amount_standard_discount) END                AS amound_discount
+--       , CASE
+--           WHEN o.store = 'Goodr.ca' THEN SUM(oi.amount_refund_product) * AVG(c.exchange_rate)
+--           ELSE SUM(oi.amount_refund_product) END                   AS amount_refunded
+      , sum(SUM(oi.quantity_booked)) OVER (PARTITION BY o.order_id_edw) AS order_quantity
+      , sum(SUM(oi.amount_booked)) OVER (PARTITION BY o.order_id_edw) AS order_total
+      , sum(SUM(oi.amount_standard_discount)) OVER (PARTITION BY o.order_id_edw) AS order_discount
+      , o.shipping_sold as order_shipping
+      , sum(sum(oi.amount_refund_product) + sum(oi.amount_booked)-sum(oi.amount_product_sold)) over (partition by o.order_id_edw) as order_refund
+      FROM
+        fact.shopify_order_item oi
+        INNER JOIN
+          dim.product p
+          ON oi.sku = p.product_id_edw
+        LEFT JOIN
+          fact.shopify_orders o
+          ON oi.order_id_edw = o.order_id_edw
+          AND oi.store = o.store
+        LEFT JOIN
+          conversion c
+          ON o.sold_date = c.effective_date
+      WHERE
+        o.store IN ('Goodr.ca', 'Goodr.com')
+      GROUP BY ALL
+
+      )
+SELECT *
+FROM
+  skus
+ORDER BY order_id_edw
