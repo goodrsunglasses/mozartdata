@@ -1,47 +1,89 @@
-WITH
-  conversion as
-    (
-      SELECT
-        CURRENCY_EXCHANGE_RATE.effective_date
-        , CURRENCY_EXCHANGE_RATE.exchange_rate
-      FROM
+with
+    conversion as (
+                      select
+                          currency_exchange_rate.effective_date
+                        , currency_exchange_rate.exchange_rate
+                      from
         fact.currency_exchange_rate
-      where CURRENCY_EXCHANGE_RATE.transaction_currency_abbreviation = 'CAD'
-      QUALIFY row_number() over (order by CURRENCY_EXCHANGE_RATE.effective_date desc) = 1
-    ),
-  skus AS (
-    SELECT
+                      where
+                          currency_exchange_rate.transaction_currency_abbreviation = 'CAD'
+                      qualify
+                          row_number() over (order by currency_exchange_rate.effective_date desc) = 1
+    )
+select
       oi.sku
     , oi.display_name
     , p.family
     , p.collection
     , o.sold_date
-    , o.store                                                                                           AS channel
-    , CASE WHEN o.sold_date BETWEEN '2023-11-22' AND '2023-11-28' THEN 'BFCM-2023' ELSE 'BFCM-2024' END AS bfcm_period
-    , COUNT(DISTINCT oi.order_id_edw)                                                                   AS order_count
-    , SUM(oi.quantity_booked)                                                                           AS quantity_booked
-    , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_product_booked) * avg(c.exchange_rate) else SUM(oi.amount_product_booked)              end                                                               AS amount_product
-    , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_sales_booked)  * avg(c.exchange_rate) else SUM(oi.amount_sales_booked) end                                                                        AS amount_sales
-    , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_yotpo_discount)     * avg(c.exchange_rate) else  SUM(oi.amount_yotpo_discount) end                                                                AS amount_yotpo_discount
-    , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_refund_product)       * avg(c.exchange_rate) else avg(c.exchange_rate) end                                                              AS amount_refunded
-    , case when o.store IN ('Specialty CAN', 'Goodr.ca') then SUM(oi.amount_gift_card_sold) * avg(c.exchange_rate) else SUM(oi.amount_gift_card_sold) end as amount_gift_card
-    , case when oi.sku like 'GC%' then true else false end gift_card_flag
-    FROM
-      fact.shopify_order_item oi
-      INNER JOIN
-        dim.product p
-        ON oi.sku = p.product_id_edw
-      LEFT JOIN
+    , o.store                                                        as channel
+    , iff(
+          o.sold_date between '2023-11-22' and '2023-11-28'
+          , 'BFCM-2023'
+          , 'BFCM-2024'
+      )                                                              as bfcm_period
+    , count(distinct oi.order_id_edw)                                as order_count
+    , sum(oi.quantity_booked)                                        as quantity_booked
+    , iff(
+          o.store in ('Specialty CAN', 'Goodr.ca')
+          , sum(oi.amount_product_booked) * avg(c.exchange_rate)
+          , sum(oi.amount_product_booked)
+      )                                                              as amount_product
+    , iff(
+          o.store in ('Specialty CAN', 'Goodr.ca')
+          , sum(oi.amount_sales_booked) * avg(c.exchange_rate)
+          , sum(oi.amount_sales_booked)
+      )                                                              as amount_sales
+    , iff(
+          o.store in ('Specialty CAN', 'Goodr.ca')
+          , sum(oi.amount_yotpo_discount) * avg(c.exchange_rate)
+          , sum(oi.amount_yotpo_discount)
+      )                                                              as amount_yotpo_discount
+    , iff(
+          o.store in ('Specialty CAN', 'Goodr.ca')
+          , sum(oi.amount_refund_product) * avg(c.exchange_rate)
+          , sum(oi.amount_refund_product)
+      )                                                              as amount_refunded
+    , iff(
+          o.store in ('Specialty CAN', 'Goodr.ca')
+          , sum(oi.amount_gift_card_sold) * avg(c.exchange_rate)
+          , sum(oi.amount_gift_card_sold)
+      )                                                              as amount_gift_card
+    , iff(
+          oi.sku like 'GC%'
+          , true
+          , false
+      )                                                              as gift_card_flag
+    , p.merchandise_class                                            as style_family
+    , min(p.d2c_launch_date) over (partition by p.merchandise_class) as model_start_date
+    , case
+          when model_start_date > '2024-01-01'
+              then 'true'
+          else 'false'
+      end                                                            as new_model_flag
+from
+    fact.shopify_order_item oi
+    inner join
+        dim.product         p
+            on
+            oi.sku = p.product_id_edw
+    left join
         fact.shopify_orders o
-        ON oi.order_id_edw = o.order_id_edw
-      LEFT JOIN
-        conversion c
-      ON 1=1
-    WHERE
-       (o.sold_date BETWEEN '2023-11-22' AND '2023-11-28')
-    OR (o.sold_date BETWEEN '2024-11-26' AND '2024-12-03')
-        AND o.store NOT IN ('Goodrwill')
-    GROUP BY
+            on
+            oi.order_id_edw = o.order_id_edw
+    left join
+        conversion          c
+            on
+            1 = 1
+where
+      (
+          o.sold_date between '2023-11-22' and '2023-11-28'
+              or o.sold_date between '2024-11-26' and '2024-12-03'
+          )
+  and o.store not in (
+    'Goodrwill'
+    )
+group by
       oi.sku
     , oi.display_name
     , p.family
@@ -49,5 +91,5 @@ WITH
     , o.sold_date
     , o.store
     , c.exchange_rate
-    )
-select * from skus
+    , p.d2c_launch_date
+    , p.merchandise_class
