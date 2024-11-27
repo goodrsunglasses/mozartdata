@@ -1,17 +1,16 @@
-with
-    conversion as (
-                      select
-                          currency_exchange_rate.effective_date
-                        , currency_exchange_rate.exchange_rate
-                      from
+with conversion as (
+    select
+        currency_exchange_rate.effective_date
+        , currency_exchange_rate.exchange_rate
+    from
         fact.currency_exchange_rate
-                      where
-                          currency_exchange_rate.transaction_currency_abbreviation = 'CAD'
-                      qualify
-                          row_number() over (order by currency_exchange_rate.effective_date desc) = 1
-    )
+    where
+      currency_exchange_rate.transaction_currency_abbreviation = 'CAD'
+    qualify
+      row_number() over (order by currency_exchange_rate.effective_date desc) = 1
+)
 select
-      oi.sku
+    oi.sku
     , oi.display_name
     , p.family
     , p.collection
@@ -60,28 +59,28 @@ select
           model_start_date > '2024-01-01'
           , 'true'
           , 'false'
-      ) as new_model_flag
+      )                                                              as new_model_flag
 from
     fact.shopify_order_item oi
     inner join
         dim.product         p
-            on
+        on
             oi.sku = p.product_id_edw
     left join
         fact.shopify_orders o
-            on
+        on
             oi.order_id_edw = o.order_id_edw
     left join
         conversion          c
-            on
+        on
             1 = 1
 where
-      (
-          o.sold_date between '2023-11-22' and '2023-11-28'
-              or o.sold_date between '2024-11-20' and '2024-11-26'
-          )
-  and o.store not in (
-    'Goodrwill'
+    (
+      o.sold_date between '2023-11-22' and '2023-11-28'
+      or o.sold_date between '2024-11-20' and '2024-11-26'
+    )
+    and o.store not in (
+        'Goodrwill'
     )
 group by
       oi.sku
