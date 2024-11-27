@@ -12,7 +12,7 @@ WITH
   p.*,
   replace(p.order_number_wms,' ','') as order_id_edw_p,
   ful.order_id_edw,
-  ful.ship_date AS ship_date_stord_api,
+  to_date(ful.ship_date) as ship_date_stord_api,
   COALESCE(o.channel, o2.channel) as channel_orders,
   COALESCE(o.channel, o2.channel,
   CASE
