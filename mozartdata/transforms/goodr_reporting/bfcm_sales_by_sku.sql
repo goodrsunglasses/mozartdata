@@ -56,11 +56,11 @@ select
       )                                                              as gift_card_flag
     , p.merchandise_class                                            as style_family
     , min(p.d2c_launch_date) over (partition by p.merchandise_class) as model_start_date
-    , case
-          when model_start_date > '2024-01-01'
-              then 'true'
-          else 'false'
-      end                                                            as new_model_flag
+    , iff(
+          model_start_date > '2024-01-01'
+          , 'true'
+          , 'false'
+      ) as new_model_flag
 from
     fact.shopify_order_item oi
     inner join
@@ -78,7 +78,7 @@ from
 where
       (
           o.sold_date between '2023-11-22' and '2023-11-28'
-              or o.sold_date between '2024-11-26' and '2024-12-03'
+              or o.sold_date between '2024-11-20' and '2024-11-26'
           )
   and o.store not in (
     'Goodrwill'
