@@ -18,6 +18,7 @@ SELECT
     )             AS inventory_item_id
   , variant.title AS variant_title
   , variant.price
+  , variant.compare_at_price
   , variant.sku
   , variant.barcode
   , variant.grams
@@ -50,6 +51,7 @@ SELECT
     )             AS inventory_item_id
   , variant.title AS variant_title
   , variant.price
+  , variant.compare_at_price
   , variant.sku
   , variant.barcode
   , variant.grams
@@ -81,6 +83,7 @@ SELECT
     )             AS inventory_item_id
   , variant.title AS variant_title
   , variant.price
+  , variant.compare_at_price
   , variant.sku
   , variant.barcode
   , variant.grams
@@ -112,6 +115,7 @@ SELECT
     )             AS inventory_item_id
   , variant.title AS variant_title
   , variant.price
+  , variant.compare_at_price
   , variant.sku
   , variant.barcode
   , variant.grams
@@ -143,6 +147,7 @@ SELECT
     )             AS inventory_item_id
   , variant.title AS variant_title
   , variant.price
+  , variant.compare_at_price
   , variant.sku
   , variant.barcode
   , variant.grams
