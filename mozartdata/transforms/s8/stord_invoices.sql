@@ -13,6 +13,7 @@ WITH
   replace(p.order_number_wms,' ','') as order_id_edw_p,
   ful.order_id_edw,
   to_date(ful.ship_date) as ship_date_stord_api,
+  COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful.ship_date)))) as  ship_month,
   COALESCE(o.channel, o2.channel) as channel_orders,
   COALESCE(o.channel, o2.channel,
   CASE
