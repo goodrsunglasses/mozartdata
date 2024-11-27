@@ -1,3 +1,17 @@
+/*
+Purpose: show customers in Shipstation. One row per shipstation customer (customerid column).
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
 SELECT customerid AS id,
 	   name,
 	   phone,

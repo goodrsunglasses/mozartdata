@@ -1,4 +1,18 @@
---The entire point of this table is to comfortably union all shopify product information onto one table, as its split between 5 connectors
+/*
+Purpose: The entire point of this table is to comfortably union all shopify product information onto one table, as its split between 5 connectors
+One row per product id (variant_id) per store.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
 SELECT
     FIRST_VALUE(variant.PRODUCT_ID) OVER (
         PARTITION BY

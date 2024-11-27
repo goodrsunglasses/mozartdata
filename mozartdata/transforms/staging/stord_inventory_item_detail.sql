@@ -1,3 +1,18 @@
+/*
+Purpose: Show detailed information regarding inventory at Stord locations.
+One row per sku per facility?
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
 SELECT
   sia.adjusted_at       AS adjusted_timestamp
 , DATE(sia.adjusted_at) AS adjusted_date

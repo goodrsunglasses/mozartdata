@@ -1,3 +1,18 @@
+/*
+Purpose: to show each order in Shopify
+One row per order id
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
 SELECT
   'Goodr.com'                                                        AS store
 , o.id as order_id_shopify
