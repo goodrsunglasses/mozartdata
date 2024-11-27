@@ -47,5 +47,5 @@ FROM
 --select count(*) from core where channel is null
 --select count (*) from core where detailed_carrier ilike 'Ase%'
 select * from core
---  where channel is null
+--  where channel = 'other' and order_number_wms is  null order by order_number_wms
 --select * from core where channel is null
