@@ -6,7 +6,17 @@
     To old products: use column old_sku to sku
     To new products: use column new_sku to sku
  Notes: This data is human input. Please consider this when troubleshooting.
- */
+
+ Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+ If no longer a base table, then remove CTE root_table.
+*/
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
 
 select
     upc.old_sku -- PRIMARY KEY, most recommended for joining

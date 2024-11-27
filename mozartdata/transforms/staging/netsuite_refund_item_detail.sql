@@ -1,3 +1,18 @@
+/*
+Purpose: show refund information for each item as entered in Netsuite.
+One row per transaction, which translates to one row per item per refund.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
 SELECT transaction                                               AS transaction_id_ns,
 	   tranline.id                                               AS transaction_line_id_ns,
 	   REPLACE(

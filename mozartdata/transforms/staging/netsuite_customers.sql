@@ -1,10 +1,26 @@
-with parents_list as
-  (
-    select distinct
-      parent as customer_id_ns
-    from
-      netsuite.customer
-  )
+/*
+Purpose: show the list from Netsuite of customers and their metadata.
+One row per customer id.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+                  )
+  , parents_list as
+        (
+                      select distinct
+                          parent as customer_id_ns
+                      from
+                          netsuite.customer
+                  )
+
 SELECT cust.id                                                                 AS customer_id_ns,
 	   cust.altname                                                            AS customer_name,
 	   cust.entityid                                                           AS customer_number,

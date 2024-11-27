@@ -1,3 +1,17 @@
+/*
+Purpose: to show the data associated with respondents to qualtrics surveys.
+One row per respondent, which breaks down to one user per response.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
 select distinct
         s_r.id as response_id_qualtrics
         , email_resp.value as email_address

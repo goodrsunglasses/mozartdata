@@ -1,5 +1,18 @@
--- CREATE OR REPLACE TABLE staging.netsuite_inventory_reservations
--- 	COPY GRANTS AS
+/*
+Purpose: show the inventory reservations currently listed in Netsuite.
+One row per transaction id?
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
 SELECT--This is basically a raw select of anything and everything relevant for order reservation data based on what I can tell
 	tran.id             AS transaction_id_ns,
 	   tran.title,

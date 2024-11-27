@@ -1,3 +1,17 @@
+/*
+Purpose: to show the response data for Qualtrics surveys at the question level.
+One row per question id per response id per survey id.
+
+One row per Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
 SELECT distinct
         s_r.survey_id as survey_id_qualtrics
         , s_r.id as response_id_qualtrics

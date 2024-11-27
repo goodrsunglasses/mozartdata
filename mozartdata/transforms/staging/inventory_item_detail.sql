@@ -1,5 +1,18 @@
--- CREATE OR REPLACE TABLE staging.inventory_item_detail
---           COPY GRANTS  as
+/*
+Purpose: To show each line item of each fulfillment. One row per line id per fulfillment id.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
+
 SELECT -- the idea of this staging table is to select all the inventory affecting transactions from Netsuite to seperately replicate inventory quantities as a balance sheet rather than a snapshot
 	   --As per what I (KSL) usually do for these I am kinda just broad swathe selecting columns that I think will be useful to be save
 	   transaction as transaction_id_ns,

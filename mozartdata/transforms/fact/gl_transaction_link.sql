@@ -1,3 +1,17 @@
+/*
+Purpose: to show each transaction and its following transaction. One row per transaction link.
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
+
 SELECT
   previousdoc as transaction_id_ns
 , pt.tranid as transaction_number_ns

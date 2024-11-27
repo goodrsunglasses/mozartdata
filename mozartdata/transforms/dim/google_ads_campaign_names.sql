@@ -12,22 +12,30 @@
  * - account_name: The descriptive name of the account.
  *
  * Used downstream in the google_ads_daily_stats table primarily
- */
 
-with
-    account_names as (
-                         select distinct
-                             id
-                           , descriptive_name
-                         from
-                             google_ads_us.account_history
-    )
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
+, account_names as (
+    select distinct
+     id
+    , descriptive_name
+    from
+     google_ads_us.account_history
+)
 
 select distinct
-    ch.id               as campaign_id_g_ads
-  , ch.name             as campaign_name
-  , an.id               as account_id_g_ads
-  , an.descriptive_name as account_name
+    ch.id                 as campaign_id_g_ads
+    , ch.name             as campaign_name
+    , an.id               as account_id_g_ads
+    , an.descriptive_name as account_name
 from
     google_ads_us.campaign_history as ch
     inner join

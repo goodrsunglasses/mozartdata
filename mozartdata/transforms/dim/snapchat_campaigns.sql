@@ -1,4 +1,5 @@
--- This SQL query retrieves campaign history data from the snapchat_ads schema.
+/*
+ Purpose: retrieves campaign history data from the snapchat_ads schema.
 
 -- It joins the campaign_history table with a CTE (Common Table Expression)
 -- latest_account_ids to fetch the latest account information for each campaign.
@@ -10,7 +11,19 @@
 
 -- Used downstream in the snapchat_ads_daily_stats table primarily
 
-WITH latest_account_ids AS (
+ One row per Snapchat campaign id, which breaks down to one campaign per account id
+
+ Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+ If no longer a base table, then remove CTE root_table.
+*/
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
+, latest_account_ids AS (
     -- This CTE selects the latest account information for each account ID.
     SELECT DISTINCT
         AD_ACCOUNT_HISTORY.id

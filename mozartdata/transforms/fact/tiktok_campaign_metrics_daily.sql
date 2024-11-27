@@ -1,6 +1,7 @@
 /*
 This SQL query is designed to retrieve and aggregate data from the TIKTOK_ADS.CAMPAIGN_REPORT_DAILY table.
-The purpose of this query is to provide insights into campaign performance metrics such as spend, revenue, impressions, clicks, and conversions.
+The purpose of this query is to provide insights into campaign performance metrics such as spend,
+revenue, impressions, clicks, and conversions.
 
 Parameters:
 - None
@@ -17,7 +18,17 @@ Return Value:
 The query groups the results by event_date and campaign_id_tiktok, and orders the results by event_date in ascending order.
 
 Used downstream in the performance_media table
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
 */
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
 
 select
     date(crd.stat_time_day)                                    as event_date

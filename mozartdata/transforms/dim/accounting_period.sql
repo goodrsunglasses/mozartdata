@@ -1,10 +1,19 @@
 /*
 Purpose: This table ingests and transforms netsuite.accoutingperiod into the EDW. This will be used for GL analysis
 
-
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
 */
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
+
 select
-  ap.id as accounting_period_id
+ap.id as accounting_period_id
 , date(ap.closedondate) as closed_on_date
 , date(ap.startdate) as period_start_date
 , date(ap.enddate) as period_end_date

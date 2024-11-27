@@ -1,4 +1,19 @@
-WITH orphan_transactions as
+/*
+Purpose: first stage of the order ingestion process. One row per item per transaction id
+per order id.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+                  )
+  , orphan_transactions as
 (
   SELECT distinct
     tran.id as transaction_id_ns

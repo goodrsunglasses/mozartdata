@@ -1,18 +1,29 @@
--- This SQL script is used to retrieve campaign-related data from the Facebook Ads API.
+/*
+ Purpose: to retrieve campaign-related data from the Facebook Ads API.
 -- It joins the campaign_history and account_history tables, applies case statements for categorizing
 -- funnel stages, campaign strategies, and media strategies, and selects the most recent record for each campaign.
 
 -- Used downstream in meta_ads_daily_stats and performance_media tables.
+One row per campaign id
 
-with
-    account_cte as (
-                       -- CTE to select distinct account IDs and names from the account_history table
-                       select distinct
-                           ah.id   as account_id_meta
-                         , ah.name as account_name
-                       from
-                           facebook_ads.account_history ah
-    )
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
+, account_cte as (
+   -- CTE to select distinct account IDs and names from the account_history table
+   select distinct
+       ah.id   as account_id_meta
+     , ah.name as account_name
+   from
+       facebook_ads.account_history ah
+)
 
 select distinct
     ch.id                   as campaign_id_meta -- Unique identifier for the campaign

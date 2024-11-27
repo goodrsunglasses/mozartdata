@@ -1,3 +1,18 @@
+/*
+Purpose: show tags from Shopify orders on goodr.com and sellgoodr.com.
+One row per tag per order.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
+    )
 SELECT
   name AS order_id_edw,
   id AS order_id_shopify,

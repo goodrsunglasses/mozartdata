@@ -1,3 +1,17 @@
+/*
+Purpose: to show items in inbound shipments.
+One row per inbound shipment id, which I think breaks down to one item per shipment?
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
 SELECT
   inb.id inbound_shipment_id_ns,
   inb.shipmentnumber as inbound_shipment_number,
