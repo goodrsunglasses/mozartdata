@@ -1,3 +1,17 @@
+/*
+Purpose: to show survey metadata associated with Qualtrics surveys.
+One row per survey id.
+
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
 select distinct
         surv.id as survey_id_qualtrics
         , surv.survey_name

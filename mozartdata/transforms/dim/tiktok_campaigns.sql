@@ -1,10 +1,23 @@
--- This SQL query is used to extract and transform data from the TIKTOK_ADS.CAMPAIGN_HISTORY table.
+/*
+ Purpose: to extract and transform data from the TIKTOK_ADS.CAMPAIGN_HISTORY table.
 -- It selects distinct campaign IDs, names, funnel stages, campaign strategies, media strategies,
 -- campaign types, budget modes, operation statuses, objective types, create times, and create dates.
 -- The funnel stages, campaign strategies, and media strategies are determined based on specific patterns in the campaign names.
 -- The query is ordered by campaign ID.
 
 -- Used downstream in the tiktok_ads_daily_stats table primarily
+
+ One row per tiktok campaign id
+Base table: CTE root_table is used to get root table reference for scheduling in mozart.
+If no longer a base table, then remove CTE root_table.
+*/
+
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
 select distinct
     ch.campaign_id       as campaign_id_tiktok
   , ch.campaign_name
