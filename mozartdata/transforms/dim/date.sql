@@ -12,7 +12,7 @@ with
                       from
                           mozart.pipeline_root_table
     )
-    .CTE_MY_DATE as (
+    , CTE_MY_DATE as (
     SELECT DATEADD(DAY, SEQ4(), '2000-01-01') AS MY_DATE
     FROM TABLE(GENERATOR(ROWCOUNT=>100000))
     )
