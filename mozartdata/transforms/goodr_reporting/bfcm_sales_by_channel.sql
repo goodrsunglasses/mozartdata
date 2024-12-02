@@ -19,13 +19,13 @@ select
     , sum(s.amount_product)                        as amount_product
     , sum(s.amount_sales)                          as amount_sales
     , sum(s.amount_yotpo_discount)                 as amount_yotpo_discount
-    , sum(s.amount_standard_discount)              as amount_standard_discount
+    , sum(s.amount_standard_discount)*-1              as amount_standard_discount
     , o.shipping
     , o.tax
-    , sum(s.amount_refunded)                       as amount_refunded
+    , sum(s.amount_refunded)*-1                       as amount_refunded
     , sum(s.amount_product) - sum(s.amount_standard_discount) + o.shipping - sum(s.amount_refunded)-sum(s.amount_gift_card) as amount_net_sales_dwh
     , sum(s.amount_product) - sum(s.amount_standard_discount) - sum(s.amount_yotpo_discount) + o.shipping + o.tax - sum(s.amount_refunded)-sum(s.amount_gift_card) as amount_net_sales_shopify
-    , sum(s.amount_gift_card)                      as amount_gift_card
+    , sum(s.amount_gift_card)*-1                      as amount_gift_card
     , sum(
         iff(
             s.new_model_flag = 'true'
