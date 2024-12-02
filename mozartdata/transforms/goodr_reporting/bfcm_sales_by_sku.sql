@@ -21,6 +21,16 @@ select
           , 'BFCM-2023'
           , 'BFCM-2024'
       )                                                              as bfcm_period
+    , case 
+      when o.sold_date in ('2024-11-26') then '0-Tues'
+      when o.sold_date in ('2023-11-22','2024-11-27') then '1-Wed'
+      when o.sold_date in ('2023-11-23','2024-11-28') then '2-Thu/Thanksgiving'
+      when o.sold_date in ('2023-11-24','2024-11-29') then '3-Fri/BF'
+      when o.sold_date in ('2023-11-25','2024-11-30') then '4-Sat'
+      when o.sold_date in ('2023-11-26','2024-12-01') then '5-Sun'
+      when o.sold_date in ('2023-11-27','2024-12-02') then '6-Mon/CM'
+      when o.sold_date in ('2023-11-28','2024-12-03') then '7-Tues'
+      end bfcm_day
     , count(distinct oi.order_id_edw)                                as order_count
     , sum(oi.quantity_booked)                                        as quantity_booked
     , iff(
