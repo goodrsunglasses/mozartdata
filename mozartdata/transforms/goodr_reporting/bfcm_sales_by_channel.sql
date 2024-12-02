@@ -18,7 +18,7 @@ select
     , sum(s.quantity_booked)                       as quantity_booked
     , sum(s.amount_product)                        as amount_product
     , sum(s.amount_sales)                          as amount_sales
-    , sum(s.amount_yotpo_discount)                 as amount_yotpo_discount
+    , sum(s.amount_yotpo_discount)   *-1              as amount_yotpo_discount
     , sum(s.amount_standard_discount)*-1              as amount_standard_discount
     , o.shipping
     , o.tax
