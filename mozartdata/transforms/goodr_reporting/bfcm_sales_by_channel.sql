@@ -2,6 +2,7 @@ select
     s.sold_date
     , s.channel
     , s.bfcm_period
+    , s.bfcm_day
     , sum(s.order_count)                           as order_count
     , sum(s.quantity_booked)                       as quantity_booked
     , sum(s.amount_product)                        as amount_product
