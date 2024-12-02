@@ -50,6 +50,11 @@ select
       )                                                              as amount_yotpo_discount
     , iff(
           o.store in ('Specialty CAN', 'Goodr.ca')
+          , sum(oi.amount_standard_discount) * avg(c.exchange_rate)
+          , sum(oi.amount_standard_discount)
+      )                                                              as amount_standard_discount
+    , iff(
+          o.store in ('Specialty CAN', 'Goodr.ca')
           , sum(oi.amount_refund_product) * avg(c.exchange_rate)
           , sum(oi.amount_refund_product)
       )                                                              as amount_refunded
