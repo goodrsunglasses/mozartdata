@@ -77,7 +77,7 @@ from
 where
     (
       o.sold_date between '2023-11-22' and '2023-11-28'
-      or o.sold_date between '2024-11-20' and '2024-11-26'
+      or o.sold_date between '2024-11-26' and '2024-12-03'
     )
     and o.store not in (
         'Goodrwill'
