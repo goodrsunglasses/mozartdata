@@ -17,7 +17,7 @@ grid_days as
     inner join
       goodr_reporting.launch_date_vs_earliest_sale ld
       on p.item_id_ns = ld.item_id_ns
-      and earliest_d2c_sale >= '2023-01-01'
+      and earliest_d2c_launch_date >= '2023-01-01'
     inner join
       grid_days d
     on 1=1
@@ -31,7 +31,7 @@ grid_days as
     , ld.display_name
     , ld.collection
     , ld.family
-    , ld.earliest_d2c_sale
+    , ld.earliest_d2c_launch_date
     , sum(oi.amount_product_sold) launch_product_sales
     , sum(oi.quantity_sold) launch_product_quantity
     from
@@ -39,7 +39,7 @@ grid_days as
     inner join
       goodr_reporting.launch_date_vs_earliest_sale ld
       on ld.item_id_ns = oi.item_id_ns
-      and ld.earliest_d2c_sale >= '2023-01-01'
+      and ld.earliest_d2c_launch_date >= '2023-01-01'
     inner join
       fact.orders o
       on oi.order_id_edw = o.order_id_edw
@@ -50,14 +50,14 @@ grid_days as
     , ld.display_name
     , ld.collection
     , ld.family
-    , ld.earliest_d2c_sale
+    , ld.earliest_d2c_launch_date
     , o.sold_date
   ),
   total_sales as
   (
     SELECT
       lo.item_id_ns,
-      (o.sold_date - lo.earliest_d2c_sale) as days_since_launch,
+      (o.sold_date - lo.earliest_d2c_launch_date) as days_since_launch,
       sum(lo.launch_product_sales) as launch_product_sales,
       sum(lo.launch_product_quantity) as launch_product_quantity,
       SUM(o.amount_product_sold) total_sales,
@@ -82,7 +82,7 @@ SELECT
 , p.merchandise_class
 , p.merchandise_department
 , p.merchandise_division
-, ld.earliest_d2c_sale as earliest_sale
+, ld.earliest_d2c_launch_date as launch_date
 , coalesce(ts.launch_product_sales,0) launch_product_sales
 , coalesce(ts.launch_product_quantity,0) launch_product_quantity
 , coalesce(ts.total_sales,0) total_sales
@@ -104,4 +104,3 @@ where p.merchandise_department = 'SUNGLASSES'
 order by
   gp.item_id_ns
 , days
----
