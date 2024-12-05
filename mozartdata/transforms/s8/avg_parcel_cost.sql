@@ -1,6 +1,6 @@
 SELECT
-  location,
-  detailed_carrier,
+--  location,
+--  detailed_carrier,
   ship_month,
   channel_coalesce,
   sum(total_shipping_less_duties) AS total_shipping_less_duties,
@@ -12,10 +12,6 @@ GROUP BY
   ALL
 ORDER BY
   ship_month,
-  channel_coalesce,
-  location,
-  detailed_carrier
-  ------
-  /*
-  select * from s8.stord_invoices
-  */
+  channel_coalesce
+--  location,
+--  detailed_carrier
