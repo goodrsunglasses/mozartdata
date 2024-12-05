@@ -32,7 +32,7 @@ WITH
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'PR-' THEN 'marketing'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'SIG' THEN 'marketing'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'BRA' THEN 'sellgoodr'
-  WHEN left(replace(p.order_number_wms,' ',''), 4) = '#BWP' THEN 'Amazon Prime'
+  WHEN left(replace(p.order_number_wms,' ',''), 4) = '#BWP' THEN 'amazon prime'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'POP' THEN 'pop'  -- seperated bc idk if these are sellgoodr or sellgoodr ca and they are very different parcel costs anyways
   ELSE 'other'
   END  ) as channel_COALESCE
