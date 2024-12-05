@@ -1,7 +1,5 @@
 SELECT
   poi.*,
-  p.sku,
-  p.item_id_ns,
   p.collection
 FROM
   fact.purchase_order_item poi
