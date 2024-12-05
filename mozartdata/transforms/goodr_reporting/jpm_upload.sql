@@ -44,7 +44,7 @@ SELECT
   concat(
     'JPM',
     TO_VARCHAR(
-      LAST_DAY(TO_DATE(DATE, 'MM/DD/YYYY'), 'MONTH'),
+      LAST_DAY(DATE, 'MONTH'),
       'MMDDYYYY'
     )
   ) || LPAD(
