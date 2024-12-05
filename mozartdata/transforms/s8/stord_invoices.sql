@@ -44,3 +44,6 @@ FROM
   left join fact.orders o2 on ful.order_id_edw = o2.order_id_edw
   )
 select * from core
+
+  ---- qc
+--where channel_COALESCE  = 'key accounts' or channel_COALESCE = 'key account can'
