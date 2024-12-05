@@ -2,10 +2,7 @@
 SELECT
   concat(
     'AMEX',
-    TO_VARCHAR(
-      LAST_DAY(TO_DATE(DATE, 'MM/DD/YYYY'), 'MONTH'),
-      'MMDDYYYY'
-    )
+    TO_VARCHAR(LAST_DAY(DATE, 'MONTH'), 'MMDDYYYY')
   ) || LPAD(
     ROW_NUMBER() OVER (
       ORDER BY
