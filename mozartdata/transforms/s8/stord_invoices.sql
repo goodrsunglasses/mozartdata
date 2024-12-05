@@ -15,7 +15,7 @@ WITH
   to_date(ful.ship_date) as ship_date_stord_api,
   COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful.ship_date)))) as  ship_month,
   COALESCE(o.channel, o2.channel) as channel_orders,
-  COALESCE(o.channel, o2.channel,
+  COALESCE(lower(o.channel), lower(o2.channel),
   CASE
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'GCA' THEN 'goodr.ca'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'G-C' THEN 'goodr.ca'
