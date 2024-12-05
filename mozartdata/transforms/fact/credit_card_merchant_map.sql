@@ -16,7 +16,7 @@ WITH
             PARTITION BY
               card_member,
               amount,
-              DATE
+              date(DATE)
           )
         ) > 1 THEN FALSE
         ELSE TRUE
@@ -40,7 +40,7 @@ WITH
             PARTITION BY
               account_given_name,
               amount,
-              post_DATE
+              date(post_DATE)
           )
         ) > 1 THEN FALSE
         ELSE TRUE
