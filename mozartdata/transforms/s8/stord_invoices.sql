@@ -19,19 +19,19 @@ WITH
   CASE
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'GCA' THEN 'goodr.ca'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'G-C' THEN 'goodr.ca'
-  WHEN left(replace(p.order_number_wms,' ',''), 4) = 'SG-C' THEN 'sellgoodr ca'
+  WHEN left(replace(p.order_number_wms,' ',''), 4) = 'SG-C' THEN 'specialty can'
   when replace(p.order_number_wms,' ','') ilike 'CS%' then 'customer service'  ---- but have to update to canada when unfilter for canada 
-  when replace(p.order_number_wms,' ','') like '%SG-CA%' then 'sellgoodr ca'
+  when replace(p.order_number_wms,' ','') like '%SG-CA%' then 'specialty can'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'GW-' THEN 'goodrwill'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'CAB' THEN 'cabana'
-  WHEN left(replace(p.order_number_wms,' ',''), 2) = 'SG' THEN 'sellgoodr'
+  WHEN left(replace(p.order_number_wms,' ',''), 2) = 'SG' THEN 'specialty'
   WHEN left(replace(p.order_number_wms,' ',''), 1) = 'G' THEN 'goodr.com'
   WHEN left(replace(p.order_number_wms,' ',''), 2) = 'TO' THEN 'transfer order'
   WHEN left(replace(p.order_number_wms,' ',''), 2) = 'CS' THEN 'customer service'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'SD-' THEN 'marketing'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'PR-' THEN 'marketing'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'SIG' THEN 'marketing'
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'BRA' THEN 'sellgoodr'
+  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'BRA' THEN 'specialty'
   WHEN left(replace(p.order_number_wms,' ',''), 4) = '#BWP' THEN 'amazon prime'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'POP' THEN 'pop'  -- seperated bc idk if these are sellgoodr or sellgoodr ca and they are very different parcel costs anyways
   ELSE 'other'
