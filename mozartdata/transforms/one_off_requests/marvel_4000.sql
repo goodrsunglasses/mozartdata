@@ -25,5 +25,5 @@ FROM
 where 
   gl.account_number = 4000
   and posting_flag 
-  and transaction_date > '2022-05-01'
+  and transaction_date between '2022-01-01' and '2024-10-31'
 group by all
