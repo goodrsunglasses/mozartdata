@@ -208,6 +208,26 @@ SELECT DISTINCT
   , i.incomeaccount                                  AS account_id_ns
   , ga.account_number
   , ga.account_display_name
+  , case
+      when class.name in ('ASTRO GS','BFGS','BOLT GS','BUG GS','FLEX GS','GLAM G','MACH GS','RUNWAYS','SUPER FLYS','VRGS','WRAP GS') then 35
+      when class.name in ('CIRCLE GS','FLY GS','LFGS','MOON G','OGS','PHGS','POP GS','RETRO GS') then 25
+      when class.name = 'SNOW G' then 75
+      else 0 end base_price_goodr
+  , case
+      when class.name in ('ASTRO GS','BFGS','BOLT GS','BUG GS','FLEX GS','GLAM G','MACH GS','RUNWAYS','SUPER FLYS','VRGS','WRAP GS') then 50
+      when class.name in ('CIRCLE GS','FLY GS','LFGS','MOON G','OGS','PHGS','POP GS','RETRO GS') then 40
+      when class.name = 'SNOW G' then 100
+      else 0 end base_price_goodr_ca
+  , case
+      when class.name in ('ASTRO GS','BFGS','BOLT GS','BUG GS','FLEX GS','GLAM G','MACH GS','RUNWAYS','SUPER FLYS','VRGS','WRAP GS') then 17.5
+      when class.name in ('CIRCLE GS','FLY GS','LFGS','MOON G','OGS','PHGS','POP GS','RETRO GS') then 12.5
+      when class.name = 'SNOW G' then 37.5
+      else 0 end base_price_sellgoodr
+  , case
+      when class.name in ('ASTRO GS','BFGS','BOLT GS','BUG GS','FLEX GS','GLAM G','MACH GS','RUNWAYS','SUPER FLYS','VRGS','WRAP GS') then 25
+      when class.name in ('CIRCLE GS','FLY GS','LFGS','MOON G','OGS','PHGS','POP GS','RETRO GS') then 20
+      when class.name = 'SNOW G' then 50
+      else 0 end base_price_sellgoodr_ca
 FROM
     products_and_invty_ids_cte                                    prod_inv
     LEFT OUTER JOIN actual_ns_products                            i
