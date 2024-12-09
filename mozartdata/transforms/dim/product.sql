@@ -1,3 +1,9 @@
+/*
+Notes: 
+- skus with -HTB at the end are target specific skus
+*/
+
+
 WITH
     unique_products
         AS (
