@@ -27,7 +27,7 @@ SELECT
   p.family,
   p.collection,
   oi.quantity_sold,
-  gl.net_amount,
+  sum(gl.net_amount) net_amount,
   --- discount,
   --- credit reason,
   --- exchnage rate,
@@ -43,5 +43,5 @@ FROM
 where 
   gl.account_number = 4000
   and posting_flag 
-  and transaction_date between '2022-01-01' and '2024-10-31'
+  and transaction_date between '2022-01-01' and '2024-12-31'
 group by all
