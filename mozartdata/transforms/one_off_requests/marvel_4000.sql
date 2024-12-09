@@ -43,5 +43,5 @@ FROM
 where 
   gl.account_number = 4000
   and posting_flag 
-  and transaction_date between '2022-01-01' and '2024-12-31'
+  and right(posting_period,4) in (2024, 2023, 2022) 
 group by all
