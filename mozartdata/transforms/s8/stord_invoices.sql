@@ -47,3 +47,4 @@ select * from core
 
   ---- qc
 --where channel_COALESCE  = 'key accounts' or channel_COALESCE = 'key account can'
+--where channel_COALESCE  = 'other'
