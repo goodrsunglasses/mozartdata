@@ -15,7 +15,9 @@ WITH
   to_date(ful.ship_date) as ship_date_stord_api,
   COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful.ship_date)))) as  ship_month,
   COALESCE(o.channel, o2.channel) as channel_orders,
-  COALESCE(lower(o.channel), lower(o2.channel),
+  COALESCE(
+  case when  left(replace(p.order_number_wms,' ',''), 3) = 'POP' THEN 'pop' END,  -- seperated bc idk if these are sellgoodr or sellgoodr ca and they are very different parcel costs anyways
+  lower(o.channel), lower(o2.channel),
   CASE
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'GCA' THEN 'goodr.ca'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'G-C' THEN 'goodr.ca'
@@ -33,7 +35,6 @@ WITH
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'SIG' THEN 'marketing'
   WHEN left(replace(p.order_number_wms,' ',''), 3) = 'BRA' THEN 'specialty'
   WHEN left(replace(p.order_number_wms,' ',''), 4) = '#BWP' THEN 'amazon prime'
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'POP' THEN 'pop'  -- seperated bc idk if these are sellgoodr or sellgoodr ca and they are very different parcel costs anyways
   ELSE 'other'
   END  ) as channel_COALESCE
   
