@@ -89,9 +89,9 @@ SELECT
 , case
   when gt.channel = 'Goodr.com' then (pr.base_price_goodr  * oi.quantity_sold) - gt.net_amount
   when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end AS amount_to_4110
-, case
+, coalesce(case
   when gt.channel = 'Goodr.com' then (pr.base_price_goodr  * oi.quantity_sold) - gt.net_amount
-  when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end + gt.net_amount as new_account_4000 
+  when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end,0) + gt.net_amount as new_account_4000 
 FROM
   fact.gl_transaction gt
   LEFT JOIN
