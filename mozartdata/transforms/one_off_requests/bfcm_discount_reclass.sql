@@ -112,6 +112,7 @@ WHERE
 AND gt.posting_flag
 AND gt.account_number LIKE '4000'
 AND gt.channel IN ('Goodr.com','goodr.ca')
+AND gt.item_id_ns is not null
 ORDER BY
   gt.transaction_id_ns
 , gt.account_number
