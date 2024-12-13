@@ -77,7 +77,7 @@ SELECT
 , p.merchandise_class
 , oi.quantity_sold
 , oi.quantity_booked
-, gt.net_amount
+, gt.net_amount as current_account_4000
 , CASE
     WHEN gt.channel = 'Goodr.com' THEN base_price_goodr
     WHEN gt.channel = 'goodr.ca' THEN base_price_goodr_ca
@@ -85,13 +85,13 @@ SELECT
 , CASE
     WHEN gt.channel = 'Goodr.com' THEN base_price_goodr
     WHEN gt.channel = 'goodr.ca' THEN base_price_goodr_ca * g.exchange_rate
-    END                                                    AS base_price_adjusted
+    END                                                    AS base_price_currency_converted
 , case
   when gt.channel = 'Goodr.com' then (pr.base_price_goodr  * oi.quantity_sold) - gt.net_amount
-  when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end AS amount_to_discount
+  when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end AS amount_to_4110
 , case
   when gt.channel = 'Goodr.com' then (pr.base_price_goodr  * oi.quantity_sold) - gt.net_amount
-  when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end + gt.net_amount as net_amount_plus_discount 
+  when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end + gt.net_amount as new_account_4000 
 FROM
   fact.gl_transaction gt
   LEFT JOIN
@@ -110,7 +110,7 @@ FROM
 WHERE
     gt.transaction_date BETWEEN '2024-11-26' AND '2024-12-03'
 AND gt.posting_flag
-AND gt.account_number LIKE '4%'
+AND gt.account_number LIKE '4000'
 AND gt.channel IN ('Goodr.com','goodr.ca')
 ORDER BY
   gt.transaction_id_ns
