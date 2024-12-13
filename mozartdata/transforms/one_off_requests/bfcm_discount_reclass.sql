@@ -88,7 +88,10 @@ SELECT
     END                                                    AS base_price_adjusted
 , case
   when gt.channel = 'Goodr.com' then (pr.base_price_goodr  * oi.quantity_sold) - gt.net_amount
-  when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end *-1 AS amount_to_discount
+  when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end AS amount_to_discount
+, case
+  when gt.channel = 'Goodr.com' then (pr.base_price_goodr  * oi.quantity_sold) - gt.net_amount
+  when gt.channel = 'goodr.ca' then (pr.base_price_goodr_ca  * oi.quantity_sold * g.exchange_rate) - gt.net_amount end + gt.net_amount as net_amount_plus_discount 
 FROM
   fact.gl_transaction gt
   LEFT JOIN
