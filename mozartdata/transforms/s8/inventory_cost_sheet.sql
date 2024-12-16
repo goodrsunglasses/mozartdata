@@ -46,3 +46,5 @@ FROM
     AND il._fivetran_synced = rp.max_synced
   LEFT JOIN ItemAvgCost iac ON il.item = iac.item
   LEFT JOIN dim.product p ON il.item = p.item_id_ns
+WHERE 
+   p.merchandise_department = 'SUNGLASSES'
