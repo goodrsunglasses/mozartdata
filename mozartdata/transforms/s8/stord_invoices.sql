@@ -16,26 +16,28 @@ WITH
   COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful.ship_date)))) as  ship_month,
   COALESCE(o.channel, o2.channel) as channel_orders,
   COALESCE(
-  case when  left(replace(p.order_number_wms,' ',''), 3) = 'POP' THEN 'pop' END,  -- seperated bc idk if these are sellgoodr or sellgoodr ca and they are very different parcel costs anyways
+  case 
+    when  left(replace(p.order_number_wms,' ',''), 3) = 'POP' THEN 'pop'   -- seperated bc idk if these are sellgoodr or sellgoodr ca and they are very different parcel costs anyways
+    when order_number_wms in ('PO-MARATHONSPORTS-030424','OSCW 26601','SG-90006','SG-103733') THEN 'specialty' end,
   lower(o.channel), lower(o2.channel),
   CASE
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'GCA' THEN 'goodr.ca'
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'G-C' THEN 'goodr.ca'
-  WHEN left(replace(p.order_number_wms,' ',''), 4) = 'SG-C' THEN 'specialty can'
-  when replace(p.order_number_wms,' ','') ilike 'CS%' then 'customer service'  ---- but have to update to canada when unfilter for canada 
-  when replace(p.order_number_wms,' ','') like '%SG-CA%' then 'specialty can'
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'GW-' THEN 'goodrwill'
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'CAB' THEN 'cabana'
-  WHEN left(replace(p.order_number_wms,' ',''), 2) = 'SG' THEN 'specialty'
-  WHEN left(replace(p.order_number_wms,' ',''), 1) = 'G' THEN 'goodr.com'
-  WHEN left(replace(p.order_number_wms,' ',''), 2) = 'TO' THEN 'transfer order'
-  WHEN left(replace(p.order_number_wms,' ',''), 2) = 'CS' THEN 'customer service'
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'SD-' THEN 'marketing'
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'PR-' THEN 'marketing'
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'SIG' THEN 'marketing'
-  WHEN left(replace(p.order_number_wms,' ',''), 3) = 'BRA' THEN 'specialty'
-  WHEN left(replace(p.order_number_wms,' ',''), 4) = '#BWP' THEN 'amazon prime'
-  ELSE 'other'
+    WHEN left(replace(p.order_number_wms,' ',''), 3) = 'GCA' THEN 'goodr.ca'
+    WHEN left(replace(p.order_number_wms,' ',''), 3) = 'G-C' THEN 'goodr.ca'
+    WHEN left(replace(p.order_number_wms,' ',''), 4) = 'SG-C' THEN 'specialty can'
+    when replace(p.order_number_wms,' ','') ilike 'CS%' then 'customer service'  ---- but have to update to canada when unfilter for canada 
+    when replace(p.order_number_wms,' ','') like '%SG-CA%' then 'specialty can'
+    WHEN left(replace(p.order_number_wms,' ',''), 3) = 'GW-' THEN 'goodrwill'
+    WHEN left(replace(p.order_number_wms,' ',''), 3) = 'CAB' THEN 'cabana'
+    WHEN left(replace(p.order_number_wms,' ',''), 2) = 'SG' THEN 'specialty'
+    WHEN left(replace(p.order_number_wms,' ',''), 1) = 'G' THEN 'goodr.com'
+    WHEN left(replace(p.order_number_wms,' ',''), 2) = 'TO' THEN 'transfer order'
+    WHEN left(replace(p.order_number_wms,' ',''), 2) = 'CS' THEN 'customer service'
+    WHEN left(replace(p.order_number_wms,' ',''), 3) = 'SD-' THEN 'marketing'
+    WHEN left(replace(p.order_number_wms,' ',''), 3) = 'PR-' THEN 'marketing'
+    WHEN left(replace(p.order_number_wms,' ',''), 3) = 'SIG' THEN 'marketing'
+    WHEN left(replace(p.order_number_wms,' ',''), 3) = 'BRA' THEN 'specialty'
+    WHEN left(replace(p.order_number_wms,' ',''), 4) = '#BWP' THEN 'amazon prime'
+    ELSE 'other'
   END  ) as channel_COALESCE
   
 FROM
