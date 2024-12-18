@@ -13,7 +13,8 @@ SELECT
   , SUM(gt.net_amount) total_cogs
   , SUM(coalesce(tranline.quantity,0)) quantity
   , tranline.rate unit_cogs
-  , case when p.sku is null or SUM(coalesce(tranline.quantity,0)) = 0 then 'Bulk Update' else 'SKU Cogs' end as transaction_type
+  , case when p.sku is null or SUM(coalesce(tranline.quantity,0)) = 0 then 'Bulk Update' else 'SKU Cogs' end as transaction_type,
+  p.product_id_edw
   FROM
     fact.gl_transaction gt
     LEFT JOIN
