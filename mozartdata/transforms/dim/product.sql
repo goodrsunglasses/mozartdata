@@ -146,7 +146,7 @@ SELECT DISTINCT
     prod_inv.sku
   , prod_inv.sku                                     AS product_id_edw
   , i.id                                             AS item_id_ns
-  , array_agg(DISTINCT stord.id)                                         AS item_id_stord_array
+  , array_agg(DISTINCT stord.id)                                         AS item_id_stord
   , prod_inv.product_id_d2c_shopify
   , prod_inv.product_id_b2b_shopify
   , prod_inv.product_id_goodrwill_shopify
