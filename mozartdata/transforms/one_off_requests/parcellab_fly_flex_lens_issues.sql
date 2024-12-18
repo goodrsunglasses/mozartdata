@@ -1,3 +1,10 @@
+/*
+  Purpose: To show the lens issues for flex g and fly g in the parcellab data.
+  Requested by: Hunter Burns
+  Primary Key: None, although a concatenation of order_no and sku would be unique
+  Create date: 2024-12-03
+*/
+
 SELECT 
   ret.created as created_timestamp
   , ret.created_date
