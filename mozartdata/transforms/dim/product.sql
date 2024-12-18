@@ -146,7 +146,7 @@ SELECT DISTINCT
     prod_inv.sku
   , prod_inv.sku                                     AS product_id_edw
   , i.id                                             AS item_id_ns
-  , stord.id                                         AS item_id_stord
+  , array_agg(DISTINCT stord.id)                                         AS item_id_stord_array
   , prod_inv.product_id_d2c_shopify
   , prod_inv.product_id_b2b_shopify
   , prod_inv.product_id_goodrwill_shopify
@@ -253,3 +253,4 @@ FROM
     LEFT JOIN staging.shipstation_product shipstation
         ON shipstation.sku = prod_inv.sku
         AND shipstation.primary_item_id_flag = true
+    GROUP BY ALL
