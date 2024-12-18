@@ -146,7 +146,7 @@ SELECT DISTINCT
     prod_inv.sku
   , prod_inv.sku                                     AS product_id_edw
   , i.id                                             AS item_id_ns
-  , array_agg(DISTINCT stord.id)                                         AS item_id_stord
+  , stord.id                                         AS item_id_stord
   , prod_inv.product_id_d2c_shopify
   , prod_inv.product_id_b2b_shopify
   , prod_inv.product_id_goodrwill_shopify
@@ -250,6 +250,7 @@ FROM
         ON i.id = agg.parentitem
     LEFT JOIN stord.stord_products_8589936822                      stord
         ON stord.sku = prod_inv.sku
+        and stord.type = 'item'
     LEFT JOIN staging.shipstation_product shipstation
         ON shipstation.sku = prod_inv.sku
         AND shipstation.primary_item_id_flag = true
