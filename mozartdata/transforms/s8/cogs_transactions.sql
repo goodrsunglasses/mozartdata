@@ -3,6 +3,7 @@ SELECT
   , gt.posting_period
   , ap.period_end_date
   , gt.channel
+  , gt.order_id_edw
   , gt.transaction_number_ns
   , gt.record_type
   , p.sku
