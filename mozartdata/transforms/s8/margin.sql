@@ -68,9 +68,9 @@ with revenue as (
     r.sku
   , r.posting_period
   , r.channel
-  , sum(r.quantity) quantity
-  , sum(r.revenue) revenue
-  , count(distinct r.order_id_edw) order_count
+  , sum(r.quantity) quantity_var
+  , sum(r.revenue) revenue_var
+  , count(distinct r.order_id_edw) order_count_var
   from revenue r
     left join
   cogs c
@@ -89,9 +89,10 @@ SELECT
 , sum(c.cogs) as cogs
 , sum(c.quantity) as cost_quantity
 , div0(sum(c.cogs),sum(r.quantity)) unit_cost
-, v.revenue
-, v.quantity
-, v.order_count
+, r.cost_est
+, v.revenue_var
+, v.quantity_var
+, v.order_count_var
 , div0(sum(r.revenue),sum(r.quantity))-div0(sum(c.cogs),sum(r.quantity)) margin
 from
   revenue r
