@@ -1,63 +1,104 @@
-SELECT
-      t.product_id_edw,
-      p.display_name,
-      p.merchandise_class,
-      p.family,
-      t.channel,
-      t.posting_period,
-      SUM(coalesce(-tranline.quantity,0)) quantity,
-      sum(-tranline.costestimate) as cost_est,
-      sum(t.net_amount) AS revenue,
-      div0(sum(t.net_amount) , SUM(coalesce(-tranline.quantity,0))) as unit_rev,
-      div0(sum(-tranline.costestimate) , SUM(coalesce(-tranline.quantity,0))) as unit_cost_est
-    FROM
-      fact.gl_transaction t
-      LEFT JOIN
-        netsuite.transactionline tranline
-        ON tranline.transaction = t.transaction_id_ns
+with revenue as (
+
+  SELECT
+    t.product_id_edw
+  , t.channel
+  , t.posting_period
+  , t.order_id_edw
+  , p.sku
+  , p.display_name
+  , SUM(COALESCE(-tranline.quantity, 0))                                    AS quantity
+  , SUM(-tranline.costestimate)                                             AS cost_est
+  , SUM(t.net_amount)                                                       AS revenue
+  , DIV0(SUM(t.net_amount), SUM(COALESCE(-tranline.quantity, 0)))           AS unit_rev
+  , DIV0(SUM(-tranline.costestimate), SUM(COALESCE(-tranline.quantity, 0))) AS unit_cost
+  FROM
+    fact.gl_transaction t
+    LEFT JOIN
+      netsuite.transactionline tranline
+      ON tranline.transaction = t.transaction_id_ns
         AND tranline.id = t.transaction_line_id_ns
         AND tranline.item = t.item_id_ns
         AND tranline.mainline = 'F'
         AND tranline.accountinglinetype = 'INCOME'
-        AND (tranline._FIVETRAN_DELETED = false or tranline._FIVETRAN_DELETED is null)
-      LEFT JOIN dim.product p ON t.product_id_edw = p.product_id_edw
-    WHERE
+        AND (tranline._fivetran_deleted = FALSE OR tranline._fivetran_deleted IS NULL)
+    LEFT JOIN dim.product p USING (product_id_edw)
+  WHERE
       posting_flag
-      AND t.account_number LIKE '4%'
-    GROUP BY all
-
-  /*
-  cost AS (
-    SELECT
-      product_id_edw,
-      channel,
-      posting_period,
-      sum(net_amount) AS cost
-    FROM
-      fact.gl_transaction
-    WHERE
-      posting_flag
-      AND account_number LIKE '5%'   --- add in the old cost of sales accounts
-    GROUP BY
-      ALL
-  ),
-  core AS (
-  SELECT
-      r.product_id_edw,
-      r.channel,
-      r.posting_period,
-      p.merchandise_department,
-      p.family AS product_category,
-      p.merchandise_class AS model,
-      r.revenue,
-      c.cost
-    FROM
-      revenue r
-      LEFT JOIN cost c using (product_id_edw, channel, posting_period)
-      LEFT JOIN dim.product p ON r.product_id_edw = p.product_id_edw
+  AND account_number LIKE '4%'
+  AND p.sku = 'OG-HND-NRBR1'
+  AND posting_period = 'Aug 2024'
+  GROUP BY ALL
   )
+, cogs as
+       (
+  SELECT
+    t.product_id_edw
+  , t.channel
+  , t.posting_period
+  , t.order_id_edw
+  , SUM(COALESCE(tranline.quantity, 0))                                    AS quantity
+  , SUM(tranline.costestimate)                                             AS cost_est
+  , SUM(t.net_amount)                                                       AS cogs
+  , DIV0(SUM(t.net_amount), SUM(COALESCE(-tranline.quantity, 0)))           AS unit_cogs
+  , DIV0(SUM(-tranline.costestimate), SUM(COALESCE(-tranline.quantity, 0))) AS unit_cost
+  FROM
+    fact.gl_transaction t
+--     inner join
+--       revenue r
+--       using(order_id_edw, product_id_edw, posting_period)
+    LEFT JOIN
+      netsuite.transactionline tranline
+      ON tranline.transaction = t.transaction_id_ns
+      AND tranline.id = t.transaction_line_id_ns
+      AND tranline.item = t.item_id_ns
+      AND tranline.mainline = 'F'
+      AND ((tranline.accountinglinetype in ('COGS','CUSTOMERRETURNVARIANCE','DROPSHIPEXPENSE') AND tranline.iscogs = 'T')
+           OR tranline.accountinglinetype in ('DROPSHIPEXPENSE'))
+      AND (tranline._FIVETRAN_DELETED = false or tranline._FIVETRAN_DELETED is null)
+    LEFT JOIN dim.product p USING (product_id_edw)
+  WHERE
+      posting_flag
+  AND account_number LIKE '5000'
+  GROUP BY ALL
+         )
+, variance as
+(
+  select
+    r.sku
+  , r.posting_period
+  , r.channel
+  , sum(r.quantity) quantity
+  , sum(r.revenue) revenue
+  , count(distinct r.order_id_edw) order_count
+  from revenue r
+    left join
+  cogs c
+  using(order_id_edw, product_id_edw, posting_period)
+  where c.order_id_edw is null and c.product_id_edw is null and c.posting_period is null
+  group by all
+
+)
 SELECT
-  *
-FROM
-  core
-*/
+  r.sku
+, r.channel
+, r.posting_period
+, sum(r.revenue) as revenue
+, sum(r.quantity) as revenue_quantity
+, div0(sum(r.revenue),sum(r.quantity)) unit_rev
+, sum(c.cogs) as cogs
+, sum(c.quantity) as cost_quantity
+, div0(sum(c.cogs),sum(r.quantity)) unit_cost
+, v.revenue
+, v.quantity
+, v.order_count
+, div0(sum(r.revenue),sum(r.quantity))-div0(sum(c.cogs),sum(r.quantity)) margin
+from
+  revenue r
+left join
+  cogs c
+  using(order_id_edw, product_id_edw, channel, posting_period)
+left join
+  variance v
+  using(posting_period,sku,channel)
+group by all
