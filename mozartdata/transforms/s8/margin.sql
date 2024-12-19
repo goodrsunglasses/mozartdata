@@ -44,9 +44,9 @@ with revenue as (
   , DIV0(SUM(-tranline.costestimate), SUM(COALESCE(-tranline.quantity, 0))) AS unit_cost
   FROM
     fact.gl_transaction t
---     inner join
---       revenue r
---       using(order_id_edw, product_id_edw, posting_period)
+     inner join
+       revenue r
+       using(order_id_edw, product_id_edw)
     LEFT JOIN
       netsuite.transactionline tranline
       ON tranline.transaction = t.transaction_id_ns
@@ -87,9 +87,9 @@ SELECT
 , sum(r.quantity) as revenue_quantity
 , div0(sum(r.revenue),sum(r.quantity)) unit_rev
 , sum(c.cogs) as cogs
-, sum(c.quantity) as cost_quantity
+, sum(c.quantity) as cogs_quantity
 , div0(sum(c.cogs),sum(r.quantity)) unit_cost
-, r.unit_cost as cost_est
+, r.cost_est
 , v.revenue_var
 , v.quantity_var
 , v.order_count_var
