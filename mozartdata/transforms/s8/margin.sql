@@ -23,7 +23,7 @@ SELECT
       LEFT JOIN dim.product p ON t.product_id_edw = p.product_id_edw
     WHERE
       posting_flag
-      AND t.account_number LIKE '4%'and t.account_number <> '4075'
+      AND t.account_number LIKE '4%'
     GROUP BY all
 
   /*
