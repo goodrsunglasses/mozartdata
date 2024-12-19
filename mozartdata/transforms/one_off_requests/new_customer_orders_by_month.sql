@@ -19,3 +19,4 @@ left join
 where
   o.store in ('Goodr.ca','Goodr.com','Cabana')
 group by all
+order by 1,2
