@@ -35,7 +35,7 @@ with revenue as (
   SELECT
     t.product_id_edw
   , t.channel
-  , t.posting_period
+  , r.posting_period
   , t.order_id_edw
   , SUM(COALESCE(tranline.quantity, 0))                                    AS quantity
   , SUM(tranline.costestimate)                                             AS cost_est
@@ -89,7 +89,7 @@ SELECT
 , sum(c.cogs) as cogs
 , sum(c.quantity) as cogs_quantity
 , div0(sum(c.cogs),sum(r.quantity)) unit_cost
-, avg(r.cost_est) as avg_cost_est
+--, avg(r.cost_est) as avg_cost_est
 , v.revenue_var
 , v.quantity_var
 , v.order_count_var
@@ -98,8 +98,9 @@ from
   revenue r
 left join
   cogs c
-  using(order_id_edw, product_id_edw, channel, posting_period)
+  using(order_id_edw, product_id_edw, posting_period, channel)
 left join
   variance v
   using(posting_period,sku,channel)
+
 group by all
