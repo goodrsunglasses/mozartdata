@@ -16,4 +16,6 @@ from
 left join
   fact.customers c
   on o.order_id_edw = c.first_order_id_edw_shopify
+where
+  o.store in ('Goodr.ca','Goodr.com','Cabana')
 group by all
