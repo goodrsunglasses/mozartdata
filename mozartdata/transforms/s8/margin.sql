@@ -26,8 +26,8 @@ with revenue as (
   WHERE
       posting_flag
   AND account_number LIKE '4%'
-  AND p.sku = 'OG-HND-NRBR1'
-  AND posting_period = 'Aug 2024'
+  -- AND p.sku = 'OG-HND-NRBR1'
+  -- AND posting_period = 'Aug 2024'
   GROUP BY ALL
   )
 , cogs as
