@@ -89,7 +89,7 @@ SELECT
 , sum(c.cogs) as cogs
 , sum(c.quantity) as cogs_quantity
 , div0(sum(c.cogs),sum(r.quantity)) unit_cost
-, r.cost_est
+, avg(r.cost_est) as avg_cost_est
 , v.revenue_var
 , v.quantity_var
 , v.order_count_var
