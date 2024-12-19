@@ -1,7 +1,7 @@
 SELECT
   poi.*,
   p.collection,
-  po.purcahse_date,
+  po.purchase_date,
   po.fulfillment_date as recieved_date
 FROM
   fact.purchase_order_item poi
