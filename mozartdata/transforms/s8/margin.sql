@@ -41,7 +41,7 @@ with revenue as (
   , SUM(tranline.costestimate)                                             AS cost_est
   , SUM(t.net_amount)                                                       AS cogs
   , DIV0(SUM(t.net_amount), SUM(COALESCE(-tranline.quantity, 0)))           AS unit_cogs
-  , DIV0(SUM(-tranline.costestimate), SUM(COALESCE(-tranline.quantity, 0))) AS unit_cost
+  , DIV0(SUM(-tranline.costestimate), SUM(COALESCE(-tranline.quantity, 0))) AS unit_cost_est
   FROM
     fact.gl_transaction t
 --     inner join
@@ -88,7 +88,7 @@ SELECT
 , div0(sum(r.revenue),sum(r.quantity)) unit_rev
 , sum(c.cogs) as cogs
 , sum(c.quantity) as cost_quantity
-, div0(sum(c.cogs),sum(r.quantity)) unit_cost
+, div0(sum(c.cogs),sum(r.quantity)) unit_cogs
 , r.cost_est
 , v.revenue_var
 , v.quantity_var
