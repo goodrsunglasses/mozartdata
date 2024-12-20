@@ -104,3 +104,6 @@ left join
   using(posting_period,sku,channel)
 
 group by all
+
+
+---bank, shipping and freight, amazon fulfillment, 3pl (cost of sales)
