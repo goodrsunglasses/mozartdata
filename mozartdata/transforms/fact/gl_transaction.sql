@@ -18,7 +18,7 @@ createdate convert to America/Los_Angeles
 use createdate converted instead of trandate
 */
   select
-      concat(tal.transaction,'_',tal.transactionline) as transaction_line_id
+      concat(tal.transaction,'_',tal.transactionline) as gl_transaction_id_edw
     , pt.order_id_edw
     , COALESCE(pt.order_id_ns,REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ','')) as order_id_ns
     , tran.id as transaction_id_ns

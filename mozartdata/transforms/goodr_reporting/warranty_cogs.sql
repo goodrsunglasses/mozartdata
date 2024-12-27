@@ -12,7 +12,7 @@ WITH
   cte_defectives AS (
     SELECT
       gl.order_id_ns,
-      gl.transaction_line_id
+      gl.gl_transaction_id_edw
     FROM
       fact.gl_transaction gl
       INNER JOIN defective_ids d ON d.order_id_ns = gl.order_id_ns
@@ -24,7 +24,7 @@ WITH
 ,  cte_cs AS (
     SELECT
       gl.order_id_ns,
-      gl.transaction_line_id
+      gl.gl_transaction_id_edw
     FROM
       fact.gl_transaction gl
     WHERE
@@ -48,7 +48,7 @@ WITH
     cte_rl AS (
     SELECT
       gl.order_id_ns,
-      gl.transaction_line_id
+      gl.gl_transaction_id_edw
     FROM
       fact.gl_transaction gl
       INNER JOIN cte_rma_ids ON cte_rma_ids.order_id_ns = gl.order_id_ns
@@ -79,7 +79,7 @@ WITH
     cte_pl AS (
     SELECT
       gl.order_id_ns,
-      gl.transaction_line_id
+      gl.gl_transaction_id_edw
     FROM
       fact.gl_transaction gl
       INNER JOIN cte_shopify_warranty_ids w ON w.name = gl.order_id_ns
@@ -90,13 +90,13 @@ WITH
 , cte_combined_ids as(
   select distinct * 
   from 
-    (select transaction_line_id from cte_defectives
+    (select gl_transaction_id_edw from cte_defectives
   UNION
-    select transaction_line_id  from cte_cs
+    select gl_transaction_id_edw  from cte_cs
   union 
-    select transaction_line_id  from cte_rl 
+    select gl_transaction_id_edw  from cte_rl 
   union 
-     select transaction_line_id  from cte_pl
+     select gl_transaction_id_edw  from cte_pl
   )
   )
 --- get final cogs
@@ -108,7 +108,7 @@ select
   p.display_name,
   sum(net_amount) as cogs
 from cte_combined_ids ids
-left join fact.gl_transaction gl on ids.transaction_line_id = gl.transaction_line_id
+left join fact.gl_transaction gl on ids.gl_transaction_id_edw = gl.gl_transaction_id_edw
   left join dim.product p on p.item_id_ns = gl.item_id_ns
 where gl.posting_flag
   and gl.posting_period like '%24'
