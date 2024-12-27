@@ -18,7 +18,7 @@ SELECT--the idea of this table is to link the staging inventory data to other di
 	  staging.plain_name,
 	  prod.sku,
 	  staging.quantity,
-	  staging.dropship,
+	  staging.dropship,--This is a super unique boolean that can be useful later, because dropship transactions are spawned per inventory line
 	  staging.expense_account_id_ns,
 	  staging.rate,
 	  staging.rateamount,
