@@ -53,13 +53,16 @@ with revenue as (
       AND tranline.id = t.transaction_line_id_ns
       AND tranline.item = t.item_id_ns
       AND tranline.mainline = 'F'
-      AND ((tranline.accountinglinetype in ('COGS','CUSTOMERRETURNVARIANCE','DROPSHIPEXPENSE') AND tranline.iscogs = 'T')
-           OR tranline.accountinglinetype in ('DROPSHIPEXPENSE'))
+      AND (
+            (account_number = 5000 and (tranline.accountinglinetype in ('COGS','CUSTOMERRETURNVARIANCE','DROPSHIPEXPENSE') AND tranline.iscogs = 'T')
+             OR tranline.accountinglinetype in ('DROPSHIPEXPENSE'))
+          OR account_number in (5005,5015,5016,5020,6005,6015,6016,6020)
+          )
       AND (tranline._FIVETRAN_DELETED = false or tranline._FIVETRAN_DELETED is null)
     LEFT JOIN dim.product p USING (product_id_edw)
   WHERE
       posting_flag
-  AND account_number LIKE '5000'
+  AND account_number in (5000,5005,5015,5016,5020,6005,6015,6016,6020)
   GROUP BY ALL
          )
 , variance as
