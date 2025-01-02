@@ -32,7 +32,7 @@ with ap_detail as
    AND gt.credit_amount != 0 --only capture transactions that add to AP
  )
 SELECT
-  gt.transaction_line_id  
+  gt.gl_transaction_id_edw
 , ap.transaction_id_ns
 , ap.transaction_reference
 , gt.posting_period

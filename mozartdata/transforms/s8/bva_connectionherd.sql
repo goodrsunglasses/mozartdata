@@ -1,5 +1,5 @@
 SELECT
-  t.transaction_line_id,
+  t.gl_transaction_id_edw,
   t.transaction_number_ns,
   t.account_id_ns,
   t.account_number,

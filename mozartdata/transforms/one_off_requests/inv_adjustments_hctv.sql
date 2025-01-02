@@ -1,5 +1,5 @@
 SELECT
-  gt.transaction_line_id,
+  gt.gl_transaction_id_edw,
   gt.transaction_id_ns,
   gt.transaction_number_ns,
   gt.record_type,

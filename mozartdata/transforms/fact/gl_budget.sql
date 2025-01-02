@@ -1,4 +1,9 @@
+/*
+ Created a unique primary key. In some cases the channel or department can be null, so we have to coalesce those values
+
+ */
 SELECT
+  md5(concat(bl."ACCOUNT",'_',bl.category,'_',coalesce(bl.cseg7,0),'_',coalesce(bl.department,0),'_',bl.period)) as gl_budget_id_edw,
   bl."ACCOUNT" as account_id_edw,
   ga.account_number,
   version.name AS budget_version,
@@ -11,14 +16,14 @@ SELECT
   SUM(bl.amount) AS budget_amount
 FROM
   netsuite.budgetlegacy bl
-  LEFT JOIN 
-    dim.gl_account ga 
+  LEFT JOIN
+    dim.gl_account ga
   ON ga.account_id_edw = bl."ACCOUNT"
-  LEFT JOIN 
+  LEFT JOIN
     netsuite.budgetcategory version
     ON version.id = bl.category
-  LEFT JOIN 
-    netsuite.customrecord_cseg7 cseg7 
+  LEFT JOIN
+    netsuite.customrecord_cseg7 cseg7
     ON cseg7.id = bl.cseg7
   left join
     dim.accounting_period ap
@@ -28,17 +33,7 @@ FROM
     on d.id = bl.department
 where
   bl.date_deleted is null
-GROUP BY
-  bl."ACCOUNT",
-  ga.account_display_name,
-  ga.account_number,
-  version.name,
-  cseg7.name,
-  ga.budget_category,
-  bl.period,
-  ap.posting_period,
-  bl.department,
-  d.name
+GROUP BY ALL
 
 --- temporary budget for 2024-v4 may
   /*

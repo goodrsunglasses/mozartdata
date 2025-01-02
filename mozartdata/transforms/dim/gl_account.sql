@@ -34,9 +34,9 @@ select
 , acct.accountsearchdisplayname as account_number_display_name
 , acct.displaynamewithhierarchy as account_number_display_name_hierarchy
 , acct.description as account_description_ns --mostly NULL/missing. description in netsuite
-, acct.parent as account_parent_id_netsuite
-, p.acctnumber as account_parent_number
-, p.accountsearchdisplayname as account_parent_number_display_name
+, acct.parent as parent_account_id_ns
+, p.acctnumber as parent_account_number
+, p.accountsearchdisplayname as parent_account_number_display_name
 , case
   when acct.accttype in ('AcctRec','Bank','DeferExpense','FixedAsset','OthAsset','OthCurrAsset') then 'Assets'
   when acct.accttype in ('AcctPay','CredCard','DeferRevenue','LongTermLiab','OthCurrLiab') then 'Liabilities'
