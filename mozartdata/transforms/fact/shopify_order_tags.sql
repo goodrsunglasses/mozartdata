@@ -14,6 +14,7 @@ with
                           mozart.pipeline_root_table
     )
 SELECT
+  concat(id,'_',index) as order_tag_id_edw,
   name AS order_id_edw,
   id AS order_id_shopify,
   tags.index,
