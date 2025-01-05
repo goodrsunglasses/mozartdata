@@ -1,10 +1,10 @@
 with period_map as (SELECT
-'2024 V5'  as year,
+'2025 V1'  as year,
   date,
   posting_period,
   count(*) OVER (partition by year,month) as days
 FROM dim.date
-where year(date) = 2024),
+where year(date) = 2025),
 
 targets as (select
     gb.budget_version
@@ -29,5 +29,5 @@ t.channel,
 period_map pm 
 LEFT JOIN targets t on t.posting_period = pm.posting_period 
   LEFT JOIN google_sheets.november_2024_revenue_dist bf on bf.transaction_date = pm.date and channel in ('Goodr.com','goodr.ca')
-  where budget_version LIKE '2024%' and channel is not null 
+  where budget_version LIKE '2025%' and channel is not null 
 order by date, channel
