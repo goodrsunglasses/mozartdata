@@ -54,5 +54,6 @@ WHERE
 
   AND c.transaction_type = 'SKU Cogs'
   and c.total_cogs >= 0   --- added per pr (remvoing from both revenue and cogs)
+  and (c.posting_period like '$%2023' or c.posting_period like '%2024' or c.posting_period like '%2025')
 GROUP BY
   ALL
