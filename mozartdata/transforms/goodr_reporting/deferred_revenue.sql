@@ -30,7 +30,7 @@ WITH
       WHERE
           gt.account_number like '4%'
       AND gt.posting_flag = TRUE
-      AND gt.posting_period = 'Jul 2023'
+      AND gt.posting_period = 'Dec 2024'
       GROUP BY ALL
       )
 , cs_inv as
