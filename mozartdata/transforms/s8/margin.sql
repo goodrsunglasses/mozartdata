@@ -2,10 +2,10 @@ with revenue as (
 
   SELECT
     t.product_id_edw
-  , t.channel
+  , coalesce(t.channel,'Other') as channel
   , t.posting_period
   , t.order_id_edw
-  , p.sku
+  , coalesce(p.sku,'No SKU') as sku
   , p.display_name
   , SUM(COALESCE(-tranline.quantity, 0))                                    AS quantity
   , SUM(-tranline.costestimate)                                             AS cost_est
@@ -34,7 +34,7 @@ with revenue as (
        (
   SELECT
     t.product_id_edw
-  , t.channel
+  , coalesce(t.channel,'Other') as channel
   , r.posting_period
   , t.order_id_edw
   , SUM(COALESCE(tranline.quantity, 0))                                    AS quantity
@@ -54,17 +54,82 @@ with revenue as (
       AND tranline.item = t.item_id_ns
       AND tranline.mainline = 'F'
       AND (
-            (account_number = 5000 and (tranline.accountinglinetype in ('COGS','CUSTOMERRETURNVARIANCE','DROPSHIPEXPENSE') AND tranline.iscogs = 'T')
-             OR tranline.accountinglinetype in ('DROPSHIPEXPENSE'))
-          OR account_number in (5005,5015,5016,5020,6005,6015,6016,6020)
+            account_number = 5000 and (tranline.accountinglinetype in ('COGS','CUSTOMERRETURNVARIANCE','DROPSHIPEXPENSE') AND tranline.iscogs = 'T')
+            OR tranline.accountinglinetype in ('DROPSHIPEXPENSE')
           )
       AND (tranline._FIVETRAN_DELETED = false or tranline._FIVETRAN_DELETED is null)
     LEFT JOIN dim.product p USING (product_id_edw)
   WHERE
       posting_flag
-  AND account_number in (5000,5005,5015,5016,5020,6005,6015,6016,6020)
+  AND account_number = 5000
   GROUP BY ALL
          )
+, amazon as
+  (
+    select
+      gt.posting_period
+    , gt.account_number
+    , coalesce(gt.channel,'Other') as channel
+    , gt.order_id_edw
+    , 'No SKU' as sku
+    , coalesce(sum(gt.net_amount),0) net_amount
+    from
+      fact.gl_transaction gt
+    LEFT JOIN dim.product p USING (product_id_edw)
+    where
+      gt.posting_flag
+    and gt.account_number in (5016,6016)
+    GROUP BY ALL
+  )
+, amazon_orders as
+  (
+    select
+      r.posting_period
+    , r.channel
+    , 'No SKU' as sku
+    , a.account_number
+    , coalesce(sum(a.net_amount),0) as net_amount
+    from
+      revenue r
+    inner join
+      amazon a
+      using(order_id_edw)
+    where
+      a.order_id_edw is not null
+    group by all
+  )
+, amazon_bulk as
+  (
+    select
+      a.posting_period
+    , a.channel
+    , 'No SKU' as sku
+    , a.account_number
+    , coalesce(sum(a.net_amount),0) as net_amount
+    from
+      amazon a
+    where
+      a.order_id_edw is null
+    group by all
+  )
+, cost_of_sales as
+  (
+    select
+      gt.posting_period
+    , coalesce(gt.channel,'Other') as channel
+    , gt.order_id_edw
+    , coalesce(p.sku,'No SKU') as sku
+    , p.display_name
+    , coalesce(sum(gt.net_amount),0) net_amount
+    from
+      fact.gl_transaction gt
+    LEFT JOIN dim.product p USING (product_id_edw)
+    where
+      gt.posting_flag
+    and gt.account_number in (5005,5015,5020,5100,5110,5200,6005,6015,6020)
+    and gt.channel is not null
+    GROUP BY ALL
+  )
 , variance as
 (
   select
@@ -96,7 +161,12 @@ SELECT
 , v.revenue_var
 , v.quantity_var
 , v.order_count_var
-, div0(sum(r.revenue),sum(r.quantity))-div0(sum(c.cogs),sum(r.quantity)) margin
+, coalesce(ab.net_amount,0) as amazon_bulk
+, coalesce(ao.net_amount,0) as amazon_order
+, coalesce(cos.net_amount,0) as cost_of_sales
+, div0(coalesce(sum(r.revenue),0),coalesce(nullif(sum(r.quantity),0),1))
+  -div0(coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0),
+        coalesce(nullif(sum(r.quantity),0),1)) margin
 from
   revenue r
 left join
@@ -105,8 +175,13 @@ left join
 left join
   variance v
   using(posting_period,sku,channel)
-
+left join
+  amazon_bulk ab
+  using(posting_period,sku,channel)
+left join
+  amazon_orders ao
+  using(posting_period,sku,channel)
+left join
+  cost_of_sales cos
+  using (posting_period,sku,channel)
 group by all
-
-
----bank, shipping and freight, amazon fulfillment, 3pl (cost of sales)
