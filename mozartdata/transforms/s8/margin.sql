@@ -2,10 +2,10 @@ with revenue as (
 
   SELECT
     t.product_id_edw
-  , coalesce(t.channel,'Other') as channel
+  , coalesce(t.channel,'Not By Channel') as channel
   , t.posting_period
   , t.order_id_edw
-  , coalesce(p.sku,'No SKU') as sku
+  , coalesce(p.sku,'No By SKU') as sku
   , p.display_name
   , SUM(COALESCE(-tranline.quantity, 0))                                    AS quantity
   , SUM(-tranline.costestimate)                                             AS cost_est
@@ -34,7 +34,7 @@ with revenue as (
        (
   SELECT
     t.product_id_edw
-  , coalesce(t.channel,'Other') as channel
+  , coalesce(t.channel,'Not By Channel') as channel
   , r.posting_period
   , t.order_id_edw
   , SUM(COALESCE(tranline.quantity, 0))                                    AS quantity
@@ -69,9 +69,9 @@ with revenue as (
     select
       gt.posting_period
     , gt.account_number
-    , coalesce(gt.channel,'Other') as channel
+    , coalesce(gt.channel,'Not By Channel') as channel
     , gt.order_id_edw
-    , 'No SKU' as sku
+    , 'No By SKU' as sku
     , coalesce(sum(gt.net_amount),0) net_amount
     from
       fact.gl_transaction gt
@@ -86,7 +86,7 @@ with revenue as (
     select
       r.posting_period
     , r.channel
-    , 'No SKU' as sku
+    , 'No By SKU' as sku
     , a.account_number
     , coalesce(sum(a.net_amount),0) as net_amount
     from
@@ -103,7 +103,7 @@ with revenue as (
     select
       a.posting_period
     , a.channel
-    , 'No SKU' as sku
+    , 'No By SKU' as sku
     , a.account_number
     , coalesce(sum(a.net_amount),0) as net_amount
     from
@@ -116,9 +116,9 @@ with revenue as (
   (
     select
       gt.posting_period
-    , coalesce(gt.channel,'Other') as channel
+    , coalesce(gt.channel,'Not By Channel') as channel
     , gt.order_id_edw
-    , coalesce(p.sku,'No SKU') as sku
+    , coalesce(p.sku,'No By SKU') as sku
     , p.display_name
     , coalesce(sum(gt.net_amount),0) net_amount
     from
@@ -163,7 +163,8 @@ SELECT
 , v.order_count_var
 , coalesce(ab.net_amount,0) as amazon_bulk
 , coalesce(ao.net_amount,0) as amazon_order
-, coalesce(cos.net_amount,0) as cost_of_sales
+, coalesce(cos.net_amount,0) as not_cogs
+, coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0) as cost_of_sales
 , div0(coalesce(sum(r.revenue),0),coalesce(nullif(sum(r.quantity),0),1))
   -div0(coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0),
         coalesce(nullif(sum(r.quantity),0),1)) margin
