@@ -5,7 +5,7 @@ with revenue as (
   , coalesce(t.channel,'Not By Channel') as channel
   , t.posting_period
   , t.order_id_edw
-  , coalesce(p.sku,'No By SKU') as sku
+  , coalesce(p.sku,'Not By SKU') as sku
   , p.display_name
   , SUM(COALESCE(-tranline.quantity, 0))                                    AS quantity
   , SUM(-tranline.costestimate)                                             AS cost_est
@@ -26,6 +26,8 @@ with revenue as (
   WHERE
       posting_flag
   AND account_number LIKE '4%'
+  AND (posting_period like '%2024' or posting_period like '%2025')
+  AND (p.merchandise_department = 'SUNGLASSES' or p.merchandise_department is null)
   -- AND p.sku = 'OG-HND-NRBR1'
   -- AND posting_period = 'Aug 2024'
   GROUP BY ALL
@@ -71,7 +73,7 @@ with revenue as (
     , gt.account_number
     , coalesce(gt.channel,'Not By Channel') as channel
     , gt.order_id_edw
-    , 'No By SKU' as sku
+    , 'Not By SKU' as sku
     , coalesce(sum(gt.net_amount),0) net_amount
     from
       fact.gl_transaction gt
@@ -86,7 +88,7 @@ with revenue as (
     select
       r.posting_period
     , r.channel
-    , 'No By SKU' as sku
+    , 'Not By SKU' as sku
     , a.account_number
     , coalesce(sum(a.net_amount),0) as net_amount
     from
@@ -103,7 +105,7 @@ with revenue as (
     select
       a.posting_period
     , a.channel
-    , 'No By SKU' as sku
+    , 'Not By SKU' as sku
     , a.account_number
     , coalesce(sum(a.net_amount),0) as net_amount
     from
@@ -118,7 +120,7 @@ with revenue as (
       gt.posting_period
     , coalesce(gt.channel,'Not By Channel') as channel
     , gt.order_id_edw
-    , coalesce(p.sku,'No By SKU') as sku
+    , coalesce(p.sku,'Not By SKU') as sku
     , p.display_name
     , coalesce(sum(gt.net_amount),0) net_amount
     from
@@ -130,23 +132,23 @@ with revenue as (
     and gt.channel is not null
     GROUP BY ALL
   )
-, variance as
-(
-  select
-    r.sku
-  , r.posting_period
-  , r.channel
-  , sum(r.quantity) quantity_var
-  , sum(r.revenue) revenue_var
-  , count(distinct r.order_id_edw) order_count_var
-  from revenue r
-    left join
-  cogs c
-  using(order_id_edw, product_id_edw, posting_period)
-  where c.order_id_edw is null and c.product_id_edw is null and c.posting_period is null
-  group by all
+-- , variance as
+-- (
+--   select
+--     r.sku
+--   , r.posting_period
+--   , r.channel
+--   , sum(r.quantity) quantity_var
+--   , sum(r.revenue) revenue_var
+--   , count(distinct r.order_id_edw) order_count_var
+--   from revenue r
+--     left join
+--   cogs c
+--   using(order_id_edw, product_id_edw, posting_period)
+--   where c.order_id_edw is null and c.product_id_edw is null and c.posting_period is null
+--   group by all
 
-)
+-- )
 SELECT
   r.sku
 , r.display_name
@@ -159,9 +161,9 @@ SELECT
 , sum(c.quantity) as cogs_quantity
 , div0(sum(c.cogs),sum(r.quantity)) unit_cost
 --, avg(r.cost_est) as avg_cost_est
-, v.revenue_var
-, v.quantity_var
-, v.order_count_var
+-- , v.revenue_var
+-- , v.quantity_var
+-- , v.order_count_var
 , coalesce(ab.net_amount,0) as amazon_bulk
 , coalesce(ao.net_amount,0) as amazon_order
 , coalesce(cos.net_amount,0) as not_cogs
@@ -174,9 +176,9 @@ from
 left join
   cogs c
   using(order_id_edw, product_id_edw, posting_period, channel)
-left join
-  variance v
-  using(posting_period,sku,channel)
+-- left join
+--   variance v
+--   using(posting_period,sku,channel)
 left join
   amazon_bulk ab
   using(posting_period,sku,channel)
