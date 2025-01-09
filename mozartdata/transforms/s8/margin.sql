@@ -149,6 +149,7 @@ with revenue as (
 )
 SELECT
   r.sku
+, r.display_name
 , r.channel
 , r.posting_period
 , sum(r.revenue) as revenue
