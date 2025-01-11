@@ -82,7 +82,7 @@ WITH
       ) AS booked_date,
       FIRST_VALUE(
         CASE
-          WHEN orderline.record_type IN ('cashsale', 'invoice') THEN transaction_date
+          WHEN orderline.record_type IN ('cashsale', 'invoice') THEN orderline.transaction_date
           ELSE NULL
         END
       ) OVER (
