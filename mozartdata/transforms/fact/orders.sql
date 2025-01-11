@@ -82,7 +82,7 @@ WITH
       ) AS booked_date,
       FIRST_VALUE(
         CASE
-          WHEN record_type IN ('cashsale', 'invoice') THEN transaction_date
+          WHEN orderline.record_type IN ('cashsale', 'invoice') THEN transaction_date
           ELSE NULL
         END
       ) OVER (
@@ -90,10 +90,10 @@ WITH
           orderline.order_id_edw
         ORDER BY
           CASE
-            WHEN record_type IN ('cashsale', 'invoice') THEN 1
+            WHEN orderline.record_type IN ('cashsale', 'invoice') THEN 1
             ELSE 2
           END,
-          transaction_created_timestamp_pst asc
+          orderline.transaction_created_timestamp_pst asc
       ) AS sold_date,
       FIRST_VALUE(
         CASE
@@ -124,7 +124,10 @@ WITH
       ) AS shipping_window_end_date
     FROM
       netsuite_info ns_parent
-      LEFT OUTER JOIN fact.order_line orderline ON orderline.order_id_edw = ns_parent.order_id_edw
+      LEFT OUTER JOIN 
+        fact.order_line orderline 
+        ON 
+          orderline.order_id_edw = ns_parent.order_id_edw
   ),
   aggregates AS (
     SELECT
