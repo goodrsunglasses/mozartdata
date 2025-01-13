@@ -9,6 +9,7 @@ SELECT
     p.color_lens_finish,
     p.sku,
     p.family,
+    p.finish_frame,
     sum(oi.revenue) revenue,
     sum(oi.quantity_sold) quantity_sold
 FROM
@@ -30,4 +31,5 @@ group by
     p.design_tier,
     p.color_lens_finish,
     p.display_name,
-    p.family
+    p.family,
+    p.finish_frame
