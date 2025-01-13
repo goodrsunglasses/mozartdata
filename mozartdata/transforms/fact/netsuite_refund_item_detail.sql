@@ -1,6 +1,6 @@
--- CREATE OR REPLACE TABLE fact.netsuite_refund_item_detail
--- 	COPY GRANTS AS
-SELECT staging.transaction_id_ns,
+SELECT
+     concat(staging.transaction_id_ns,'_',staging.transaction_line_id_ns) AS refund_item_detail_id_edw,
+     staging.transaction_id_ns,
 	   staging.transaction_line_id_ns,
 	   staging.order_id_ns,		
 	   COALESCE(parents.ORDER_ID_EDW, staging.order_id_ns)                                          AS order_id_edw, --A bunch of amazon CR's were created via a trantype not found in dim.parent_transactions

@@ -18,6 +18,7 @@ with
 SELECT
   'Goodr.com' AS store
 , 'D2C'       AS category
+, concat(da.order_id,'_',da.index) as discount_application_id_edw
 , da.order_id as order_id_shopify
 , da.index
 , da.type
@@ -36,6 +37,7 @@ UNION ALL
 SELECT
   'Specialty' AS store
 , 'B2B'       AS category
+, concat(da.order_id,'_',da.index) as discount_application_id_edw
 , da.order_id as order_id_shopify
 , da.index
 , da.type
@@ -54,6 +56,7 @@ UNION ALL
 SELECT
   'Goodr.ca' AS store
 , 'D2C'      AS category
+, concat(da.order_id,'_',da.index) as discount_application_id_edw
 , da.order_id as order_id_shopify
 , da.index
 , da.type
@@ -72,6 +75,7 @@ UNION ALL
 SELECT
   'Specialty CAN' AS store
 , 'B2B'           AS category
+, concat(da.order_id,'_',da.index) as discount_application_id_edw
 , da.order_id as order_id_shopify
 , da.index
 , da.type
@@ -90,6 +94,7 @@ UNION ALL
 SELECT
   'Cabana' AS store
 , 'D2C'           AS category
+, concat(da.order_id,'_',da.index) as discount_application_id_edw
 , da.order_id as order_id_shopify
 , da.index
 , da.type

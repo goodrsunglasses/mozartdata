@@ -1,5 +1,6 @@
 SELECT
-  appl.order_id_shopify
+  md5(concat(appl.order_id_shopify,'_',line.order_line_id_shopify,'_',appl.index)) as discount_item_id_edw
+, appl.order_id_shopify
 , appl.store
 , line.order_line_id_shopify
 , line.display_name

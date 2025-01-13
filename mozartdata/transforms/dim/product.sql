@@ -250,7 +250,7 @@ FROM
         ON i.id = agg.parentitem
     LEFT JOIN stord.stord_products_8589936822                      stord
         ON stord.sku = prod_inv.sku
-        and stord.type = 'item'
+        and stord.type = 'item' --This filter removes any 'listing' records, which cause data splay, because a single sku can have multiple listings, but only one item record.
     LEFT JOIN staging.shipstation_product shipstation
         ON shipstation.sku = prod_inv.sku
         AND shipstation.primary_item_id_flag = true
