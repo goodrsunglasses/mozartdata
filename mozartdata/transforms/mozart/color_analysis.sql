@@ -18,7 +18,7 @@ JOIN
 JOIN
     dim.product AS p ON oi.product_id_edw = p.product_id_edw
 WHERE
-    sold_date > '2021-12-31'
+    o.sold_date > '2021-12-31'
 group by
     o.channel,
     p.sku,
