@@ -5,7 +5,8 @@ This is a 1 time snapshot of fact.customer_ns_map to capture the 2024 tiers and 
 Snapshot was taken on 1/13/2025
 */
 select
-  *
+  *,
+  current_date as snapshot_date
 from
   fact.customer_ns_map
 where
