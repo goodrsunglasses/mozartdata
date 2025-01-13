@@ -18,7 +18,7 @@ with
 SELECT
   'Goodr.com' as store
 , 'D2C' as category
-, concat(da.order_line_id,'_',da.index,'_') as discount_allocation_id_edw
+, concat(da.order_line_id,'_',da.index) as discount_allocation_id_edw
 , da.order_line_id
 , da.index
 , da.discount_application_index
@@ -34,7 +34,7 @@ UNION ALL
 SELECT
   'Specialty' as store
 , 'B2B' as category
-, concat(da.order_line_id,'_',da.index,'_') as discount_allocation_id_edw
+, concat(da.order_line_id,'_',da.index) as discount_allocation_id_edw
 , da.order_line_id
 , da.index
 , da.discount_application_index
@@ -50,7 +50,7 @@ UNION ALL
 SELECT
   'Goodr.ca' as store
 , 'D2C' as category
-, concat(da.order_line_id,'_',da.index,'_') as discount_allocation_id_edw
+, concat(da.order_line_id,'_',da.index) as discount_allocation_id_edw
 , da.order_line_id
 , da.index
 , da.discount_application_index
@@ -66,7 +66,7 @@ UNION ALL
 SELECT
   'Specialty CAN' as store
 , 'B2B' as category
-, concat(da.order_line_id,'_',da.index,'_') as discount_allocation_id_edw
+, concat(da.order_line_id,'_',da.index) as discount_allocation_id_edw
 , da.order_line_id
 , da.index
 , da.discount_application_index
@@ -82,7 +82,7 @@ UNION ALL
 SELECT
   'Cabana' as store
 , 'D2C' as category
-, concat(da.order_line_id,'_',da.index,'_') as discount_allocation_id_edw
+, concat(da.order_line_id,'_',da.index) as discount_allocation_id_edw
 , da.order_line_id
 , da.index
 , da.discount_application_index
