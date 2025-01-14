@@ -12,6 +12,11 @@ with revenue as (
   , SUM(t.net_amount)                                                       AS revenue
   , DIV0(SUM(t.net_amount), SUM(COALESCE(-tranline.quantity, 0)))           AS unit_rev
   , DIV0(SUM(-tranline.costestimate), SUM(COALESCE(-tranline.quantity, 0))) AS unit_cost
+  , p.collection
+  , p.family
+  , p.stage
+  , p.merchandise_class
+  , p.merchandise_department
   FROM
     fact.gl_transaction t
     LEFT JOIN
@@ -171,6 +176,11 @@ SELECT
 , div0(coalesce(sum(r.revenue),0),coalesce(nullif(sum(r.quantity),0),1))
   -div0(coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0),
         coalesce(nullif(sum(r.quantity),0),1)) margin
+, r.collection
+, r.family
+, r.stage
+, r.merchandise_class
+, r.merchandise_department
 from
   revenue r
 left join
@@ -188,4 +198,5 @@ left join
 left join
   cost_of_sales cos
   using (posting_period,sku,channel)
+left join dim.product p using (sku)
 group by all
