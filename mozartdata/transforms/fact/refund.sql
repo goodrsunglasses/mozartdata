@@ -38,7 +38,8 @@ SELECT
 , r.amount_tax
 , r.amount_paid
 FROM
-  refunds r
-  LEFT JOIN
-    bridge.netsuite_aggregates as agg
-    ON r.order_id_edw = agg.order_id_edw
+  refunds                         as r
+LEFT JOIN
+    bridge.orders                 as agg
+    ON
+    r.order_id_edw = agg.order_id_edw
