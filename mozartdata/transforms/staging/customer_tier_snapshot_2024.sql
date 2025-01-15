@@ -8,6 +8,9 @@ However, we found issues with Patrick Temple and Public Lands. So new snapshot i
 
 Manual adjustment to move Patrick Temple to Fleet Feet. This was done in PR #103, but we are making a manual adjustment here for snapshot purposes, so we don't have to run the pipeline again.
 */
+/*
+Commenting out select statement to reduce risk of data erroneously being updated.
+
 select
   * exclude tier,
   case when lower(company_name) = 'patrick temple' then 'Fleet Feet' else tier end as tier,
@@ -16,3 +19,5 @@ from
   fact.customer_ns_map
 where
   tier is not null or doors is not null
+
+*/
