@@ -44,5 +44,5 @@ FROM
 where 
   gl.account_number = 4000
   and posting_flag 
-  and right(posting_period,4) in (2024, 2023, 2022) 
+  and right(posting_period,4) in (2024, 2023, 2022, 2021) 
 group by all
