@@ -1,4 +1,4 @@
-WITH
+ WITH
   refunds AS
     (
       SELECT
@@ -28,8 +28,8 @@ SELECT
 , r.transaction_number_ns
 , r.transaction_created_timestamp_pst
 , r.customer_id_ns
-, o.sold_date as order_sold_date
-, date_trunc(month,o.sold_date) as order_sold_month
+, agg.sold_date as order_sold_date
+, date_trunc(month,agg.sold_date) as order_sold_month
 , r.refund_date
 , date_trunc(month,r.refund_date) as refund_month
 , r.amount_revenue
@@ -40,5 +40,5 @@ SELECT
 FROM
   refunds r
   LEFT JOIN
-    fact.orders o
-    ON r.order_id_edw = o.order_id_edw
+    bridge.netsuite_aggregates as agg
+    ON r.order_id_edw = agg.order_id_edw
