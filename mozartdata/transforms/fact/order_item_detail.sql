@@ -56,6 +56,7 @@ with net_amount as
         , coalesce(na.amount_tax,0) as amount_tax
         , coalesce(na.amount_paid,0) as amount_paid
         , coalesce(na.amount_cogs,0) as amount_cogs
+        , coalesce(na.amount_cos,0) as amount_cos
         , coalesce(na.amount_billed,0) as amount_billed
         , coalesce(na.amount_inventory,0) as amount_inventory
         , coalesce(na.amount_landed_costs,0) as amount_landed_costs
