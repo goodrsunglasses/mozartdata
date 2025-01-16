@@ -28,8 +28,8 @@ SELECT
 , r.transaction_number_ns
 , r.transaction_created_timestamp_pst
 , r.customer_id_ns
-, agg.sold_date as order_sold_date
-, date_trunc(month,agg.sold_date) as order_sold_month
+, o.sold_date as order_sold_date
+, date_trunc(month,o.sold_date) as order_sold_month
 , r.refund_date
 , date_trunc(month,r.refund_date) as refund_month
 , r.amount_revenue
@@ -40,6 +40,6 @@ SELECT
 FROM
   refunds                         as r
 LEFT JOIN
-    bridge.orders                 as agg
+    bridge.orders                 as o
     ON
     r.order_id_edw = agg.order_id_edw
