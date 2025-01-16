@@ -1,6 +1,3 @@
-/*--first grab the netsuite info from dim.orders which implicitly should only
-  have parent transactions from NS.
- */
 with
     refund_aggregates as (
         select distinct
