@@ -42,4 +42,4 @@ FROM
 LEFT JOIN
     bridge.orders                 as o
     ON
-    r.order_id_edw = agg.order_id_edw
+    r.order_id_edw = o.order_id_edw
