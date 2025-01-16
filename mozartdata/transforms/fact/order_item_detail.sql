@@ -15,7 +15,7 @@ with net_amount as
                 , sum(case when gt.account_number = '5000' then gt.net_amount else 0 end)                    amount_cogs
                 , sum(case
                         when gt.account_number like '5%' then gt.net_amount
-                        when gt.account_number in (6005.6015,6016,6020) and right(gt.posting_period,4) <= 2024 then gt.net_amount
+                        when gt.account_number in (6005,6015,6016,6020) and right(gt.posting_period,4) <= 2024 then gt.net_amount
                         else 0 end)                                                                          amount_cos
                 , sum(case
                         when gt.account_number between 4000 and 4999 or gt.account_number like '220%'
