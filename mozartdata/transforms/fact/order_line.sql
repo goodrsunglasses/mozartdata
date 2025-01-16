@@ -62,6 +62,7 @@ SELECT DISTINCT
   sum(item_detail.amount_tax) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_tax,
   sum(item_detail.amount_paid) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_paid,
   sum(item_detail.amount_cogs) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_cogs,
+  sum(item_detail.amount_cos) over (partition by item_detail.order_id_edw, item_detail.transaction_id_ns) as amount_cos,
   number.trackingnumber tracking_number,
   FIRST_VALUE(item_detail.location IGNORE NULLS) over (
     PARTITION BY
