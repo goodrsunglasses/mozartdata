@@ -30,6 +30,7 @@ with net_amount as
            where (gt.account_number between 4000 and 4999
               or gt.account_number like '5%'
               or gt.account_number like '220%'
+              or gt.account_number in (6005,6015,6016,6020)
               or gt.account_number in (1200,2310)) -- PO Accounts
            group by gt.transaction_id_ns
                   , gt.item_id_ns)
