@@ -28,12 +28,12 @@ with net_amount as
                 , sum(case when gt.account_number = 1200 then gt.net_amount else 0 end)                      amount_inventory
                 , sum(case when gt.account_number = 5200 then gt.net_amount * -1 else 0 end)                 amount_landed_costs
            from fact.gl_transaction gt
+           --note: normally we want to have posting_flag = true, however in this case, we don't because we want non posted transactions from SO/PO
            where (gt.account_number between 4000 and 4999
               or gt.account_number like '5%'
               or gt.account_number like '220%'
               or gt.account_number in (6005,6015,6016,6020)
               or gt.account_number in (1200,2310)) -- PO Accounts
-              and gt.posting_flag = true
            group by gt.transaction_id_ns
                   , gt.item_id_ns)
 
