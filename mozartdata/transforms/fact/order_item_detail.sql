@@ -1,3 +1,4 @@
+--create or replace table fact.order_item_detail copy grants as
 with net_amount as
           (select gt.transaction_id_ns
                 , gt.item_id_ns
@@ -32,6 +33,7 @@ with net_amount as
               or gt.account_number like '220%'
               or gt.account_number in (6005,6015,6016,6020)
               or gt.account_number in (1200,2310)) -- PO Accounts
+              and gt.posting_flag = true
            group by gt.transaction_id_ns
                   , gt.item_id_ns)
 
