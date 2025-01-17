@@ -1,4 +1,4 @@
-WITH
+ WITH
   refunds AS
     (
       SELECT
@@ -38,7 +38,8 @@ SELECT
 , r.amount_tax
 , r.amount_paid
 FROM
-  refunds r
-  LEFT JOIN
-    fact.orders o
-    ON r.order_id_edw = o.order_id_edw
+  refunds                         as r
+LEFT JOIN
+    bridge.orders                 as o
+    ON
+    r.order_id_edw = o.order_id_edw
