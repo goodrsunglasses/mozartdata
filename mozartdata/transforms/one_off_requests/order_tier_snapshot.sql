@@ -1,3 +1,11 @@
+/*
+This will be used as part of year end data tasks.
+
+Update the dates below:
+o.booked_date <= '2024-12-31'
+AND (o.sold_date >= '2025-01-01'
+*/
+
 SELECT
   o.order_id_edw
 , o.order_id_ns
