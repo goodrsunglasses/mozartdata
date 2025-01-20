@@ -98,6 +98,6 @@ with net_amount as
                           ON staging.customer_id_ns = cnm.customer_id_ns
           LEFT OUTER JOIN dim.channel c
                           ON c.channel_id_ns = staging.channel_id_ns
-          LEFT OUTER JOIN prod_goodr_dwh.csvs.orders_tiers_snapshot_2024 ot
+          LEFT OUTER JOIN csvs.orders_tiers_snapshot_2024 ot
                           ON parents.order_id_edw = ot.order_id_edw
    WHERE exceptions.exception_flag = FALSE
