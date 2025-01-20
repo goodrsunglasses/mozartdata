@@ -80,11 +80,12 @@ with net_amount as
         , staging.warranty_order_id_ns
         , cnm.customer_id_edw
         , staging.CUSTOMER_ID_NS
-        , case
-          when ot.order_id_edw is not null then cnm.tier
-          when year(staging.transaction_date) <= 2024 then cnm.tier_2024
-          else cnm.tier
-          end as tier
+--         , case
+--           when ot.order_id_edw is not null then cnm.tier
+--           when year(staging.transaction_date) <= 2024 then cnm.tier_2024
+--           else cnm.tier
+--           end as tier
+        , cnm.tier
         , exceptions.exception_flag
         , c.name as channel
    	    , staging.rate_percent
@@ -98,6 +99,6 @@ with net_amount as
                           ON staging.customer_id_ns = cnm.customer_id_ns
           LEFT OUTER JOIN dim.channel c
                           ON c.channel_id_ns = staging.channel_id_ns
-          LEFT OUTER JOIN csvs.orders_tiers_snapshot_2024 ot
-                          ON parents.order_id_edw = ot.order_id_edw
+--           LEFT OUTER JOIN csvs.orders_tiers_snapshot_2024 ot
+--                           ON parents.order_id_edw = ot.order_id_edw
    WHERE exceptions.exception_flag = FALSE

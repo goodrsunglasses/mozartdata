@@ -10,4 +10,4 @@ LEFT OUTER JOIN
       ON nc.customer_id_ns = ns_ids.value
 LEFT OUTER JOIN
     staging.customer_tier_snapshot_2024 ct
-    on cust.customer_id_edw = ct.customer_id_edw
+    on nc.customer_id_ns = ct.customer_id_ns
