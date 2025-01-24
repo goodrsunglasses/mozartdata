@@ -37,7 +37,7 @@ SELECT
   oid.plain_name,
   date_trunc(MONTH, oid.transaction_date) as month,
   sum(oid.total_quantity) as quantity,
-  cost
+  cost as avg_cost
 FROM
   fact.order_item_detail oid
   INNER JOIN affilate_orders ao ON ao.order_id_edw = oid.order_id_edw
