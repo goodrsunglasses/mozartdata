@@ -18,15 +18,17 @@ WITH
     group by all
   )
 SELECT
+--  oid.*
   oid.product_id_edw as product_id,
   oid.plain_name,
   date_trunc(MONTH, oid.transaction_date) as month,
-  sum(oid.total_quantity) as quantity
+  sum(oid.total_quantity) as quantity,
+  avg(amount_cogs)
 FROM
   fact.order_item_detail oid
   INNER JOIN affilate_orders ao ON ao.order_id_edw = oid.order_id_edw
 WHERE
   record_type = 'itemfulfillment'
-GROUP BY
+  GROUP BY
   ALL
 order by month desc, plain_name
