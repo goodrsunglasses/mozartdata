@@ -1,3 +1,14 @@
+/*
+The tier code snippet is used to tag orders with the customer tier at the time the order was sold. We will need to
+update this snippet at year end, as we snapshot more orders which need to be reclassified.
+
+case
+  when ot.order_id_edw is not null then cnm.tier
+  when year(staging.transaction_date) <= '2024-01-01' then cnm.tier_2024
+  else cnm.tier
+end as tier
+
+*/
 with
   gl_transaction_cte AS (
     SELECT
@@ -49,7 +60,8 @@ group by all
            group by gt.transaction_id_ns
                   , gt.item_id_ns)
 
-   SELECT parents.order_id_edw
+   SELECT
+          parents.order_id_edw
         , staging.order_id_ns
         , staging.transaction_id_ns
         , parents.is_parent
@@ -96,7 +108,7 @@ group by all
           end as tier
         , exceptions.exception_flag
         , c.name as channel
-   	, staging.rate_percent
+   	    , staging.rate_percent
    FROM dim.parent_transactions parents
           LEFT OUTER JOIN staging.order_item_detail staging ON staging.transaction_id_ns = parents.transaction_id_ns
           LEFT OUTER JOIN exceptions.order_item_detail exceptions

@@ -2,11 +2,11 @@ SELECT
   poi.*,
   p.collection,
   po.purchase_date,
-  po.fulfillment_date as recieved_date
+  po.fulfillment_date AS recieved_date
 FROM
   fact.purchase_order_item poi
   LEFT JOIN dim.product p ON p.product_id_edw = poi.product_id_edw
-  left join fact.purchase_orders po on po.order_id_edw = poi.order_id_edw
+  LEFT JOIN fact.purchase_orders po ON po.order_id_edw = poi.order_id_edw
 WHERE
   (
     p.sku IN (
