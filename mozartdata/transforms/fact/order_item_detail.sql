@@ -1,4 +1,3 @@
-create or replace table fact.order_item_detail copy grants as
 with
   gl_transaction_cte AS (
     SELECT
