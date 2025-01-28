@@ -3,15 +3,18 @@ WITH actuals AS (
         posting_period,
         to_date(posting_period, 'MON YYYY') AS posting_period_date,
         sum(CASE WHEN account_number LIKE '4%' THEN net_amount END) AS revenue,
-        sum(CASE WHEN account_number LIKE '5%' THEN net_amount END) AS cogs,
+        sum(CASE WHEN account_number LIKE '5000' THEN net_amount END) AS cogs,
+        sum(CASE WHEN gt.account_number like '5%' then gt.net_amount
+                 WHEN gt.account_number in (6005,6015,6016,6020) and right(gt.posting_period,4) <= 2024 THEN gt.net_amount
+                 ELSE 0 end) AS cos,
         sum(CASE WHEN account_number LIKE '6%' OR account_number LIKE '7%' THEN net_amount END) AS opex,
-        (revenue - cogs - opex) AS net_income,
+        (revenue - cos - opex) AS net_income,
         sum(CASE WHEN account_number LIKE '60%' THEN net_amount END) AS fulfillment,
         sum(CASE WHEN account_number LIKE '61%' THEN net_amount END) AS product_dev,
         sum(CASE WHEN account_number LIKE '63%' THEN net_amount END) AS sales_and_marketing,
         sum(CASE WHEN account_number LIKE '70%' THEN net_amount END) AS labor,
         sum(CASE WHEN account_number LIKE '7%' AND account_number NOT LIKE '70%' THEN net_amount END) AS g_and_a,
-        (revenue - cogs) / revenue AS gross_margin,
+        (revenue - cos) / revenue AS gross_margin,
         (net_income / revenue) AS net_margin
     FROM
         fact.gl_transaction gt
@@ -26,15 +29,18 @@ budget AS (
         posting_period,
         to_date(posting_period, 'MON YYYY') AS posting_period_date,
         sum(CASE WHEN account_number LIKE '4%' THEN budget_amount END) AS revenue,
-        sum(CASE WHEN account_number LIKE '5%' THEN budget_amount END) AS cogs,
+        sum(CASE WHEN account_number LIKE '5000' THEN budget_amount END) AS cogs,
+        sum(CASE WHEN account_number like '5%' then budget_amount
+                 WHEN account_number in (6005,6015,6016,6020) and right(posting_period,4) <= 2024 THEN budget_amount
+                 ELSE 0 end) AS cos,
         sum(CASE WHEN account_number LIKE '6%' OR account_number LIKE '7%' THEN budget_amount END) AS opex,
-        (revenue - cogs - opex) AS net_income,
+        (revenue - cos - opex) AS net_income,
         sum(CASE WHEN account_number LIKE '60%' THEN budget_amount END) AS fulfillment,
         sum(CASE WHEN account_number LIKE '61%' THEN budget_amount END) AS product_dev,
         sum(CASE WHEN account_number LIKE '63%' THEN budget_amount END) AS sales_and_marketing,
         sum(CASE WHEN account_number LIKE '70%' THEN budget_amount END) AS labor,
         sum(CASE WHEN account_number LIKE '7%' AND account_number NOT LIKE '70%' THEN budget_amount END) AS g_and_a,
-        (revenue - cogs) / revenue AS gross_margin,
+        (revenue - cos) / revenue AS gross_margin,
         (net_income / revenue) AS net_margin,
         budget_version
     FROM
@@ -48,6 +54,7 @@ SELECT
     *,
     SUM(revenue) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS revenue_ytd,
     SUM(cogs) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cogs_ytd,
+    SUM(cos) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cos_ytd,
     SUM(opex) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS opex_ytd,
     SUM(net_income) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS net_income_ytd,
     SUM(fulfillment) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS fulfillment_ytd,
