@@ -246,7 +246,7 @@ with revenue as (
 -- )
 SELECT
   r.sku
-, r.display_name
+, coalesce( r.display_name, r.sku) as item
 , r.channel
 , r.posting_period
 , sum(r.revenue) as revenue
