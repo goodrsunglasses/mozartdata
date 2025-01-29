@@ -9,7 +9,20 @@ case
 end as tier
 
 */
-with net_amount as
+with
+  gl_transaction_cte AS (
+    SELECT
+      gt.transaction_id_ns
+    , gt.item_id_ns
+    , gt.account_number
+    , sum(gt.net_amount) net_amount
+    , sum(gt.debit_amount) debit_amount
+    , sum(gt.credit_amount) credit_amount
+    , gt.posting_period
+from fact.gl_transaction gt
+group by all
+    ),
+  net_amount as
           (select gt.transaction_id_ns
                 , gt.item_id_ns
                 , sum(case when gt.account_number between 4000 and 4999 then gt.net_amount else 0 end)       amount_revenue
@@ -23,7 +36,11 @@ with net_amount as
                           then gt.debit_amount * -1 --Some refunds are reversing revenue accounts instead of adding to refund accounts (42*)
                         else 0 end)                                                                          amount_refunded
                 , sum(case when gt.account_number like '220%' then gt.net_amount else 0 end)                 amount_tax
-                , sum(case when gt.account_number like '5%' then gt.net_amount else 0 end)                   amount_cogs
+                , sum(case when gt.account_number = '5000' then gt.net_amount else 0 end)                    amount_cogs
+                , sum(case
+                        when gt.account_number like '5%' then gt.net_amount
+                        when gt.account_number in (6005,6015,6016,6020) and right(gt.posting_period,4) <= 2024 then gt.net_amount
+                        else 0 end)                                                                          amount_cos
                 , sum(case
                         when gt.account_number between 4000 and 4999 or gt.account_number like '220%'
                           then gt.net_amount
@@ -33,10 +50,12 @@ with net_amount as
                 , sum(case when gt.account_number = 2310 then gt.net_amount * -1 else 0 end)                 amount_billed
                 , sum(case when gt.account_number = 1200 then gt.net_amount else 0 end)                      amount_inventory
                 , sum(case when gt.account_number = 5200 then gt.net_amount * -1 else 0 end)                 amount_landed_costs
-           from fact.gl_transaction gt
+           from gl_transaction_cte gt
+           --note: normally we want to have posting_flag = true, however in this case, we don't because we want non posted transactions from SO/PO
            where (gt.account_number between 4000 and 4999
               or gt.account_number like '5%'
               or gt.account_number like '220%'
+              or gt.account_number in (6005,6015,6016,6020)
               or gt.account_number in (1200,2310)) -- PO Accounts
            group by gt.transaction_id_ns
                   , gt.item_id_ns)
@@ -64,6 +83,7 @@ with net_amount as
         , coalesce(na.amount_tax,0) as amount_tax
         , coalesce(na.amount_paid,0) as amount_paid
         , coalesce(na.amount_cogs,0) as amount_cogs
+        , coalesce(na.amount_cos,0) as amount_cos
         , coalesce(na.amount_billed,0) as amount_billed
         , coalesce(na.amount_inventory,0) as amount_inventory
         , coalesce(na.amount_landed_costs,0) as amount_landed_costs
@@ -99,6 +119,6 @@ with net_amount as
                           ON staging.customer_id_ns = cnm.customer_id_ns
           LEFT OUTER JOIN dim.channel c
                           ON c.channel_id_ns = staging.channel_id_ns
-          LEFT OUTER JOIN csvs.orders_tiers_snapshot_2024 ot
+         LEFT OUTER JOIN csvs.orders_tiers_snapshot_2024 ot
                           ON parents.order_id_edw = ot.order_id_edw
    WHERE exceptions.exception_flag = FALSE

@@ -75,6 +75,7 @@ select
     , o.amount_tax_sold
     , o.amount_paid_sold
     , o.amount_cogs_fulfilled
+    , o.amount_cos_fulfilled
     , o.amount_revenue_refunded
     , o.amount_product_refunded
     , o.amount_shipping_refunded
@@ -97,3 +98,4 @@ left outer join
     refund_aggregates               refund
     on
         refund.order_id_edw = o.order_id_edw
+        

@@ -64,7 +64,8 @@ WITH
       oid.plain_name,
       COALESCE(SUM(oid.total_quantity),0) AS quantity_fulfilled,
       COALESCE(SUM(oid.rate),0) AS rate_fulfilled,
-      COALESCE(SUM(oid.amount_cogs),0) AS amount_cogs_fulfilled
+      COALESCE(SUM(oid.amount_cogs),0) AS amount_cogs_fulfilled,
+      COALESCE(SUM(oid.amount_cos),0) AS amount_cos_fulfilled
     FROM
       fact.order_item_detail oid
     WHERE
@@ -142,6 +143,7 @@ SELECT DISTINCT
   sold.amount_shipping_sold,
   sold.amount_tax_sold,
   sold.amount_paid_sold,
+  fulfilled.amount_cos_fulfilled,
   fulfilled.amount_cogs_fulfilled,
   coalesce(refunded.amount_revenue_refunded,sold.amount_revenue_refunded,0) as amount_revenue_refunded,
   coalesce(refunded.amount_product_refunded,sold.amount_product_refunded,0) as amount_product_refunded,

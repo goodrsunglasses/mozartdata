@@ -218,6 +218,7 @@ with
             , sum(oi.amount_tax_sold)          as amount_tax_sold
             , sum(oi.amount_paid_sold)         as amount_paid_sold
             , sum(oi.amount_cogs_fulfilled)    as amount_cogs_fulfilled
+            , sum(oi.amount_cos_fulfilled)     as amount_cos_fulfilled
             , sum(oi.amount_revenue_refunded)  as amount_revenue_refunded
             , sum(oi.amount_product_refunded)  as amount_product_refunded
             , sum(oi.amount_shipping_refunded) as amount_shipping_refunded
@@ -365,6 +366,7 @@ select
     , aggregates.amount_tax_sold
     , aggregates.amount_paid_sold
     , aggregates.amount_cogs_fulfilled
+    , aggregates.amount_cos_fulfilled
     , aggregates.amount_revenue_refunded
     , aggregates.amount_product_refunded
     , aggregates.amount_shipping_refunded
