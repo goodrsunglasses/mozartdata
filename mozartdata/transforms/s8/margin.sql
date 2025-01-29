@@ -119,7 +119,7 @@ with revenue as (
       a.order_id_edw is null
     group by all
   )
-, cost_of_sales as
+, bank_fees as
   (
     select
       gt.posting_period
@@ -133,7 +133,97 @@ with revenue as (
     LEFT JOIN dim.product p USING (product_id_edw)
     where
       gt.posting_flag
-    and gt.account_number in (5005,5015,5020,5100,5110,5200,6005,6015,6020)
+    and gt.account_number in (5005,6005)
+    and gt.channel is not null
+    GROUP BY ALL
+  )
+, threepl as
+  (
+    select
+      gt.posting_period
+    , coalesce(gt.channel,'Not By Channel') as channel
+    , gt.order_id_edw
+    , coalesce(p.sku,'Not By SKU') as sku
+    , p.display_name
+    , coalesce(sum(gt.net_amount),0) net_amount
+    from
+      fact.gl_transaction gt
+    LEFT JOIN dim.product p USING (product_id_edw)
+    where
+      gt.posting_flag
+    and gt.account_number in (5015,6015)
+    and gt.channel is not null
+    GROUP BY ALL
+  )
+, shipping as
+  (
+    select
+      gt.posting_period
+    , coalesce(gt.channel,'Not By Channel') as channel
+    , gt.order_id_edw
+    , coalesce(p.sku,'Not By SKU') as sku
+    , p.display_name
+    , coalesce(sum(gt.net_amount),0) net_amount
+    from
+      fact.gl_transaction gt
+    LEFT JOIN dim.product p USING (product_id_edw)
+    where
+      gt.posting_flag
+    and gt.account_number in (5020,6020)
+    and gt.channel is not null
+    GROUP BY ALL
+  )
+, shrinkage_inventory as
+  (
+    select
+      gt.posting_period
+    , coalesce(gt.channel,'Not By Channel') as channel
+    , gt.order_id_edw
+    , coalesce(p.sku,'Not By SKU') as sku
+    , p.display_name
+    , coalesce(sum(gt.net_amount),0) net_amount
+    from
+      fact.gl_transaction gt
+    LEFT JOIN dim.product p USING (product_id_edw)
+    where
+      gt.posting_flag
+    and gt.account_number = 5100
+    and gt.channel is not null
+    GROUP BY ALL
+  )
+, royalies as
+  (
+    select
+      gt.posting_period
+    , coalesce(gt.channel,'Not By Channel') as channel
+    , gt.order_id_edw
+    , coalesce(p.sku,'Not By SKU') as sku
+    , p.display_name
+    , coalesce(sum(gt.net_amount),0) net_amount
+    from
+      fact.gl_transaction gt
+    LEFT JOIN dim.product p USING (product_id_edw)
+    where
+      gt.posting_flag
+    and gt.account_number = 5110
+    and gt.channel is not null
+    GROUP BY ALL
+  )
+, lcv as        --- landed cost variance
+  (
+    select
+      gt.posting_period
+    , coalesce(gt.channel,'Not By Channel') as channel
+    , gt.order_id_edw
+    , coalesce(p.sku,'Not By SKU') as sku
+    , p.display_name
+    , coalesce(sum(gt.net_amount),0) net_amount
+    from
+      fact.gl_transaction gt
+    LEFT JOIN dim.product p USING (product_id_edw)
+    where
+      gt.posting_flag
+    and gt.account_number = 5200
     and gt.channel is not null
     GROUP BY ALL
   )
@@ -171,11 +261,16 @@ SELECT
 -- , v.order_count_var
 , coalesce(ab.net_amount,0) as amazon_bulk
 , coalesce(ao.net_amount,0) as amazon_order
-, coalesce(cos.net_amount,0) as not_cogs
-, coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0) as cost_of_sales
-, div0(coalesce(sum(r.revenue),0),coalesce(nullif(sum(r.quantity),0),1))
-  -div0(coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0),
-        coalesce(nullif(sum(r.quantity),0),1)) margin
+, coalesce(bank_fees.net_amount,0) as bank_fees
+, coalesce(threepl.net_amount,0) as threepl
+, coalesce(shipping.net_amount,0) as shipping 
+, coalesce(shrinkage_inventory.net_amount,0) as shrinkage_inventory 
+, coalesce(royalies.net_amount,0) as royalties
+, coalesce(lcv.net_amount,0) as lcv                       -- landed cost variance 
+--, coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0) as cost_of_sales
+--, div0(coalesce(sum(r.revenue),0),coalesce(nullif(sum(r.quantity),0),1))
+--  -div0(coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0),
+--        coalesce(nullif(sum(r.quantity),0),1)) margin
 , r.collection
 , r.family
 , r.stage
@@ -196,7 +291,22 @@ left join
   amazon_orders ao
   using(posting_period,sku,channel)
 left join
-  cost_of_sales cos
+  bank_fees 
+  using (posting_period,sku,channel)
+left join
+  threepl
+  using (posting_period,sku,channel)
+left join
+  shipping
+  using (posting_period,sku,channel)
+left join
+  shrinkage_inventory
+  using (posting_period,sku,channel)
+left join
+  royalies
+  using (posting_period,sku,channel)
+left join
+  lcv
   using (posting_period,sku,channel)
 left join dim.product p using (sku)
 group by all
