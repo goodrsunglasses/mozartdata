@@ -8,7 +8,9 @@ WITH actuals AS (
         sum(CASE WHEN account_number like '5%' then net_amount
                  WHEN account_number in (6005,6015,6016,6020) and right(posting_period,4) <= 2024 THEN net_amount
                  ELSE 0 end) AS cos,
-        sum(CASE WHEN account_number LIKE '6%' OR account_number LIKE '7%' THEN net_amount END) AS opex,
+        sum(CASE WHEN account_number LIKE '6%' AND right(posting_period,4) > 2024 then net_amount
+         WHEN account_number LIKE '6%' AND right(posting_period,4) <= 2024 AND account_number not in (6005,6015,6016,6020) then net_amount
+         WHEN account_number LIKE '7%' THEN net_amount END) AS opex,
         (revenue - cos - opex) AS net_income,
         sum(CASE WHEN account_number LIKE '60%' THEN net_amount END) AS fulfillment,
         sum(CASE WHEN account_number LIKE '61%' THEN net_amount END) AS product_dev,
