@@ -72,7 +72,7 @@ SELECT
 FROM (
     SELECT
         *,
-        'actual' AS budget_version
+       concat(right(posting_period,4), ' - Actual') AS budget_version
     FROM
         actuals
 
