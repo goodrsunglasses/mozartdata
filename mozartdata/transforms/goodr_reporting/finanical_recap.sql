@@ -4,7 +4,7 @@ WITH actuals AS (
         to_date(posting_period, 'MON YYYY') AS posting_period_date,
         sum(CASE WHEN account_number LIKE '4%' THEN net_amount END) AS revenue,
         sum(CASE WHEN account_number LIKE '5000' THEN net_amount END) AS cogs,
-        sum(CASE WHEN account_number LIKE '5%' THEN net_amount END) AS all_cogs_accounts,
+ --       sum(CASE WHEN account_number LIKE '5%' THEN net_amount END) AS all_cos_accounts,
         sum(CASE WHEN account_number like '5%' then net_amount
                  WHEN account_number in (6005,6015,6016,6020) and right(posting_period,4) <= 2024 THEN net_amount
                  ELSE 0 end) AS cos,
@@ -31,7 +31,7 @@ budget AS (
         to_date(posting_period, 'MON YYYY') AS posting_period_date,
         sum(CASE WHEN account_number LIKE '4%' THEN budget_amount END) AS revenue,
         sum(CASE WHEN account_number LIKE '5000' THEN budget_amount END) AS cogs,
-        sum(CASE WHEN account_number LIKE '5%' THEN budget_amount END) AS all_cogs_accounts,
+--        sum(CASE WHEN account_number LIKE '5%' THEN budget_amount END) AS all_cos_accounts,
         sum(CASE WHEN account_number like '5%' then budget_amount
                  WHEN account_number in (6005,6015,6016,6020) and right(posting_period,4) <= 2024 THEN budget_amount
                  ELSE 0 end) AS cos,
