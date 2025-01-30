@@ -9,7 +9,7 @@ WITH actuals AS (
                  WHEN account_number in (6005,6015,6016,6020) and right(posting_period,4) <= 2024 THEN net_amount
                  ELSE 0 end) AS cos,
         sum(CASE WHEN account_number LIKE '6%' OR account_number LIKE '7%' THEN net_amount END) AS opex,
-        (revenue - all_cogs_accounts - opex) AS net_income,
+        (revenue - cos - opex) AS net_income,
         sum(CASE WHEN account_number LIKE '60%' THEN net_amount END) AS fulfillment,
         sum(CASE WHEN account_number LIKE '61%' THEN net_amount END) AS product_dev,
         sum(CASE WHEN account_number LIKE '63%' THEN net_amount END) AS sales_and_marketing,
@@ -36,7 +36,7 @@ budget AS (
                  WHEN account_number in (6005,6015,6016,6020) and right(posting_period,4) <= 2024 THEN budget_amount
                  ELSE 0 end) AS cos,
         sum(CASE WHEN account_number LIKE '6%' OR account_number LIKE '7%' THEN budget_amount END) AS opex,
-        (revenue - all_cogs_accounts - opex) AS net_income,
+        (revenue - cos - opex) AS net_income,
         sum(CASE WHEN account_number LIKE '60%' THEN budget_amount END) AS fulfillment,
         sum(CASE WHEN account_number LIKE '61%' THEN budget_amount END) AS product_dev,
         sum(CASE WHEN account_number LIKE '63%' THEN budget_amount END) AS sales_and_marketing,
