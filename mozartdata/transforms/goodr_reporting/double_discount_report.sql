@@ -1,3 +1,9 @@
+------- step 1: find the discount title
+/*
+select * from  shopify.discount_application 
+order by order_id desc 
+*/
+------ step 2: update the title in the promo cte where clause
 with promo as
   (
   SELECT
@@ -14,7 +20,7 @@ with promo as
   on ol.id = dl.order_line_id
    and da.index = dl.discount_application_index
   WHERE
-    da.title  ilike '%Pour%'
+    da.title  ilike '%Pour%'                                ---- update title here (double check above it works, titles are captured weird)
   group by 1,2
   ),
     yotpo as
