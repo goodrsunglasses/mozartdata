@@ -1,6 +1,6 @@
 SELECT DISTINCT
   detail.order_id_edw,
-  detail.transaction_created_date_pst AS sold_date, --renamed it this because this report only looks at the sold transaction types
+  detail.transaction_date AS sold_date, --renamed it this because this report only looks at the sold transaction types
   gltran.date_posted_pst,
   gltran.posting_period,
   gltran.posting_flag,
