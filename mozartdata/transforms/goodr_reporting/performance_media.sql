@@ -216,4 +216,3 @@ SELECT
 
 FROM
   pre_to_date p
-WHERE p.year = 2025
