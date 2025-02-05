@@ -4,6 +4,15 @@ WITH actuals AS (
         to_date(posting_period, 'MON YYYY') AS posting_period_date,
         sum(CASE WHEN account_number LIKE '4%' THEN net_amount END) AS revenue,
         sum(CASE WHEN account_number LIKE '5000' THEN net_amount END) AS cogs,
+        sum(CASE WHEN account_number LIKE '5100%' THEN net_amount END) AS inv_adj,
+        sum(CASE WHEN account_number LIKE '5110' THEN net_amount END) AS royalties,
+        sum(CASE WHEN account_number LIKE '5200' THEN net_amount END) AS lcv,
+        sum(CASE WHEN account_number in ('5005','6005') THEN net_amount END) AS bank_fees,
+        sum(CASE WHEN account_number in ('5015','6015') THEN net_amount END) AS threepl,
+        sum(CASE WHEN account_number in ('5016','6016') THEN net_amount END) AS amazon_ful,
+        sum(CASE WHEN account_number = '5020' then net_amount
+                 WHEN account_number = '6020' and right(posting_period,4) <= 2024 THEN net_amount
+                  ELSE 0 END) AS shipping,
  --       sum(CASE WHEN account_number LIKE '5%' THEN net_amount END) AS all_cos_accounts,
         sum(CASE WHEN account_number like '5%' then net_amount
                  WHEN account_number in (6005,6015,6016,6020) and right(posting_period,4) <= 2024 THEN net_amount
@@ -33,6 +42,15 @@ budget AS (
         to_date(posting_period, 'MON YYYY') AS posting_period_date,
         sum(CASE WHEN account_number LIKE '4%' THEN budget_amount END) AS revenue,
         sum(CASE WHEN account_number LIKE '5000' THEN budget_amount END) AS cogs,
+        sum(CASE WHEN account_number LIKE '5100%' THEN budget_amount END) AS inv_adj,
+        sum(CASE WHEN account_number LIKE '5110' THEN budget_amount END) AS royalties,
+        sum(CASE WHEN account_number LIKE '5200' THEN budget_amount END) AS lcv,
+        sum(CASE WHEN account_number in ('5005','6005') THEN budget_amount END) AS bank_fees,
+        sum(CASE WHEN account_number in ('5015','6015') THEN budget_amount END) AS threepl,
+        sum(CASE WHEN account_number in ('5016','6016') THEN budget_amount END) AS amazon_ful,
+        sum(CASE WHEN account_number = '5020' then budget_amount
+                 WHEN account_number = '6020' and right(posting_period,4) <= 2024 THEN budget_amount
+                  ELSE 0 END) AS shipping,
 --        sum(CASE WHEN account_number LIKE '5%' THEN budget_amount END) AS all_cos_accounts,
         sum(CASE WHEN account_number like '5%' then budget_amount
                  WHEN account_number in (6005,6015,6016,6020) and right(posting_period,4) <= 2024 THEN budget_amount
@@ -58,6 +76,13 @@ SELECT
     *,
     SUM(revenue) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS revenue_ytd,
     SUM(cogs) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cogs_ytd,
+    SUM(inv_adj) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS inv_adj_ytd,
+    SUM(royalties) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS royalties_ytd,
+    SUM(lcv) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS lcv_ytd,
+    SUM(bank_fees) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS bank_fees_ytd,
+    SUM(threepl) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS threepl_ytd,
+    SUM(amazon_ful) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS amazon_ful_ytd,
+    SUM(shipping) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS shipping_ytd,
     SUM(cos) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cos_ytd,
     SUM(opex) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS opex_ytd,
     SUM(net_income) OVER (PARTITION BY EXTRACT(YEAR FROM posting_period_date), budget_version ORDER BY posting_period_date ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS net_income_ytd,
