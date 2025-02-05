@@ -2,9 +2,8 @@
   This report feeds the 2025 Performance Media google sheet
 
  */
-SELECT
-  *
-from
+SELECT *
+FROM
   goodr_reporting.performance_media
-where
+WHERE
   year = 2025
