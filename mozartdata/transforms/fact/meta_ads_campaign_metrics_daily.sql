@@ -38,7 +38,6 @@ from
                 and cc.date = fad.day
 where 
     cc.date is not null
-    and cc.date >= '2024-01-01'
 order by
     cc.date        asc -- Sort the results by date in descending order.
   , cc.campaign_id asc -- Sort the results by campaign ID in ascending order.
