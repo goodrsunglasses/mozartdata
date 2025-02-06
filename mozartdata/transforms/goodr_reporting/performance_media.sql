@@ -210,4 +210,4 @@ SELECT
 FROM
     pre_to_date p
 WHERE
-    p.social_channel is not null
+    p.date between '2021-05-20' and current_date
