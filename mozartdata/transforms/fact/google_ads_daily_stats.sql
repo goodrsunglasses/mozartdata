@@ -7,13 +7,13 @@ select
             then 'Performance'
         when campaign_name like '%TOF%' or campaign_name like '%MOF%'
             then 'Awareness'
-        else campaign_name
+        else 'Other'
     end                        as funnel_stage
-  , round(sum(revenue), 2)     as revenue
-  , round(sum(spend), 2)       as spend
+  , sum(revenue)     as revenue
+  , sum(spend)       as spend
   , sum(impressions)           as impressions
   , sum(clicks)                as clicks
-  , round(sum(conversions), 2) as conversions
+  , sum(conversions) as conversions
 from
     fact.google_ads_campaigns_daily_stats
 group by

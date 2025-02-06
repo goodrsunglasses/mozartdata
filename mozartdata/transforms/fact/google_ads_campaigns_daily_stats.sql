@@ -14,10 +14,10 @@ select
   , camp_info.campaign_name
   , camp_info.account_id_g_ads
   , camp_info.account_name
-  , round(sum(camp_s.conversions_value), 2)                                                       as revenue
-  , round(sum(camp_s.cost_micros) / 1000000, 2)                                                   as spend
+  , sum(camp_s.conversions_value)                                                      as revenue
+  , sum(camp_s.cost_micros) / 1000000                                                 as spend
   , sum(camp_s.clicks)                                                                            as clicks
-  , round(sum(camp_s.conversions), 2)                                                             as conversions
+  , sum(camp_s.conversions)                                                             as conversions
   , sum(camp_s.impressions)                                                                       as impressions
 from
     google_ads_us.campaign_stats      as camp_s
@@ -25,8 +25,6 @@ from
         dim.google_ads_campaign_names as camp_info
             on
             camp_s.id = camp_info.campaign_id_g_ads
-where
-    camp_s.date >= '2023-12-31'
 group by
     camp_info.account_id_g_ads
   , camp_info.account_name
