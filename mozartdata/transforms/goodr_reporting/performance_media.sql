@@ -160,8 +160,6 @@ with
         left join
             combined c
                 on c.event_date = d.date
-    where
-          d.date <= current_date()
     group by
         d.date
       , d.week_of_year
