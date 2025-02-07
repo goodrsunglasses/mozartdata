@@ -76,7 +76,7 @@ SELECT
   order_status_url,
   test,
   payment_gateway_names,
-  note_attributes,
+--  note_attributes,
   landing_site_base_url,
   company_id,
   company_location_id
