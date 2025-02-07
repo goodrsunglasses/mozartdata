@@ -75,7 +75,7 @@ SELECT
   _fivetran_deleted,
   order_status_url,
   test,
-  payment_gateway_names,
+--  payment_gateway_names,
 --  note_attributes,
   landing_site_base_url,
   company_id,
