@@ -17,7 +17,7 @@ FROM
 WHERE
   posting_flag = 'true'
   AND to_date(posting_period, 'MON YYYY') >= '2022-01-01'
-  and account_number in (7010, 7015, 7020, 7030, 7040)   ---- payroll accounts, not including workers comp (7050)
+  and account_number in (7010, 7015, 7020, 7030, 7040, 7050)   ---- payroll accounts
 GROUP BY all
   )
 , budget as (
@@ -37,7 +37,7 @@ FROM
   left join dim.herd_map  using (department_id_ns)
 WHERE
   to_date(posting_period, 'MON YYYY') >= '2022-01-01'
-  and account_number in (7010, 7015, 7020, 7030, 7040)   ---- payroll accounts, not including workers comp (7050)
+  and account_number in (7010, 7015, 7020, 7030, 7040, 7050)   ---- payroll accounts
 GROUP BY all
 )
 select 
