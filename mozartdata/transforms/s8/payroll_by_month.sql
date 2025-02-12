@@ -17,7 +17,7 @@ GROUP BY all
   SELECT
   posting_period,
   to_date(posting_period, 'MON YYYY') AS posting_period_date,
-  concat(right(posting_period, 4), ' - Actual') AS budget_version,
+  budget_version,
   sum( budget_amount ) AS payroll,
 FROM
   fact.gl_budget gb
