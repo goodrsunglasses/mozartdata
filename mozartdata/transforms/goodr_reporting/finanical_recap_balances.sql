@@ -33,7 +33,6 @@ SELECT
   sum(  CASE     WHEN account_number LIKE '35%'  THEN ending_balance END  ) AS equity
 FROM
   fact.gl_balances b
-where posting_period = 'Jan 2025'               ---- delete later 
 GROUP BY
   1,
   2
