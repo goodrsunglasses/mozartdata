@@ -10,7 +10,7 @@ FROM
 WHERE
   posting_flag = 'true'
   AND to_date(posting_period, 'MON YYYY') >= '2022-01-01'
-  and account_number in (7010, 7015, 7020, 7030, 7040, 7050)   ---- payroll accounts
+  and account_number in (7010, 7015, 7020, 7030, 7035, 7040, 7050)   ---- payroll accounts
 GROUP BY all
   )
 , budget as (
@@ -23,7 +23,7 @@ FROM
   fact.gl_budget gb
 WHERE
   to_date(posting_period, 'MON YYYY') >= '2022-01-01'
-  and account_number in (7010, 7015, 7020, 7030, 7040, 7050)   ---- payroll accounts
+  and account_number in (7010, 7015, 7020, 7030, 7035, 7040, 7050)   ---- payroll accounts
 GROUP BY all
 )
 select 
