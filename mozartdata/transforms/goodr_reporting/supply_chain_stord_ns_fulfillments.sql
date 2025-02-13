@@ -16,3 +16,6 @@ WHERE
   quantity_stord IS NOT NULL
   AND quantity_ns IS NULL
   AND channel IS NOT NULL
+ORDER BY
+  ship_date,
+  order_number desc
