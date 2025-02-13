@@ -22,10 +22,17 @@ SELECT
                   account_number = '2601' 
                    THEN ending_balance END  ) AS other_current_liabilities,
   sum(  CASE     WHEN account_number LIKE '2602' THEN ending_balance  END  ) AS lt_liabilities,
+  sum(  CASE     WHEN (account_number LIKE '20%' and account_number != '2000') or 
+                  account_number LIKE '21%' or
+                  account_number LIKE '23%' or
+                  account_number LIKE '24%' or
+                  account_number = '2601' 
+                   THEN ending_balance END  ) AS other_current_liabilities_wo_stp,
+  sum(  CASE     WHEN account_number LIKE '22%' THEN ending_balance  END  ) AS sales_tax_payable,
   current_assets - other_current_liabilities as net_working_capital,
   current_assets / other_current_liabilities as current_ratio,
   (cash + receivables) / other_current_liabilities as quick_ratio,
-  cash / other_current_liabilities as cash_ration,
+  cash / other_current_liabilities as cash_ratio,
   quarter(posting_period_date) as quarter,
   sum(  CASE     WHEN account_number LIKE '15%' or  
                   account_number LIKE '16%'THEN ending_balance  END  ) AS PPE,
@@ -33,6 +40,7 @@ SELECT
   sum(  CASE     WHEN account_number LIKE '35%'  THEN ending_balance END  ) AS equity
 FROM
   fact.gl_balances b
+where posting_period = 'Jan 2025'
 GROUP BY
   1,
   2
