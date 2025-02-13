@@ -47,7 +47,7 @@ with  lag as
 FROM
   fact.gl_balances b
 --  left join date_lag using (period_start_date, account_number, current_period_amount)
-where posting_period = 'Jan 2025'                  -- for qc
+--where posting_period = 'Jan 2025'                  -- for qc
 GROUP BY
   1,
   2
