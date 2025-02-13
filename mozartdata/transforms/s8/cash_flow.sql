@@ -43,13 +43,7 @@ with  lag as
   sum(  CASE     WHEN account_number LIKE '15%' or  
                   account_number LIKE '16%'THEN current_period_amount  END  ) AS PPE,
   sum(  CASE     WHEN account_number LIKE '10%' THEN current_period_amount  END  ) AS cash_casheq,
-  sum(  CASE     WHEN account_number LIKE '35%'  THEN current_period_amount END  ) AS equity,
-  sum(  CASE     WHEN account_number like '4%' or 
-                      account_number like '5%' or 
-                      account_number like '6%' or 
-                      account_number like '7%' or 
-                      account_number like '8%'   THEN current_period_amount END  ) AS net_income,
-  sum(  CASE     WHEN account_number between 4000 and 8999 THEN current_period_amount END  ) AS net_income_2
+  sum(  CASE     WHEN account_number LIKE '35%'  THEN current_period_amount END  ) AS equity
 FROM
   fact.gl_balances b
 --  left join date_lag using (period_start_date, account_number, current_period_amount)
