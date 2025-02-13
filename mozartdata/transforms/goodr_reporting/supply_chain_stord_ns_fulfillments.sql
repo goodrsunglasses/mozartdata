@@ -6,7 +6,7 @@ SELECT
   REGEXP_REPLACE(item.sku, '-v\\d+$', '') AS fixed_sku,
   prod.display_name,
   item.quantity_stord quantity_shipped_stord,
-  item.quantity_ns quantity_shipped_ns
+  quantity_fulfilled_ns 
 FROM
   fact.fulfillment_item item
   LEFT OUTER JOIN fact.fulfillment ful ON ful.fulfillment_id_edw = item.fulfillment_id_edw
@@ -14,7 +14,7 @@ FROM
   LEFT OUTER JOIN dim.product prod ON prod.sku = REGEXP_REPLACE(item.sku, '-v\\d+$', '')
 WHERE
   quantity_stord IS NOT NULL
-  AND quantity_ns IS NULL
+  and quantity_fulfilled_ns is null
   AND channel IS NOT NULL
 ORDER BY
   ship_date,
