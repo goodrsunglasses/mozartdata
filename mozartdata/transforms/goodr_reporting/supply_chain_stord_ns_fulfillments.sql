@@ -15,5 +15,4 @@ FROM
 WHERE
   quantity_stord IS NOT NULL
   AND quantity_ns IS NULL
-  AND ship_date BETWEEN '2025-01-01T00:00:00' AND '2025-01-31T23:59:59'
   AND channel IS NOT NULL
