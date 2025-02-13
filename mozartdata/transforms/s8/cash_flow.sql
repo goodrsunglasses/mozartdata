@@ -39,10 +39,6 @@ with  lag as
                   account_number = '2601' 
                    THEN current_period_amount END  ) AS other_current_liabilities_wo_stp,
   sum(  CASE     WHEN account_number LIKE '22%' THEN current_period_amount  END  ) AS sales_tax_payable,
-  current_assets - other_current_liabilities as net_working_capital,
-  current_assets / other_current_liabilities as current_ratio,
-  (cash + receivables) / other_current_liabilities as quick_ratio,
-  cash / other_current_liabilities as cash_ratio,
   quarter(posting_period_date) as quarter,
   sum(  CASE     WHEN account_number LIKE '15%' or  
                   account_number LIKE '16%'THEN current_period_amount  END  ) AS PPE,
