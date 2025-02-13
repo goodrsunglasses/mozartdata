@@ -3,8 +3,7 @@ SELECT
   ord.channel,
   ord.location,
   ful.ship_date,
-  item.sku,
-REGEXP_REPLACE(item.sku, '-v\\d+$', '') AS fixed_sku,
+  REGEXP_REPLACE(item.sku, '-v\\d+$', '') AS fixed_sku,
   prod.display_name,
   item.quantity_stord quantity_shipped_stord,
   item.quantity_ns quantity_shipped_ns
