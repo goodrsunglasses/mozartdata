@@ -40,7 +40,7 @@ SELECT
   sum(  CASE     WHEN account_number LIKE '35%'  THEN ending_balance END  ) AS equity
 FROM
   fact.gl_balances b
-where posting_period = 'Jan 2025'
+--where posting_period = 'Jan 2025'                  -- for qc
 GROUP BY
   1,
   2
