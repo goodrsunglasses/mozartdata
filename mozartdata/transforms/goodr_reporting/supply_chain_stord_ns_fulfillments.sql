@@ -14,8 +14,7 @@ FROM
   LEFT OUTER JOIN dim.product prod ON prod.sku = REGEXP_REPLACE(item.sku, '-v\\d+$', '')
 WHERE
   quantity_stord IS NOT NULL
-  and quantity_fulfilled_ns is null
+  and fulfillment_date_ns is null
   AND channel IS NOT NULL
 ORDER BY
-  ship_date,
-  order_number desc
+  ship_date desc
