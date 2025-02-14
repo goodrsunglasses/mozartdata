@@ -56,11 +56,7 @@ with
                         then 'USA'
                     else 'Other'
                 end          as account_country
-              , case
-                    when ga.funnel_stage not in ('Awareness', 'Performance')
-                        then 'Other'
-                    else ga.funnel_stage
-                end          as marketing_strategy
+              , ga.marketing_strategy
               , ga.spend
               , ga.revenue
               , ga.impressions
