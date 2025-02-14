@@ -13,7 +13,7 @@ SELECT
   item.order_id_edw order_number,
   ord.channel,
   ord.location,
-  ful.ship_date,
+  ful.ship_date as ship_date_stord,
   REGEXP_REPLACE(item.sku, '-v\\d+$', '') AS fixed_sku,
   prod.display_name,
   item.quantity_stord quantity_shipped_stord,
@@ -29,5 +29,6 @@ WHERE
   quantity_stord IS NOT NULL
   AND fulfillment_date_ns IS NULL
   AND channel IS NOT NULL
+  and date(ship_date) != CURRENT_DATE()
 ORDER BY
   ship_date desc
