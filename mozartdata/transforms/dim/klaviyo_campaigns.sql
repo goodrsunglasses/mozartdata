@@ -54,7 +54,6 @@ SELECT
   , date(b.send_timestamp) as send_date
   , case when b.send_strategy_is_local_flag then b.send_timestamp else CONVERT_TIMEZONE('UTC','America/Los_Angeles', b.send_timestamp) end as send_timestamp_pst
   , case when b.send_strategy_is_local_flag then date(b.send_timestamp) else date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', b.send_timestamp)) end as send_date_pst
-  , CONVERT_TIMEZONE('UTC','America/Los_Angeles', b.send_timestamp)  as send_timestamp_pst_new
   , b.audiences
   , b.ignore_unsubscribes_flag
   , b.use_smart_sending_flag
