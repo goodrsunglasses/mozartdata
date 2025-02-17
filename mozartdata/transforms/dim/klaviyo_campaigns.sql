@@ -17,23 +17,25 @@ with base as
 (
  SELECT
     c.id as campaign_id_klaviyo
-  , to_timestamp(c.attributes:CREATED_AT) as created_timestamp
-  , to_timestamp(c.attributes:SCHEDULED_AT) as scheduled_timestamp
-  , to_timestamp(c.attributes:SEND_TIME) as send_timestamp
+  , to_timestamp(c.attributes:CREATED_AT::int) as created_timestamp
+  , to_timestamp(c.attributes:SCHEDULED_AT::int) as scheduled_timestamp
+  , to_timestamp(c.attributes:SEND_TIME::int) as send_timestamp
+  , c.attributes:SEND_TIME as ts
   , c.attributes:NAME::string as name
   , c.attributes:STATUS::string as status
   , c.attributes:SEND_OPTIONS:IGNORE_UNSUBSCRIBES::boolean as ignore_unsubscribes_flag
   , c.attributes:AUDIENCES as audiences
   , c.attributes:SEND_OPTIONS:USE_SMART_SENDING::boolean as use_smart_sending_flag
   , c.attributes:SEND_STRATEGY:METHOD::varchar as send_strategy_method
-  , to_timestamp(c.attributes:SEND_STRATEGY:OPTIONS_STATIC:DATETIME) as send_strategy_timestamp
+  , to_timestamp(c.attributes:SEND_STRATEGY:OPTIONS_STATIC:DATETIME::int) as send_strategy_timestamp
   , c.attributes:SEND_STRATEGY:OPTIONS_STATIC:IS_LOCAL::boolean as send_strategy_is_local_flag
   , c.attributes:SEND_STRATEGY:OPTIONS_STATIC:SEND_PAST_RECIPIENTS_IMMEDIATELY::boolean as sent_strategy_past_recipients_immediately_flag
   , c.attributes:TRACKING_OPTIONS:IS_ADD_UTM::boolean as tracking_options_is_add_utm_flag
   , c.attributes:TRACKING_OPTIONS:CUSTOM_TRACKING_PARAMS as tracking_options_custom_tracking_parameters
   , c.attributes:TRACKING_OPTIONS:IS_TRACKING_CLICKS::boolean as tracking_options_is_tracking_clicks_flag
   , c.attributes:TRACKING_OPTIONS:IS_TRACKING_OPENS::boolean as tracking_options_is_tracking_opens_flag
-  , to_timestamp(c.attributes:UPDATED_AT) as updated_timestamp
+  , to_timestamp(c.attributes:UPDATED_AT::int) as updated_timestamp
+  , c.attributes
  FROM
      klaviyo_portable_v3_parallel.KLAVIYO_V3_CAMPAIGNS_8589938396 c
  )
@@ -52,6 +54,7 @@ SELECT
   , date(b.send_timestamp) as send_date
   , case when b.send_strategy_is_local_flag then b.send_timestamp else CONVERT_TIMEZONE('UTC','America/Los_Angeles', b.send_timestamp) end as send_timestamp_pst
   , case when b.send_strategy_is_local_flag then date(b.send_timestamp) else date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', b.send_timestamp)) end as send_date_pst
+  , CONVERT_TIMEZONE('UTC','America/Los_Angeles', b.send_timestamp)  as send_timestamp_pst_new
   , b.audiences
   , b.ignore_unsubscribes_flag
   , b.use_smart_sending_flag
@@ -70,6 +73,7 @@ SELECT
   , date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', b.updated_timestamp)) as updated_date_pst
 FROM
   base b
+where b.campaign_id_klaviyo = 'RVjkSY'
 /*
 Note: The second half of the union was joining to the original fivetran data pulled from
 July 2023 - Jan 2024. However,  this data was incomplete and inconsistent with Portable's data

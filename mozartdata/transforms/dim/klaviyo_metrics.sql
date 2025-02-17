@@ -15,8 +15,8 @@ WITH
   base as
     (
       SELECT
-        to_timestamp(m.attributes:CREATED) as created_timestamp
-      , to_timestamp(m.attributes:UPDATED) as updated_timestamp
+        to_timestamp(m.attributes:CREATED::int) as created_timestamp
+      , to_timestamp(m.attributes:UPDATED::int) as updated_timestamp
       , m.*
       FROM
         klaviyo_portable_v3_parallel.klaviyo_v3_metrics_8589938396 m
