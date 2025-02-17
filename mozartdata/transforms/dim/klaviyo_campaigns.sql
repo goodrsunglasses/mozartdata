@@ -73,7 +73,6 @@ SELECT
   , date(CONVERT_TIMEZONE('UTC','America/Los_Angeles', b.updated_timestamp)) as updated_date_pst
 FROM
   base b
-where b.campaign_id_klaviyo = 'RVjkSY'
 /*
 Note: The second half of the union was joining to the original fivetran data pulled from
 July 2023 - Jan 2024. However,  this data was incomplete and inconsistent with Portable's data
