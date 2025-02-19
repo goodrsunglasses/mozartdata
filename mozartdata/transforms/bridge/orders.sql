@@ -363,7 +363,5 @@ FROM dim.orders orders
 		 LEFT OUTER JOIN fulfillment_info
 						 ON fulfillment_info.order_id_edw = orders.order_id_edw
 -- LEFT OUTER JOIN fact.customers cust ON cust.first_order_id_edw_ns = orders.order_id_edw
-WHERE aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z' and orders.order_id_edw = 'G2089287'
+WHERE aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY aggregate_netsuite.booked_date DESC
-
-
