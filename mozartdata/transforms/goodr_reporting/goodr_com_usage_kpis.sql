@@ -17,320 +17,108 @@
     More to come
 
  */
-with
-    shopify_data_this_ytd as (
-                                 select
-                                     d.date::date                               as date
-                                   , shopify.sessions
-                                   , shopify."ONLINE STORE VISITORS"            as users
-                                   , shopify."NEW CUSTOMERS"                    as new_customers
-                                   , shopify.customers                          as total_customers
-                                   , shopify."SESSIONS THAT COMPLETED CHECKOUT" as sess_completed_checkout
-                                   , shopify."CONVERSION RATE"                  as daily_conversion_rate
-                                 from
-                                     dim.date                                       as d
-                                     left join
-                                         shopify_exports.kpi_data_20240101_20250205 as shopify
-                                             on
-                                             d.date = shopify.day::date
-                                 where
-                                       d.date >= date_trunc('year', current_date)
-                                   and d.date <= current_date
-                             )
-  , shopify_data_last_ytd as (
-                                 select
-                                     shopify.day::date                          as date
-                                   , shopify.sessions
-                                   , shopify."ONLINE STORE VISITORS"            as users
-                                   , shopify."NEW CUSTOMERS"                    as new_customers
-                                   , shopify.customers                          as total_customers
-                                   , shopify."SESSIONS THAT COMPLETED CHECKOUT" as sess_completed_checkout
-                                   , shopify."CONVERSION RATE"                  as daily_conversion_rate
-                                 from
-                                     shopify_exports.kpi_data_20240101_20250205 as shopify
-                                 where
-                                     shopify.day >= date_trunc('year', dateadd(year, -1, current_date))
-                                        and shopify.day <= dateadd(year, -1, current_date)
-                             )
-, shopify_customers_last_month as (
-    select
-                                     shopify.day::date                               as date
-                                   , shopify.customers                          as total_customers
-                                 from
-                                     shopify_exports.kpi_data_20240101_20250205 as shopify
-                                 where
-                                       shopify.day >= date_trunc('month', dateadd(month, -1, current_date))
-                                        and shopify.day <= dateadd(day, -1, date_trunc('month', current_date))
-                             )
-  , media_totals_this_ytd as (
-                                 select
-                                     date::date     as date
-                                   , sum(spend)       as total_spend
-                                   , sum(revenue)     as total_revenue
-                                   , sum(impressions) as total_impressions
-                                   , sum(clicks)      as total_clicks
-                                 from
-                                     goodr_reporting.performance_media as pm
-                                 where
-                                       lower(pm.account_country) = 'usa'
-                                   and date >= date_trunc('year', current_date)
-                                   and date <= current_date
-                                 group by
-                                     date
-                             )
-  , media_totals_last_ytd as (
-                                 select
-                                     date::date     as date
-                                   , sum(spend)       as total_spend
-                                   , sum(revenue)     as total_revenue
-                                   , sum(impressions) as total_impressions
-                                   , sum(clicks)      as total_clicks
-                                 from
-                                     goodr_reporting.performance_media as pm
-                                 where
-                                       lower(pm.account_country) = 'usa'
-                                   and date >= date_trunc('year', dateadd(year, -1, current_date))
-                                   and date <= dateadd(year, -1, current_date)
-                                 group by
-                                     date
-                             )
-  , revenue_totals_this_ytd as (
-                                 select
-                                     gl_tran.transaction_date::date     as date
-                                   , round(sum(gl_tran.net_amount), 2) as daily_total_revenue
-                                 from
-                                     dev_reporting.gl_transaction as gl_tran
-                                 where
-                                       gl_tran.posting_flag = true
-                                   and lower(gl_tran.channel) = 'goodr.com'
-                                   and gl_tran.account_number in (
-                                                                  4000, 4110, 4210
-                                     )
-                                   and gl_tran.transaction_date >= date_trunc('year', current_date)
-                                   and gl_tran.transaction_date <= current_date
-                                 group by
-                                     gl_tran.transaction_date
-                             )
-  , revenue_totals_last_ytd as (
-                                 select
-                                     gl_tran.transaction_date::date     as date
-                                   , round(sum(gl_tran.net_amount), 2) as daily_total_revenue
-                                 from
-                                     dev_reporting.gl_transaction as gl_tran
-                                 where
-                                       gl_tran.posting_flag = true
-                                   and lower(gl_tran.channel) = 'goodr.com'
-                                   and gl_tran.account_number in (
-                                                                  4000, 4110, 4210
-                                     )
-                                   and gl_tran.transaction_date >= date_trunc('year', dateadd(year, -1, current_date))
-                                   and gl_tran.transaction_date <= dateadd(year, -1, current_date)
-                                 group by
-                                     gl_tran.transaction_date
-                             )
-  , loyalty_account_totals_ytd as (
-                                 select
-                                     try_to_timestamp(
-                                         trim(
-                                             replace(
-                                                 platform_account_created_at
-                                                 , ' UTC'
-                                                 , ''
-                                             )
-                                         )
-                                         , 'YYYY-MM-DD HH24:MI:SS'
-                                     )::date  as date
-                                   , count(*) as daily_total_created_accounts
-                                 from
-                                     yotpo_exports.customer_report_010125_021225
-                                 where
-                                       lower(platform_account_created_at) != 'unknown'
-                                   and date >= date_trunc('year', current_date)
-                                   and date <= current_date
-                                 group by
-                                     date
-                             )
-  , loyalty_account_totals_last_month as (
-                                 select
-                                     try_to_timestamp(
-                                         trim(
-                                             replace(
-                                                 platform_account_created_at
-                                                 , ' UTC'
-                                                 , ''
-                                             )
-                                         )
-                                         , 'YYYY-MM-DD HH24:MI:SS'
-                                     )::date  as date
-                                   , count(*) as daily_total_created_accounts
-                                 from
-                                     yotpo_exports.customer_report_120124_123124
-                                 where
-                                       lower(platform_account_created_at) != 'unknown'
-                                   and date >= '2024-12-01'
-                                   and date <= '2024-12-31'
-                                 group by
-                                     date
-                             )
-  , loyalty_redeeming_customers_totals_ytd as (
-                                 select
-                                     day::date     as date
-                                   , "REDEEMING CUSTOMERS" as redeeming_customers
-                                 from
-                                     yotpo_exports.daily_redeeming_customers_010124_021125
-                                 where
-                                       day >= date_trunc('year', current_date)
-                                   and day <= current_date
-                             )
-  , loyalty_redeeming_customers_totals_last_month as (
-                                 select
-                                     day::date     as date
-                                   , "REDEEMING CUSTOMERS" as redeeming_customers
-                                 from
-                                     yotpo_exports.daily_redeeming_customers_010124_021125
-                                 where
-                                       day >= '2024-12-01'
-                                   and day <= '2024-12-31'
-                             )
-  -- , daily_stats as (
-                                 select
-                                     sd_ytd.date
-                                   -- , loyalty_redeeming_ytd.date                                             as redeem_date
-                                   , sd_ytd.sessions                                                        as shopify_sessions
-                                   , sd_last_ytd.sessions                                                   as shopify_sessions_last_year
-                                   , (sd_ytd.sessions - sd_last_ytd.sessions)                               as shopify_sessions_diff
-                                   , sd_ytd.users                                                           as shopify_users
-                                   , sd_last_ytd.users                                                      as shopify_users_last_year
-                                   , (sd_ytd.users - sd_last_ytd.users)                                     as shopify_users_diff
-                                   , sd_ytd.total_customers                                                 as shopify_total_customers
-                                   , sd_last_ytd.total_customers                                            as shopify_total_customers_last_year
-                                   , (sd_ytd.total_customers - sd_last_ytd.total_customers)                 as shopify_total_customers_diff
-                                   , sd_ytd.new_customers                                                   as shopify_new_customers
-                                   , sd_last_ytd.new_customers                                              as shopify_new_customers_last_year
-                                   , (sd_ytd.new_customers - sd_last_ytd.new_customers)                     as shopify_new_customers_diff
-                                   , sd_ytd.sess_completed_checkout                                         as shopify_sess_completed_checkout
-                                   , sd_last_ytd.sess_completed_checkout                                    as shopify_sess_completed_checkout_last_year
-                                   , (sd_ytd.sess_completed_checkout - sd_last_ytd.sess_completed_checkout) as shopify_sess_completed_checkout_diff
-                                   , sd_ytd.daily_conversion_rate                                           as shopify_daily_conversion_rate
-                                   , sd_last_ytd.daily_conversion_rate                                      as shopify_daily_conversion_rate_last_year
-                                   , (sd_ytd.daily_conversion_rate - sd_last_ytd.daily_conversion_rate)     as shopify_daily_conversion_rate_diff
-                                   , round(media_ytd.total_spend, 2)                                        as media_partners_daily_media_spend
-                                   , round(media_last_ytd.total_spend, 2)                                   as media_partners_daily_media_spend_last_year
-                                   , round((media_ytd.total_spend - media_last_ytd.total_spend), 2)         as media_partners_daily_media_spend_diff
-                                   , round(media_ytd.total_revenue, 2)                                      as media_partners_daily_media_revenue
-                                   , round(media_last_ytd.total_revenue, 2)                                 as media_partners_daily_media_revenue_last_year
-                                   , round((media_ytd.total_revenue - media_last_ytd.total_revenue), 2)     as media_partners_daily_media_revenue_diff
-                                   , media_ytd.total_impressions                                            as media_partners_daily_media_impressions
-                                   , media_last_ytd.total_impressions                                       as media_partners_daily_media_impressions_last_year
-                                   , round((media_ytd.total_impressions - media_last_ytd.total_impressions),
-                                           2)                                                               as daily_media_impressions_diff
-                                   , media_ytd.total_clicks                                                 as daily_media_clicks
-                                   , media_last_ytd.total_clicks                                            as daily_media_clicks_last_year
-                                   , round((media_ytd.total_clicks - media_last_ytd.total_clicks), 2)       as daily_media_clicks_diff
-                                   , revenue_ytd.daily_total_revenue                                        as daily_total_revenue
-                                   , revenue_last_ytd.daily_total_revenue                                   as daily_total_revenue_last_year
-                                   , round((revenue_ytd.daily_total_revenue - revenue_last_ytd.daily_total_revenue),
-                                           2)                                                               as daily_total_revenue_diff
-                                   , loyalty_accounts_ytd.daily_total_created_accounts                      as daily_yotpo_account_total
-                                   , loyalty_accounts_last_month.daily_total_created_accounts               as daily_yotpo_account_total_last_month
-                                   , loyalty_redeeming_ytd.redeeming_customers                              as daily_yotpo_redeeming_customers_total
-                                   , loyalty_redeeming_last_month.redeeming_customers                       as daily_yotpo_redeeming_customers_total_last_month
-                                   , round((media_partners_daily_media_impressions / shopify_users), 2)     as customer_acquisition_cost
-                                   , round(((media_ytd.total_spend * 1000) / media_ytd.total_impressions),
-                                           2)                                                               as eff_cost_per_mile
-                                   , round((revenue_last_ytd.daily_total_revenue / sd_ytd.users), 2)        as average_revenue_per_user
-                                   , round(
-                                         (loyalty_accounts_ytd.daily_total_created_accounts / sd_ytd.total_customers)
-                                         , 2
-                                     )                                                                      as daily_loyalty_account_creation_rate
-                                 from
-                                     shopify_data_this_ytd                      as sd_ytd
-                                     left join
-                                         shopify_data_last_ytd                  as sd_last_ytd
-                                             on
-                                             day(sd_ytd.date) = day(sd_last_ytd.date)
-                                                 and month(sd_ytd.date) = month(sd_last_ytd.date)
-                                     left join
-                                         media_totals_this_ytd                  as media_ytd
-                                             on
-                                             day(sd_ytd.date) = day(media_ytd.date)
-                                                 and month(sd_ytd.date) = month(media_ytd.date)
-                                     left join
-                                         media_totals_last_ytd                  as media_last_ytd
-                                             on
-                                             day(sd_ytd.date) = day(media_last_ytd.date)
-                                                 and month(sd_ytd.date) = month(media_last_ytd.date)
-                                     left join
-                                         revenue_totals_this_ytd                as revenue_ytd
-                                             on
-                                             day(sd_ytd.date) = day(revenue_ytd.date)
-                                                 and month(sd_ytd.date) = month(revenue_ytd.date)
-                                     left join
-                                         revenue_totals_last_ytd                as revenue_last_ytd
-                                             on
-                                             day(sd_ytd.date) = day(revenue_last_ytd.date)
-                                                 and month(sd_ytd.date) = month(revenue_last_ytd.date)
-                                     left join
-                                         loyalty_account_totals_ytd             as loyalty_accounts_ytd
-                                             on
-                                             day(sd_ytd.date) = day(loyalty_accounts_ytd.date)
-                                                 and month(sd_ytd.date) = month(loyalty_accounts_ytd.date)
-                                     left join
-                                         loyalty_account_totals_last_month      as loyalty_accounts_last_month
-                                             on
-                                             day(sd_ytd.date) = day(loyalty_accounts_last_month.date)
-                                                 and month(dateadd('month', -1, sd_ytd.date)) = month(loyalty_accounts_last_month.date)
-                                     left join
-                                         loyalty_redeeming_customers_totals_ytd as loyalty_redeeming_ytd
-                                             on
-                                             day(sd_ytd.date) = day(loyalty_redeeming_ytd.date)
-                                                 and month(sd_ytd.date) = month(loyalty_redeeming_ytd.date)
-                                 left join
-                                        loyalty_redeeming_customers_totals_last_month as loyalty_redeeming_last_month
-                                             on
-                                             day(sd_ytd.date) = day(loyalty_redeeming_last_month.date)
-                                                 and month(dateadd('month', -1, sd_ytd.date)) = month(loyalty_redeeming_last_month.date)
-                             -- )
 
--- select
---     date_trunc('month', dateadd('year', -1, date)) as month
---     , sum(daily_stats.sessions_last) as sessions
---     , sum(daily_stats.sess_completed_checkout_last) as sessions_completed_checkout
---     , sum(daily_stats.users_last) as total_users
---     , sum(daily_stats.daily_total_revenue_last) as total_revenue
---     -- , sum(daily_stats.daily_loyalty_redeeming_customers_total) as total_redeeming_customers
---     , sum(daily_stats.total_customers_last) as total_customers
---     , sum(daily_stats.daily_media_spend_last) as total_media_spend
---     , sum(daily_stats.daily_media_impressions_last) as total_impressions
---     -- , sum(daily_loyalty_account_total) as total_accounts_created
---     , sum(daily_stats.new_customers_last) as new_customers
--- from
---     daily_stats
--- where
---     date between '2025-01-01' and '2025-01-31'
--- group by
---     month
--- select
---     sum(shopify_data_last_ytd.total_customers)
--- from shopify_data_last_ytd
--- where date between '2024-12-01' and '2024-12-31'
--- select
---     date_trunc('month', date)                               as month
---   , sum(daily_stats.shopify_sessions)                       as sessions
---   , sum(daily_stats.shopify_sess_completed_checkout)        as sessions_completed_checkout
---   , sum(daily_stats.shopify_users)                          as total_users
---   , sum(daily_stats.daily_total_revenue)                    as total_revenue
---   , sum(daily_stats.daily_yotpo_redeeming_customers_total)  as total_redeeming_customers
---   , sum(daily_stats.shopify_total_customers)                as total_customers
---   , sum(daily_stats.media_partners_daily_media_spend)       as total_media_spend
---   , sum(daily_stats.media_partners_daily_media_impressions) as total_impressions
---   , sum(daily_stats.daily_yotpo_account_total)              as total_accounts_created
---   , sum(daily_stats.daily_yotpo_account_total_last_month)   as total_accounts_created_last_month
---   , sum(daily_stats.shopify_new_customers)                  as new_customers
---     ,sum(daily_stats.daily_yotpo_redeeming_customers_total_last_month) as total_redeeming_customers_last_month
--- from
---     daily_stats
--- where
---     date between '2025-01-01' and '2025-01-31'
--- group by
---     month
+with
+    marketing_totals as (
+                            select
+                                date::date           as date
+                              , round(sum(spend), 2) as total_spend
+                              , sum(impressions)     as total_impressions
+                              , sum(clicks)          as total_clicks
+                            from
+                                goodr_reporting.performance_media as pm
+                            where
+                                  lower(pm.account_country) = 'usa'
+                              and date >= '2024-01-01'
+                              and date <= current_date
+                            group by
+                                date
+                        )
+  , revenue_totals as (
+                            select
+                                gl_tran.transaction_date::date    as date
+                              , round(sum(gl_tran.net_amount), 2) as total_revenue
+                            from
+                                fact.gl_transaction as gl_tran
+                            where
+                                  gl_tran.posting_flag = true
+                              and lower(gl_tran.channel) = 'goodr.com'
+                              and gl_tran.account_number in (
+                                                             4000, 4110, 4210
+                                )
+                              and gl_tran.transaction_date >= '2024-01-01'
+                              and gl_tran.transaction_date <= current_date
+                            group by
+                                gl_tran.transaction_date
+                        )
+  , new_customer_revenue_totals as (
+                            select
+                                cust.first_order_date_shopify::date as date
+                              , round(
+                                    sum(
+                                        amount_product + amount_discount + amount_refunded
+                                    ), 2
+                                )                                   as new_customer_product_sales
+                            from
+                                fact.customers                as cust
+                                inner join
+                                    fact.customer_shopify_map as shopify
+                                        on
+                                        cust.customer_id_edw = shopify.customer_id_edw
+                                left join
+                                    fact.order_item_detail    as oid
+                                        on
+                                        cust.first_order_id_edw_shopify = oid.order_id_edw
+                            where
+                                  lower(shopify.store) = 'goodr.com'
+                              and lower(oid.record_type) in (
+                                                             'cashsale', 'invoice', 'cashrefund'
+                                )
+                              and lower(oid.plain_name) not in (
+                                                                'tax', 'shipping'
+                                )
+                              and cust.first_order_date_shopify >= '2024-01-01'
+                            group by
+                                cust.first_order_date_shopify
+                            order by
+                                cust.first_order_date_shopify
+
+                        )
+select
+    d.date::date
+  , shopify.sessions
+  , shopify.users
+  , shopify.total_customers
+  , shopify.new_customers
+  , (shopify.total_customers - shopify.new_customers)                             as existing_customers
+  , shopify.sessions_completed_checkout
+  , round(shopify.conversion_rate, 8)                                             as conversion_rate
+  , marketing.total_spend
+  , marketing.total_impressions
+  , marketing.total_clicks
+  , gl_tran.total_revenue                                                         as total_product_sales
+  , new_customer_sales.new_customer_product_sales
+  , (gl_tran.total_product_sales - new_customer_sales.new_customer_product_sales) as existing_customer_product_sales
+from
+    dim.date                                    as d
+    left join
+        staging.shopify_kpi_exports_aggregation as shopify
+            on
+            d.date = shopify.date
+    left join
+        marketing_totals                        as marketing
+            on
+            d.date = marketing.date
+    left join
+        revenue_totals                          as gl_tran
+            on
+            d.date = gl_tran.date
+    left join
+        new_customer_revenue_totals             as new_customer_sales
+            on
+            d.date = new_customer_sales.date
+where
+      d.date >= '2024-01-01'
+  and d.date <= current_date
+order by
+    d.date asc

@@ -1,49 +1,49 @@
 select
-    EMAIL
-     , FIRST_NAME
-     , LAST_NAME
-     , POINTS_EARNED
-     , POINTS_BALANCE
-     , REFERRAL_LINK
-     , REFERRED_BY
-     , LAST_SEEN
-     , VIP_TIER
-     , BIRTH_MONTH
-     , BIRTH_DAY
-     , BIRTH_YEAR
-     , ANNIVERSARY_MONTH
-     , ANNIVERSARY_DAY
-     , ANNIVERSARY_YEAR
-     , PLATFORM_ACCOUNT_CREATED_AT
-     , CREATED_AT
-     , PHONE_NUMBER
-     , LOYALTY_ELIGIBLE
-     , OPT_IN_DATE
-     , REFERRAL_DISCOUNT_CODE
+    email
+  , first_name
+  , last_name
+  , points_earned
+  , points_balance
+  , referral_link
+  , referred_by
+  , last_seen
+  , vip_tier
+  , birth_month
+  , birth_day
+  , birth_year
+  , anniversary_month
+  , anniversary_day
+  , anniversary_year
+  , platform_account_created_at
+  , created_at
+  , phone_number
+  , loyalty_eligible
+  , opt_in_date
+  , referral_discount_code
 from
-    YOTPO_EXPORTS.CUSTOMER_REPORT_010125_021225
-UNION ALL
+    yotpo_exports.customer_report_010125_021225
+union all
 select
-    EMAIL
-     , FIRST_NAME
-     , LAST_NAME
-     , POINTS_EARNED
-     , POINTS_BALANCE
-     , REFERRAL_LINK
-     , REFERRED_BY
-     , LAST_SEEN
-     , VIP_TIER
-     , BIRTH_MONTH
-     , BIRTH_DAY
-     , BIRTH_YEAR
-     , ANNIVERSARY_MONTH
-     , ANNIVERSARY_DAY
-     , ANNIVERSARY_YEAR
-     , PLATFORM_ACCOUNT_CREATED_AT
-     , CREATED_AT
-     , PHONE_NUMBER
-     , LOYALTY_ELIGIBLE
-     , OPT_IN_DATE
-     , REFERRAL_DISCOUNT_CODE
+    email
+  , first_name
+  , last_name
+  , points_earned
+  , points_balance
+  , referral_link
+  , referred_by
+  , last_seen
+  , vip_tier
+  , birth_month
+  , birth_day
+  , birth_year
+  , anniversary_month
+  , anniversary_day
+  , anniversary_year
+  , platform_account_created_at
+  , created_at
+  , phone_number
+  , loyalty_eligible
+  , opt_in_date
+  , referral_discount_code
 from
-    YOTPO_EXPORTS.CUSTOMER_REPORT_120124_123124
+    yotpo_exports.customer_report_120124_123124
