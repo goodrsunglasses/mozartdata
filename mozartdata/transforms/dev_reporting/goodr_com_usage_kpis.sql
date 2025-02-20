@@ -12,6 +12,16 @@
             session count.
         total_customers:
             This is the total number of users that bought a product in a day.
+        new_customers:
+            This is the number of new users that bought a product in a day.
+        existing_customers:
+
+  , shopify.sessions_completed_checkout                    as shopify_sessions_completed_checkout
+  , marketing.total_spend                                  as marketing_spend
+  , marketing.total_impressions                            as marketing_impressions
+  , gl_tran.total_product_sales                                                  as existing_customer_product_sales
+  , ifnull(yotpo_redemptions.redeeming_customers, 0)       as yotpo_redeeming_customers
+  , ifnull(yotpo_accounts.daily_total_created_accounts, 0) as yotpo_accounts_created
     Todos:
         - handle leap years
  */
@@ -19,9 +29,9 @@
 with
     marketing_totals as (
                             select
-                                date::date           as date
-                              , round(sum(spend), 2) as total_spend
-                              , sum(impressions)     as total_impressions
+                                pm.date                 as date
+                              , round(sum(pm.spend), 2) as total_spend
+                              , sum(pm.impressions)     as total_impressions
                             from
                                 goodr_reporting.performance_media as pm
                             where
@@ -31,12 +41,12 @@ with
                             group by
                                 date
                         )
-  , revenue_totals as (
+  , product_sales_totals as (
                             select
-                                gl_tran.transaction_date::date    as date
-                              , round(sum(gl_tran.net_amount), 2) as total_revenue
+                                gl_tran.transaction_date          as date
+                              , round(sum(gl_tran.net_amount), 2) as total_product_sales
                             from
-                                fact.gl_transaction as gl_tran
+                                dev_reporting.gl_transaction as gl_tran
                             where
                                   gl_tran.posting_flag = true
                               and lower(gl_tran.channel) = 'goodr.com'
@@ -48,40 +58,41 @@ with
                             group by
                                 gl_tran.transaction_date
                         )
-  , new_customer_revenue_totals as (
-                            select
-                                cust.first_order_date_shopify::date as date
-                              , round(
-                                    sum(
-                                        amount_product + amount_discount + amount_refunded
-                                    ), 2
-                                )                                   as new_customer_product_sales
-                            from
-                                fact.customers                as cust
-                                inner join
-                                    fact.customer_shopify_map as shopify
-                                        on
-                                        cust.customer_id_edw = shopify.customer_id_edw
-                                left join
-                                    fact.order_item_detail    as oid
-                                        on
-                                        cust.first_order_id_edw_shopify = oid.order_id_edw
-                            where
-                                  lower(shopify.store) = 'goodr.com'
-                              and lower(oid.record_type) in (
-                                                             'cashsale', 'invoice', 'cashrefund'
-                                )
-                              and lower(oid.plain_name) not in (
-                                                                'tax', 'shipping'
-                                )
-                              and product_id_edw != 'Defectives/Damaged'
-                              and cust.first_order_date_shopify >= '2024-01-01'
-                            group by
-                                cust.first_order_date_shopify
-                            order by
-                                cust.first_order_date_shopify
-
-                        )
+    -- removed as it is not used in any KPIs at the moment, but may be in the future
+    -- , new_customer_revenue_totals as (
+    --                           select
+    --                               cust.first_order_date_shopify as date
+    --                             , round(
+    --                                   sum(
+    --                                       amount_product + amount_discount + amount_refunded
+    --                                   ), 2
+    --                               )                                   as new_customer_product_sales
+    --                           from
+    --                               fact.customers                as cust
+    --                               inner join
+    --                                   fact.customer_shopify_map as shopify
+    --                                       on
+    --                                       cust.customer_id_edw = shopify.customer_id_edw
+    --                               left join
+    --                                   fact.order_item_detail    as oid
+    --                                       on
+    --                                       cust.first_order_id_edw_shopify = oid.order_id_edw
+    --                           where
+    --                                 lower(shopify.store) = 'goodr.com'
+    --                             and lower(oid.record_type) in (
+    --                                                            'cashsale', 'invoice', 'cashrefund'
+    --                               )
+    --                             and lower(oid.plain_name) not in (
+    --                                                               'tax', 'shipping'
+    --                               )
+    --                             and product_id_edw != 'Defectives/Damaged'
+    --                             and cust.first_order_date_shopify >= '2024-01-01'
+    --                           group by
+    --                               cust.first_order_date_shopify
+    --                           order by
+    --                               cust.first_order_date_shopify
+    --
+    --                       )
   , yotpo_loyalty_account_totals as (
                             select
                                 platform_account_created_at_date as date
@@ -94,22 +105,22 @@ with
                                 platform_account_created_at_date
                         )
 select
-    d.date::date                                           as date
+    d.date                                                 as date
   , shopify.sessions                                       as shopify_sessions
   , shopify.users                                          as shopify_users
   , shopify.total_customers                                as shopify_total_customers
   , shopify.new_customers                                  as shopify_new_customers
   , (shopify.total_customers - shopify.new_customers)      as shopify_existing_customers
   , shopify.sessions_completed_checkout                    as shopify_sessions_completed_checkout
-  , round(shopify.conversion_rate, 8)                      as shopify_daily_conversion_rate
   , marketing.total_spend                                  as marketing_spend
   , marketing.total_impressions                            as marketing_impressions
-  , gl_tran.total_revenue                                  as total_product_sales
-  , new_customer_sales.new_customer_product_sales
-  , round(
-        (gl_tran.total_revenue - new_customer_sales.new_customer_product_sales)
-        , 2
-    )                                                      as existing_customer_product_sales
+  , gl_tran.total_product_sales
+-- left in for potential future use for new vs existing customer product_sales
+-- , new_customer_sales.new_customer_product_sales
+-- , round(
+--       (gl_tran.total_revenue - new_customer_sales.new_customer_product_sales)
+--       , 2
+--   )                                                      as existing_customer_product_sales
   , ifnull(yotpo_redemptions.redeeming_customers, 0)       as yotpo_redeeming_customers
   , ifnull(yotpo_accounts.daily_total_created_accounts, 0) as yotpo_accounts_created
 from
@@ -123,13 +134,14 @@ from
             on
             d.date = marketing.date
     left join
-        revenue_totals                            as gl_tran
+        product_sales_totals                            as gl_tran
             on
             d.date = gl_tran.date
-    left join
-        new_customer_revenue_totals               as new_customer_sales
-            on
-            d.date = new_customer_sales.date
+-- removed as it is not used in KPIs at the moment, but may be used in the future for product_sales
+-- left join
+--     new_customer_revenue_totals               as new_customer_sales
+--         on
+--         d.date = new_customer_sales.date
     left join
         staging.yotpo_redemptions_kpi_aggregation as yotpo_redemptions
             on
