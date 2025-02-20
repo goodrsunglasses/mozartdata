@@ -39,7 +39,7 @@ with
                                 fact.gl_transaction as gl_tran
                             where
                                   gl_tran.posting_flag = true
-                              and lower(gl_tran.channel) = 'goodr.com'
+                              and gl_tran.channel = 'Goodr.com'
                               and gl_tran.account_number in (
                                                              4000, 4110, 4210
                                 )
