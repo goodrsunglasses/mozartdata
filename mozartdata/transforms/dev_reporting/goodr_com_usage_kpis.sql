@@ -35,7 +35,7 @@ with
                             from
                                 goodr_reporting.performance_media as pm
                             where
-                                  lower(pm.account_country) = 'usa'
+                                  pm.account_country ='USA'
                               and date >= '2024-01-01'
                               and date <= current_date
                             group by
@@ -49,7 +49,7 @@ with
                                 dev_reporting.gl_transaction as gl_tran
                             where
                                   gl_tran.posting_flag = true
-                              and lower(gl_tran.channel) = 'goodr.com'
+                              and gl_tran.channel = 'Goodr.com'
                               and gl_tran.account_number in (
                                                              4000, 4110, 4210
                                 )
