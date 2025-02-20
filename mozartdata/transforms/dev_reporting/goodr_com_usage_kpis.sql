@@ -25,7 +25,7 @@ with
                             from
                                 goodr_reporting.performance_media as pm
                             where
-                                  lower(pm.account_country) = 'usa'
+                                  pm.account_country ='USA'
                               and date >= '2024-01-01'
                               and date <= current_date
                             group by
