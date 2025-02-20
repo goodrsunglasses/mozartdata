@@ -12,6 +12,7 @@ WITH
   p.*,
   replace(p.order_number_wms,' ','') as order_id_edw_p,
   ful.order_id_edw,
+  COALESCE(ful.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
   to_date(ful.ship_date) as ship_date_stord_api,
   COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful.ship_date)))) as  ship_month,
   COALESCE(o.channel, o2.channel) as channel_orders,
@@ -52,6 +53,5 @@ select * from core
 --where channel_COALESCE  = 'key accounts' or channel_COALESCE = 'key account can'
 --where channel_COALESCE  = 'other'
 --select sum(TOTAL_SHIPPING_LESS_DUTIES) from core where channel_COALESCE  = 'other'
-
 
 ---- need to add shopify (subtotal, delivery method, shipping income)
