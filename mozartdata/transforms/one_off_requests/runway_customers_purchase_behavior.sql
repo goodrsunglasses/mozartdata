@@ -33,7 +33,8 @@ FROM
   left join dim.product p using (product_id_edw)
 where product_id_edw is not null 
   and p.merchandise_department = 'SUNGLASSES'
-  and sold_month >= '2024-07-01'
+--  and sold_month >= '2024-07-01'
+  and sold_month >= '2023-01-01'
   and channel not in ('Goodrstock Giveaways','Customer Service CAN', 'Goodrwill','Co-Brand','Customer Service','Marketing')
 --  and channel = 'Goodr.com'
 group by all 
@@ -61,7 +62,8 @@ FROM
   left join dim.product p using (product_id_edw)
 where product_id_edw is not null 
   and p.merchandise_department = 'SUNGLASSES'
-  and sold_month >= '2024-07-01'
+--  and sold_month >= '2024-07-01'
+  and sold_month >= '2023-01-01'
 --  and channel not in ('Goodrstock Giveaways','Customer Service CAN', 'Goodrwill','Co-Brand','Customer Service','Marketing')
   and channel = 'Goodr.com'
 group by all 
