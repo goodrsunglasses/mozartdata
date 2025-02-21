@@ -13,7 +13,7 @@ WITH
       , SUM(o.amount_revenue_sold) OVER (PARTITION BY o.customer_id_edw)                             AS lifetime_revenue
       , SUM(o.amount_revenue_sold) OVER (PARTITION BY o.customer_id_edw, c.customer_category)        AS channel_revenue
       FROM
-        fact.orders o
+        bridge.orders o
         LEFT JOIN
           dim.channel c
           ON o.channel = c.name
