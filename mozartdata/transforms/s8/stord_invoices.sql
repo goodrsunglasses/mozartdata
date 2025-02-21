@@ -7,6 +7,15 @@ WITH
     WHERE
       source = 'Stord'
   )
+, shipping as (
+  select order_id, id, code from shopify.order_shipping_line
+  union all 
+  select order_id, id, code from goodr_canada_shopify.order_shipping_line
+  union all 
+  select order_id, id, code from specialty_shopify.order_shipping_line
+  union all 
+  select order_id, id, code from sellgoodr_canada_shopify.order_shipping_line
+)
 , core as (
   SELECT distinct
   p.*,
@@ -47,7 +56,15 @@ FROM
   LEFT JOIN fact.orders o ON upper(replace(p.order_number_wms,' ','')) = upper(o.order_id_edw)
   left join fact.orders o2 on ful.order_id_edw = o2.order_id_edw
   )
-select * from core
+SELECT
+  core.*,
+  so.order_id_shopify,
+  ship.id,
+  ship.code
+FROM
+  core
+  LEFT JOIN fact.shopify_orders so ON so.order_id_edw = core.order_id_edw_coalesce     --  will this splay? I had it as inner join before
+  LEFT JOIN shipping ship ON so.order_id_shopify = ship.order_id                       --  will this splay??
 
   ---- qc
 --where channel_COALESCE  = 'key accounts' or channel_COALESCE = 'key account can'
