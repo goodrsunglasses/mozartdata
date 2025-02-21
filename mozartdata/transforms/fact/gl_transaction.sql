@@ -53,7 +53,7 @@ use createdate converted instead of trandate
     , p.product_id_edw
     , tran.entity as customer_id_ns
     , cnm.customer_id_edw
-    , cnm.tier
+    , cnm.tier as customer_tier
     , tl.department as department_id_ns
     , d.name as department
     , tran.memo as memo
