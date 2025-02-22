@@ -28,7 +28,8 @@ SELECT DISTINCT
 , gt.product_id_edw
 , gt.customer_id_ns
 , gt.customer_id_edw
-, gt.tier
+, gt.customer_tier
+, o.tier as order_tier
 , gt.department_id_ns
 , gt.department
 , gt.memo
@@ -41,15 +42,13 @@ SELECT DISTINCT
 , gt.cleared_flag
 , gt.cleared_date
 , gt.order_id_shopify
-, CASE
-    WHEN o.tier LIKE '%O' AND o.b2b_d2c = 'B2B' THEN TRUE
-    WHEN cust.first_order_id_edw_shopify IS NOT NULL THEN TRUE
-    ELSE FALSE END AS new_customer_order_flag
+, o.new_customer_order_flag
+, o.new_customer_order_flag
 FROM
   fact.gl_transaction gt
   LEFT JOIN
     fact.orders o
   ON o.order_id_edw = gt.order_id_edw
   LEFT OUTER JOIN fact.customers cust
-  ON cust.first_order_id_edw_shopify = gt.order_id_edw
-  AND cust.customer_category = 'D2C'
+    ON cust.first_order_id_edw_shopify = gt.order_id_edw
+    AND cust.customer_category = 'D2C'
