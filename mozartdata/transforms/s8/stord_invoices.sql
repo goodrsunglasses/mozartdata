@@ -22,6 +22,8 @@ WITH
   replace(p.order_number_wms,' ','') as order_id_edw_p,
   ful.order_id_edw,
   COALESCE(ful.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
+  o.amount_product_sold as subtotal,
+  o.amount_shipping_sold as shipping_income,
   to_date(ful.ship_date) as ship_date_stord_api,
   COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful.ship_date)))) as  ship_month,
   COALESCE(o.channel, o2.channel) as channel_orders,
