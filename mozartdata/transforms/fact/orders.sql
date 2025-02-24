@@ -92,6 +92,7 @@ select
     , refund.refund_timestamp_pst
     , date(refund.refund_timestamp_pst)                                                  as refund_date_pst
     , CASE
+        WHEN o.b2b_d2c = 'INDIRECT' THEN NULL
         WHEN o.tier LIKE '%O' AND o.b2b_d2c = 'B2B' THEN TRUE
         WHEN cust.first_order_id_edw_shopify IS NOT NULL THEN TRUE
         ELSE FALSE END AS new_customer_order_flag
