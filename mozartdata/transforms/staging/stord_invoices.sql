@@ -4,11 +4,11 @@ SELECT
   null as invoice,
   carrier as   detailed_carrier,
   null as   account_number,
-  CAST(billed_date AS DATE) as billed_date,
+  billed_date,
   order_number as   order_number_wms,
   tracking_number as   shipment_tracking_number,
   customer_name,
-  CAST(ship_date AS DATE) as ship_date,
+  ship_date,
   destination_address as   destination_address_1,
   final_destination_city as   destination_city,
   final_destination_state as   destination_state,
@@ -28,4 +28,37 @@ SELECT
   )
   select * from oct_las
   union all 
-  select * from stord_invoices.parcel_details
+SELECT
+  location,
+  invoice,
+  detailed_carrier,
+  account_number,
+  COALESCE(
+      TRY_TO_DATE(BILLED_DATE, 'YYYY-MM-DD'), 
+      TRY_TO_DATE(BILLED_DATE, 'MM/DD/YYYY HH:MI:SS AM'),
+      TRY_TO_DATE(BILLED_DATE, 'MM/DD/YYYY') 
+  ) AS billed_date_converted,
+  order_number_wms,
+  shipment_tracking_number,
+  customer_name,
+  COALESCE(
+      TRY_TO_DATE(ship_DATE, 'YYYY-MM-DD'), 
+      TRY_TO_DATE(ship_DATE, 'MM/DD/YYYY HH:MI:SS AM'),
+      TRY_TO_DATE(ship_DATE, 'MM/DD/YYYY') 
+  ) AS ship_DATE_converted,
+  destination_address_1,
+  destination_city,
+  destination_state,
+  destination_zip,
+  destination_country,
+  shipping_method,
+  stord_service_level,
+  sum_package_weight,
+  zone,
+  duties_charge,
+  ancillary_charges_2,
+  fuel_charges,
+  residential_charges,
+  shipping_charges,
+  total_shipping_less_duties
+FROM stord_invoices.parcel_details
