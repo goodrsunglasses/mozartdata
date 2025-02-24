@@ -53,7 +53,7 @@ WITH
   END  ) as channel_COALESCE
   
 FROM
-  stord_invoices.parcel_details p
+  staging.stord_invoices p
   LEFT JOIN ful ON p.shipment_tracking_number = ful.tracking_number
   LEFT JOIN fact.orders o ON upper(replace(p.order_number_wms,' ','')) = upper(o.order_id_edw)
   left join fact.orders o2 on ful.order_id_edw = o2.order_id_edw
