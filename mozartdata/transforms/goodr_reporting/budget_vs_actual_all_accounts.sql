@@ -87,4 +87,4 @@ with
   inner join
     period_map pm
     on pm.posting_period = bc.posting_period
-  where bc.posting_period like '%24'
+  where bc.posting_period like '%25'

@@ -23,7 +23,7 @@ FROM
   left join dim.gl_account a on a.account_id_edw = t.account_id_edw
 WHERE
   t.department_id_ns in (46536,18,2,19,1,53242)
-  and posting_period like '%2024'
+  and posting_period like '%2025'
   and t.account_number >= 5000
   and posting_flag
   and t.account_number != 6016

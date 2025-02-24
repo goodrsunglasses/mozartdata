@@ -54,11 +54,13 @@ SELECT
         THEN 'Awareness'
         WHEN LOWER(cam_history.name) LIKE '%bof%'
         THEN 'Performance'
+        ELSE 'Other'
     END AS marketing_strategy
     , CASE
         WHEN LOWER(cam_history.name) LIKE '%mof%' THEN 'MOF'
         WHEN LOWER(cam_history.name) LIKE '%tof%' THEN 'TOF'
         WHEN LOWER(cam_history.name) LIKE '%bof%' THEN 'BOF'
+        ELSE 'OTHER'
     END AS funnel_stage
     , cam_history.AD_ACCOUNT_ID AS account_id
     , acc_history.NAME AS account_name
@@ -68,9 +70,6 @@ FROM
 INNER JOIN
     latest_account_ids AS acc_history
     ON cam_history.AD_ACCOUNT_ID = acc_history.ID
-WHERE
-    start_time::date >= '2024-01-01'
-    AND LOWER(cam_history.name) NOT LIKE '%not used%'
 QUALIFY
     -- selects the most recently updated row for each campaign in the campaign history table
     ROW_NUMBER() OVER (

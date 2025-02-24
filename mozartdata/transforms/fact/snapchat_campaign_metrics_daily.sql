@@ -18,9 +18,9 @@ select
   , stats."DATE"::date                                   as report_date -- Report date
   , stats.impressions -- Number of impressions
   , stats.swipes                                         as clicks -- Number of clicks (swipes)
-  , round(stats.spend / 1000000, 2)                      as spend -- Total spend (converted from microcurrency)
+  , stats.spend / 1000000                                as spend -- Total spend (converted from microcurrency)
   , stats.conversion_purchases                           as conversions -- Number of conversions
-  , round(stats.conversion_purchases_value / 1000000, 2) as revenue -- Total revenue (converted from microcurrency)
+  , stats.conversion_purchases_value / 1000000           as revenue -- Total revenue (converted from microcurrency)
 from
     dim.snapchat_campaigns                 as cam -- Dimension table for Snapchat campaigns
     inner join
@@ -28,6 +28,5 @@ from
             on
             cam.campaign_id_snapchat = stats.campaign_id -- Join condition
 order by
-    stats.campaign_id
-  , -- Order by campaign ID
-    stats."DATE"::date desc -- Order by report date in descending order
+    stats.campaign_id -- Order by campaign ID
+  , stats."DATE"::date desc -- Order by report date in descending order

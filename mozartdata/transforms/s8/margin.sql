@@ -169,7 +169,7 @@ with revenue as (
     LEFT JOIN dim.product p USING (product_id_edw)
     where
       gt.posting_flag
-    and gt.account_number in (5020,6020)
+    and ((gt.account_number = 5020 and posting_period like '%2025') or (gt.account_number = 6020 and posting_period like '%2024'))
     and gt.channel is not null
     GROUP BY ALL
   )
@@ -191,7 +191,7 @@ with revenue as (
     and gt.channel is not null
     GROUP BY ALL
   )
-, royalies as
+, royalties as
   (
     select
       gt.posting_period
@@ -254,8 +254,9 @@ SELECT
 , div0(sum(r.revenue),sum(r.quantity)) unit_rev
 , sum(c.cogs) as cogs
 , sum(c.quantity) as cogs_quantity
-, div0(sum(c.cogs),sum(r.quantity)) unit_cost
---, avg(r.cost_est) as avg_cost_est
+, div0(sum(c.cogs),sum(r.quantity)) unit_cogs
+, div0(sum(r.cost_est),sum(r.quantity)) as avg_cost_est_ns
+--, avg(r.cost_est) as avg_cost_est_ns
 -- , v.revenue_var
 -- , v.quantity_var
 -- , v.order_count_var
@@ -265,12 +266,15 @@ SELECT
 , coalesce(threepl.net_amount,0) as threepl
 , coalesce(shipping.net_amount,0) as shipping 
 , coalesce(shrinkage_inventory.net_amount,0) as shrinkage_inventory 
-, coalesce(royalies.net_amount,0) as royalties
+, coalesce(royalties.net_amount,0) as royalties
 , coalesce(lcv.net_amount,0) as lcv                       -- landed cost variance 
 --, coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0) as cost_of_sales
 --, div0(coalesce(sum(r.revenue),0),coalesce(nullif(sum(r.quantity),0),1))
 --  -div0(coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(cos.net_amount,0),
 --        coalesce(nullif(sum(r.quantity),0),1)) margin
+, coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(bank_fees.net_amount,0) +coalesce(threepl.net_amount,0) +coalesce(shipping.net_amount,0) +coalesce(shrinkage_inventory.net_amount,0) +coalesce(royalties.net_amount,0) +coalesce(lcv.net_amount,0) as cost_of_sales
+, sum(r.revenue) - (sum(c.cogs)) as rev_minus_cogs
+, sum(r.revenue) - (coalesce(sum(c.cogs),0)+coalesce(ab.net_amount,0)+coalesce(ao.net_amount,0)+coalesce(bank_fees.net_amount,0) +coalesce(threepl.net_amount,0) +coalesce(shipping.net_amount,0) +coalesce(shrinkage_inventory.net_amount,0) +coalesce(royalties.net_amount,0) +coalesce(lcv.net_amount,0)) as rev_minus_cos
 , r.collection
 , r.family
 , r.stage
@@ -303,7 +307,7 @@ left join
   shrinkage_inventory
   using (posting_period,sku,channel)
 left join
-  royalies
+  royalties
   using (posting_period,sku,channel)
 left join
   lcv

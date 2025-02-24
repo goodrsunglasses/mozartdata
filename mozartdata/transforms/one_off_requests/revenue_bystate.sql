@@ -40,7 +40,7 @@ left join
   on ol.order_id_edw = po.order_id_edw
 WHERE
   gt.account_number between 4000 and 4999
-  and YEAR(TO_DATE(gt.posting_period,'Mon YYYY'))='2022'
+  and YEAR(TO_DATE(gt.posting_period,'Mon YYYY'))='2024'
   and gt.posting_flag 
 group by
  gt.order_id_edw  
