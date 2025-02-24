@@ -43,12 +43,8 @@ SELECT DISTINCT
 , gt.cleared_date
 , gt.order_id_shopify
 , o.new_customer_order_flag
-, o.new_customer_order_flag
 FROM
   fact.gl_transaction gt
   LEFT JOIN
     fact.orders o
   ON o.order_id_edw = gt.order_id_edw
-  LEFT OUTER JOIN fact.customers cust
-    ON cust.first_order_id_edw_shopify = gt.order_id_edw
-    AND cust.customer_category = 'D2C'
