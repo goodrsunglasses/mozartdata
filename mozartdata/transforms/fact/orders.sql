@@ -91,9 +91,17 @@ select
     end                          as has_refund
     , refund.refund_timestamp_pst
     , date(refund.refund_timestamp_pst)                                                  as refund_date_pst
+    , CASE
+        WHEN o.b2b_d2c = 'INDIRECT' THEN NULL
+        WHEN o.tier LIKE '%O' AND o.b2b_d2c = 'B2B' THEN TRUE
+        WHEN cust.first_order_id_edw_shopify IS NOT NULL THEN TRUE
+        ELSE FALSE END AS new_customer_order_flag
 from
     bridge.orders as o
 left outer join
     refund_aggregates               refund
     on
         refund.order_id_edw = o.order_id_edw
+  LEFT OUTER JOIN fact.customers cust
+    ON cust.first_order_id_edw_shopify = o.order_id_edw
+    AND cust.customer_category = 'D2C'
