@@ -1,3 +1,5 @@
+CREATE OR REPLACE TABLE staging.shopify_companies
+            COPY GRANTS  as
 with
     root_table as (
                       select
