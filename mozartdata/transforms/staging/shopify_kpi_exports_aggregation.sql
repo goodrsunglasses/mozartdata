@@ -1,5 +1,5 @@
 select
-    day::date                          as date
+    day::date                          as event_date
   , "ONLINE STORE VISITORS"            as users
   , sessions                           as sessions
   , "NEW CUSTOMERS"                    as new_customers
