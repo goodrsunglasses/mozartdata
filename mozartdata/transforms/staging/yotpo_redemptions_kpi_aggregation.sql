@@ -1,5 +1,5 @@
 select
-    day::date as date
+    day::date as event_date
     , "REDEEMING CUSTOMERS" as redeeming_customers
 from
     yotpo_exports.daily_redeeming_customers_010124_021125
