@@ -1,3 +1,9 @@
+with root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+)
 select
     day::date as event_date
     , "REDEEMING CUSTOMERS" as redeeming_customers
