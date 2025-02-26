@@ -1,5 +1,11 @@
 with
-    union_cte as (
+  root_table as (
+    select
+      *
+    from
+      mozart.pipeline_root_table
+  )
+  , union_cte as (
                      select
                          email
                        , first_name
