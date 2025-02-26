@@ -34,7 +34,7 @@
 with
     marketing_totals as (
                             select
-                                pm.date                 as date
+                                pm.date                 as event_date
                               , round(sum(pm.spend), 2) as total_spend
                               , sum(pm.impressions)     as total_impressions
                             from
@@ -101,7 +101,7 @@ with
     --                       )
   , yotpo_loyalty_account_totals as (
                             select
-                                created_at_date as date
+                                created_at_date as event_date
                               , count(*)                         as daily_total_created_accounts
                             from
                                 staging.yotpo_accounts_kpi_aggregation
@@ -134,11 +134,11 @@ from
     left join
         staging.shopify_kpi_exports_aggregation   as shopify
             on
-            d.date = shopify.date
+            d.date = shopify.event_date
     left join
         marketing_totals                          as marketing
             on
-            d.date = marketing.date
+            d.date = marketing.event_date
     -- left join
     --     product_sales_totals                            as gl_tran
     --         on
@@ -151,11 +151,11 @@ from
     left join
         staging.yotpo_redemptions_kpi_aggregation as yotpo_redemptions
             on
-            d.date = yotpo_redemptions.date
+            d.date = yotpo_redemptions.event_date
     left join
         yotpo_loyalty_account_totals              as yotpo_accounts
             on
-            d.date = yotpo_accounts.date
+            d.date = yotpo_accounts.event_date
 where
       d.date >= '2024-01-01'
   and d.date <= current_date
