@@ -40,30 +40,29 @@ with
                             from
                                 goodr_reporting.performance_media as pm
                             where
-                                  pm.account_country ='USA'
+                                  pm.account_country = 'USA'
                               and date >= '2024-01-01'
                               and date <= current_date
                             group by
                                 date
                         )
-  -- removed until we know what we want to use for product_sales totals as a source of truth
-  -- , product_sales_totals as (
-  --                           select
-  --                               gl_tran.transaction_date          as date
-  --                             , round(sum(gl_tran.net_amount), 2) as total_product_sales
-  --                           from
-  --                               dev_reporting.gl_transaction as gl_tran
-  --                           where
-  --                                 gl_tran.posting_flag = true
-  --                             and gl_tran.channel = 'Goodr.com'
-  --                             and gl_tran.account_number in (
-  --                                                            4000, 4110, 4210
-  --                               )
-  --                             and gl_tran.transaction_date >= '2024-01-01'
-  --                             and gl_tran.transaction_date <= current_date
-  --                           group by
-  --                               gl_tran.transaction_date
-  --                       )
+  , revenue_daily_totals as (
+                            select
+                                gl_tran.transaction_date
+                              , sum(gl_tran.net_amount) as total_revenue
+                            from
+                                dev_reporting.gl_transaction as gl_tran
+                            where
+                                  gl_tran.posting_flag = true
+                              and gl_tran.channel = 'Goodr.com'
+                              and gl_tran.account_number like '4%'
+                              and gl_tran.transaction_date >= '2024-01-01'
+                              and gl_tran.transaction_date <= current_date
+                            group by
+                                gl_tran.transaction_date
+                            order by
+                                gl_tran.transaction_date asc
+                        )
     -- removed as it is not used in any KPIs at the moment, but may be in the future
     -- , new_customer_revenue_totals as (
     --                           select
@@ -102,7 +101,7 @@ with
   , yotpo_loyalty_account_totals as (
                             select
                                 created_at_date as event_date
-                              , count(*)                         as daily_total_created_accounts
+                              , count(*)        as daily_total_created_accounts
                             from
                                 staging.yotpo_accounts_kpi_aggregation
                             where
@@ -120,13 +119,13 @@ select
   , shopify.sessions_completed_checkout                    as shopify_sessions_completed_checkout
   , marketing.total_spend                                  as marketing_spend
   , marketing.total_impressions                            as marketing_impressions
-  -- , gl_tran.total_product_sales
-  -- left in for potential future use for new vs existing customer product_sales
-  -- , new_customer_sales.new_customer_product_sales
-  -- , round(
-  --       (gl_tran.total_revenue - new_customer_sales.new_customer_product_sales)
-  --       , 2
-  --   )                                                      as existing_customer_product_sales
+  , gl_tran.total_revenue                                  as gl_total_revenue
+    -- left in for potential future use for new vs existing customer product_sales
+    -- , new_customer_sales.new_customer_product_sales
+    -- , round(
+    --       (gl_tran.total_revenue - new_customer_sales.new_customer_product_sales)
+    --       , 2
+    --   )                                                      as existing_customer_product_sales
   , ifnull(yotpo_redemptions.redeeming_customers, 0)       as yotpo_redeeming_customers
   , ifnull(yotpo_accounts.daily_total_created_accounts, 0) as yotpo_accounts_created
 from
@@ -139,15 +138,15 @@ from
         marketing_totals                          as marketing
             on
             d.date = marketing.event_date
-    -- left join
-    --     product_sales_totals                            as gl_tran
-    --         on
-    --         d.date = gl_tran.date
-    -- removed as it is not used in KPIs at the moment, but may be used in the future for product_sales
-    -- left join
-    --     new_customer_revenue_totals               as new_customer_sales
-    --         on
-    --         d.date = new_customer_sales.date
+    left join
+        revenue_daily_totals                      as gl_tran
+            on
+            d.date = gl_tran.transaction_date
+            -- removed as it is not used in KPIs at the moment, but may be used in the future for product_sales
+            -- left join
+            --     new_customer_revenue_totals               as new_customer_sales
+            --         on
+            --         d.date = new_customer_sales.date
     left join
         staging.yotpo_redemptions_kpi_aggregation as yotpo_redemptions
             on
