@@ -2,7 +2,7 @@
 
 SELECT
   so.*,
-  ship.id,
+  ship.id as shipment_id,
   ship.code
 FROM
  shopify."ORDER" so 
