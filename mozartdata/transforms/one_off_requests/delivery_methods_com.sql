@@ -1,7 +1,10 @@
 --- shopify shipping method by order Aug 15 - today
 
 SELECT
-  so.*,
+--so.*,
+  so.id as order_id,
+  so.name,
+  so.created_at as order_created_at,
   ship.id as shipment_id,
   ship.code
 FROM
