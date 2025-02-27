@@ -1,11 +1,15 @@
 WITH
   ful AS (
     SELECT
-      *
+      tracking_number,
+      order_id_edw,
+      ship_date,
+      sum(quantity) as qty
     FROM
       fact.fulfillment_item_detail fid
     WHERE
       source = 'Stord'
+  group by all
   )
 , shipping as (
   select order_id, id, code from shopify.order_shipping_line
@@ -19,6 +23,7 @@ WITH
 , core as (
   SELECT distinct
   p.*,
+  ful.qty,
   replace(p.order_number_wms,' ','') as order_id_edw_p,
   ful.order_id_edw,
   COALESCE(ful.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
