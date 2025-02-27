@@ -67,8 +67,6 @@ with
                               and date_trunc('month', gl_tran.transaction_date) = period.period_start_date
                             group by
                                 gl_tran.transaction_date
-                            order by
-                                gl_tran.transaction_date asc
                         )
     -- removed as it is not used in any KPIs at the moment, but may be in the future
     -- , new_customer_revenue_totals as (
