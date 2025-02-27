@@ -75,8 +75,8 @@ SELECT cust.id                                                                 A
      cust.custentityam_state_2 as state_2,
      cust.custentityam_state_3 as state_3,
 	cust.duplicate,
-	to_number(cust.custentityshop_parent_id) as shopify_parent_id,
-	to_number(cust.custentitycustentity_shop_id_sg) as shopify_sellgoodr_id --seems like we have one custom field per id in a given shopify store
+	to_number(cust.custentityshop_parent_id) as shopify_parent_company_id,
+	to_number(cust.custentitycustentity_shop_id_sg) as shopify_sellgoodr_customer_id --seems like we have one custom field per id in a given shopify store
 FROM netsuite.customer cust
     LEFT JOIN parents_list pl
       on cust.id = pl.customer_id_ns
