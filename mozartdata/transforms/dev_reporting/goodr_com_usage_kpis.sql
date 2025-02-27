@@ -22,6 +22,8 @@
             This is the total spend on marketing across the platforms tracked in goodr_reporting.performance_media.
         marketing_impressions:
             This is the total amount of impressions (basically people tha saw an ad) across marketing platforms.
+        gl_total_revenue:
+            This is the total revenue for each day. Specifically it is all 4000 accounts totaled.
         yotpo_redeeming_customers:
             This is the total number of customers that redeemed points in a day.
                 - This may include Canada, I will find out from Jared soon
@@ -52,12 +54,17 @@ with
                               , sum(gl_tran.net_amount) as total_revenue
                             from
                                 dev_reporting.gl_transaction as gl_tran
+                                left join
+                                    dim.accounting_period    as period
+                                        on gl_tran.posting_period = period.posting_period
                             where
                                   gl_tran.posting_flag = true
                               and gl_tran.channel = 'Goodr.com'
                               and gl_tran.account_number like '4%'
                               and gl_tran.transaction_date >= '2024-01-01'
                               and gl_tran.transaction_date <= current_date
+                              and period.is_posting_flag = true
+                              and date_trunc('month', gl_tran.transaction_date) = period.period_start_date
                             group by
                                 gl_tran.transaction_date
                             order by
@@ -109,6 +116,7 @@ with
                             group by
                                 created_at_date
                         )
+
 select
     d.date                                                 as event_date
   , shopify.sessions                                       as shopify_sessions
