@@ -150,11 +150,11 @@ from
         revenue_daily_totals                      as gl_tran
             on
             d.date = gl_tran.transaction_date
-            -- removed as it is not used in KPIs at the moment, but may be used in the future for product_sales
-            -- left join
-            --     new_customer_revenue_totals               as new_customer_sales
-            --         on
-            --         d.date = new_customer_sales.date
+    -- removed as it is not used in KPIs at the moment, but may be used in the future for product_sales
+    -- left join
+    --     new_customer_revenue_totals               as new_customer_sales
+    --         on
+    --         d.date = new_customer_sales.date
     left join
         staging.yotpo_redemptions_kpi_aggregation as yotpo_redemptions
             on
