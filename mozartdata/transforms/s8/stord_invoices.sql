@@ -2,6 +2,10 @@ WITH
   ful AS (
     SELECT
       tracking_number,
+        CASE
+        WHEN tracking_number LIKE '420%' THEN SUBSTRING(tracking_number, 9) -- Remove "420" + next 5 digits
+        ELSE tracking_number
+      END AS slim_tracking_number,
       order_id_edw,
       ship_date,
       sum(quantity) as qty
@@ -23,14 +27,14 @@ WITH
 , core as (
   SELECT distinct
   p.*,
-  ful.qty,
+  COALESCE(ful2.qty, ful1.qty) as qty,
   replace(p.order_number_wms,' ','') as order_id_edw_p,
-  ful.order_id_edw,
-  COALESCE(ful.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
+  ful2.order_id_edw,
+  COALESCE(ful2.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
   o.amount_product_sold as subtotal,
   o.amount_shipping_sold as shipping_income,
-  to_date(ful.ship_date) as ship_date_stord_api,
-  COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful.ship_date)))) as  ship_month,
+  to_date(ful2.ship_date) as ship_date_stord_api,
+  COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful2.ship_date)))) as  ship_month,
   COALESCE(o.channel, o2.channel) as channel_orders,
   COALESCE(
   case 
@@ -59,9 +63,10 @@ WITH
   
 FROM
   staging.stord_invoices p
-  LEFT JOIN ful ON p.shipment_tracking_number = ful.tracking_number
+  LEFT JOIN ful as ful1 ON p.shipment_tracking_number = ful1.slim_tracking_number --- count of qty is null alone was 952,455
+  left join ful as ful2 ON p.shipment_tracking_number = ful2.tracking_number ---- count of qty is null with both 29,375
   LEFT JOIN fact.orders o ON upper(replace(p.order_number_wms,' ','')) = upper(o.order_id_edw)
-  left join fact.orders o2 on ful.order_id_edw = o2.order_id_edw
+  left join fact.orders o2 on ful2.order_id_edw = o2.order_id_edw
   )
 SELECT
   core.*,
@@ -72,7 +77,7 @@ FROM
   core
   LEFT JOIN fact.shopify_orders so ON so.order_id_edw = core.order_id_edw_coalesce     --  will this splay? I had it as inner join before - no
   LEFT JOIN shipping ship ON so.order_id_shopify = ship.order_id                       --  will this splay?? no
-where ship_date between '2024-06-01' and '2024-10-31'                      --- to limit for analysis per greg 
+where ship_date between '2024-06-01' and '2024-10-31'                                  -- to limit for analysis per greg 
 order by ship_date desc 
 
   ---- qc
