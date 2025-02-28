@@ -27,16 +27,16 @@ WITH
 , core as (
   SELECT distinct
   p.*,
-  COALESCE(ful2.tracking_number, ful1.tracking_number) as s1c_tracking_number,
+  COALESCE(ful2.tracking_number, ful1.tracking_number) as api_tracking_number,
   ful1.slim_tracking_number as cut_tracking_number,
-  COALESCE(ful2.qty, ful1.qty) as qty,
-  replace(p.order_number_wms,' ','') as order_id_edw_p,
-  ful2.order_id_edw,
-  COALESCE(ful2.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
+  COALESCE(ful2.qty, ful1.qty) as api_qty,
+  replace(p.order_number_wms,' ','') as inv_order_id_edw,
+  coalesce(ful2.order_id_edw,ful1.order_id_edw) as api_order_id_edw,
+  COALESCE(ful2.order_id_edw,ful1.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
   o.amount_product_sold as subtotal,                        ---- by order, so will be duplicated for split shipments
   o.amount_shipping_sold as shipping_income,                ---- by order, so will be duplicated for split shipments
-  to_date(ful2.ship_date) as ship_date_stord_api,
-  COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful2.ship_date)))) as  ship_month,
+  coalesce(to_date(ful2.ship_date),to_date(ful1.ship_date)) as api_ship_date,
+  COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful2.ship_date))),date_trunc(month, try_to_date(to_date(ful1.ship_date)))) as  ship_month,
   COALESCE(o.channel, o2.channel) as channel_orders,
   COALESCE(
   case 
