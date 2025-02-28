@@ -14,7 +14,7 @@ FROM
   left join (select  posting_period, min(date) period_start from dim.date group by 1) d on t.posting_period = d.posting_period
 WHERE
   posting_flag
- AND account_number LIKE '4%'             --- revenue only 
+-- AND account_number LIKE '4%'             --- revenue only 
   AND transaction_month <> posting_period_month
   and (transaction_month like '2025%' or posting_period_month like '2025%')         ---- only looking at things that happened in or impact 2025 
 
