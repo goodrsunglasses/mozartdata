@@ -163,6 +163,7 @@ select channel, posting_period, sum(revenue) from
     , nsmap.buyer_email
     , nsmap.pop
     , nsmap.logistics
+    , false AS gl_variance_flag
     FROM
       fact.order_item_detail detail
       LEFT OUTER JOIN fact.orders orders ON orders.order_id_edw = detail.order_id_edw
@@ -222,6 +223,7 @@ select channel, posting_period, sum(revenue) from
     , NULL                    AS buyer_email
     , NULL                    AS pop
     , NULL                    AS logistics
+    , true AS gl_variance_flag
     FROM
       dev_reporting.gl_transaction gltran
       INNER JOIN
