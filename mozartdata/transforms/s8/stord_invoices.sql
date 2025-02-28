@@ -27,6 +27,8 @@ WITH
 , core as (
   SELECT distinct
   p.*,
+  ful2.tracking_number as s1c_tracking_number,
+  ful1.slim_tracking_number as cut_tracking_number,
   COALESCE(ful2.qty, ful1.qty) as qty,
   replace(p.order_number_wms,' ','') as order_id_edw_p,
   ful2.order_id_edw,
