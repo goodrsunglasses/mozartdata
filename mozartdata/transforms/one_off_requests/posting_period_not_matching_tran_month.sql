@@ -1,57 +1,3 @@
-/*
---- netsuite : 1669287.6600000001  (4000, Jan 2025)
-SELECT
-  sum(net_amount),
-  channel,
-  date_trunc(MONTH, transaction_date)
-  --  posting_period
-FROM
-  fact.gl_transaction
-WHERE
-  posting_flag
-  AND account_number LIKE '4000'
-  AND posting_period LIKE '%2025'
-GROUP BY
-  ALL
-  ---------
-SELECT
-  sum(net_amount),
-  channel,
-  posting_period
-FROM
-  fact.gl_transaction
-WHERE
-  posting_flag
-  AND account_number LIKE '4000'
-  AND posting_period LIKE '%2025'
-GROUP BY
-  ALL
-ORDER BY
-  3,
-  2
-  --------
-SELECT DISTINCT
-  (transaction_date)
-FROM
-  fact.gl_transaction
-WHERE
-  posting_period = 'Jan 2025'
-  AND account_number LIKE '4%'
-  AND posting_flag
-ORDER BY
-  1
-  ----------
-SELECT
-  *
-FROM
-  fact.gl_transaction
-WHERE
-  posting_period = 'Jan 2025'
-  AND posting_flag
-  AND transaction_date < '2025-01-01'
-  AND account_number LIKE '4%'
-  */
-  ---------
 SELECT
   t.transaction_id_ns,
   t.order_id_ns,
@@ -68,9 +14,9 @@ FROM
   left join (select  posting_period, min(date) period_start from dim.date group by 1) d on t.posting_period = d.posting_period
 WHERE
   posting_flag
- AND account_number LIKE '4%'
+ AND account_number LIKE '4%'             --- revenue only 
   AND transaction_month <> posting_period_month
-  and (transaction_month like '2025%' or posting_period_month like '2025%')
+  and (transaction_month like '2025%' or posting_period_month like '2025%')         ---- only looking at things that happened in or impact 2025 
 
 -------- TOTALS 
   /*
