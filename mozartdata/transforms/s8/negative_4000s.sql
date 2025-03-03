@@ -8,4 +8,4 @@ WHERE
   AND account_number = 4000
   AND net_amount < 0
 --  and record_type = 'journalentry'
-order by transaction_id_ns
+order by transaction_id_ns desc
