@@ -2,7 +2,7 @@ SELECT DISTINCT
   (
     COALESCE(
       try_to_date(ship_date),
-      try_to_date(ship_date_stord_api)
+      try_to_date(api_ship_date)
     )
   ) AS dates,
   invoice
