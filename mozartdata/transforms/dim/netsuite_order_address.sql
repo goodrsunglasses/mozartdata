@@ -64,7 +64,7 @@ with base as (
   union all
   select
     a.nkey
-  , 'invoice' as record_type
+  , 'salesorder' as record_type
   , a.addr1
   , a.addr2
   , a.addr3
@@ -79,7 +79,7 @@ with base as (
   , a.override
   , a.dropdownstate
   from
-    netsuite.invoiceshippingaddress a
+    netsuite.salesordershippingaddress a
   where
     _fivetran_deleted = false
   union all
