@@ -1,6 +1,6 @@
 with base as (
   select
-    a.nkey as address_id_ns
+    a.nkey as order_address_id_ns
   , 'invoice' as record_type
   , a.addr1 as address_1
   , a.addr2 as address_2
@@ -21,7 +21,7 @@ with base as (
     _fivetran_deleted = false
   union all
   select
-    a.nkey as address_id_ns
+    a.nkey as order_address_id_ns
   , 'cashsale' as record_type
   , a.addr1 as address_1
   , a.addr2 as address_2
@@ -42,7 +42,7 @@ with base as (
     _fivetran_deleted = false
   union all
   select
-    a.nkey as address_id_ns
+    a.nkey as order_address_id_ns
   , 'cashrefund' as record_type
   , a.addr1 as address_1
   , a.addr2 as address_2
@@ -63,7 +63,7 @@ with base as (
     _fivetran_deleted = false
   union all
   select
-    a.nkey as address_id_ns
+    a.nkey as order_address_id_ns
   , 'invoice' as record_type
   , a.addr1 as address_1
   , a.addr2 as address_2
@@ -82,10 +82,31 @@ with base as (
     netsuite.invoiceshippingaddress a
   where
     _fivetran_deleted = false
+  union all
+  select
+    a.nkey as order_address_id_ns
+  , 'itemfulfillment' as record_type
+  , a.addr1 as address_1
+  , a.addr2 as address_2
+  , a.addr3 as address_3
+  , a.addressee as customer_name
+  , a.addrphone as phone_number
+  , a.addrtext as address_text
+  , a.attention as attention
+  , a.city
+  , a.state
+  , a.country
+  , a.zip
+  , a.override
+  , a.dropdownstate as state_drop_down
+  from
+    netsuite.itemfulfillmentshippingaddress a
+  where
+    _fivetran_deleted = false
 )
 select
-  coalesce(b.record_type,'_',b.address_id_ns) as order_address_id_edw
-  , b.address_id_ns as order_address_id_ns
+    concat(b.record_type,'_',b.order_address_id_ns) as order_address_id_edw
+  , b.order_address_id_ns
   , b.record_type
   , b.address_1
   , b.address_2
@@ -106,5 +127,5 @@ from
   base b
 left join
   netsuite.state s
-  on b.state = s.state
+  on b.state = s.fullname
   and b.country = s.country
