@@ -17,9 +17,17 @@ FROM
 WHERE
   posting_flag = 'true'
   AND to_date(posting_period, 'MON YYYY') >= '2022-01-01'
-      and ((account_number LIKE '6%'      
-      AND right(posting_period, 4) > 2024) OR (account_number LIKE '6%'     AND right(posting_period, 4) <= 2024     
-      AND right(posting_period, 4) <= 2024     AND account_number NOT IN (6005, 6015, 6016, 6020))) ---- opex accounts minus labor
+  AND (
+        (account_number LIKE '6%' 
+         AND right(posting_period, 4) > 2024)   ---- opex accounts 
+        OR 
+        (account_number LIKE '6%' 
+         AND right(posting_period, 4) <= 2024 
+         AND account_number NOT IN (6005, 6015, 6016, 6020))  ---- opex accounts that moved to cost of sales 
+        OR 
+        (account_number LIKE '7%' 
+         AND account_number NOT IN (7010, 7015, 7020, 7030, 7035, 7040, 7050))   ---- general and admin minus labor
+      )
 GROUP BY all
   )
 , budget as (
@@ -39,9 +47,17 @@ FROM
   left join dim.herd_map  using (department_id_ns)
 WHERE
   to_date(posting_period, 'MON YYYY') >= '2022-01-01'
-      and ((account_number LIKE '6%'      
-      AND right(posting_period, 4) > 2024) OR (account_number LIKE '6%'     
-      AND right(posting_period, 4) <= 2024     AND account_number NOT IN (6005, 6015, 6016, 6020))) ---- opex accounts minus labor
+  AND (
+        (account_number LIKE '6%' 
+         AND right(posting_period, 4) > 2024)   ---- opex accounts 
+        OR 
+        (account_number LIKE '6%' 
+         AND right(posting_period, 4) <= 2024 
+         AND account_number NOT IN (6005, 6015, 6016, 6020))  ---- opex accounts that moved to cost of sales 
+        OR 
+        (account_number LIKE '7%' 
+         AND account_number NOT IN (7010, 7015, 7020, 7030, 7035, 7040, 7050))   ---- general and admin minus labor
+      )
 GROUP BY all
 )
 select 
