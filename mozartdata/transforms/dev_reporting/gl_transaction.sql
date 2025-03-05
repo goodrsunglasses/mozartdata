@@ -43,8 +43,15 @@ SELECT DISTINCT
 , gt.cleared_date
 , gt.order_id_shopify
 , o.new_customer_order_flag
+. noa.state
+, noa.state_abbreviation
+, noa.country
+, noa.zip_code
 FROM
   fact.gl_transaction gt
   LEFT JOIN
     fact.orders o
   ON o.order_id_edw = gt.order_id_edw
+  LEFT JOIN
+    dim.netsuite_order_address noa
+  ON noa.order_address_id_edw = gt.shipping_address_id_edw

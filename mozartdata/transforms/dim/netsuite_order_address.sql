@@ -1,3 +1,4 @@
+create or replace table dim.netsuite_order_address copy grants as
 with base as (
   select
     a.nkey
