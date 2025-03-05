@@ -134,7 +134,7 @@ select
   , b.addr3 as address_3
   , b.addressee as customer_name
   , b.addrphone as phone_number
-  , NULLIF(REGEXP_REPLACE(b.addrphone, '^1|\\+1\\s?|\\(|\\)|-|\\s', ''), '') as normalized_phone_number
+  , NULLIF(REGEXP_REPLACE(REGEXP_REPLACE(b.addrphone, '^1|\\+1\\s?|\\(|\\)|-|\\s', ''),'[^0-9]',''), '') as normalized_phone_number
   , b.addrtext as address_text
   , b.attention
   , b.city
