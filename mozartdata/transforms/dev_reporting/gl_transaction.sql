@@ -55,5 +55,5 @@ FROM
     fact.orders o
   ON o.order_id_edw = gt.order_id_edw
   LEFT JOIN
-    dim.netsuite_order_address noa
-  ON noa.order_address_id_edw = gt.shipping_address_id_edw
+    dim.netsuite_shipping_address noa
+  ON noa.shipping_address_id_edw = gt.shipping_address_id_edw

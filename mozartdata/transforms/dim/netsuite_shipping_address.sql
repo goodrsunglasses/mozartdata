@@ -127,8 +127,8 @@ with base as (
 )
 
 select
-    concat(b.record_type,'_',b.nkey) as order_address_id_edw
-  , b.nkey as order_address_id_ns
+    concat(b.record_type,'_',b.nkey) as shipping_address_id_edw
+  , b.nkey as shipping_address_id_ns
   , b.addr1 as address_1
   , b.addr2 as address_2
   , b.addr3 as address_3

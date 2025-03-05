@@ -68,8 +68,6 @@ use createdate converted instead of trandate
     , tran.custbody_boomi_orderid as order_id_shopify
     , tran.shippingaddress as shipping_address_id_ns
     , concat(tran.recordtype,'_',tran.shippingaddress) as shipping_address_id_edw
-    , tran.billingaddress as billing_address_id_ns
-    , concat(tran.recordtype,'_',tran.billingaddress) as billing_address_id_edw
     from
       netsuite.transactionaccountingline tal
     inner join
