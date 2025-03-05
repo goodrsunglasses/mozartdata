@@ -43,6 +43,8 @@ SELECT DISTINCT
 , gt.cleared_date
 , gt.order_id_shopify
 , o.new_customer_order_flag
+, gt.shipping_address_id_edw
+, gt.shipping_address_id_ns
 , noa.state
 , noa.state_abbreviation
 , noa.country
