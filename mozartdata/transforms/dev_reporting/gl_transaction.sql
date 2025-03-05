@@ -49,6 +49,7 @@ SELECT DISTINCT
 , noa.state_abbreviation
 , noa.country
 , noa.zip_code
+, noa.normalized_zip_code
 FROM
   fact.gl_transaction gt
   LEFT JOIN
