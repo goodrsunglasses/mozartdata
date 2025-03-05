@@ -1,4 +1,4 @@
-SELECT
+SELECT DISTINCT
   gt.gl_transaction_id_edw
 , gt.order_id_edw
 , gt.order_id_ns

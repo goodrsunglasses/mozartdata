@@ -116,8 +116,8 @@ select
   , b.addrtext as address_text
   , b.attention
   , b.city
-  , b.state
-  , s.shortname as state_abbreviation
+  , coalesce(sa.fullname, b.state) as state
+  , coalesce(sf.shortname, b.state) as state_abbreviation
   , b.country
   , b.zip as zip_code
   , case when b.override = 'T' then true else false end as override_flag
@@ -125,6 +125,10 @@ select
 from
   base b
 left join
-  netsuite.state s
-  on b.state = s.fullname
-  and b.country = s.country
+  netsuite.state sf
+  on b.state = sf.fullname
+  and b.country = sf.country
+left join
+  netsuite.state sa
+  on b.state = sa.shortname
+  and b.country = sa.country
