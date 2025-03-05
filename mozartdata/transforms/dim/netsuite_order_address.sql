@@ -103,7 +103,29 @@ with base as (
     netsuite.itemfulfillmentshippingaddress a
   where
     _fivetran_deleted = false
+  union all
+  select
+    a.nkey
+  , 'purchaseorder' as record_type
+  , a.addr1
+  , a.addr2
+  , a.addr3
+  , a.addressee
+  , a.addrphone
+  , a.addrtext
+  , a.attention
+  , a.city
+  , a.state
+  , a.country
+  , a.zip
+  , a.override
+  , a.dropdownstate
+  from
+    netsuite.purchaseordershippingaddress a
+  where
+    _fivetran_deleted = false
 )
+
 select
     concat(b.record_type,'_',b.nkey) as order_address_id_edw
   , b.nkey as order_address_id_ns
@@ -120,6 +142,7 @@ select
   , coalesce(sf.shortname, b.state) as state_abbreviation
   , b.country
   , b.zip as zip_code
+  , case when b.country = 'US' then left(trim(b.zip),5) else b.zip end as normalized_zip_code
   , case when b.override = 'T' then true else false end as override_flag
   , b.dropdownstate as state_drop_down
 from
