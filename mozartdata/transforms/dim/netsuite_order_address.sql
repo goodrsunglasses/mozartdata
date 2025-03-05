@@ -1,4 +1,3 @@
-create or replace table dim.netsuite_order_address copy grants as
 with base as (
   select
     a.nkey
@@ -120,7 +119,7 @@ select
   , b.state
   , s.shortname as state_abbreviation
   , b.country
-  , b.zip
+  , b.zip as zip_code
   , case when b.override = 'T' then true else false end as override_flag
   , b.dropdownstate as state_drop_down
 from

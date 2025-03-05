@@ -1,4 +1,4 @@
-SELECT DISTINCT
+SELECT
   gt.gl_transaction_id_edw
 , gt.order_id_edw
 , gt.order_id_ns
@@ -43,7 +43,7 @@ SELECT DISTINCT
 , gt.cleared_date
 , gt.order_id_shopify
 , o.new_customer_order_flag
-. noa.state
+, noa.state
 , noa.state_abbreviation
 , noa.country
 , noa.zip_code

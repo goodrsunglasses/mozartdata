@@ -17,7 +17,6 @@ pe = paymentevent
 createdate convert to America/Los_Angeles
 use createdate converted instead of trandate
 */
-create or replace table fact.gl_transaction copy grants as
   select
       concat(tal.transaction,'_',tal.transactionline) as gl_transaction_id_edw
     , pt.order_id_edw
