@@ -66,6 +66,8 @@ use createdate converted instead of trandate
     , case when tl.cleared = 'T' then true else false end as cleared_flag
     , date(tl.cleareddate) AS cleared_date
     , tran.custbody_boomi_orderid as order_id_shopify
+    , tran.shippingaddress as shipping_address_id_ns
+    , concat(tran.recordtype,'_',tran.shippingaddress) as shipping_address_id_edw
     from
       netsuite.transactionaccountingline tal
     inner join
@@ -114,37 +116,4 @@ use createdate converted instead of trandate
     and (tal._fivetran_deleted = false or tal._fivetran_deleted is null)
     and (tl._fivetran_deleted = false or tl._fivetran_deleted is null)
     and (pe._fivetran_deleted = false or pe._fivetran_deleted is null)
-    group by
-     concat(tal.transaction,'_',tal.transactionline)
-    , pt.order_id_edw
-    , COALESCE(pt.order_id_ns,REPLACE(COALESCE(tran.custbody_goodr_shopify_order,tran.custbody_goodr_po_number),' ',''))
-    , tran.id
-    , tran.tranid
-    , tran.recordtype
-    , tal."ACCOUNT"
-    , tal.transactionline
-    , ga.account_number
-    , ga.budget_category
-    , channel.name
-    , tran.trandate
-    , pe.eventdate
-    , ap.posting_period
-    , case when tal.posting = 'T' then true else false end
-    , createdfrom
-    , tran.entity
-    , cnm.customer_id_edw
-    , cnm.tier
-    , tl.department
-    , tl.item
-    , p.product_id_edw
-    , d.name
-    , tran.memo
-    , tl.memo
-    , c.fullname
-    , tl.cleared
-    , tl.cleareddate
-    , tran.custbody_boomi_orderid
-    , e.altname   
-    , e.type
-    , eline.altname
-    , eline.type
+    group by all
