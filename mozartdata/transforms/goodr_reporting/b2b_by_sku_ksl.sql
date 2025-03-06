@@ -113,5 +113,5 @@ SELECT DISTINCT
     WHERE
         gltran.posting_flag = TRUE
     AND gltran.account_number LIKE '4%'
-    AND gltran.order_id_edw IS NULL
+    AND (gltran.order_id_edw IS NULL or record_type not in ('invoice','cashsale','cashrefund'))
     GROUP BY ALL
