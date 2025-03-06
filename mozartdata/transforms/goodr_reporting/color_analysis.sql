@@ -8,7 +8,6 @@ SELECT
     p.merchandise_class,
     p.color_lens_finish,
     p.sku,
-    p.family,
     p.finish_frame,
     sum(oi.revenue) revenue,
     sum(oi.quantity_sold) quantity_sold
@@ -21,6 +20,7 @@ JOIN
 WHERE
     sold_date > '2023-12-31'
     AND p.merchandise_department = 'SUNGLASSES'
+    AND p.family = 'INLINE'
 group by
     o.channel,
     p.sku,
@@ -31,5 +31,4 @@ group by
     p.design_tier,
     p.color_lens_finish,
     p.display_name,
-    p.family,
     p.finish_frame
