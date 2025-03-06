@@ -11,8 +11,8 @@ with
                           *
                       from
                           mozart.pipeline_root_table
-    )
-with base as (
+    ),
+base as (
   select
     a.nkey
   , 'invoice' as record_type
