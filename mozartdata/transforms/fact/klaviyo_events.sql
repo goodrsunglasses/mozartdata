@@ -11,13 +11,13 @@ There are potentially more data points in the blob worth extracting, but waiting
 */
 
 SELECT
-  e.datetime as event_timestamp
-, convert_timezone('UTC', 'America/Los_Angeles', e.datetime) as event_timestamp_pst
-, date(e.datetime) as event_date
-, date(convert_timezone('UTC', 'America/Los_Angeles', e.datetime)) as event_date_pst
-, e.event_id as event_id_klaviyo
-, e.metric_id as metric_id_klaviyo
-, m.name as metric_name
+  e.timestamp as event_timestamp
+, convert_timezone('UTC', 'America/Los_Angeles', e.timestamp) as event_timestamp_pst
+, date(e.timestamp) as event_date
+, date(convert_timezone('UTC', 'America/Los_Angeles', e.timestamp)) as event_date_pst
+, e.id as event_id_klaviyo
+-- , e.metric_id as metric_id_klaviyo
+-- , m.name as metric_name
 , e.profile_id as profile_id_klaviyo
 , e.event_properties
 , case when m.name = 'Placed Order' then JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$event_id"')::varchar else null end as order_id_shopify
@@ -37,10 +37,11 @@ SELECT
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$extra"."current_subtotal_price"')::varchar as subtotal_amount
 , JSON_EXTRACT_PATH_TEXT(e.event_properties,'"$value"')::varchar as item_amount
 FROM
-  staging.klaviyo_events e
-LEFT JOIN
-  dim.klaviyo_metrics m
-  on e.metric_id = m.metric_id_klaviyo
+  klaviyo_portable_v3_2.events e
+-- LEFT JOIN
+--   dim.klaviyo_metrics m
+--   on e.metric_id = m.metric_id_klaviyo
+limit 100
 -- UNION ALL
 -- SELECT
 --   to_timestamp_ntz(ke.datetime) as event_timestamp

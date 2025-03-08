@@ -1,10 +1,10 @@
 SELECT
-  _portable_extracted,
-  datetime,
-  event_id,
-  event_properties,
-  metric_id,
-  profile_id,
+   _portable_extracted,
+   attributes,
+   id as event_id,
+   links,
+   relationships,
   timestamp,
-  uuid
-FROM klaviyo_portable.klaviyo_v2_events_8589937320
+  type
+FROM  klaviyo_portable_v3_2.events
+limit 100

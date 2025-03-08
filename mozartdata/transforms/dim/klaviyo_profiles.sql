@@ -7,18 +7,44 @@ About this data: Klaviyo Profiles are the customers in klaviyo.
 Open questions: (as of 4/20/2024) Do we use swell or loyalty at Goodr?
 The fields are mostly null, is this intentional?
 */
+WITH base as
+(
+  SELECT
+    p.id as profile_id_klaviyo
+  , to_timestamp(p.attributes:CREATED::INT) as created_timestamp
+  , p.attributes:EMAIL::STRING as email
+  , p.attributes:FIRST_NAME::STRING as first_name
+  , p.attributes:LAST_NAME::STRING as last_name
+  , p.attributes:TITLE::STRING as title
+  , p.attributes:LOCATION:ADDRESS1::STRING as address_1
+  , p.attributes:LOCATION:ADDRESS2::STRING as address_2
+  , p.attributes:LOCATION:CITY::STRING as city
+  , p.attributes:LOCATION:REGION::STRING as region
+  , p.attributes:LOCATION:ZIP::STRING as zip_code
+  , p.attributes:LOCATION:COUNTRY::STRING as country
+  , p.attributes:LOCATION:TIMEZONE::STRING as timezone
+  , p.attributes:LOCATION:LATITUDE::STRING as latitude
+  , p.attributes:LOCATION:LONGITUDE::STRING as longitude
+  , p.attributes:PHONE_NUMBER::STRING as phone_number
+  , p.attributes:ORGANIZATION::STRING as company
+  , to_timestamp(p.attributes:LAST_EVENT_DATE::INT) as last_event_timestamp
+  , p.attributes
+  , p.attributes:PROPERTIES as properties
+  FROM
+    klaviyo_portable_v3_parallel.klaviyo_v3_profiles_8589938396 p
+)
 SELECT
-  p.profile_id as profile_id_klaviyo
-, p.created as created_timestamp
-, date(p.created) as created_date
-, convert_timezone('UTC', 'America/Los_Angeles', p.created) as created_timestamp_pst
-, date(convert_timezone('UTC', 'America/Los_Angeles', p.created)) as created_date_pst
-, p.email
-, p.first_name
-, p.last_name
-, p.title
-, p.location:ADDRESS1::varchar as address_1
-, p.location:ADDRESS2::varchar as address_2
+  b.profile_id_klaviyo
+, b.created_timestamp
+, date(b.created_timestamp) as created_date
+, convert_timezone('UTC', 'America/Los_Angeles', b.created_timestamp) as created_timestamp_pst
+, date(convert_timezone('UTC', 'America/Los_Angeles', b.created_timestamp)) as created_date_pst
+, b.email
+, b.first_name
+, b.last_name
+, b.title
+, b.address_1
+, b.address_2
 , p.location:CITY::varchar as city
 , p.location:REGION::varchar as region
 , p.location:ZIP::varchar as zip_code
@@ -75,4 +101,4 @@ SELECT
 , convert_timezone('UTC','America/Los_Angeles',p.updated) as updated_timestamp_pst
 , date(convert_timezone('UTC','America/Los_Angeles',p.updated)) as updated_date_pst
 FROM
-  klaviyo_portable.klaviyo_v2_profiles_8589937320 p
+  base b
