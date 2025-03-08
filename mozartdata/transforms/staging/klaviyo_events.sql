@@ -6,4 +6,5 @@ SELECT
    relationships,
   timestamp,
   type
-FROM  klaviyo_portable_v3_parallel.klaviyo_v3_events_8589938396
+FROM  klaviyo_portable_v3_2.events
+limit 100
