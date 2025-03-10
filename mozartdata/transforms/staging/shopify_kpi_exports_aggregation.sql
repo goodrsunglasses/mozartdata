@@ -26,3 +26,14 @@ select
   , "SESSIONS THAT COMPLETED CHECKOUT"
 from
     shopify_exports.kpi_data_20250206_20250216
+union all
+select
+    day::date
+  , "ONLINE STORE VISITORS"
+  , sessions
+  , "NEW CUSTOMERS"
+  , customers
+  , "CONVERSION RATE"
+  , "SESSIONS THAT COMPLETED CHECKOUT"
+from
+    shopify_exports.kpi_data_20250217_20250309
