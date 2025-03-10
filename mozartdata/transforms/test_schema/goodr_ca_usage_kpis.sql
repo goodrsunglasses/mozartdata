@@ -124,7 +124,7 @@ select
 from
     dim.date                                      as d
     left join
-        staging.shopify_kpi_exports_aggregation   as shopify
+        staging.shopify_canada_kpi_exports_aggregation   as shopify
             on
             d.date = shopify.event_date
     left join
