@@ -9,13 +9,13 @@ SELECT
   t.posting_period,
   t.transaction_date,
   date_trunc(MONTH, transaction_date) AS transaction_month,
-  date_trunc(MONTH, d.period_start) as posting_period_month
+  ap.period_start_date posting_period_month
 FROM
   fact.gl_transaction t
-  left join (select  posting_period, min(date) period_start from dim.date group by 1) d on t.posting_period = d.posting_period
+  left join dim.accounting_period ap using(posting_period)
 WHERE
   posting_flag
--- AND account_number LIKE '4%'
+ -- AND account_number LIKE '4%'
   AND transaction_month <> posting_period_month
   and (transaction_month like '2025%' or posting_period_month like '2025%')
 order by transaction_date desc
