@@ -21,8 +21,9 @@ SELECT
 FROM
   fact.gl_transaction t
   left join dim.gl_account a on a.account_id_edw = t.account_id_edw
+  left join dim.herd_map h using (department_id_ns)
 WHERE
-  t.department_id_ns in (24,4,53239,18333,8)
+  h.herd = 'retail'
   and posting_period like '%2025'
   and t.account_number >= 5000
   and posting_flag
