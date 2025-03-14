@@ -3,7 +3,7 @@ SELECT
       department,
       case 
           when department_id_ns in (25,18331,12,53241) then 'money'
-          when department_id_ns in (24,4,53239,18333) then 'retail'
+          when department_id_ns in (24,4,53239,18333,53243) then 'retail'
           when department_id_ns in (16,20,22,6,21) then 'creative'
           when department_id_ns in (46536,18,2,19,1,53242,3,8) then 'consumer'
           when department_id_ns in (9,53138,23,11,18332,14,17) then 'ops'
