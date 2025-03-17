@@ -80,7 +80,7 @@ union all
       NULL AS shipping_method,
       stord_service_level,
       weight_in_ounces AS sum_package_weight,
-      zone,
+      zone::text,
       duty duties_charge,
       other AS ancillary_charges_2,
       fuel fuel_charges,
