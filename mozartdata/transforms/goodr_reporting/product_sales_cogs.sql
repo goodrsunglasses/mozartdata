@@ -5,6 +5,8 @@ SELECT  date_trunc('month', sold_date) as month,
   p.merchandise_class as model,
 p.stage,
   design_tier,
+  d2c_launch_date,
+  b2b_launch_date,
   SUM(oi.quantity_sold) as units_sold , 
   sum(oi.revenue) as Revenue,
   SUM(cogs.total_cogs) as COGS
