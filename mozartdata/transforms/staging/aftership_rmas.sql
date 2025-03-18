@@ -1,4 +1,4 @@
-SELECT 'USA - Returns + 3rd party'                                                      as aftership_org
+SELECT 'USA - returns + 3rd party'                                                      as aftership_org
      , us_returns_3p_warranties.id                                                      as aftership_id
      , us_returns_3p_warranties.rma_number
      , us_returns_3p_warranties._ORDER:ORDER_NUMBER::VARCHAR                            as original_order_id_edw
@@ -47,7 +47,7 @@ SELECT 'USA - Returns + 3rd party'                                              
      , us_returns_3p_warranties.auto_resolved
 FROM aftership_returns_usa_and_3rd_party_warranties_portable.returns as us_returns_3p_warranties
 union all
-SELECT 'Canada - Returns + 3rd party'                                                    as aftership_org
+SELECT 'Canada - returns + 3rd party'                                                    as aftership_org
      , can_returns_3p_warranties.id                                                      as aftership_id
      , can_returns_3p_warranties.rma_number
      , can_returns_3p_warranties._ORDER:ORDER_NUMBER::VARCHAR                            as original_order_id_edw
