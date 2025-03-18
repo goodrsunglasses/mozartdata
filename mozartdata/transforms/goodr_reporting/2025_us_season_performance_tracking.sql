@@ -3,10 +3,11 @@
    ,TO_VARCHAR(DATE, 'Mon') as month
   , funnel_stage
   , sum(spend) as spend
-  , sum(revenue) as purchase_value
   , sum(impressions) as impressions
+  , sum(revenue) as purchase_value
   , sum(clicks) as clicks
   , sum(conversions) as purchases
+  , sum(reach)
   from
     goodr_reporting.performance_media
   where
