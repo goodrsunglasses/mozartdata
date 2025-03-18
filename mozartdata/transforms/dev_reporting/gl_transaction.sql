@@ -23,6 +23,7 @@ SELECT DISTINCT
 , gt.debit_amount
 , gt.normal_balance_amount
 , gt.net_amount
+, gt.quantity
 , gt.parent_transaction_id_ns
 , gt.item_id_ns
 , gt.product_id_edw

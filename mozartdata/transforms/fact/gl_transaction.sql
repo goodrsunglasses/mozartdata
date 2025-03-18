@@ -48,6 +48,7 @@ use createdate converted instead of trandate
       when ga.account_category in ('Assets','Expenses') then (coalesce(tal.debit,0)) - (coalesce(tal.credit,0))
       when ga.account_category in ('Liabilities','Equity','Revenues') then (coalesce(tal.credit,0)) - (coalesce(tal.debit,0))
       end,0)) as net_amount
+    , sum(abs(case when tl.itemtype = 'InvtPart' then tl.quantity else 0 end)) as quantity
     , tl.createdfrom as parent_transaction_id_ns
     , tl.item as item_id_ns
     , p.product_id_edw
