@@ -179,7 +179,45 @@ WITH
       'staging_ las_20241007' AS source_file
     FROM
       stord_invoices.las_20241007
-  ---  stord_invoices.inv6027590 (all duplicates)
+      ---  stord_invoices.inv6027590 (all duplicates)
+    UNION ALL
+    --- parcel_details
+    SELECT
+      location::text,
+      invoice::text,
+      detailed_carrier::text,
+      account_number::text,
+      COALESCE(
+        TRY_TO_DATE(BILLED_DATE, 'YYYY-MM-DD'),
+        TRY_TO_DATE(BILLED_DATE, 'MM/DD/YYYY HH:MI:SS AM'),
+        TRY_TO_DATE(BILLED_DATE, 'MM/DD/YYYY')
+      ) AS billed_date_converted,
+      order_number_wms::text,
+      shipment_tracking_number::text,
+      customer_name::text,
+      COALESCE(
+        TRY_TO_DATE(ship_DATE, 'YYYY-MM-DD'),
+        TRY_TO_DATE(ship_DATE, 'MM/DD/YYYY HH:MI:SS AM'),
+        TRY_TO_DATE(ship_DATE, 'MM/DD/YYYY')
+      ) AS ship_DATE_converted,
+      destination_address_1::text,
+      destination_city::text,
+      destination_state::text,
+      destination_zip::text,
+      destination_country::text,
+      shipping_method::text,
+      stord_service_level::text,
+      sum_package_weight::text,
+      zone::text,
+      duties_charge,
+      ancillary_charges_2,
+      fuel_charges,
+      residential_charges,
+      shipping_charges,
+      total_shipping_less_duties,
+      'parcel_details' AS source_file
+    FROM
+      stord_invoices.parcel_details
   )
 SELECT
   location,
@@ -210,13 +248,13 @@ SELECT
 FROM
   combined
 
-/*   QC FOR DUPLICATES 
-WHERE (shipment_tracking_number, total_shipping_less_duties)
+  /*   QC FOR DUPLICATES 
+  WHERE (shipment_tracking_number, total_shipping_less_duties)
   IN (
-    SELECT shipment_tracking_number, total_shipping_less_duties
-    FROM combined
-    GROUP BY shipment_tracking_number, total_shipping_less_duties
-    HAVING COUNT(DISTINCT source_file) > 1
+  SELECT shipment_tracking_number, total_shipping_less_duties
+  FROM combined
+  GROUP BY shipment_tracking_number, total_shipping_less_duties
+  HAVING COUNT(DISTINCT source_file) > 1
   )
-order by shipment_tracking_number, invoice
-*/
+  order by shipment_tracking_number, invoice
+  */
