@@ -176,8 +176,10 @@ SELECT DISTINCT
   , templecolor.name                                 AS color_temple
   , framefinish.name                                 AS finish_frame
   , templefinish.name                                AS finish_temple
-  , lenscolor.name                                   AS color_lens_finish
-  , i.custitem24                                     AS lens_type
+  , lenscolorbase.name                               AS color_lens_base
+  , lenscolorfinish.name                                   AS color_lens_finish
+  , lenstech.name                                    AS lens_tech
+  , lenstype.name                                    AS lens_type
   , design.name                                      AS design_tier
   , artwork.name                                     AS frame_artwork
   , i.custitem7                                      AS d2c_launch_timestamp
@@ -199,6 +201,13 @@ SELECT DISTINCT
   , i.custitem_goodr_ip_height                       AS ip_height_in
   , i.custitem_goodr_hts_code_item                   AS hts_code
   , i.CUSTITEM1                                      AS country_of_origin
+  , IFF(i.custitem_goodrcabana_item = 'T', TRUE, FALSE) as cabana_item_flag
+  , IFF(i.custitem_goodrwill_item = 'T', TRUE, FALSE) as goodrwill_item_flag
+  , IFF(i.custitem_goodrglobal_item = 'T', TRUE, FALSE) as global_item_flag
+  , IFF(i.custitem_sellgoodr_item = 'T', TRUE, FALSE) as sellgoodr_item_flag
+  , IFF(i.custitem_goodrsunglasses_item = 'T', TRUE, FALSE) as goodr_com_item_flag
+  , IFF(i.custitemcustitem_goodrcad_item = 'T', TRUE, FALSE) as goodr_ca_item_flag
+  , IFF(i.custitemcustitem_sellgoodrcad_item = 'T', TRUE, FALSE) as sellgoodr_ca_item_flag
   , IFF(i.custitem_stord_item = 'T', TRUE, FALSE)    AS stord_item_flag
   , IFF(i.custitem14 = 'T', TRUE, FALSE)             AS distributor_portal_item_flag
   , IFF(i.custitem25 = 'T', TRUE, FALSE)             AS key_account_prebook_item_flag
@@ -228,10 +237,14 @@ FROM
         ON i.custitem21 = framefinish.id
     LEFT JOIN netsuite.customlist988                               templefinish
         ON i.custitem33 = templefinish.id
-    LEFT JOIN netsuite.customlist990                               lenscolor
+    LEFT JOIN netsuite.customlist990                               lenscolorfinish
         ON i.custitem22 = lenscolor.id
-    LEFT JOIN netsuite.customlist_psgss_product_color              lenscolorbase
+    LEFT JOIN netsuite.CUSTOMLIST1273                             lenscolorbase
         ON i.custitem28 = lenscolorbase.id
+    LEFT JOIN netsuite.customlist992                               lenstype
+        ON i.custitem24 = lenstype.id
+    LEFT JOIN netsuite.CUSTOMLIST989                               lenstech
+        ON i.custitem23 = lenstech.id
     LEFT JOIN netsuite.customlist_psgss_merc_class                 class
         ON i.custitem_psgss_merc_class = class.id
     LEFT JOIN netsuite.customlist_psgss_merc_dept                  dept
