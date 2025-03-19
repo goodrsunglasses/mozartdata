@@ -53,13 +53,12 @@ select
     , returns.return_item_total_price_amount - zeroifnull(returns.return_item_tax_price_amount) as rma_item_product_value
     , zeroifnull(returns.return_item_unit_discount_amount) as rma_item_discount_value
     , zeroifnull(returns.return_item_tax_price_amount) as rma_item_tax_value
-    , return_product.collection as rma_item_lens_sku
-    , return_product.family as rma_item_lens_type
-    , return_product.stage as rma_item_color_frame
-    , return_product.merchandise_class as rma_item_lens_type
-    , return_product.upc_code as rma_item_frame_artwork
-    , return_product.design_tier as rma_item_frame_finish
-    , return_product.vendor_name as rma_item_vendor_name
+    , return_product.collection as rma_item_collection
+    , return_product.family as rma_item_family
+    , return_product.stage as rma_item_stage
+    , return_product.merchandise_class as rma_item_merchandise_class
+    , return_product.upc_code as rma_item_upc_code
+    , return_product.design_tier as rma_item_design_tier
     , return_product.lens_sku as rma_item_lens_sku
     , return_product.lens_type as rma_item_lens_type
     , return_product.color_frame as rma_item_color_frame
@@ -96,6 +95,12 @@ select
     , exchange.exchange_quantity as rma_exchange_item_quantity
     , exchange.exchange_item_unit_price_currency as rma_exchange_item_currency
     , exchange.exchange_item_unit_price_amount as rma_exchange_item_product_value
+    , exchange_product.collection as rma_exchange_item_collection
+    , exchange_product.family as rma_exchange_item_family
+    , exchange_product.stage as rma_exchange_item_stage
+    , exchange_product.merchandise_class as rma_exchange_item_merchandise_class
+    , exchange_product.upc_code as rma_exchange_item_upc_code
+    , exchange_product.design_tier as rma_exchange_item_design_tier
     , exchange_product.lens_sku as rma_exchange_item_lens_sku
     , exchange_product.lens_type as rma_exchange_item_lens_type
     , exchange_product.color_frame as rma_exchange_item_color_frame
