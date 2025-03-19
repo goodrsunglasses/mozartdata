@@ -345,6 +345,22 @@ SELECT orders.order_id_edw
 	 , aggregates.amount_paid_total
 	 , aggregates.gross_profit_estimate
 	 , aggregates.cost_estimate
+    , case
+        when
+            aftership_return_orders.original_order_id_edw is not null
+        then
+            true
+        else
+            false
+    end as has_aftership_rma
+    , case
+        when
+            aftership_exchange_orders.rma_exchange_order_id_edw is not null
+        then
+            true
+        else
+            false
+    end as is_aftership_generated
 -- case when aggregate_netsuite.tier like '%O' then true
 --      when cust.first_order_id_edw_ns is not null and cust.customer_category = 'D2C' then TRUE
 --      else false end as customer_first_order_flag
@@ -362,6 +378,14 @@ FROM dim.orders orders
 							aggregate_netsuite.channel_currency_id_ns = cer.transaction_currency_id_ns
 		 LEFT OUTER JOIN fulfillment_info
 						 ON fulfillment_info.order_id_edw = orders.order_id_edw
+         left join
+            fact.aftership_rmas             as aftership_return_orders
+            on
+                orders.order_id_edw = aftership_return_orders.original_order_id_edw
+         left join
+            fact.aftership_rmas             as aftership_exchange_orders
+            on
+                orders.order_id_edw = aftership_exchange_orders.rma_exchange_order_id_edw
 -- LEFT OUTER JOIN fact.customers cust ON cust.first_order_id_edw_ns = orders.order_id_edw
 WHERE aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY aggregate_netsuite.booked_date DESC
