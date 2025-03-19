@@ -62,7 +62,6 @@ select
     , return_product.lens_sku as rma_item_lens_sku
     , return_product.lens_type as rma_item_lens_type
     , return_product.color_frame as rma_item_color_frame
-    , return_product.lens_type as rma_item_lens_type
     , return_product.frame_artwork as rma_item_frame_artwork
     , return_product.finish_frame as rma_item_frame_finish
     , return_product.vendor_name as rma_item_vendor_name
@@ -104,7 +103,6 @@ select
     , exchange_product.lens_sku as rma_exchange_item_lens_sku
     , exchange_product.lens_type as rma_exchange_item_lens_type
     , exchange_product.color_frame as rma_exchange_item_color_frame
-    , exchange_product.lens_type as rma_exchange_item_lens_type
     , exchange_product.frame_artwork as rma_exchange_item_frame_artwork
     , exchange_product.finish_frame as rma_exchange_item_frame_finish
     , exchange_product.vendor_name as rma_exchange_item_vendor_name
