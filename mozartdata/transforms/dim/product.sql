@@ -237,7 +237,7 @@ FROM
         ON i.custitem21 = framefinish.id
     LEFT JOIN netsuite.customlist988                               templefinish
         ON i.custitem33 = templefinish.id
-    LEFT JOIN netsuite.customlist990                               lenscolor
+    LEFT JOIN netsuite.customlist990                               lenscolorfinish
         ON i.custitem22 = lenscolor.id
     LEFT JOIN netsuite.CUSTOMLIST1273                             lenscolorbase
         ON i.custitem28 = lenscolorbase.id
