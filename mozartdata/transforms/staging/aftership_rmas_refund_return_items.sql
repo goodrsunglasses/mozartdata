@@ -18,8 +18,8 @@ select
   , return_items.value:UNIT_DISCOUNTED_PRICE_INCLUDING_TAX:CURRENCY::varchar as return_item_total_price_currency
   , return_items.value:UNIT_DISPLAY_PRICE:AMOUNT::float                      as return_item_unit_price_amount
   , return_items.value:UNIT_DISPLAY_PRICE:CURRENCY::varchar                  as return_item_unit_price_currency
-  , return_items.value:UNIT_DISCOUNT:AMOUNT::float                           as return_item_shipping_price_amount
-  , return_items.value:UNIT_DISCOUNT:CURRENCY::varchar                       as return_item_shipping_price_currency
+  , return_items.value:UNIT_DISCOUNT:AMOUNT::float                           as return_item_unit_discount_amount
+  , return_items.value:UNIT_DISCOUNT:CURRENCY::varchar                       as return_item_unit_discount_currency
   , return_items.value:UNIT_TAX:AMOUNT::float                                as return_item_tax_price_amount
   , return_items.value:UNIT_TAX:CURRENCY::varchar                            as return_item_tax_price_currency
   , return_items.value:RETURN_REASON::varchar                                as return_item_reason
@@ -52,8 +52,8 @@ select
   , return_items.value:UNIT_DISCOUNTED_PRICE_INCLUDING_TAX:CURRENCY::varchar as return_item_total_price_currency
   , return_items.value:UNIT_DISPLAY_PRICE:AMOUNT::float                      as return_item_unit_price_amount
   , return_items.value:UNIT_DISPLAY_PRICE:CURRENCY::varchar                  as return_item_unit_price_currency
-  , return_items.value:UNIT_DISCOUNT:AMOUNT::float                           as return_item_shipping_price_amount
-  , return_items.value:UNIT_DISCOUNT:CURRENCY::varchar                       as return_item_shipping_price_currency
+  , return_items.value:UNIT_DISCOUNT:AMOUNT::float                           as return_item_unit_discount_amount
+  , return_items.value:UNIT_DISCOUNT:CURRENCY::varchar                       as return_item_unit_discount_currency
   , return_items.value:UNIT_TAX:AMOUNT::float                                as return_item_tax_price_amount
   , return_items.value:UNIT_TAX:CURRENCY::varchar                            as return_item_tax_price_currency
   , return_items.value:RETURN_REASON::varchar                                as return_item_reason
@@ -86,8 +86,8 @@ select
   , return_items.value:UNIT_DISCOUNTED_PRICE_INCLUDING_TAX:CURRENCY::varchar as return_item_total_price_currency
   , return_items.value:UNIT_DISPLAY_PRICE:AMOUNT::float                      as return_item_unit_price_amount
   , return_items.value:UNIT_DISPLAY_PRICE:CURRENCY::varchar                  as return_item_unit_price_currency
-  , return_items.value:UNIT_DISCOUNT:AMOUNT::float                           as return_item_shipping_price_amount
-  , return_items.value:UNIT_DISCOUNT:CURRENCY::varchar                       as return_item_shipping_price_currency
+  , return_items.value:UNIT_DISCOUNT:AMOUNT::float                           as return_item_unit_discount_amount
+  , return_items.value:UNIT_DISCOUNT:CURRENCY::varchar                       as return_item_unit_discount_currency
   , return_items.value:UNIT_TAX:AMOUNT::float                                as return_item_tax_price_amount
   , return_items.value:UNIT_TAX:CURRENCY::varchar                            as return_item_tax_price_currency
   , return_items.value:RETURN_REASON::varchar                                as return_item_reason
@@ -120,8 +120,8 @@ select
   , return_items.value:UNIT_DISCOUNTED_PRICE_INCLUDING_TAX:CURRENCY::varchar as return_item_total_price_currency
   , return_items.value:UNIT_DISPLAY_PRICE:AMOUNT::float                      as return_item_unit_price_amount
   , return_items.value:UNIT_DISPLAY_PRICE:CURRENCY::varchar                  as return_item_unit_price_currency
-  , return_items.value:UNIT_DISCOUNT:AMOUNT::float                           as return_item_shipping_price_amount
-  , return_items.value:UNIT_DISCOUNT:CURRENCY::varchar                       as return_item_shipping_price_currency
+  , return_items.value:UNIT_DISCOUNT:AMOUNT::float                           as return_item_unit_discount_amount
+  , return_items.value:UNIT_DISCOUNT:CURRENCY::varchar                       as return_item_unit_discount_currency
   , return_items.value:UNIT_TAX:AMOUNT::float                                as return_item_tax_price_amount
   , return_items.value:UNIT_TAX:CURRENCY::varchar                            as return_item_tax_price_currency
   , return_items.value:RETURN_REASON::varchar                                as return_item_reason

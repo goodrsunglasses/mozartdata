@@ -66,6 +66,7 @@ from
             )                                 as exchange_items
 where
     lower(usa_warranties.exchange) != 'null'
+and exchange_items.value:SKU != exchange_items.value:VARIANT_TO_REPLACE:SKU
 union all
 select
     'Canada - warranty'                                                  as org

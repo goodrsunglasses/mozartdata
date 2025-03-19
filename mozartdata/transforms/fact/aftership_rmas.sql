@@ -6,9 +6,10 @@ select
     rmas.aftership_id
   , rmas.rma_number
   , rmas.created_at::date                                          as rma_created_date
-  , rmas.customer_email
+  , rmas.customer_email                                            as rma_email
   , rmas.original_order_id_edw
   , rmas.original_order_id_shopify
+  , rmas.original_order_placed_at::date                            as original_order_date
   , case
         when
             lower(rmas.original_order_store) = 'goodr-sunglasses'
@@ -20,7 +21,7 @@ select
             'goodr.ca'
         else
             'unkown store'
-    end                                                            as rma_original_orer_channel
+    end                                                            as original_orer_channel
   , case
         when
             rmas.approval_status = 'done'
@@ -136,3 +137,4 @@ from
     staging.aftership_rmas as rmas
 where
     rmas.created_at >= '2025-01-21' -- Aftership went live on Jan 21st, 2025.
+    and lower(rmas.customer_email) not like '%goodr.com'
