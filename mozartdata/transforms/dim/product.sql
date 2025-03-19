@@ -177,7 +177,7 @@ SELECT DISTINCT
   , framefinish.name                                 AS finish_frame
   , templefinish.name                                AS finish_temple
   , lenscolorbase.name                               AS color_lens_base
-  , lenscolor.name                                   AS color_lens_finish
+  , lenscolorfinish.name                                   AS color_lens_finish
   , lenstech.name                                    AS lens_tech
   , lenstype.name                                    AS lens_type
   , design.name                                      AS design_tier
