@@ -1,5 +1,5 @@
 /*
-    Table name: fact.aftership_rmas
+    Table name: fact.aftership_rma_items
     Created: 3-14-2025
     Purpose: takes information from staging.aftership_rmas_refund_return_items and
         aftership_rmas_exchange_warranty_items and creates a table for determining item-level info in rmas, e.g. sku,
