@@ -9,10 +9,10 @@ p.stage,
   b2b_launch_date,
   SUM(oi.quantity_sold) as units_sold , 
   sum(oi.revenue) as Revenue,
-  SUM(cogs.total_cogs) as COGS
+  SUM(cogs.unit_cogs) as COGS
   FROM fact.order_item oi
   LEFT JOIN dim.product p on p.sku = oi.sku
   LEFT JOIN fact.orders o  on o.order_id_edw = oi.order_id_edw
-  LEFT JOIN s8.cogs_transactions cogs on cogs.order_id_edw = o.order_id_edw and cogs.sku = oi.sku
+  LEFT JOIN (SELECT DISTINCT order_id_edw,sku,unit_cogs FROM s8.cogs_transactions) cogs on cogs.order_id_edw = o.order_id_edw and cogs.sku = oi.sku
 where family is not null 
 group by all
