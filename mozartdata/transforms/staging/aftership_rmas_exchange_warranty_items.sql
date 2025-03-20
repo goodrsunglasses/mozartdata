@@ -25,6 +25,15 @@
         exchange_item_unit_price_amount: cost of the item being used as a replacement if it were bought instead
         exchange_item_unit_price_currency: currency of the unit price
 */
+
+with
+  root_table as (
+    select
+        *
+    from
+        mozart.pipeline_root_table
+    )
+
 select
     'USA - returns + 3rd party'                                          as aftership_org
   , us_returns_3p_warranties.id                                          as aftership_id

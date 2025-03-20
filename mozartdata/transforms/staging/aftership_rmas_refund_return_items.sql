@@ -42,6 +42,15 @@
     return_item_reason_comment: comment for return item. This contains date code for warranties
     PRODUCT_TAGS: tags on product. random but useful data that is not normalized
  */
+
+ with
+  root_table as (
+    select
+        *
+    from
+        mozart.pipeline_root_table
+    )
+
  select
     'USA - returns + 3rd party'                                              as aftership_org
   , us_returns_3p_warranties.id                                              as aftership_id

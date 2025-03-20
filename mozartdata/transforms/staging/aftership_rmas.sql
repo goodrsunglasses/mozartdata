@@ -59,6 +59,13 @@
     resolved_at: datetime rma was resolved
     auto_resolved: indicated if it was processed without review
  */
+with
+  root_table as (
+    select
+        *
+    from
+        mozart.pipeline_root_table
+    )
 
 select
     'USA - returns + 3rd party'                                                      as aftership_org
