@@ -34,8 +34,8 @@ WITH
   replace(p.order_number_wms,' ','') as inv_order_id_edw,
   coalesce(ful2.order_id_edw,ful1.order_id_edw) as api_order_id_edw,
   COALESCE(ful2.order_id_edw,ful1.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
-  o.amount_product_sold as subtotal,                        ---- by order, so will be duplicated for split shipments
-  o.amount_shipping_sold as shipping_income,                ---- by order, so will be duplicated for split shipments
+  (o.amount_revenue_sold - o.amount_shipping_sold) as subtotal,       ---- by order, so will be duplicated for split shipments
+  o.amount_shipping_sold as shipping_income,                          ---- by order, so will be duplicated for split shipments
   COALESCE(ful2.state, ful1.state) as state_ful,
   sr.region as shipping_region,
   coalesce(to_date(ful2.ship_date),to_date(ful1.ship_date)) as api_ship_date,
