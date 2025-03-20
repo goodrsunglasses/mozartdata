@@ -1,4 +1,48 @@
-select
+/*
+ Table name: staging.aftership_rmas_refund_return_items
+ Created: 3-12-2025
+ Purpose: Union alls together the item-level refund and return data from the various Portable Aftership tables
+    - USA + 3rd Party, Canada + 3rd Party, US Warranty, and Canada Warranty. It does not actually have any 3rd party
+    warranty data as of its creation due to that information not flowing through the API - it requires
+    webhooks, which can be implemented in the future if desired.
+
+    To be clear on the difference between this and the exchange_warranty_items table: this table shows information
+    related to items being refunded for or returned.
+
+ Schema:
+    aftership_org: The organization on Aftership
+    aftership_id: unique id of rma on Aftership
+    rma_number: the main identifier for an Aftership customer request.
+        Primary Key
+    original_order_id_edw:the order number of the original order that is associated with the RMA.
+        Foreign key to fact.orders.order_id_edw and fact.aftership_rmas.original_order_id_edw
+    original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
+    return_item_product_id_edw: product_id_edw (sku) of the item being returned/refunded
+    return_item_product_id_shopify: product id in shopify of the item being returned/refunded
+    return_item_variant_id_shopify: variant id in shopify of the item being returned/refunded
+    return_item_title: display name of the item being returned
+    return_item_type: collection that return item belongs to, e.g. The OGs
+    ordered_quantity: quantity originally ordered of this item
+    intended_return_quantity: quantity listed on the return as going to be returned/refunded
+    return_quantity: quantity actually returned/refunded. Very inaccurate
+    received_quantity: quantity received per shipping info. Very inaccurate
+    refund_quantity: quantity actually refunded. Very inaccurate
+    return_item_total_price_amount: return item total original price with tax
+    return_item_total_price_currency: currency return item total price is in.
+    return_item_unit_price_amount: normal price of the item being returned
+    return_item_unit_price_currency: currency of unit price
+    return_item_unit_discount_amount: discount applied to normal price of item being returned.
+        Not necessarily applied to the item in Shopify - could be shipping discount broken down by
+        item by Aftership.
+    return_item_unit_discount_currency: Currency of discount
+    return_item_tax_price_amount: tax value of original item in original order.
+    return_item_tax_price_currency: currency of tax
+    return_item_reason: reason item is returned
+    return_item_subreason: subreason it is returned
+    return_item_reason_comment: comment for return item. This contains date code for warranties
+    PRODUCT_TAGS: tags on product. random but useful data that is not normalized
+ */
+ select
     'USA - returns + 3rd party'                                              as aftership_org
   , us_returns_3p_warranties.id                                              as aftership_id
   , us_returns_3p_warranties.rma_number

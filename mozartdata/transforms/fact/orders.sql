@@ -91,8 +91,8 @@ select
     end                          as has_refund
     , refund.refund_timestamp_pst
     , date(refund.refund_timestamp_pst)                                                  as refund_date_pst
-    , o.has_aftership_rma
-    , o.is_aftership_generated
+    , o.has_aftership_rma -- indicates if an order has an aftership rma associated with it
+    , o.is_aftership_generated -- indicates if an order was created by aftership as part of an rma
     , CASE
         WHEN o.b2b_d2c = 'INDIRECT' THEN NULL
         WHEN o.tier LIKE '%O' AND o.b2b_d2c = 'B2B' THEN TRUE

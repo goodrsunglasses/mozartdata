@@ -1,5 +1,48 @@
 /*
-    This table is used to display all the information regarding 
+    Table name: fact.aftership_rmas
+    Created: 3-14-2025
+    Purpose: takes information from staging.aftership_rmas and turns them into more usable columns. That means it
+        takes certain columns and groups them to reinterpret what they mean.
+
+    Schema:
+        aftership_id: The organization on Aftership
+        rma_number: the main identifier for an Aftership customer request.
+            Primary Key
+        rma_created_date: date rma was created
+        rma_email: email of the customer that submitted the rma
+        original_order_id_edw:  the order number of the original order that is associated with the RMA.
+            Foreign key to fact.orders.order_id_edw and fact.aftership_rma_items.original_order_id_edw
+        original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
+        original_order_date: date that the original order was placed
+        original_order_channel: original channel order was placed on. Matches dim.channel or is "unknown source"
+        rma_status: status of rma, simplified from the various values from aftership. can be completed, cancelled,
+            incomplete or other
+        rma_approved_date: date rma was approved
+        rma_expired_date: date rma expired
+        rma_rejected_date: date rma was rejected
+        rma_resolved_date: date rma was resolved, as in it no longer needed any further action
+        rma_type: whether an rma was an upsell, downsell, refund or exchange
+        rma_currency: currency of product and tax values
+        rma_total_product_value: total product value of the products in the rma as originally sold
+        rma_total_tax_value: value of tax was on all rma products when originally sold
+        rma_refund_product_value: value of refunds on products in rma (as opposed to any exchanges in the rma)
+        rma_refund_tax_value: value of tax on refunds in this rma
+        rma_refund_date: date refund was issued
+        rma_refund_destination: destination of refund, empty if no refund destination
+        rma_exchange_product_value: value of products exchanged in this rma (as opposed to returned or refunded)
+        rma_exchange_tax_value: value of tax on exchanges in rma
+        rma_exchange_order_id_edw: order number on Shopify of exchange order, if any.
+            Foreign key to fact.orders.order_id_edw and fact.aftership_rma_items.original_order_id_edw
+        rma_upsell_currency: currency of any upsell values in rma
+        rma_upsell_total_value: total value of upsells in this rma, including tax
+        rma_return_type: type of return, can be 'no return' or 'return'
+        rma_return_status: status of return, inidcating if a reurn has been shipped, is in transit, or is received.
+        rma_return_carrier: carrier of the return, e.g. usps
+        rma_return_tracking_number: tracking number of return, is null until slug receives package. Likely connects
+            to fulfillment tables but not sure how at this time.
+            todo: add boolean in relevant fulfillment table
+        rma_return_currency: currency of return cost
+        rma_return_cost: cost of shipping return
 */
 
 select
@@ -20,8 +63,8 @@ select
             then
             'goodr.ca'
         else
-            'unkown store'
-    end                                                            as original_orer_channel
+            'unknown store'
+    end                                                            as original_order_channel
   , case
         when
             rmas.approval_status = 'done'
@@ -136,5 +179,5 @@ select
 from
     staging.aftership_rmas as rmas
 where
-    rmas.created_at >= '2025-01-21' -- Aftership went live on Jan 21st, 2025.
-    and lower(rmas.customer_email) not like '%goodr.com'
+      rmas.created_at >= '2025-01-21' -- Aftership went live on Jan 21st, 2025.
+  and lower(rmas.customer_email) not like '%goodr.com'

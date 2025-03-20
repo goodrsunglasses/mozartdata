@@ -8,8 +8,10 @@
  Schema:
     aftership_org: The organization on Aftership
     aftership_id: unique id of rma on Aftership
-    rma_number: rma number, the main identifier for an Aftership customer request. Primary Key
-    original_order_id_edw: the order number of the original order that is associated with the RMA
+    rma_number: the main identifier for an Aftership customer request.
+        Primary Key
+    original_order_id_edw: the order number of the original order that is associated with the RMA.
+        Foreign key to fact.orders.order_id_edw and fact.aftership_rma_items.original_order_id_edw
     original_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
     created_at: timestamp showing when a rma was filed
     expired_at: timestamp showing when a rma expired
@@ -22,7 +24,8 @@
     customer_email: email of the customer that submitted the rma
     original_order_placed_at: datetime original order was placed on Shopify
     original_order_store: Shopify store where order was placed
-    exchange_order_number: order number on Shopify of exchange order, if any
+    exchange_order_number: order number on Shopify of exchange order, if any.
+        Foreign key to fact.orders.order_id_edw and fact.aftership_rma_items.original_order_id_edw
     exchange_total_incl_tax_amount: total value of exchange order including tax
     exchange_total_incl_tax_currency: type of currency exchange value is in
     exchange_tax_total: total value of exchange tax
@@ -36,10 +39,12 @@
     return_tax_amount: the tax value of the return or refund
     return_tax_currency: the currency the tax amount is in
     shipment_slug: carrier for the return, if any
-    shipment_tracking_number: tracking number of return, is null until slug receives package
+    shipment_tracking_number: tracking number of return, is null until slug receives package. Likely connects
+        to fulfillment tables but not sure how at this time.
+        todo: add boolean in relevant fulfillment table
     shipment_tracking_status: status of shipment for return
     shipment_cost: cost of shipment for return
-    shipment_currency" currency of shipment cost
+    shipment_currency: currency of shipment cost
     return_received_at: datetime shipment of return was received
     auto_received: if shipment was received without review
     refunded_at: datetime refund was processed

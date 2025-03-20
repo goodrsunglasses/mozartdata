@@ -1,3 +1,30 @@
+/*
+    Table name: staging.aftership_rmas_exchange_warranty_items
+    Created: 3-12-2025
+    Purpose: Union alls together the item-level warranty and exchange data from the various Portable Aftership tables
+    - USA + 3rd Party, Canada + 3rd Party, US Warranty, and Canada Warranty. It does not actually have any 3rd party
+    warranty data as of its creation due to that information not flowing through the API - it requires
+    webhooks, which can be implemented in the future if desired.
+
+    To be clear on the difference between this and the refund_return_items table: this table shows information
+    related to items being sent to a customer (an exchange).
+
+    Schema:
+        aftership_org: The organization on Aftership
+        aftership_id: unique id of rma on Aftership
+        rma_number: the main identifier for an Aftership customer request.
+            Primary Key
+        original_order_id_edw:the order number of the original order that is associated with the RMA.
+            Foreign key to fact.orders.order_id_edw and fact.aftership_rmas.original_order_id_edw
+        original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
+        original_item_title: display name of the originally ordered item
+        exchange_item_product_id_edw: product_id_edw (sku) of the item being used as a replacement in the exchange
+        exchange_item_product_id_shopify: product_id in shopify of the item being used as a replacement in the exchange
+        exchange_item_variant_id_shopify: variant_id in Shopify of the item being used as a replacement in the exchange
+        exchange_quantity: quantity being sent in the exchange
+        exchange_item_unit_price_amount: cost of the item being used as a replacement if it were bought instead
+        exchange_item_unit_price_currency: currency of the unit price
+*/
 select
     'USA - returns + 3rd party'                                          as aftership_org
   , us_returns_3p_warranties.id                                          as aftership_id
