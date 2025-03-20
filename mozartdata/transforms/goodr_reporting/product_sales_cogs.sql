@@ -13,6 +13,6 @@ p.stage,
   FROM fact.order_item oi
   LEFT JOIN dim.product p on p.sku = oi.sku
   LEFT JOIN fact.orders o  on o.order_id_edw = oi.order_id_edw
-  LEFT JOIN s8.cogs_transactions cogs on cogs.order_id_edw = o.order_id_edw
+  LEFT JOIN s8.cogs_transactions cogs on cogs.order_id_edw = o.order_id_edw and cogs.sku = oi.sku
 where family is not null 
 group by all
