@@ -14,6 +14,7 @@ SELECT
 , social_channel
 , account_country
 , marketing_strategy
+, funnel_stage
 , spend
 , revenue
 , impressions
