@@ -8,6 +8,7 @@ WITH
       END AS slim_tracking_number,
       order_id_edw,
       ship_date,
+      state,
       sum(quantity) as qty
     FROM
       fact.fulfillment_item_detail fid
@@ -35,6 +36,8 @@ WITH
   COALESCE(ful2.order_id_edw,ful1.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
   o.amount_product_sold as subtotal,                        ---- by order, so will be duplicated for split shipments
   o.amount_shipping_sold as shipping_income,                ---- by order, so will be duplicated for split shipments
+  COALESCE(ful2.state, ful1.state) as state_ful,
+  sr.region as shipping_region,
   coalesce(to_date(ful2.ship_date),to_date(ful1.ship_date)) as api_ship_date,
   COALESCE( (date_trunc(month, try_to_date(p.ship_date))),date_trunc(month, try_to_date(to_date(ful2.ship_date))),date_trunc(month, try_to_date(to_date(ful1.ship_date)))) as  ship_month,
   COALESCE(o.channel, o2.channel) as channel_orders,
@@ -69,12 +72,24 @@ FROM
   left join ful as ful2 ON p.shipment_tracking_number = ful2.tracking_number ---- count of qty is null with both 29,375
   LEFT JOIN fact.orders o ON upper(replace(p.order_number_wms,' ','')) = upper(o.order_id_edw)
   left join fact.orders o2 on ful2.order_id_edw = o2.order_id_edw
+  left join dim.shipping_regions sr on sr.code = ful1.state   ---- check that this works for ful2 as well
   )
 SELECT
   core.*,
-  so.order_id_shopify,
+  so.order_id_shopify,   --- bring back after qc
   ship.id,
-  ship.code
+  ship.code,
+      case 
+      when code ilike '%Standard%' then 'standard'  
+      when code ilike '%Priority%' then 'priority'
+      when code ilike '%Express%' then 'priority'
+      when code ilike '%Alaska/Hawaii/Territories (5-10 Business Days)%' then 'standard' 
+      when code ilike 'Alaska/Hawaii/Territories 2-8 days' then 'priority'
+      when code ilike 'Alaska/Hawaii/Territories 1 business day' then 'standard'
+      when code ilike '%Starbucks%' then 'standard'
+      when code ilike '%Expédition%' then 'priority'
+      when code ilike 'Canada (5-8 Business Days)' then 'standard'
+    else 'unknown' end as standard_priority
 FROM
   core
   LEFT JOIN fact.shopify_orders so ON so.order_id_edw = core.order_id_edw_coalesce     --  will this splay? I had it as inner join before - no
@@ -86,5 +101,6 @@ order by ship_date desc
 --where channel_COALESCE  = 'key accounts' or channel_COALESCE = 'key account can'
 --where channel_COALESCE  = 'other'
 --select sum(TOTAL_SHIPPING_LESS_DUTIES) from core where channel_COALESCE  = 'other'
+
 
 ---- need to add shopify (subtotal, delivery method, shipping income)
