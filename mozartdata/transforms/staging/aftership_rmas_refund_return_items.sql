@@ -86,7 +86,7 @@ from
             )                                                       as return_items
 union all
 select
-    'Canada - returns + 3rd party'                                           as org
+    'Canada - returns + 3rd party'                                           as aftership_org
   , can_returns_3p_warranties.id                                             as aftership_id
   , can_returns_3p_warranties.rma_number
   , can_returns_3p_warranties._order:ORDER_NUMBER::varchar                   as original_order_id_edw
