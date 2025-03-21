@@ -59,7 +59,7 @@ where
     lower(us_returns_3p_warranties.exchange) != 'null'
 union all
 select
-    'Canada - returns + 3rd party'                                       as org
+    'Canada - returns + 3rd party'                                       as aftership_org
   , can_returns_3p_warranties.id                                         as aftership_id
   , can_returns_3p_warranties.rma_number
   , can_returns_3p_warranties._order:ORDER_NUMBER::varchar               as original_order_id_edw
@@ -83,7 +83,7 @@ where
     lower(can_returns_3p_warranties.exchange) != 'null'
 union all
 select
-    'USA - warranty'                                                     as org
+    'USA - warranty'                                                     as aftership_org
   , usa_warranties.id                                                    as aftership_id
   , usa_warranties.rma_number
   , usa_warranties._order:ORDER_NUMBER::varchar                          as original_order_id_edw
@@ -107,7 +107,7 @@ where
     lower(usa_warranties.exchange) != 'null'
 union all
 select
-    'Canada - warranty'                                                  as org
+    'Canada - warranty'                                                  as aftership_org
   , can_warranties.id                                                    as aftership_id
   , can_warranties.rma_number
   , can_warranties._order:ORDER_NUMBER::varchar                          as original_order_id_edw
