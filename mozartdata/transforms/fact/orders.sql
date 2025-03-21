@@ -105,7 +105,6 @@ left outer join
     on
         refund.order_id_edw = o.order_id_edw
 LEFT OUTER JOIN
-    fact.customers                  cust
-    ON
-        cust.first_order_id_edw_shopify = o.order_id_edw
-        AND cust.customer_category = 'D2C'
+    fact.customers cust
+    ON cust.first_order_id_edw_shopify = o.order_id_edw
+     AND cust.customer_category = 'D2C'
