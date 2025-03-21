@@ -83,10 +83,10 @@ select
         else
             'other'
     end                                                            as rma_status
-  , rmas.approved_at::date                                         as rma_approved_date
-  , rmas.expired_at::date                                          as rma_expired_date
-  , rmas.rejected_at::date                                         as rma_rejected_date
-  , rmas.resolved_at::date                                         as rma_resolved_date
+  , rmas.approved_at::date                                         as approved_date
+  , rmas.expired_at::date                                          as expired_date
+  , rmas.rejected_at::date                                         as rejected_date
+  , rmas.resolved_at::date                                         as resolved_date
   , case
         when
             aftership_org like '%warranty'
