@@ -13,10 +13,11 @@
     aftership_org: The organization on Aftership
     aftership_id: unique id of rma on Aftership
     rma_number: the main identifier for an Aftership customer request.
-        Primary Key
     original_order_id_edw:the order number of the original order that is associated with the RMA.
         Foreign key to fact.orders.order_id_edw and fact.aftership_rmas.original_order_id_edw
     original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
+    return_item_aftership_id: item id in the return.
+        Primary Key
     return_item_product_id_edw: product_id_edw (sku) of the item being returned/refunded
     return_item_product_id_shopify: product id in shopify of the item being returned/refunded
     return_item_variant_id_shopify: variant id in shopify of the item being returned/refunded
@@ -57,6 +58,7 @@
   , us_returns_3p_warranties.rma_number
   , us_returns_3p_warranties._order:ORDER_NUMBER::varchar                    as original_order_id_edw
   , us_returns_3p_warranties._order:EXTERNAL_ID::integer                     as original_order_id_shopify
+  , return_items.value:ID::integer                                           as return_item_aftership_id
   , return_items.value:SKU::varchar                                          as return_item_product_id_edw
   , return_items.value:EXTERNAL_PRODUCT_ID::integer                          as return_item_product_id_shopify
   , return_items.value:EXTERNAL_VARIANT_ID::integer                          as return_item_variant_id_shopify
@@ -91,6 +93,7 @@ select
   , can_returns_3p_warranties.rma_number
   , can_returns_3p_warranties._order:ORDER_NUMBER::varchar                   as original_order_id_edw
   , can_returns_3p_warranties._order:EXTERNAL_ID::integer                    as original_order_id_shopify
+  , return_items.value:ID::integer                                           as return_item_aftership_id
   , return_items.value:SKU::varchar                                          as return_item_product_id_edw
   , return_items.value:EXTERNAL_PRODUCT_ID::integer                          as return_item_product_id_shopify
   , return_items.value:EXTERNAL_VARIANT_ID::integer                          as return_item_variant_id_shopify
@@ -125,6 +128,7 @@ select
   , usa_warranties.rma_number
   , usa_warranties._order:ORDER_NUMBER::varchar                              as original_order_id_edw
   , usa_warranties._order:EXTERNAL_ID::integer                               as original_order_id_shopify
+  , return_items.value:ID::integer                                           as return_item_aftership_id
   , return_items.value:SKU::varchar                                          as return_item_product_id_edw
   , return_items.value:EXTERNAL_PRODUCT_ID::integer                          as return_item_product_id_shopify
   , return_items.value:EXTERNAL_VARIANT_ID::integer                          as return_item_variant_id_shopify
@@ -159,6 +163,7 @@ select
   , can_warranties.rma_number
   , can_warranties._order:ORDER_NUMBER::varchar                              as original_order_id_edw
   , can_warranties._order:EXTERNAL_ID::integer                               as original_order_id_shopify
+  , return_items.value:ID::integer                                           as return_item_aftership_id
   , return_items.value:SKU::varchar                                          as return_item_product_id_edw
   , return_items.value:EXTERNAL_PRODUCT_ID::integer                          as return_item_product_id_shopify
   , return_items.value:EXTERNAL_VARIANT_ID::integer                          as return_item_variant_id_shopify

@@ -178,7 +178,7 @@ left join
     staging.aftership_rmas_exchange_warranty_items as exchange
     on
         rmas.rma_number = exchange.rma_number
-        and returns.return_item_product_id_edw = exchange.original_item_product_id_edw
+        and returns.return_item_aftership_id = exchange.original_item_aftership_id
 left join
     dim.product as return_product
     on

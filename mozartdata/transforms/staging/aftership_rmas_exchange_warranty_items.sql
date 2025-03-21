@@ -13,10 +13,10 @@
         aftership_org: The organization on Aftership
         aftership_id: unique id of rma on Aftership
         rma_number: the main identifier for an Aftership customer request.
-            Primary Key
         original_order_id_edw:the order number of the original order that is associated with the RMA.
             Foreign key to fact.orders.order_id_edw and fact.aftership_rmas.original_order_id_edw
         original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
+        original_item_aftership_id: unique aftership id of the originally ordered item that the exchange is replacing
         original_item_title: display name of the originally ordered item
         exchange_item_product_id_edw: product_id_edw (sku) of the item being used as a replacement in the exchange
         exchange_item_product_id_shopify: product_id in shopify of the item being used as a replacement in the exchange
@@ -40,8 +40,9 @@ select
   , us_returns_3p_warranties.rma_number
   , us_returns_3p_warranties._order:ORDER_NUMBER::varchar                as original_order_id_edw
   , us_returns_3p_warranties._order:EXTERNAL_ID::integer                 as original_order_id_shopify
-  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
+  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_ID::integer         as original_item_aftership_id
   , exchange_items.value:VARIANT_TO_REPLACE:SKU::varchar                 as original_item_product_id_edw
+  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
   , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_title
   , exchange_items.value:SKU::varchar                                    as exchange_item_product_id_edw
   , exchange_items.value:EXTERNAL_PRODUCT_ID::integer                    as exchange_item_product_id_shopify
@@ -63,8 +64,9 @@ select
   , can_returns_3p_warranties.rma_number
   , can_returns_3p_warranties._order:ORDER_NUMBER::varchar               as original_order_id_edw
   , can_returns_3p_warranties._order:EXTERNAL_ID::integer                as original_order_id_shopify
-  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
+  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_ID::integer         as original_item_aftership_id
   , exchange_items.value:VARIANT_TO_REPLACE:SKU::varchar                 as original_item_product_id_edw
+  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
   , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_title
   , exchange_items.value:SKU::varchar                                    as exchange_item_product_id_edw
   , exchange_items.value:EXTERNAL_PRODUCT_ID::integer                    as exchange_item_product_id_shopify
@@ -86,8 +88,9 @@ select
   , usa_warranties.rma_number
   , usa_warranties._order:ORDER_NUMBER::varchar                          as original_order_id_edw
   , usa_warranties._order:EXTERNAL_ID::integer                           as original_order_id_shopify
-  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
+  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_ID::integer         as original_item_aftership_id
   , exchange_items.value:VARIANT_TO_REPLACE:SKU::varchar                 as original_item_product_id_edw
+  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
   , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_title
   , exchange_items.value:SKU::varchar                                    as exchange_item_product_id_edw
   , exchange_items.value:EXTERNAL_PRODUCT_ID::integer                    as exchange_item_product_id_shopify
@@ -109,8 +112,9 @@ select
   , can_warranties.rma_number
   , can_warranties._order:ORDER_NUMBER::varchar                          as original_order_id_edw
   , can_warranties._order:EXTERNAL_ID::integer                           as original_order_id_shopify
-  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
+  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_ID::integer         as original_item_aftership_id
   , exchange_items.value:VARIANT_TO_REPLACE:SKU::varchar                 as original_item_product_id_edw
+  , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
   , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_title
   , exchange_items.value:SKU::varchar                                    as exchange_item_product_id_edw
   , exchange_items.value:EXTERNAL_PRODUCT_ID::integer                    as exchange_item_product_id_shopify
