@@ -104,7 +104,7 @@ where
     lower(usa_warranties.exchange) != 'null'
 union all
 select
-    'Canada - warranty'                                                  as org
+    'Canada - warranty'                                                  as aftership_org
   , can_warranties.id                                                    as aftership_id
   , can_warranties.rma_number
   , can_warranties._order:ORDER_NUMBER::varchar                          as original_order_id_edw
