@@ -86,6 +86,7 @@ select
   , rmas.approved_at::date                                         as approved_date
   , rmas.expired_at::date                                          as expired_date
   , rmas.rejected_at::date                                         as rejected_date
+  , rmas.refunded_at::date                                         as refund_date
   , rmas.resolved_at::date                                         as resolved_date
   , case
         when
@@ -131,7 +132,6 @@ select
                               zeroifnull(rmas.exchange_tax_total)) as amount_product_refunded
   , zeroifnull(rmas.return_tax_amount) -
     zeroifnull(rmas.exchange_tax_total)                            as amount_tax_refunded
-  , rmas.refunded_at::date                                         as rma_refund_date
   , rmas.refund_destination                                        as rma_refund_destination
   , zeroifnull(rmas.exchange_total_incl_tax_amount) -
     zeroifnull(rmas.exchange_tax_total)                            as amount_product_exchanged
