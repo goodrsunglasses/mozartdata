@@ -125,20 +125,20 @@ select
     end                                                            as rma_type
   , rmas.return_total_with_tax_currency                            as currency
   , rmas.return_total_with_tax_amount -
-    zeroifnull(rmas.return_tax_amount)                             as rma_total_product_value
-  , zeroifnull(rmas.return_tax_amount)                             as rma_total_tax_value
+    zeroifnull(rmas.return_tax_amount)                             as amount_product_total
+  , zeroifnull(rmas.return_tax_amount)                             as amount_tax_total
   , rmas.est_refund_amount - (zeroifnull(rmas.return_tax_amount) -
-                              zeroifnull(rmas.exchange_tax_total)) as rma_refund_product_value
+                              zeroifnull(rmas.exchange_tax_total)) as amount_product_refunded
   , zeroifnull(rmas.return_tax_amount) -
-    zeroifnull(rmas.exchange_tax_total)                            as rma_refund_tax_value
+    zeroifnull(rmas.exchange_tax_total)                            as amount_tax_refunded
   , rmas.refunded_at::date                                         as rma_refund_date
   , rmas.refund_destination                                        as rma_refund_destination
   , zeroifnull(rmas.exchange_total_incl_tax_amount) -
-    zeroifnull(rmas.exchange_tax_total)                            as rma_exchange_product_value
-  , zeroifnull(rmas.exchange_tax_total)                            as rma_exchange_tax_value
-  , rmas.exchange_order_number                                     as rma_exchange_order_id_edw
-  , rmas.checkout_upsell_currency                                  as rma_upsell_currency
-  , rmas.checkout_upsell_total                                     as rma_upsell_total_value
+    zeroifnull(rmas.exchange_tax_total)                            as amount_product_exchanged
+  , zeroifnull(rmas.exchange_tax_total)                            as amount_tax_exchanged
+  , rmas.exchange_order_number                                     as exchange_order_id_edw
+  , rmas.checkout_upsell_currency                                  as upsell_currency
+  , rmas.checkout_upsell_total                                     as amount_total_upsell
   , case
         when
             lower(rmas.return_method_name) like '%ship%'
