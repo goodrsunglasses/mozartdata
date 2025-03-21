@@ -35,7 +35,7 @@ WITH
   coalesce(ful2.order_id_edw,ful1.order_id_edw) as api_order_id_edw,
   COALESCE(ful2.order_id_edw,ful1.order_id_edw, replace(p.order_number_wms,' ','') ) as order_id_edw_coalesce,
   (o.amount_revenue_sold - o.amount_shipping_sold) as subtotal,       ---- by order, so will be duplicated for split shipments
-  o.amount_shipping_sold as shipping_income,                          ---- by order, so will be duplicated for split shipments
+  o.amount_shipping_sold as shipping_income,                          ---- by order, so will be duplicated for split shipment
   COALESCE(ful2.state, ful1.state) as state_ful,
   sr.region as shipping_region,
   coalesce(to_date(ful2.ship_date),to_date(ful1.ship_date)) as api_ship_date,
@@ -79,7 +79,7 @@ SELECT
   so.order_id_shopify,   --- bring back after qc
   ship.id,
   ship.code,
-      case 
+  case 
       when code ilike '%Standard%' then 'standard'  
       when code ilike '%Priority%' then 'priority'
       when code ilike '%Express%' then 'priority'
@@ -89,7 +89,15 @@ SELECT
       when code ilike '%Starbucks%' then 'standard'
       when code ilike '%Expédition%' then 'priority'
       when code ilike 'Canada (5-8 Business Days)' then 'standard'
-    else 'unknown' end as standard_priority
+      else 'unknown' end as standard_priority,
+  case 
+      when subtotal >= 50 and channel_COALESCE = 'goodr.com' then 'Above FST'
+      when subtotal < 50 and channel_COALESCE = 'goodr.com' then 'Below FST'
+      when subtotal >= 55.78 and channel_COALESCE = 'goodr.ca' then 'Above FST'
+      when subtotal < 55.78 and channel_COALESCE = 'goodr.ca' then 'Below FST'
+      when subtotal >= 1200 and channel_COALESCE = 'specialty' then 'Above FST'
+      when subtotal < 1200 and channel_COALESCE = 'specialty' then 'Below FST'
+      else 'No FST' end as free_ship_threshold
 FROM
   core
   LEFT JOIN fact.shopify_orders so ON so.order_id_edw = core.order_id_edw_coalesce     --  will this splay? I had it as inner join before - no
