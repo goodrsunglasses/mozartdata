@@ -81,7 +81,7 @@ where
     lower(can_returns_3p_warranties.exchange) != 'null'
 union all
 select
-    'USA - warranty'                                                     as org
+    'USA - warranty'                                                     as aftership_org
   , usa_warranties.id                                                    as aftership_id
   , usa_warranties.rma_number
   , usa_warranties._order:ORDER_NUMBER::varchar                          as original_order_id_edw
