@@ -13,11 +13,12 @@
     aftership_org: The organization on Aftership
     aftership_id: unique id of rma on Aftership
     rma_number: the main identifier for an Aftership customer request.
+        Composite primary Key with return_item_aftership_id
     original_order_id_edw:the order number of the original order that is associated with the RMA.
         Foreign key to fact.orders.order_id_edw and fact.aftership_rmas.original_order_id_edw
     original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
     return_item_aftership_id: item id in the return.
-        Primary Key
+        Composite primary Key with rma_number
     return_item_product_id_edw: product_id_edw (sku) of the item being returned/refunded
     return_item_product_id_shopify: product id in shopify of the item being returned/refunded
     return_item_variant_id_shopify: variant id in shopify of the item being returned/refunded

@@ -9,6 +9,7 @@
     Schema:
         aftership_id: The organization on Aftership
         rma_number: the main identifier for an Aftership customer request.
+            Composite primary Key with rma_item_aftership_id
         rma_created_date: date rma was created
         rma_email: email of the customer that submitted the rma
         original_order_id_edw:  the order number of the original order that is associated with the RMA.
@@ -16,6 +17,9 @@
         original_order_date: date that the original order was placed
         rma_type: whether a item is part of a refund, an exchange or a warranty. NOT THE SAME AS fact.aftership_rmas
         rma_return_type: what type of return is the item - return or no return
+        rma_item_aftership_id: id of the item being replaced from the original order. Is used to link the item being
+            replaced with the item that is replacing it in the case of an exchange.
+            Composite primary Key with rma_number
         rma_item_product_id_edw: product_id_edw (sku) of the item
         rma_item_product_id_shopify: product id in Shopify of the item
         rma_item_variant_id_shopify: variant id in Shopify of the item
@@ -101,6 +105,7 @@ select
         else
             'unknown rma return type'
     end as rma_return_type
+    , returns.return_item_aftership_id as rma_item_aftership_id
     , returns.return_item_product_id_edw as rma_item_product_id_edw
     , returns.return_item_product_id_shopify as rma_item_product_id_shopify
     , returns.return_item_variant_id_shopify as rma_item_variant_id_shopify
