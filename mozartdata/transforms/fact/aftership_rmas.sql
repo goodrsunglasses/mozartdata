@@ -123,7 +123,7 @@ select
         else
             'unknown organization'
     end                                                            as rma_type
-  , rmas.return_total_with_tax_currency                            as rma_currency
+  , rmas.return_total_with_tax_currency                            as currency
   , rmas.return_total_with_tax_amount -
     zeroifnull(rmas.return_tax_amount)                             as rma_total_product_value
   , zeroifnull(rmas.return_tax_amount)                             as rma_total_tax_value
