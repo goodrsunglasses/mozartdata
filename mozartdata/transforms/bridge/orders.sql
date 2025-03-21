@@ -222,6 +222,18 @@ WITH netsuite_info AS (SELECT orders.order_id_edw
 						   )                                AS cost_estimate
 					FROM fact.order_item oi
 					GROUP BY order_id_edw)
+, aftership_rmas as (
+        select distinct
+            original_order_id_edw
+        from
+            fact.aftership_rmas
+                    )
+, aftership_orders_from_rmas as (
+        select distinct
+            rma_exchange_order_id_edw
+        from
+            fact.aftership_rmas
+                    )
 SELECT orders.order_id_edw
 	 , orders.order_id_ns
 	 , aggregate_netsuite.channel
@@ -379,11 +391,11 @@ FROM dim.orders orders
 		 LEFT OUTER JOIN fulfillment_info
 						 ON fulfillment_info.order_id_edw = orders.order_id_edw
          left join
-            fact.aftership_rmas             as aftership_return_orders -- orders that have return or refund rmas
+            aftership_rmas             as aftership_return_orders -- orders that have return or refund rmas
             on
                 orders.order_id_edw = aftership_return_orders.original_order_id_edw
          left join
-            fact.aftership_rmas             as aftership_exchange_orders -- orders that have exchange or warranty rmas
+            aftership_orders_from_rmas as aftership_exchange_orders -- orders that have exchange or warranty rmas
             on
                 orders.order_id_edw = aftership_exchange_orders.rma_exchange_order_id_edw
 -- LEFT OUTER JOIN fact.customers cust ON cust.first_order_id_edw_ns = orders.order_id_edw
