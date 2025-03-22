@@ -398,6 +398,5 @@ FROM dim.orders orders
             aftership_orders_from_rmas as aftership_exchange_orders -- orders that have exchange or warranty rmas
             on
                 orders.order_id_edw = aftership_exchange_orders.rma_exchange_order_id_edw
--- LEFT OUTER JOIN fact.customers cust ON cust.first_order_id_edw_ns = orders.order_id_edw
 WHERE aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY aggregate_netsuite.booked_date DESC
