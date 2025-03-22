@@ -48,7 +48,7 @@
 select
     rmas.aftership_id
   , rmas.rma_number
-  , rmas.created_at::date                                          as rma_created_date
+  , rmas.created_at::date                                          as created_date
   , rmas.customer_email                                            as rma_email
   , rmas.original_order_id_edw
   , rmas.original_order_id_shopify
