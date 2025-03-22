@@ -128,11 +128,11 @@ select
   , rmas.return_total_with_tax_amount -
     zeroifnull(rmas.return_tax_amount)                             as amount_product_total
   , zeroifnull(rmas.return_tax_amount)                             as amount_tax_total
+  , rmas.refund_destination                                        as refund_payment_destination
   , rmas.est_refund_amount - (zeroifnull(rmas.return_tax_amount) -
                               zeroifnull(rmas.exchange_tax_total)) as amount_product_refunded
   , zeroifnull(rmas.return_tax_amount) -
     zeroifnull(rmas.exchange_tax_total)                            as amount_tax_refunded
-  , rmas.refund_destination                                        as rma_refund_destination
   , zeroifnull(rmas.exchange_total_incl_tax_amount) -
     zeroifnull(rmas.exchange_tax_total)                            as amount_product_exchanged
   , zeroifnull(rmas.exchange_tax_total)                            as amount_tax_exchanged
@@ -171,11 +171,11 @@ select
             'return not shipped'
         else
             'return status unknown'
-    end                                                            as rma_return_status
-  , rmas.shipment_slug                                             as rma_return_carrier
-  , rmas.shipment_tracking_number                                  as rma_return_tracking_number
-  , rmas.shipment_currency                                         as rma_return_currency
-  , rmas.shipment_cost                                             as rma_return_cost
+    end                                                            as return_status
+  , rmas.shipment_slug                                             as return_carrier
+  , rmas.shipment_tracking_number                                  as return_tracking_number
+  , rmas.shipment_currency                                         as return_currency
+  , rmas.shipment_cost                                             as amount_shipping_return
 from
     staging.aftership_rmas as rmas
 where
