@@ -222,13 +222,13 @@ WITH netsuite_info AS (SELECT orders.order_id_edw
 						   )                                AS cost_estimate
 					FROM fact.order_item oi
 					GROUP BY order_id_edw)
-, aftership_rmas as (
+, aftership_return_orders as (
         select distinct
             original_order_id_edw
         from
             fact.aftership_rmas
                     )
-, aftership_orders_from_rmas as (
+, aftership_exchange_orders as (
         select distinct
             rma_exchange_order_id_edw
         from
@@ -391,11 +391,11 @@ FROM dim.orders orders
 		 LEFT OUTER JOIN fulfillment_info
 						 ON fulfillment_info.order_id_edw = orders.order_id_edw
          left join
-            aftership_rmas             as aftership_return_orders -- orders that have return or refund rmas
+            aftership_return_orders -- orders that have return or refund rmas
             on
                 orders.order_id_edw = aftership_return_orders.original_order_id_edw
          left join
-            aftership_orders_from_rmas as aftership_exchange_orders -- orders that have exchange or warranty rmas
+            aftership_exchange_orders -- orders that have exchange or warranty rmas
             on
                 orders.order_id_edw = aftership_exchange_orders.rma_exchange_order_id_edw
 WHERE aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
