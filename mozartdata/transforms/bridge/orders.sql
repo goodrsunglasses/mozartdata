@@ -372,7 +372,7 @@ SELECT orders.order_id_edw
             true
         else
             false
-    end as is_aftership_generated -- indicates if the order was created by Aftership as part of an rma
+    end as is_aftership_exchange -- indicates if the order was created by Aftership as part of an rma
 -- case when aggregate_netsuite.tier like '%O' then true
 --      when cust.first_order_id_edw_ns is not null and cust.customer_category = 'D2C' then TRUE
 --      else false end as customer_first_order_flag
