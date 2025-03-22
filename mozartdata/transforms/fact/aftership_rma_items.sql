@@ -106,9 +106,9 @@ select
             'unknown rma return type'
     end as rma_return_type
     , returns.return_item_aftership_id as rma_item_aftership_id
-    , returns.return_item_product_id_edw as rma_item_product_id_edw
-    , returns.return_item_product_id_shopify as rma_item_product_id_shopify
-    , returns.return_item_variant_id_shopify as rma_item_variant_id_shopify
+    , returns.return_item_product_id_edw as original_product_id_edw
+    , returns.return_item_product_id_shopify as original_product_id_shopify
+    , returns.return_item_variant_id_shopify as original_variant_id_shopify
     , returns.return_item_title as rma_item_title
     , returns.return_item_type as rma_item_type
     , returns.return_item_reason as rma_item_reason
