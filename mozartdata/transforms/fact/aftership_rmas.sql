@@ -1,9 +1,11 @@
 /*
-    Table name: fact.aftership_rmas
-    Created: 3-14-2025
-    Purpose: takes information from staging.aftership_rmas and turns them into more usable columns. That means it
+    Table name:
+        fact.aftership_rmas
+    Created:
+        3-14-2025
+    Purpose:
+        takes information from staging.aftership_rmas and turns them into more usable columns. That means it
         takes certain columns and groups them to reinterpret what they mean.
-
     Schema:
         aftership_id: The organization on Aftership
             Primary Key
@@ -46,7 +48,7 @@
 */
 
 select
-    rmas.aftership_id
+    rmas.id_aftership
   , rmas.rma_number                                                as rma_number_aftership
   , rmas.created_at::date                                          as created_date
   , rmas.customer_email
@@ -82,7 +84,8 @@ select
             'incomplete'
         else
             'other'
-    end                                                            as rma_status
+    end                                                            as rma_completion_status
+  , rmas.approval_status                                           as rma_approval_status
   , rmas.approved_at::date                                         as approved_date
   , rmas.expired_at::date                                          as expired_date
   , rmas.rejected_at::date                                         as rejected_date

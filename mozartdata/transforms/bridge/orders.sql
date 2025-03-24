@@ -230,7 +230,7 @@ WITH netsuite_info AS (SELECT orders.order_id_edw
                     )
 , aftership_exchange_orders as (
         select distinct
-            rma_exchange_order_id_edw
+            exchange_order_id_edw
         from
             fact.aftership_rmas
                     )
@@ -367,7 +367,7 @@ SELECT orders.order_id_edw
     end as has_aftership_rma -- indicates if the order has an aftership rma associated with it
     , case
         when
-            aftership_exchange_orders.rma_exchange_order_id_edw is not null
+            aftership_exchange_orders.exchange_order_id_edw is not null
         then
             true
         else
@@ -397,6 +397,6 @@ FROM dim.orders orders
          left join
             aftership_exchange_orders -- orders that have exchange or warranty rmas
             on
-                orders.order_id_edw = aftership_exchange_orders.rma_exchange_order_id_edw
+                orders.order_id_edw = aftership_exchange_orders.exchange_order_id_edw
 WHERE aggregate_netsuite.booked_date >= '2022-01-01T00:00:00Z'
 ORDER BY aggregate_netsuite.booked_date DESC
