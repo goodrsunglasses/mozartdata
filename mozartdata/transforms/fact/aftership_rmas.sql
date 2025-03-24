@@ -6,8 +6,8 @@
 
     Schema:
         aftership_id: The organization on Aftership
-        rma_number: the main identifier for an Aftership customer request.
             Primary Key
+        rma_number: the main identifier for an Aftership customer request.
         rma_created_date: date rma was created
         rma_email: email of the customer that submitted the rma
         original_order_id_edw:  the order number of the original order that is associated with the RMA.

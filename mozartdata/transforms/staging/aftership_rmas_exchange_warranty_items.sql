@@ -12,13 +12,13 @@
     Schema:
         aftership_org: The organization on Aftership
         aftership_id: unique id of rma on Aftership
-        rma_number: the main identifier for an Aftership customer request.
             Composite primary Key with original_item_aftership_id
+        rma_number: the main identifier for an Aftership customer request within an Aftership organization
         original_order_id_edw:the order number of the original order that is associated with the RMA.
             Foreign key to fact.orders.order_id_edw and fact.aftership_rmas.original_order_id_edw
         original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
         original_item_aftership_id: unique aftership id of the originally ordered item that the exchange is replacing
-            Composite primary Key with rma_number
+            Composite primary Key with aftership_id
         original_item_title: display name of the originally ordered item
         exchange_item_product_id_edw: product_id_edw (sku) of the item being used as a replacement in the exchange
         exchange_item_product_id_shopify: product_id in shopify of the item being used as a replacement in the exchange
