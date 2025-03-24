@@ -141,7 +141,7 @@ select
   , zeroifnull(rmas.exchange_tax_total)                            as amount_tax_exchanged
   , rmas.exchange_order_number                                     as exchange_order_id_edw
   , rmas.checkout_upsell_currency                                  as upsell_currency
-  , rmas.checkout_upsell_total                                     as amount_total_upsell
+  , rmas.checkout_upsell_total                                     as amount_upsell_total
   , case
         when
             lower(rmas.return_method_name) like '%ship%'
