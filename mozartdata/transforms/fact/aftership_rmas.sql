@@ -48,8 +48,8 @@
 */
 
 select
-    rmas.id_aftership
-  , rmas.rma_number                                                as rma_number_aftership
+    rmas.rma_id_aftership
+  , rmas.rma_number_aftership
   , rmas.created_at::date                                          as created_date
   , rmas.customer_email
   , rmas.original_order_id_edw
@@ -96,9 +96,7 @@ select
             aftership_org like '%warranty'
             then
             'warranty'
-        when
-            aftership_org like '%returns%'
-            then
+        else
             case
                 when
                     checkout_upsell_total != 0
@@ -124,8 +122,6 @@ select
                 else
                     'unknown rma type'
             end
-        else
-            'unknown organization'
     end                                                            as rma_type
   , rmas.return_total_with_tax_currency                            as currency
   , rmas.return_total_with_tax_amount -

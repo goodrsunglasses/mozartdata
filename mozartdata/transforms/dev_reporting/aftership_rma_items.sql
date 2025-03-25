@@ -69,7 +69,7 @@
         rma_exchange_item_vendor_name: vendor of the item that is replacing the returned item per dim.product
  */
 select
-    rma_items.id_aftership
+    rma_items.rma_id_aftership
   , rma_items.rma_number_aftership
   , rma_items.created_date
   , rma_items.customer_email
@@ -92,22 +92,22 @@ select
   , rma_items.amount_product_total
   , rma_items.amount_discount_total
   , rma_items.amount_tax_total
-  , return_product.collection          as rma_item_collection
-  , return_product.family              as rma_item_family
-  , return_product.stage               as rma_item_stage
-  , return_product.merchandise_class   as rma_item_merchandise_class
-  , return_product.upc_code            as rma_item_upc_code
-  , return_product.design_tier         as rma_item_design_tier
-  , return_product.lens_sku            as rma_item_lens_sku
-  , return_product.lens_type           as rma_item_lens_type
-  , return_product.color_frame         as rma_item_color_frame
-  , return_product.frame_artwork       as rma_item_frame_artwork
-  , return_product.finish_frame        as rma_item_frame_finish
-  , return_product.vendor_name         as rma_item_vendor_name
+  , return_product.collection          as original_item_collection
+  , return_product.family              as original_item_family
+  , return_product.stage               as original_item_stage
+  , return_product.merchandise_class   as original_item_merchandise_class
+  , return_product.upc_code            as original_item_upc_code
+  , return_product.design_tier         as original_item_design_tier
+  , return_product.lens_sku            as original_item_lens_sku
+  , return_product.lens_type           as original_item_lens_type
+  , return_product.color_frame         as original_item_color_frame
+  , return_product.frame_artwork       as original_item_frame_artwork
+  , return_product.finish_frame        as original_item_frame_finish
+  , return_product.vendor_name         as original_item_vendor_name
   , rma_items.exchange_product_id_edw
   , rma_items.exchange_product_id_shopify
   , rma_items.exchange_variant_id_shopify
-  , exchange_product.display_name      as exchange_item_title
+  , exchange_product.display_name      as exchange_product_title
   , case
         when
             rma_items.exchange_product_id_edw is null
@@ -133,18 +133,19 @@ select
   , rma_items.quantity_exchanged
   , rma_items.exchange_currency
   , rma_items.amount_product_exchanged
-  , exchange_product.collection        as exchange_item_collection
-  , exchange_product.family            as exchange_item_family
-  , exchange_product.stage             as exchange_item_stage
-  , exchange_product.merchandise_class as exchange_item_merchandise_class
-  , exchange_product.upc_code          as exchange_item_upc_code
-  , exchange_product.design_tier       as exchange_item_design_tier
-  , exchange_product.lens_sku          as exchange_item_lens_sku
-  , exchange_product.lens_type         as exchange_item_lens_type
-  , exchange_product.color_frame       as exchange_item_color_frame
-  , exchange_product.frame_artwork     as exchange_item_frame_artwork
-  , exchange_product.finish_frame      as exchange_item_frame_finish
-  , exchange_product.vendor_name       as exchange_item_vendor_name
+  , rma_items.amount_total_rma
+  , exchange_product.collection        as exchange_product_collection
+  , exchange_product.family            as exchange_product_family
+  , exchange_product.stage             as exchange_product_stage
+  , exchange_product.merchandise_class as exchange_product_merchandise_class
+  , exchange_product.upc_code          as exchange_product_upc_code
+  , exchange_product.design_tier       as exchange_product_design_tier
+  , exchange_product.lens_sku          as exchange_product_lens_sku
+  , exchange_product.lens_type         as exchange_product_lens_type
+  , exchange_product.color_frame       as exchange_product_color_frame
+  , exchange_product.frame_artwork     as exchange_product_frame_artwork
+  , exchange_product.finish_frame      as exchange_product_frame_finish
+  , exchange_product.vendor_name       as exchange_product_vendor_name
 from
     fact.aftership_rma_items as rma_items
     left join

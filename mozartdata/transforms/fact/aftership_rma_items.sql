@@ -45,15 +45,15 @@
         rma_exchange_item_product_value: value of item that is replacing the returned item
  */
 select
-    rmas.id_aftership
-  , rmas.rma_number                                                                           as rma_number_aftership
+    rmas.rma_id_aftership
+  , rmas.rma_number_aftership
   , rmas.created_at::date                                                                     as created_date
   , rmas.customer_email
   , rmas.original_order_id_edw
   , rmas.original_order_placed_at::date                                                       as original_order_date
   , case
         when
-            exchange.rma_number is null
+            exchange.rma_number_aftership is null
                 and rmas.aftership_org not like '%warranty%'
             then
             'refund'
@@ -62,7 +62,7 @@ select
             then
             'warranty'
         when
-            exchange.rma_number is not null
+            exchange.rma_number_aftership is not null
                 and rmas.aftership_org not like '%warranty%'
             then
             'exchange'
@@ -102,16 +102,17 @@ select
   , exchange.exchange_quantity                                                                as quantity_exchanged
   , exchange.exchange_item_unit_price_currency                                                as exchange_currency
   , exchange.exchange_item_unit_price_amount                                                  as amount_product_exchanged
+  , rmas.return_total_with_tax_amount                                                         as amount_total_rma
 from
     staging.aftership_rmas                             as rmas
     left join
         staging.aftership_rmas_refund_return_items     as returns
             on
-            rmas.rma_number = returns.rma_number
+            rmas.rma_number_aftership = returns.rma_number_aftership
     left join
         staging.aftership_rmas_exchange_warranty_items as exchange
             on
-            rmas.rma_number = exchange.rma_number
+            rmas.rma_number_aftership = exchange.rma_number_aftership
                 and returns.return_item_aftership_id = exchange.original_item_aftership_id
 where
       rmas.created_at >= '2025-01-21' --Aftership went live on Jan 21st, 2025

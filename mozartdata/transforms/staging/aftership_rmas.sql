@@ -63,17 +63,17 @@
         auto_resolved: indicated if it was processed without review
  */
 with
-  root_table as (
-    select
-        *
-    from
-        mozart.pipeline_root_table
+    root_table as (
+                      select
+                          *
+                      from
+                          mozart.pipeline_root_table
     )
 
 select
     'USA - returns + 3rd party'                                                      as aftership_org
-  , us_returns_3p_warranties.id                                                       as id_aftership
-  , us_returns_3p_warranties.rma_number
+  , us_returns_3p_warranties.id                                                      as rma_id_aftership
+  , us_returns_3p_warranties.rma_number                                              as rma_number_aftership
   , us_returns_3p_warranties._order:ORDER_NUMBER::varchar                            as original_order_id_edw
   , us_returns_3p_warranties._order:EXTERNAL_ID::varchar                             as original_order_id_shopify
   , us_returns_3p_warranties.created_at
@@ -123,8 +123,8 @@ from
 union all
 select
     'Canada - returns + 3rd party'                                                    as aftership_org
-  , can_returns_3p_warranties.id                                                      as id_aftership
-  , can_returns_3p_warranties.rma_number
+  , can_returns_3p_warranties.id                                                      as rma_id_aftership
+  , can_returns_3p_warranties.rma_number                                              as rma_number_aftership
   , can_returns_3p_warranties._order:ORDER_NUMBER::varchar                            as original_order_id_edw
   , can_returns_3p_warranties._order:EXTERNAL_ID::varchar                             as original_order_id_shopify
   , can_returns_3p_warranties.created_at
@@ -174,8 +174,8 @@ from
 union all
 select
     'USA - warranty'                                                       as aftership_org
-  , usa_warranties.id                                                      as id_aftership
-  , usa_warranties.rma_number
+  , usa_warranties.id                                                      as rma_id_aftership
+  , usa_warranties.rma_number                                              as rma_number_aftership
   , usa_warranties._order:ORDER_NUMBER::varchar                            as original_order_id_edw
   , usa_warranties._order:EXTERNAL_ID::varchar                             as original_order_id_shopify
   , usa_warranties.created_at
@@ -225,8 +225,8 @@ from
 union all
 select
     'Canada - warranty'                                                    as aftership_org
-  , can_warranties.id                                                      as id_aftership
-  , can_warranties.rma_number
+  , can_warranties.id                                                      as rma_id_aftership
+  , can_warranties.rma_number                                              as rma_number_aftership
   , can_warranties._order:ORDER_NUMBER::varchar                            as original_order_id_edw
   , can_warranties._order:EXTERNAL_ID::varchar                             as original_order_id_shopify
   , can_warranties.created_at
