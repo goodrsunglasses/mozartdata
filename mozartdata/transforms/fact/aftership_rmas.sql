@@ -133,12 +133,15 @@ select
   , zeroifnull(rmas.return_tax_amount)                             as amount_tax_total
   , rmas.refund_destination                                        as refund_payment_destination
   , rmas.est_refund_amount - (zeroifnull(rmas.return_tax_amount) -
-                              zeroifnull(rmas.exchange_tax_total)) as amount_product_refunded
+                              zeroifnull(rmas.exchange_tax_total)) as amount_product_refund
   , zeroifnull(rmas.return_tax_amount) -
-    zeroifnull(rmas.exchange_tax_total)                            as amount_tax_refunded
+    zeroifnull(rmas.exchange_tax_total)                            as amount_tax_refund
+  , rmas.est_refund_amount                                         as amount_total_refund
   , zeroifnull(rmas.exchange_total_incl_tax_amount) -
-    zeroifnull(rmas.exchange_tax_total)                            as amount_product_exchanged
-  , zeroifnull(rmas.exchange_tax_total)                            as amount_tax_exchanged
+    zeroifnull(rmas.exchange_tax_total)                            as amount_product_exchange
+  , zeroifnull(rmas.exchange_tax_total)                            as amount_tax_exchange
+  , zeroifnull(rmas.exchange_total_incl_tax_amount)                as amount_total_exchange
+  , rmas.return_total_with_tax_amount                              as amount_total_rma
   , rmas.exchange_order_number                                     as exchange_order_id_edw
   , rmas.checkout_upsell_currency                                  as upsell_currency
   , rmas.checkout_upsell_total                                     as amount_total_upsell

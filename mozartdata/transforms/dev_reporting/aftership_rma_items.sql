@@ -8,8 +8,8 @@
         each row contains the item returned and any items it was exchanged for, if any.
     Schema:
         aftership_id: The organization on Aftership
-            Composite primary Key with rma_item_aftership_id
-        rma_number: the main identifier for an Aftership customer request.
+            Composite primary Key with original_product_id_aftership
+        rma_number_aftership: the main identifier for an Aftership customer request.
         rma_created_date: date rma was created
         rma_email: email of the customer that submitted the rma
         original_order_id_edw:  the order number of the original order that is associated with the RMA.
@@ -17,14 +17,14 @@
         original_order_date: date that the original order was placed
         rma_type: whether a item is part of a refund, an exchange or a warranty. NOT THE SAME AS fact.aftership_rmas
         rma_return_type: what type of return is the item - return or no return
-        rma_item_aftership_id: id of the item being replaced from the original order. Is used to link the item being
+        original_product_id_aftership: id of the item being replaced from the original order. Is used to link the item being
             replaced with the item that is replacing it in the case of an exchange.
             Composite primary Key with aftership_id
         rma_item_product_id_edw: product_id_edw (sku) of the item
         rma_item_product_id_shopify: product id in Shopify of the item
         rma_item_variant_id_shopify: variant id in Shopify of the item
-        rma_item_title: display name of item
-        rma_item_type: collection of item, e.g. the OGs
+        original_display_name: display name of item
+        original_product_type: collection of item, e.g. the OGs
         rma_item_reason: reason item is being returned
         rma_item_subreason: subreason item is being returned
         rma_item_reason_comment: comment on item being returned. Contains date code
@@ -77,21 +77,21 @@ select
   , rma_items.original_order_date
   , rma_items.rma_type
   , rma_items.rma_return_type
-  , rma_items.rma_item_aftership_id
+  , rma_items.original_product_id_aftership
   , rma_items.original_product_id_edw
   , rma_items.original_product_id_shopify
   , rma_items.original_variant_id_shopify
-  , rma_items.rma_item_title
-  , rma_items.rma_item_type
-  , rma_items.rma_item_reason
-  , rma_items.rma_item_subreason
-  , rma_items.rma_item_reason_comment
-  , rma_items.original_ordered_item_quantity
-  , rma_items.rma_item_quantity
-  , rma_items.rma_item_currency
-  , rma_items.rma_item_product_value
-  , rma_items.rma_item_discount_value
-  , rma_items.rma_item_tax_value
+  , rma_items.original_display_name
+  , rma_items.original_product_type
+  , rma_items.rma_product_reason
+  , rma_items.rma_product_subreason
+  , rma_items.rma_product_reason_comment
+  , rma_items.quantity_ordered
+  , rma_items.quantity_rma
+  , rma_items.currency
+  , rma_items.amount_product_total
+  , rma_items.amount_discount_total
+  , rma_items.amount_tax_total
   , return_product.collection          as rma_item_collection
   , return_product.family              as rma_item_family
   , return_product.stage               as rma_item_stage
@@ -104,32 +104,35 @@ select
   , return_product.frame_artwork       as rma_item_frame_artwork
   , return_product.finish_frame        as rma_item_frame_finish
   , return_product.vendor_name         as rma_item_vendor_name
-  , rma_items.exchange_item_product_id_edw
-  , rma_items.exchange_item_product_id_shopify
-  , rma_items.exchange_item_variant_id_shopify
+  , rma_items.exchange_product_id_edw
+  , rma_items.exchange_product_id_shopify
+  , rma_items.exchange_variant_id_shopify
   , exchange_product.display_name      as exchange_item_title
   , case
         when
-            rma_items.exchange_item_product_id_edw is null
+            rma_items.exchange_product_id_edw is null
             then
             null
         when
-            rma_items.original_product_id_edw != rma_items.exchange_item_product_id_edw
-                and lower(rma_items.rma_item_title) != lower(exchange_product.display_name)
+            rma_items.original_product_id_edw != rma_items.exchange_product_id_edw
+                and lower(rma_items.original_display_name) != lower(exchange_product.display_name)
             then
             'different-item exchange'
         when
-            rma_items.original_product_id_edw != rma_items.exchange_item_product_id_edw
-                and lower(rma_items.rma_item_title) = lower(exchange_product.display_name)
+            rma_items.original_product_id_edw != rma_items.exchange_product_id_edw
+                and lower(rma_items.original_display_name) = lower(exchange_product.display_name)
             then
             'same-item different-sku exchange'
         when
-            rma_items.original_product_id_edw = rma_items.exchange_item_product_id_edw
+            rma_items.original_product_id_edw = rma_items.exchange_product_id_edw
             then
             'same-item same-sku exchange'
         else
             'other exchange'
     end                                as exchange_item_type
+  , rma_items.quantity_exchanged
+  , rma_items.exchange_currency
+  , rma_items.amount_product_exchanged
   , exchange_product.collection        as exchange_item_collection
   , exchange_product.family            as exchange_item_family
   , exchange_product.stage             as exchange_item_stage
@@ -142,9 +145,6 @@ select
   , exchange_product.frame_artwork     as exchange_item_frame_artwork
   , exchange_product.finish_frame      as exchange_item_frame_finish
   , exchange_product.vendor_name       as exchange_item_vendor_name
-  , rma_items.exchange_item_quantity
-  , rma_items.exchange_item_currency
-  , rma_items.exchange_item_product_value
 from
     fact.aftership_rma_items as rma_items
     left join
@@ -154,4 +154,4 @@ from
     left join
         dim.product          as exchange_product
             on
-            rma_items.exchange_item_product_id_edw = exchange_product.product_id_edw
+            rma_items.exchange_product_id_edw = exchange_product.product_id_edw
