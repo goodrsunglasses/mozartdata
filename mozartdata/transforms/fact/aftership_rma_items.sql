@@ -85,7 +85,7 @@ select
   , returns.return_item_product_id_edw                                                        as original_product_id_edw
   , returns.return_item_product_id_shopify                                                    as original_product_id_shopify
   , returns.return_item_variant_id_shopify                                                    as original_variant_id_shopify
-  , returns.return_item_title                                                                 as original_display_name
+  , returns.return_item_display_name                                                          as original_display_name
   , returns.return_item_type                                                                  as original_product_type
   , returns.return_item_reason                                                                as rma_product_reason
   , returns.return_item_subreason                                                             as rma_product_subreason

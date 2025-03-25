@@ -25,7 +25,7 @@
         return_item_product_id_edw: product_id_edw (sku) of the item being returned/refunded
         return_item_product_id_shopify: product id in shopify of the item being returned/refunded
         return_item_variant_id_shopify: variant id in shopify of the item being returned/refunded
-        return_item_title: display name of the item being returned
+        return_item_display_name: display name of the item being returned
         return_item_type: collection that return item belongs to, e.g. The OGs
         ordered_quantity: quantity originally ordered of this item
         intended_return_quantity: quantity listed on the return as going to be returned/refunded
@@ -66,7 +66,7 @@ select
   , return_items.value:SKU::varchar                                          as return_item_product_id_edw
   , return_items.value:EXTERNAL_PRODUCT_ID::integer                          as return_item_product_id_shopify
   , return_items.value:EXTERNAL_VARIANT_ID::integer                          as return_item_variant_id_shopify
-  , return_items.value:PRODUCT_TITLE::varchar                                as return_item_title
+  , return_items.value:PRODUCT_TITLE::varchar                                as return_item_display_name
   , return_items.value:PRODUCT_CATEGORIES[0]::varchar                        as return_item_type
   , return_items.value:ORDERED_QUANTITY::integer                             as ordered_quantity
   , return_items.value:INTENDED_RETURN_QUANTITY::integer                     as intended_return_quantity
@@ -101,7 +101,7 @@ select
   , return_items.value:SKU::varchar                                          as return_item_product_id_edw
   , return_items.value:EXTERNAL_PRODUCT_ID::integer                          as return_item_product_id_shopify
   , return_items.value:EXTERNAL_VARIANT_ID::integer                          as return_item_variant_id_shopify
-  , return_items.value:PRODUCT_TITLE::varchar                                as return_item_title
+  , return_items.value:PRODUCT_TITLE::varchar                                as return_item_display_name
   , return_items.value:PRODUCT_CATEGORIES[0]::varchar                        as return_item_type
   , return_items.value:ORDERED_QUANTITY::integer                             as ordered_quantity
   , return_items.value:INTENDED_RETURN_QUANTITY::integer                     as intended_return_quantity
@@ -136,7 +136,7 @@ select
   , return_items.value:SKU::varchar                                          as return_item_product_id_edw
   , return_items.value:EXTERNAL_PRODUCT_ID::integer                          as return_item_product_id_shopify
   , return_items.value:EXTERNAL_VARIANT_ID::integer                          as return_item_variant_id_shopify
-  , return_items.value:PRODUCT_TITLE::varchar                                as return_item_title
+  , return_items.value:PRODUCT_TITLE::varchar                                as return_item_display_name
   , return_items.value:PRODUCT_CATEGORIES[0]::varchar                        as return_item_type
   , return_items.value:ORDERED_QUANTITY::integer                             as ordered_quantity
   , return_items.value:INTENDED_RETURN_QUANTITY::integer                     as intended_return_quantity
@@ -171,7 +171,7 @@ select
   , return_items.value:SKU::varchar                                          as return_item_product_id_edw
   , return_items.value:EXTERNAL_PRODUCT_ID::integer                          as return_item_product_id_shopify
   , return_items.value:EXTERNAL_VARIANT_ID::integer                          as return_item_variant_id_shopify
-  , return_items.value:PRODUCT_TITLE::varchar                                as return_item_title
+  , return_items.value:PRODUCT_TITLE::varchar                                as return_item_display_name
   , return_items.value:PRODUCT_CATEGORIES[0]::varchar                        as return_item_type
   , return_items.value:ORDERED_QUANTITY::integer                             as ordered_quantity
   , return_items.value:INTENDED_RETURN_QUANTITY::integer                     as intended_return_quantity

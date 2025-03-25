@@ -50,7 +50,7 @@
         rma_exchange_item_product_id_edw: product_id_edw (sku) of item that is replacing the returned item
         rma_exchange_item_product_id_shopify: product id in Shopify of the item that is replacing the returned item
         rma_exchange_item_variant_id_shopify: variant id in Shopify of the item that is replacing the returned item
-        rma_exchange_item_title: display name of the item that is replacing the returned item
+        rma_exchange_item_display_name: display name of the item that is replacing the returned item
         rma_exchange_item_type: collection of the item that is replacing the returned item
         rma_exchange_item_quantity: quantity of items being sent to replace the returned item
         rma_exchange_item_currency: currency of exchange item values
@@ -107,7 +107,7 @@ select
   , rma_items.exchange_product_id_edw
   , rma_items.exchange_product_id_shopify
   , rma_items.exchange_variant_id_shopify
-  , exchange_product.display_name      as exchange_product_title
+  , exchange_product.display_name      as exchange_product_display_name
   , case
         when
             rma_items.exchange_product_id_edw is null

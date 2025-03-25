@@ -22,7 +22,7 @@
         original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
         original_item_aftership_id: unique aftership id of the originally ordered item that the exchange is replacing
             Composite primary Key with aftership_id
-        original_item_title: display name of the originally ordered item
+        original_item_display_name: display name of the originally ordered item
         exchange_item_product_id_edw: product_id_edw (sku) of the item being used as a replacement in the exchange
         exchange_item_product_id_shopify: product_id in shopify of the item being used as a replacement in the exchange
         exchange_item_variant_id_shopify: variant_id in Shopify of the item being used as a replacement in the exchange
@@ -48,7 +48,7 @@ select
   , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_ID::integer         as original_item_aftership_id
   , exchange_items.value:VARIANT_TO_REPLACE:SKU::varchar                 as original_item_product_id_edw
   , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
-  , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_title
+  , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_display_name
   , exchange_items.value:SKU::varchar                                    as exchange_item_product_id_edw
   , exchange_items.value:EXTERNAL_PRODUCT_ID::integer                    as exchange_item_product_id_shopify
   , exchange_items.value:EXTERNAL_VARIANT_ID::integer                    as exchange_item_variant_id_shopify
@@ -70,7 +70,7 @@ select
   , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_ID::integer         as original_item_aftership_id
   , exchange_items.value:VARIANT_TO_REPLACE:SKU::varchar                 as original_item_product_id_edw
   , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
-  , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_title
+  , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_display_name
   , exchange_items.value:SKU::varchar                                    as exchange_item_product_id_edw
   , exchange_items.value:EXTERNAL_PRODUCT_ID::integer                    as exchange_item_product_id_shopify
   , exchange_items.value:EXTERNAL_VARIANT_ID::integer                    as exchange_item_variant_id_shopify
@@ -92,7 +92,7 @@ select
   , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_ID::integer         as original_item_aftership_id
   , exchange_items.value:VARIANT_TO_REPLACE:SKU::varchar                 as original_item_product_id_edw
   , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
-  , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_title
+  , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_display_name
   , exchange_items.value:SKU::varchar                                    as exchange_item_product_id_edw
   , exchange_items.value:EXTERNAL_PRODUCT_ID::integer                    as exchange_item_product_id_shopify
   , exchange_items.value:EXTERNAL_VARIANT_ID::integer                    as exchange_item_variant_id_shopify
@@ -114,7 +114,7 @@ select
   , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_ID::integer         as original_item_aftership_id
   , exchange_items.value:VARIANT_TO_REPLACE:SKU::varchar                 as original_item_product_id_edw
   , exchange_items.value:VARIANT_TO_REPLACE:EXTERNAL_PRODUCT_ID::integer as original_item_product_id_shopify
-  , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_title
+  , exchange_items.value:VARIANT_TO_REPLACE:TITLE::varchar               as original_item_display_name
   , exchange_items.value:SKU::varchar                                    as exchange_item_product_id_edw
   , exchange_items.value:EXTERNAL_PRODUCT_ID::integer                    as exchange_item_product_id_shopify
   , exchange_items.value:EXTERNAL_VARIANT_ID::integer                    as exchange_item_variant_id_shopify
