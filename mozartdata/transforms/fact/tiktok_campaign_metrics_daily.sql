@@ -38,7 +38,6 @@ select
   , sum(crd.impressions)                                       as impressions
   , sum(crd.clicks)                                            as clicks
   , sum(crd.conversion)                                        as conversions
-  , sum(crd.reach)                                             as reach
 from
     tiktok_ads.campaign_report_daily crd
 group by
