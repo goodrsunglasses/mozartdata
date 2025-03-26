@@ -9,8 +9,11 @@
         quantity and value.
 
     Schema:
+        org_id_aftership: id of the aftership org as defined by the dwh team
+            Composite Primary Key with rma_id_aftership and original_product_id_aftership
+        org_name_aftership: name of the aftership org as defined in aftership itself
         rma_id_aftership: The id of the rma on Aftership
-            Composite primary Key with original_product_id_aftership
+            Composite primary Key with org_id_aftership and original_product_id_aftership
         rma_number_aftership: the main identifier for an Aftership customer request.
         created_date: date rma was created
         customer_email: email of the customer that submitted the rma
@@ -21,7 +24,7 @@
         rma_return_type: what type of return is the item - return or no return
         original_product_id_aftership: id of the item being replaced from the original order. Is used to link the item being
             replaced with the item that is replacing it in the case of an exchange.
-            Composite primary Key with aftership_id
+            Composite primary Key with org_id_aftership and rma_id_aftership
         original_product_id_edw: product_id_edw (sku) of the item
         original_product_id_shopify: product id in Shopify of the item
         original_variant_id_shopify: variant id in Shopify of the item
@@ -46,7 +49,9 @@
         amount_total_rma: total amount being refunded and exchanged in the rma
  */
 select
-    rmas.rma_id_aftership
+    orgs.org_id_aftership
+  , orgs.org_name_aftership
+  , rmas.rma_id_aftership
   , rmas.rma_number_aftership
   , rmas.created_at::date                                                                     as created_date
   , rmas.customer_email
@@ -55,16 +60,16 @@ select
   , case
         when
             exchange.rma_number_aftership is null
-                and rmas.aftership_org not like '%warranty%'
+                and rmas.org_name_aftership not like '%warranty%'
             then
             'refund'
         when
-            rmas.aftership_org like '%warranty%'
+            rmas.org_name_aftership like '%warranty%'
             then
             'warranty'
         when
             exchange.rma_number_aftership is not null
-                and rmas.aftership_org not like '%warranty%'
+                and rmas.org_name_aftership not like '%warranty%'
             then
             'exchange'
         else
@@ -106,6 +111,9 @@ select
   , rmas.return_total_with_tax_amount                                                         as amount_total_rma
 from
     staging.aftership_rmas                             as rmas
+    inner join
+        dim.aftership_orgs                             as orgs
+            on rmas.org_id_aftership = orgs.org_id_aftership
     left join
         staging.aftership_rmas_refund_return_items     as returns
             on

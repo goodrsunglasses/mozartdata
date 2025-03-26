@@ -7,8 +7,12 @@
         Links fact.aftership_rma_items to dim.product to provide info on parts like lens, frame and vendor.
         each row contains the item returned and any items it was exchanged for, if any.
     Schema:
-        aftership_id: The organization on Aftership
-            Composite primary Key with original_product_id_aftership
+
+        org_id_aftership: id of the aftership org as defined by the dwh team
+            Composite Primary Key with rma_id_aftership and original_product_id_aftership
+        org_name_aftership: name of the aftership org as defined in aftership itself
+        rma_id_aftership: The id of the rma on Aftership
+            Composite primary Key with org_id_aftership and original_product_id_aftership
         rma_number_aftership: the main identifier for an Aftership customer request.
         rma_created_date: date rma was created
         rma_email: email of the customer that submitted the rma
@@ -19,7 +23,7 @@
         rma_return_type: what type of return is the item - return or no return
         original_product_id_aftership: id of the item being replaced from the original order. Is used to link the item being
             replaced with the item that is replacing it in the case of an exchange.
-            Composite primary Key with aftership_id
+            Composite primary Key with org_id_aftership and rma_id_aftership
         rma_item_product_id_edw: product_id_edw (sku) of the item
         rma_item_product_id_shopify: product id in Shopify of the item
         rma_item_variant_id_shopify: variant id in Shopify of the item
@@ -69,7 +73,9 @@
         rma_exchange_item_vendor_name: vendor of the item that is replacing the returned item per dim.product
  */
 select
-    rma_items.rma_id_aftership
+    rma_items.org_id_aftership
+  , rma_items.org_name_aftership
+  , rma_items.rma_id_aftership
   , rma_items.rma_number_aftership
   , rma_items.created_date
   , rma_items.customer_email

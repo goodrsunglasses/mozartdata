@@ -9,9 +9,11 @@
         warranty data as of its creation due to that information not flowing through the API - it requires
         webhooks, which can be implemented in the future if desired.
     Schema:
-        aftership_org: The organization on Aftership
+        org_id_aftership: id of the organization (created in dwh since we don't get from Portable)
+            Composite primary key with rma_id_aftership
+        org_name_aftership: The organization on Aftership
         rma_id_aftership: unique id of rma on Aftership
-            Primary key
+            Composite primary key with org_id_aftership
         rma_number_aftership: the main identifier for an Aftership customer request within an Aftership organization
         original_order_id_edw: the order number of the original order that is associated with the RMA.
             Foreign key to fact.orders.order_id_edw and fact.aftership_rma_items.original_order_id_edw
@@ -71,7 +73,8 @@ with
     )
 
 select
-    'USA - returns + 3rd party'                                                      as aftership_org
+    1                                                                                as org_id_aftership
+  , 'USA - returns + 3rd party'                                                      as org_name_aftership
   , us_returns_3p_warranties.id                                                      as rma_id_aftership
   , us_returns_3p_warranties.rma_number                                              as rma_number_aftership
   , us_returns_3p_warranties._order:ORDER_NUMBER::varchar                            as original_order_id_edw
@@ -122,7 +125,8 @@ from
     aftership_returns_usa_and_3rd_party_warranties_portable.returns as us_returns_3p_warranties
 union all
 select
-    'Canada - returns + 3rd party'                                                    as aftership_org
+    2                                                                                 as org_id_aftership
+  , 'Canada - returns + 3rd party'                                                    as org_name_aftership
   , can_returns_3p_warranties.id                                                      as rma_id_aftership
   , can_returns_3p_warranties.rma_number                                              as rma_number_aftership
   , can_returns_3p_warranties._order:ORDER_NUMBER::varchar                            as original_order_id_edw
@@ -173,7 +177,8 @@ from
     aftership_returns_canada_and_3rd_party_warranties_portable.returns as can_returns_3p_warranties
 union all
 select
-    'USA - warranty'                                                       as aftership_org
+    3                                                                      as org_id_aftership
+  , 'USA - warranty'                                                       as org_name_aftership
   , usa_warranties.id                                                      as rma_id_aftership
   , usa_warranties.rma_number                                              as rma_number_aftership
   , usa_warranties._order:ORDER_NUMBER::varchar                            as original_order_id_edw
@@ -224,7 +229,8 @@ from
     aftership_usa_warranties_portable.returns as usa_warranties
 union all
 select
-    'Canada - warranty'                                                    as aftership_org
+    4                                                                      as org_id_aftership
+  , 'Canada - warranty'                                                    as org_name_aftership
   , can_warranties.id                                                      as rma_id_aftership
   , can_warranties.rma_number                                              as rma_number_aftership
   , can_warranties._order:ORDER_NUMBER::varchar                            as original_order_id_edw

@@ -7,8 +7,11 @@
         takes information from staging.aftership_rmas and turns them into more usable columns. That means it
         takes certain columns and groups them to reinterpret what they mean.
     Schema:
+        org_id_aftership: id of the aftership org as defined by the dwh team
+            Composite Primary Key with rma_id_aftership
+        org_name_aftership: name of the aftership org as defined in aftership itself
         rma_id_aftership: The id of the rma on Aftership
-            Primary Key
+            Composite Primary Key with org_id_aftership
         rma_number_aftership: the main identifier for an Aftership customer request.
         created_date: date rma was created
         customer_email: email of the customer that submitted the rma
@@ -52,7 +55,9 @@
 */
 
 select
-    rmas.rma_id_aftership
+    orgs.org_id_aftership
+  , orgs.org_name_aftership
+  , rmas.rma_id_aftership
   , rmas.rma_number_aftership
   , rmas.created_at::date                                          as created_date
   , rmas.customer_email
@@ -97,7 +102,7 @@ select
   , rmas.resolved_at::date                                         as resolved_date
   , case
         when
-            aftership_org like '%warranty'
+            orgs.org_name_aftership like '%warranty'
             then
             'warranty'
         else
@@ -184,6 +189,9 @@ select
   , rmas.shipment_cost                                             as amount_shipping_return
 from
     staging.aftership_rmas as rmas
+    inner join
+        dim.aftership_orgs as orgs
+            on rmas.org_id_aftership = orgs.org_id_aftership
 where
       rmas.created_at >= '2025-01-21' -- Aftership went live on Jan 21st, 2025.
   and lower(rmas.customer_email) not like '%goodr.com'
