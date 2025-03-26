@@ -7,44 +7,48 @@
         takes information from staging.aftership_rmas and turns them into more usable columns. That means it
         takes certain columns and groups them to reinterpret what they mean.
     Schema:
-        aftership_id: The organization on Aftership
+        rma_id_aftership: The organization on Aftership
             Primary Key
-        rma_number: the main identifier for an Aftership customer request.
-        rma_created_date: date rma was created
-        rma_email: email of the customer that submitted the rma
-        original_order_id_edw:  the order number of the original order that is associated with the RMA.
+        rma_number_aftership: the main identifier for an Aftership customer request.
+        created_date: date rma was created
+        customer_email: email of the customer that submitted the rma
+        original_order_id_edw: the order number of the original order that is associated with the RMA.
             Foreign key to fact.orders.order_id_edw and fact.aftership_rma_items.original_order_id_edw
         original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
         original_order_date: date that the original order was placed
         original_order_channel: original channel order was placed on. Matches dim.channel or is "unknown source"
-        rma_status: status of rma, simplified from the various values from aftership. can be completed, cancelled,
+        rma_completion_status: status of rma, simplified from the various values from aftership. can be completed, cancelled,
             incomplete or other
-        rma_approved_date: date rma was approved
-        rma_expired_date: date rma expired
-        rma_rejected_date: date rma was rejected
-        rma_resolved_date: date rma was resolved, as in it no longer needed any further action
+        ema_approval_status: status of rma as shown on Aftership
+        approved_date: date rma was approved
+        expired_date: date rma expired
+        rejected_date: date rma was rejected
+        refund_date: date refund was issued
+        resolved_date: date rma was resolved, as in it no longer needed any further action
         rma_type: whether an rma was an upsell, downsell, refund or exchange
-        rma_currency: currency of product and tax values
-        rma_total_product_value: total product value of the products in the rma as originally sold
-        rma_total_tax_value: value of tax was on all rma products when originally sold
-        rma_refund_product_value: value of refunds on products in rma (as opposed to any exchanges in the rma)
-        rma_refund_tax_value: value of tax on refunds in this rma
-        rma_refund_date: date refund was issued
-        rma_refund_destination: destination of refund, empty if no refund destination
-        rma_exchange_product_value: value of products exchanged in this rma (as opposed to returned or refunded)
-        rma_exchange_tax_value: value of tax on exchanges in rma
-        rma_exchange_order_id_edw: order number on Shopify of exchange order, if any.
+        currency: currency of product and tax values
+        amount_product_total: total product value of the products in the rma as originally sold
+        amount_tax_total: value of tax was on all rma products when originally sold
+        refund_payment_destination: destination of refund, empty if no refund destination
+        amount_product_refund: value of refunds on products in rma (as opposed to any exchanges in the rma)
+        amount_tax_refund: value of tax on refunds in this rma
+        amount_total_refund: total amount refunded to the customer
+        amount_product_exchange: value of products exchanged in this rma (as opposed to returned or refunded)
+        amount_tax_exchange: value of tax on exchanges in rma
+        amount_total_exchange: total value of the exchange
+        amount_total_rma: total value of this rma in total, with refunds and exchanges
+        exchange_order_id_edw: order number on Shopify of exchange order, if any.
             Foreign key to fact.orders.order_id_edw and fact.aftership_rma_items.original_order_id_edw
-        rma_upsell_currency: currency of any upsell values in rma
-        rma_upsell_total_value: total value of upsells in this rma, including tax
+        upsell_currency: currency of any upsell values in rma
+        amount_upsell_total	: total value of upsells in this rma, including tax
         rma_return_type: type of return, can be 'no return' or 'return'
-        rma_return_status: status of return, inidcating if a reurn has been shipped, is in transit, or is received.
-        rma_return_carrier: carrier of the return, e.g. usps
-        rma_return_tracking_number: tracking number of return, is null until slug receives package. Likely connects
+        return_status: status of return, inidcating if a reurn has been shipped, is in transit, or is received.
+        return_carrier: carrier of the return, e.g. usps
+        return_tracking_number: tracking number of return, is null until slug receives package. Likely connects
             to fulfillment tables but not sure how at this time.
             todo: add boolean in relevant fulfillment table
-        rma_return_currency: currency of return cost
-        rma_return_cost: cost of shipping return
+        return_currency: currency of return cost
+        amount_shipping_return: cost of shipping return
 */
 
 select
