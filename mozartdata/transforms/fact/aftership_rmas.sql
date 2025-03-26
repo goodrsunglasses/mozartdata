@@ -7,7 +7,7 @@
         takes information from staging.aftership_rmas and turns them into more usable columns. That means it
         takes certain columns and groups them to reinterpret what they mean.
     Schema:
-        rma_id_aftership: The organization on Aftership
+        rma_id_aftership: The id of the rma on Aftership
             Primary Key
         rma_number_aftership: the main identifier for an Aftership customer request.
         created_date: date rma was created
