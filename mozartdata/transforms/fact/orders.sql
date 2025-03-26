@@ -91,6 +91,8 @@ select
     end                          as has_refund
     , refund.refund_timestamp_pst
     , date(refund.refund_timestamp_pst)                                                  as refund_date_pst
+    , o.has_aftership_rma -- indicates if an order has an aftership rma associated with it
+    , o.is_aftership_exchange -- indicates if an order was created by aftership as part of an rma
     , CASE
         WHEN o.b2b_d2c = 'INDIRECT' THEN NULL
         WHEN o.tier LIKE '%O' AND o.b2b_d2c = 'B2B' THEN TRUE
@@ -102,6 +104,7 @@ left outer join
     refund_aggregates               refund
     on
         refund.order_id_edw = o.order_id_edw
-  LEFT OUTER JOIN fact.customers cust
+LEFT OUTER JOIN
+    fact.customers cust
     ON cust.first_order_id_edw_shopify = o.order_id_edw
-    AND cust.customer_category = 'D2C'
+     AND cust.customer_category = 'D2C'
