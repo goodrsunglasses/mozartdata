@@ -10,9 +10,9 @@
         webhooks, which can be implemented in the future if desired.
     Schema:
         aftership_org: The organization on Aftership
-        aftership_id: unique id of rma on Aftership
+        rma_id_aftership: unique id of rma on Aftership
             Primary key
-        rma_number: the main identifier for an Aftership customer request within an Aftership organization
+        rma_number_aftership: the main identifier for an Aftership customer request within an Aftership organization
         original_order_id_edw: the order number of the original order that is associated with the RMA.
             Foreign key to fact.orders.order_id_edw and fact.aftership_rma_items.original_order_id_edw
         original_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
