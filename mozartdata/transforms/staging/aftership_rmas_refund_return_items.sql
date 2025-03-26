@@ -14,9 +14,9 @@
 
     Schema:
         aftership_org: The organization on Aftership
-        aftership_id: unique id of rma on Aftership
+        rma_id_aftership: unique id of rma on Aftership
             Composite primary Key with original_item_aftership_id
-        rma_number: the main identifier for an Aftership customer request within an Aftership organization
+        rma_number_aftership: the main identifier for an Aftership customer request within an Aftership organization
         original_order_id_edw:the order number of the original order that is associated with the RMA.
             Foreign key to fact.orders.order_id_edw and fact.aftership_rmas.original_order_id_edw
         original_order_id_shopify: id as it is shows in the address bar when viewing it on the shopify website
@@ -29,9 +29,9 @@
         return_item_type: collection that return item belongs to, e.g. The OGs
         ordered_quantity: quantity originally ordered of this item
         intended_return_quantity: quantity listed on the return as going to be returned/refunded
-        return_quantity: quantity actually returned/refunded. Very inaccurate
+        return_quantity: quantity actually returned/refunded
         received_quantity: quantity received per shipping info. Very inaccurate
-        refund_quantity: quantity actually refunded. Very inaccurate
+        refund_quantity: quantity actually refunded
         return_item_total_price_amount: return item total original price with tax
         return_item_total_price_currency: currency return item total price is in.
         return_item_unit_price_amount: normal price of the item being returned
