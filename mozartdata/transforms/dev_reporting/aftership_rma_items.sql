@@ -57,7 +57,7 @@
         exchange_product_id_shopify: product id in Shopify of the item that is replacing the returned item
         exchange_variant_id_shopify: variant id in Shopify of the item that is replacing the returned item
         exchange_product_display_name: display name of the item that is replacing the returned item
-        exchange_product_type: collection of the item that is replacing the returned item
+        exchange_item_type: collection of the item that is replacing the returned item
         quantity_exchanged: quantity of items being sent to replace the returned item
         exchange_currency: currency of exchange item values
         amount_product_exchanged: value of item that is replacing the returned item
@@ -141,7 +141,7 @@ select
             'same-item same-sku exchange'
         else
             'other exchange'
-    end                                as exchange_product_type
+    end                                as exchange_item_type
   , rma_items.quantity_exchanged
   , rma_items.exchange_currency
   , rma_items.amount_product_exchanged
