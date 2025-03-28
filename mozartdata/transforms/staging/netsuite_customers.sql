@@ -5,7 +5,8 @@ One row per customer id.
 Base table: CTE root_table is used to get root table reference for scheduling in mozart.
 If no longer a base table, then remove CTE root_table.
 */
-
+CREATE OR REPLACE TABLE staging.netsuite_customers
+            COPY GRANTS  as
 with
     root_table as (
                       select
@@ -73,7 +74,9 @@ SELECT cust.id                                                                 A
      cust.custentityam_state_1 as state_1,
      cust.custentityam_state_2 as state_2,
      cust.custentityam_state_3 as state_3,
-	   cust.duplicate
+	cust.duplicate,
+	to_number(cust.custentityshop_parent_id) as shopify_parent_company_id,
+	to_number(cust.custentitycustentity_shop_id_sg) as shopify_sellgoodr_customer_id --seems like we have one custom field per id in a given shopify store
 FROM netsuite.customer cust
     LEFT JOIN parents_list pl
       on cust.id = pl.customer_id_ns
