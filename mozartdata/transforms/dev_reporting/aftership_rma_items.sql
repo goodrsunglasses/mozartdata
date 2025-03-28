@@ -14,8 +14,8 @@
         rma_id_aftership: The id of the rma on Aftership
             Composite primary Key with org_id_aftership and original_product_id_aftership
         rma_number_aftership: the main identifier for an Aftership customer request.
-        rma_created_date: date rma was created
-        rma_email: email of the customer that submitted the rma
+        created_date: date rma was created
+        customer_email: email of the customer that submitted the rma
         original_order_id_edw:  the order number of the original order that is associated with the RMA.
             Foreign key to fact.orders.order_id_edw and fact.aftership_rmas.original_order_id_edw
         original_order_date: date that the original order was placed
@@ -24,53 +24,57 @@
         original_product_id_aftership: id of the item being replaced from the original order. Is used to link the item being
             replaced with the item that is replacing it in the case of an exchange.
             Composite primary Key with org_id_aftership and rma_id_aftership
-        rma_item_product_id_edw: product_id_edw (sku) of the item
-        rma_item_product_id_shopify: product id in Shopify of the item
-        rma_item_variant_id_shopify: variant id in Shopify of the item
+        original_product_id_edw: product_id_edw (sku) of the item
+        original_product_id_shopify: product id in Shopify of the item
+        original_variant_id_shopify: variant id in Shopify of the item
         original_display_name: display name of item
         original_product_type: collection of item, e.g. the OGs
-        rma_item_reason: reason item is being returned
-        rma_item_subreason: subreason item is being returned
-        rma_item_reason_comment: comment on item being returned. Contains date code
-        original_ordered_item_quantity: original ordered item quantity
-        rma_item_quantity: quantity being subitted in the rma
-        rma_item_currency: currency of item values
-        rma_item_product_value: value of product in original order, MAY NOT HAVE BEEN WHAT WAS CHARGED
-        rma_item_discount_value: value of discount on item in original order, MAY NOT HAVE BEEN ITEM LEVEL IN
+        rma_product_reason: reason item is being returned
+        rma_product_subreason: subreason item is being returned
+        rma_product_reason_comment: comment on item being returned. Contains date code
+        quantity_ordered: original ordered item quantity
+        quantity_rma: quantity being subitted in the rma
+        currency: currency of item values
+        amount_product_total: value of product in original order, MAY NOT HAVE BEEN WHAT WAS CHARGED
+        amount_discount_total: value of discount on item in original order, MAY NOT HAVE BEEN ITEM LEVEL IN
             ORIGINAL ORDER
-        rma_item_tax_value: value of tax on item in the original order
-        rma_item_collection: collection of item per dim.product
-        rma_item_family: family of item per dim.product
-        rma_item_stage: stage of item per dim.product
-        rma_item_merchandise_class: class of item per dim.product
-        rma_item_upc_code: upc code of item per dim.product
-        rma_item_design_tier: design tier of item per dim.product
-        rma_item_lens_sku: lens sku per dim.product
-        rma_item_lens_type: lens type per dim.product
-        rma_item_color_frame: frame color per dim.product
-        rma_item_frame_artwork: frame artwork per dim.product
-        rma_item_frame_finish: frame finish per dim.product
-        rma_item_vendor_name: vendor per dim.product
-        rma_exchange_item_product_id_edw: product_id_edw (sku) of item that is replacing the returned item
-        rma_exchange_item_product_id_shopify: product id in Shopify of the item that is replacing the returned item
-        rma_exchange_item_variant_id_shopify: variant id in Shopify of the item that is replacing the returned item
-        rma_exchange_item_display_name: display name of the item that is replacing the returned item
-        rma_exchange_item_type: collection of the item that is replacing the returned item
-        rma_exchange_item_quantity: quantity of items being sent to replace the returned item
-        rma_exchange_item_currency: currency of exchange item values
-        rma_exchange_item_product_value: value of item that is replacing the returned item
-        rma_exchange_item_collection: collection of the item that is replacing the returned item per dim.product
-        rma_exchange_item_family: family of the item that is replacing the returned item per dim.product
-        rma_exchange_item_stage: stage of the item that is replacing the returned item per dim.product
-        rma_exchange_item_merchandise_class: class of the item that is replacing the returned item per dim.product
-        rma_exchange_item_upc_code: upc code of the item that is replacing the returned item per dim.product
-        rma_exchange_item_design_tier: tier of the item that is replacing the returned item per dim.product
-        rma_exchange_item_lens_sku: lens sku of the item that is replacing the returned item per dim.product
-        rma_exchange_item_lens_type: lens type of the item that is replacing the returned item per dim.product
-        rma_exchange_item_color_frame: frame color of the item that is replacing the returned item per dim.product
-        rma_exchange_item_frame_artwork: frame artwork of the item that is replacing the returned item per dim.product
-        rma_exchange_item_frame_finish: frame finish of the item that is replacing the returned item per dim.product
-        rma_exchange_item_vendor_name: vendor of the item that is replacing the returned item per dim.product
+        amount_tax_total: value of tax on item in the original order
+        original_item_collection: collection of item per dim.product
+        original_item_family: family of item per dim.product
+        original_item_stage: stage of item per dim.product
+        original_item_merchandise_class: class of item per dim.product
+        original_item_upc_code: upc code of item per dim.product
+        original_item_design_tier: design tier of item per dim.product
+        original_item_lens_sku: lens sku per dim.product
+        original_item_lens_type: lens type per dim.product
+        original_item_color_lens_base: lens color base per dim.product
+        original_item_color_lens_finish: lens color finish per dim.product
+        original_item_color_frame: frame color per dim.product
+        original_item_frame_artwork: frame artwork per dim.product
+        original_item_frame_finish: frame finish per dim.product
+        original_item_vendor_name: vendor per dim.product
+        exchange_product_id_edw: product_id_edw (sku) of item that is replacing the returned item
+        exchange_product_id_shopify: product id in Shopify of the item that is replacing the returned item
+        exchange_variant_id_shopify: variant id in Shopify of the item that is replacing the returned item
+        exchange_product_display_name: display name of the item that is replacing the returned item
+        exchange_product_type: collection of the item that is replacing the returned item
+        quantity_exchanged: quantity of items being sent to replace the returned item
+        exchange_currency: currency of exchange item values
+        amount_product_exchanged: value of item that is replacing the returned item
+        exchange_product_collection: collection of the item that is replacing the returned item per dim.product
+        exchange_product_family: family of the item that is replacing the returned item per dim.product
+        exchange_product_stage: stage of the item that is replacing the returned item per dim.product
+        exchange_product_merchandise_class: class of the item that is replacing the returned item per dim.product
+        exchange_product_upc_code: upc code of the item that is replacing the returned item per dim.product
+        exchange_product_design_tier: tier of the item that is replacing the returned item per dim.product
+        exchange_product_lens_sku: lens sku of the item that is replacing the returned item per dim.product
+        exchange_product_lens_type: lens type of the item that is replacing the returned item per dim.product
+        exchange_product_color_lens_base: lens color base of the item that is replacing the returned item per dim.product
+        exchange_product_color_lens_base: lens color finish of the item that is replacing the returned item per dim.product
+        exchange_product_color_frame: frame color of the item that is replacing the returned item per dim.product
+        exchange_product_frame_artwork: frame artwork of the item that is replacing the returned item per dim.product
+        exchange_product_frame_finish: frame finish of the item that is replacing the returned item per dim.product
+        exchange_product_vendor_name: vendor of the item that is replacing the returned item per dim.product
  */
 select
     rma_items.org_id_aftership
@@ -106,6 +110,8 @@ select
   , return_product.design_tier         as original_item_design_tier
   , return_product.lens_sku            as original_item_lens_sku
   , return_product.lens_type           as original_item_lens_type
+  , return_product.color_lens_base     as original_item_color_lens_base
+  , return_product.color_lens_finish   as original_item_color_lens_finish
   , return_product.color_frame         as original_item_color_frame
   , return_product.frame_artwork       as original_item_frame_artwork
   , return_product.finish_frame        as original_item_frame_finish
@@ -135,7 +141,7 @@ select
             'same-item same-sku exchange'
         else
             'other exchange'
-    end                                as exchange_item_type
+    end                                as exchange_product_type
   , rma_items.quantity_exchanged
   , rma_items.exchange_currency
   , rma_items.amount_product_exchanged
@@ -148,6 +154,8 @@ select
   , exchange_product.design_tier       as exchange_product_design_tier
   , exchange_product.lens_sku          as exchange_product_lens_sku
   , exchange_product.lens_type         as exchange_product_lens_type
+  , exchange_product.color_lens_base   as exchange_product_color_lens_base
+  , exchange_product.color_lens_finish as exchange_product_color_lens_finish
   , exchange_product.color_frame       as exchange_product_color_frame
   , exchange_product.frame_artwork     as exchange_product_frame_artwork
   , exchange_product.finish_frame      as exchange_product_frame_finish
