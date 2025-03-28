@@ -48,7 +48,7 @@
         original_item_lens_sku: lens sku per dim.product
         original_item_lens_type: lens type per dim.product
         original_item_color_lens_base: lens color base per dim.product
-        original_item_color_lens_base: lens color finish per dim.product
+        original_item_color_lens_finish: lens color finish per dim.product
         original_item_color_frame: frame color per dim.product
         original_item_frame_artwork: frame artwork per dim.product
         original_item_frame_finish: frame finish per dim.product
@@ -111,7 +111,7 @@ select
   , return_product.lens_sku            as original_item_lens_sku
   , return_product.lens_type           as original_item_lens_type
   , return_product.color_lens_base     as original_item_color_lens_base
-  , return_product.color_lens_finish   as original_item_color_lens_base
+  , return_product.color_lens_finish   as original_item_color_lens_finish
   , return_product.color_frame         as original_item_color_frame
   , return_product.frame_artwork       as original_item_frame_artwork
   , return_product.finish_frame        as original_item_frame_finish
