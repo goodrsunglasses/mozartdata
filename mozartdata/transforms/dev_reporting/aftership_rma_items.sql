@@ -155,7 +155,7 @@ select
   , exchange_product.lens_sku          as exchange_product_lens_sku
   , exchange_product.lens_type         as exchange_product_lens_type
   , exchange_product.color_lens_base   as exchange_product_color_lens_base
-  , exchange_product.color_lens_base   as exchange_product_color_lens_finish
+  , exchange_product.color_lens_finish as exchange_product_color_lens_finish
   , exchange_product.color_frame       as exchange_product_color_frame
   , exchange_product.frame_artwork     as exchange_product_frame_artwork
   , exchange_product.finish_frame      as exchange_product_frame_finish
