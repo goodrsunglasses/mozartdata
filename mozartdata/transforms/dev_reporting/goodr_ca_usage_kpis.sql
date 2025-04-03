@@ -1,5 +1,5 @@
 /*
-    This table shows the daily KPIs for goodr.com usage.
+    This table shows the daily KPIs for goodr.ca usage.
     Columns:
         event_date:
             Date reported on. This comes from dim.date to prevent issues
@@ -26,7 +26,7 @@
             This is the total number of conversions from ads across marketing platforms.
         gl_total_revenue:
             This is the total revenue for each day. Specifically it is all 4000 accounts totaled.
-    Todos:
+    Todo:
         - handle leap years
  */
 
