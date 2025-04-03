@@ -30,6 +30,7 @@ with
                         then 'Performance'
                     else 'Other'
                 end                  as marketing_strategy
+              , tc.funnel_stage
               , sum(tmd.spend)       as spend
               , sum(tmd.revenue)     as revenue
               , sum(tmd.impressions) as impressions
@@ -42,6 +43,7 @@ with
                         on tmd.campaign_id_tiktok = tc.campaign_id_tiktok
             group by
                 tmd.event_date
+              , tc.funnel_stage
               , tc.funnel_stage
         )
   , g_ads as
@@ -57,6 +59,7 @@ with
                     else 'Other'
                 end          as account_country
               , ga.marketing_strategy
+              , ga.funnel_stage
               , ga.spend
               , ga.revenue
               , ga.impressions
@@ -71,6 +74,7 @@ with
               , 'snapchat'                  as social_channel
               , 'USA'                       as account_country
               , scmd.marketing_strategy
+              , scmd.funnel_stage
               , sum(scmd.spend)  as spend
               , sum(scmd.revenue) as revenue
               , sum(scmd.impressions)       as impressions
@@ -81,6 +85,7 @@ with
             group by
                 scmd.report_date
               , scmd.marketing_strategy
+              , scmd.funnel_stage
         )
   , meta_ads as (
             select
@@ -94,6 +99,7 @@ with
                     else 'Other'
                 end                           as account_country
               , mc.media_strategy             as marketing_strategy
+              , mc.funnel_stage
               , sum(macmd.spend)    as spend
               , sum(macmd.revenue)  as revenue
               , sum(macmd.impressions)        as impressions
@@ -108,6 +114,7 @@ with
                 macmd.date
               , mc.account_name
               , mc.media_strategy
+              , mc.funnel_stage
         )
   , combined as
         (
@@ -144,6 +151,7 @@ with
       , c.social_channel
       , c.account_country
       , c.marketing_strategy
+      , c.funnel_stage
       , sum(c.spend)       as spend
       , sum(c.revenue)     as revenue
       , sum(c.impressions) as impressions
@@ -168,6 +176,7 @@ with
       , c.social_channel
       , c.account_country
       , c.marketing_strategy
+      , c.funnel_stage
   )
 SELECT
     p.date
@@ -181,26 +190,27 @@ SELECT
   , p.social_channel
   , p.account_country
   , p.marketing_strategy
+  , p.funnel_stage
   , round(p.spend, 2) as spend
   , round(p.revenue, 2) as revenue
   , p.impressions as impressions
   , p.clicks as clicks
   , p.conversions as conversions
-  , round(sum(spend) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) spend_season_to_date
-  , round(sum(revenue) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) revenue_season_to_date
-  , sum(impressions) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) impressions_season_to_date
-  , sum(clicks) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) clicks_season_to_date
-  , sum(conversions) over  (partition by sales_season, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) conversions_season_to_date
-  , round(sum(spend) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) spend_month_to_date
-  , round(sum(revenue) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) revenue_month_to_date
-  , sum(impressions) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) impressions_month_to_date
-  , sum(clicks) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) clicks_month_to_date
-  , sum(conversions) over  (partition by month, social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) conversions_month_to_date
-  , round(sum(spend) over  (partition by social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) spend_year_to_date
-  , round(sum(revenue) over  (partition by social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) revenue_year_to_date
-  , sum(impressions) over  (partition by social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) impressions_year_to_date
-  , sum(clicks) over  (partition by social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) clicks_year_to_date
-  , sum(conversions) over  (partition by social_channel, account_country, marketing_strategy, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) conversions_year_to_date
+  , round(sum(spend) over  (partition by sales_season, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) spend_season_to_date
+  , round(sum(revenue) over  (partition by sales_season, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) revenue_season_to_date
+  , sum(impressions) over  (partition by sales_season, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) impressions_season_to_date
+  , sum(clicks) over  (partition by sales_season, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) clicks_season_to_date
+  , sum(conversions) over  (partition by sales_season, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) conversions_season_to_date
+  , round(sum(spend) over  (partition by month, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) spend_month_to_date
+  , round(sum(revenue) over  (partition by month, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) revenue_month_to_date
+  , sum(impressions) over  (partition by month, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) impressions_month_to_date
+  , sum(clicks) over  (partition by month, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) clicks_month_to_date
+  , sum(conversions) over  (partition by month, social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) conversions_month_to_date
+  , round(sum(spend) over  (partition by social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) spend_year_to_date
+  , round(sum(revenue) over  (partition by social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW), 2) revenue_year_to_date
+  , sum(impressions) over  (partition by social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) impressions_year_to_date
+  , sum(clicks) over  (partition by social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) clicks_year_to_date
+  , sum(conversions) over  (partition by social_channel, account_country, marketing_strategy, funnel_stage, year ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) conversions_year_to_date
 FROM
     pre_to_date p
 WHERE

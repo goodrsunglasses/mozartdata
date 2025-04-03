@@ -80,6 +80,31 @@ with
                        , referral_discount_code
                      from
                          yotpo_exports.customer_report_021325_030925
+                     union all
+                     select
+                         email
+                       , first_name
+                       , last_name
+                       , points_earned
+                       , points_balance
+                       , referral_link
+                       , referred_by
+                       , last_seen
+                       , vip_tier
+                       , birth_month
+                       , birth_day
+                       , birth_year
+                       , anniversary_month
+                       , anniversary_day
+                       , anniversary_year
+                       , platform_account_created_at
+                       , created_at
+                       , phone_number
+                       , loyalty_eligible
+                       , opt_in_date
+                       , referral_discount_code
+                     from
+                         yotpo_exports.customer_report_031025_033125
     )
 select
     union_cte.email
