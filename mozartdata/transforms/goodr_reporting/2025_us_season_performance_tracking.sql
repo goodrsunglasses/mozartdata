@@ -13,4 +13,5 @@ where
   year = 2025
 and account_country = 'USA'
 and funnel_stage != 'OTHER'
+and social_channel != 'google ads'
 group by all
