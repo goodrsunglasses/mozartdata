@@ -32,7 +32,7 @@ SELECT
   inb.shipmentmemo as memo,
   custrecordgoodrponum as po_number,
   externaldocumentnumber as external_document_number,
-  shipmentcreateddate as inbound_created_timestamp
+  shipmentcreateddate as created_timestamp
 FROM
   netsuite.inboundshipment inb
   left outer join netsuite.CUSTOMLIST976 type on type.id=inb.custrecordcustrecord_inbound_type
