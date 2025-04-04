@@ -13,20 +13,22 @@ with root_table as (
       mozart.pipeline_root_table
 )
 SELECT
-  inb.id inbound_shipment_id_ns,
+  inb.id as inbound_shipment_id_ns,
   shipmentstatus as status,
-  shipmentnumber as inb_number,
+  shipmentnumber as inbound_shipment_number,
   type.name as method,
   date(custrecordcustrecord_actual_delivery_) as delivery_date,
   date(custrecordcustrecord_actual_ex_factory) as exit_factory_date,
-  date(custrecordcustrecord_ata_to_destination) as ata_to_destination,
-  date(custrecordcustrecord_atd_from_origin) as atd_from_origin,
-  date(custrecordcustrecord_eta_to_destination) as eta_to_destination,
-  date(custrecordcustrecord_etd_from_origin) as etd_from_origin,
-  date(custrecordcustrecord_planned_delivery) as planned_delivery,
+  date(custrecordcustrecord_ata_to_destination) as ata_to_destination_date,
+  date(custrecordcustrecord_atd_from_origin) as atd_from_origin_date,
+  date(custrecordcustrecord_eta_to_destination) as eta_to_destination_date,
+  date(custrecordcustrecord_etd_from_origin) as etd_from_origin_date,
+  date(custrecordcustrecord_planned_delivery) as planned_delivery_date,
+  inb.shipmentmemo as memo,
   custrecordgoodrponum as po_number,
   externaldocumentnumber as external_document_number,
-  shipmentcreateddate as inb_created_timestemp
+  shipmentcreateddate as inbound_created_timestamp,
+  date(shipmentcreateddate) as inbound_created_date
 FROM
   netsuite.inboundshipment inb
   left outer join netsuite.CUSTOMLIST976 type on type.id=inb.custrecordcustrecord_inbound_type
