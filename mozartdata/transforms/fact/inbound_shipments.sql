@@ -17,6 +17,11 @@ SELECT
   shipmentstatus as status,
   shipmentnumber as inbound_shipment_number,
   type.name as method,
+  date(shipmentcreateddate) as created_date,
+  date(expecteddeliverydate) as expected_delivery_date,
+  date(actualdeliverydate) as actual_delivery_date,
+  date(expectedshippingdate) as expected_deliveryshipping_date,
+  date(actualshippingdate) as actual_shipping_date,
   date(custrecordcustrecord_actual_delivery_) as delivery_date,
   date(custrecordcustrecord_actual_ex_factory) as exit_factory_date,
   date(custrecordcustrecord_ata_to_destination) as ata_to_destination_date,
@@ -27,8 +32,7 @@ SELECT
   inb.shipmentmemo as memo,
   custrecordgoodrponum as po_number,
   externaldocumentnumber as external_document_number,
-  shipmentcreateddate as inbound_created_timestamp,
-  date(shipmentcreateddate) as inbound_created_date
+  shipmentcreateddate as inbound_created_timestamp
 FROM
   netsuite.inboundshipment inb
   left outer join netsuite.CUSTOMLIST976 type on type.id=inb.custrecordcustrecord_inbound_type
