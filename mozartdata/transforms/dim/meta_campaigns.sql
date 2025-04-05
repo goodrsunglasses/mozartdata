@@ -23,6 +23,8 @@ with root_table as (
      , ah.name as account_name
    from
        facebook_ads.account_history ah
+  where
+       ah.name is not null -- because there is a duplicate id in the table that has a null name
 )
 
 select distinct
