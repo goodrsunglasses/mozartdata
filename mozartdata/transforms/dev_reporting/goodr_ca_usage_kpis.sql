@@ -1,6 +1,7 @@
 /*
-    This table shows the daily KPIs for goodr.ca usage.
-    Columns:
+    Table name: dev_reporting.goodr_ca_usage_kpis
+    Purpose: To permit reporting on the various goodr.ca usage metrics for KPIs
+    Schema:
         event_date:
             Date reported on. This comes from dim.date to prevent issues
             with a date not existing in Shopify.
