@@ -5,7 +5,6 @@ One row per inbound shipment id, which I think breaks down to one item per shipm
 Base table: CTE root_table is used to get root table reference for scheduling in mozart.
 If no longer a base table, then remove CTE root_table.
 */
-
 with root_table as (
     select
       *
@@ -23,6 +22,7 @@ SELECT
   quantityexpected as quantity_expected,
   quantityreceived as quantity_received,
   quantityremaining as quantity_remaining,
+  quantityexpected-quantityremaining as quantity_outstanding,
   receivinglocation as receiving_location,
   shipmentitemamount as inbound_shipment_amount,
   totalunitcost as total_unit_cost,

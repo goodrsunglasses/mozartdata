@@ -9,6 +9,7 @@ SELECT
   quantity_expected,
   quantity_received,
   quantity_remaining,
+  quantity_outstanding,
   receiving_location,
   inbound_shipment_amount,
   total_unit_cost,
