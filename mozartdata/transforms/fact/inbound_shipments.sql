@@ -5,7 +5,6 @@ One row per inbound shipment id
 Base table: CTE root_table is used to get root table reference for scheduling in mozart.
 If no longer a base table, then remove CTE root_table.
 */
-
 with root_table as (
     select
       *
@@ -18,17 +17,19 @@ SELECT
   shipmentnumber as inbound_shipment_number,
   type.name as method,
   date(shipmentcreateddate) as created_date,
+  date(expectedshippingdate) as expected_shipping_date,
+  date(actualshippingdate) as actual_shipping_date,
   date(expecteddeliverydate) as expected_delivery_date,
   date(actualdeliverydate) as actual_delivery_date,
-  date(expectedshippingdate) as expected_deliveryshipping_date,
-  date(actualshippingdate) as actual_shipping_date,
-  date(custrecordcustrecord_actual_delivery_) as delivery_date,
+  date(custrecordcustrecord_planned_delivery) as planned_delivery_to_dc_date,
+  date(custrecordcustrecord_actual_delivery_) as actual_delivery_to_dc_date,
   date(custrecordcustrecord_actual_ex_factory) as exit_factory_date,
   date(custrecordcustrecord_ata_to_destination) as ata_to_destination_date,
-  date(custrecordcustrecord_atd_from_origin) as atd_from_origin_date,
   date(custrecordcustrecord_eta_to_destination) as eta_to_destination_date,
   date(custrecordcustrecord_etd_from_origin) as etd_from_origin_date,
-  date(custrecordcustrecord_planned_delivery) as planned_delivery_date,
+  date(custrecordcustrecord_atd_from_origin) as atd_from_origin_date,
+  v.name as freight_forwarder,
+  l.name as end_destination_location,
   inb.shipmentmemo as memo,
   custrecordgoodrponum as po_number,
   externaldocumentnumber as external_document_number,
@@ -40,3 +41,5 @@ SELECT
 FROM
   netsuite.inboundshipment inb
   left outer join netsuite.CUSTOMLIST976 type on type.id=inb.custrecordcustrecord_inbound_type
+  left outer join dim.vendors v on inb.custrecord161 = v.vendor_id_ns
+  left outer join dim.locations l on inb.custrecord162 = l.location_id_ns
