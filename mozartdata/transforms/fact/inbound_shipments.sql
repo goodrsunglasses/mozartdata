@@ -35,6 +35,7 @@ SELECT
   custrecordcustrecord_stord_inbound_messa as inbound_document_sent,
   vesselnumber as vessel_number,
   custrecordcontainernumber as container_number,
+  billoflading as bill_of_lading,
   shipmentcreateddate as created_timestamp
 FROM
   netsuite.inboundshipment inb
