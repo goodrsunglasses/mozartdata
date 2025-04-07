@@ -32,6 +32,6 @@ SELECT
   shipmentitemtransaction as shipment_item_id_ns
 FROM
   netsuite.inboundshipment inb
-  LEFT OUTER JOIN netsuite.inboundshipmentitem inb_item ON inb_item.inboundshipment = inb.id
+  LEFT OUTER JOIN netsuite.inboundshipmentitem inb_item ON inb_item.inboundshipment = inb.id AND inb_item._fivetran_deleted = false
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.uniquekey = inb_item.shipmentitemtransaction
   LEFT OUTER JOIN netsuite.transaction tran ON inb_item.purchaseordertransaction = tran.id
