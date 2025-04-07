@@ -3,6 +3,8 @@ SELECT
   i.inbound_shipment_item_id_ns,
   i.item_id_ns,
   p.product_id_edw,
+  purchase_order_transaction_id_ns,
+  purchase_order_number,
   p.sku,
   expected_rate,
   quantity_billed,

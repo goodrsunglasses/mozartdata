@@ -27,9 +27,11 @@ SELECT
   shipmentitemamount as inbound_shipment_amount,
   totalunitcost as total_unit_cost,
   unitlandedcost as unit_landed_cost,
-  purchaseordertransaction as purchase_order_id_ns,
+  inb_item.purchaseordertransaction as purchase_order_transaction_id_ns,
+  tran.tranid as purchase_order_number,
   shipmentitemtransaction as shipment_item_id_ns
 FROM
   netsuite.inboundshipment inb
   LEFT OUTER JOIN netsuite.inboundshipmentitem inb_item ON inb_item.inboundshipment = inb.id
   LEFT OUTER JOIN netsuite.transactionline tranline ON tranline.uniquekey = inb_item.shipmentitemtransaction
+  LEFT OUTER JOIN netsuite.transaction tran ON inb_item.purchaseordertransaction = tran.id
