@@ -32,6 +32,9 @@ SELECT
   inb.shipmentmemo as memo,
   custrecordgoodrponum as po_number,
   externaldocumentnumber as external_document_number,
+  custrecordcustrecord_stord_inbound_messa as inbound_document_sent,
+  vesselnumber as vessel_number,
+  custrecordcontainernumber as container_number,
   shipmentcreateddate as created_timestamp
 FROM
   netsuite.inboundshipment inb
