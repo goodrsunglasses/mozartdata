@@ -24,8 +24,8 @@ SELECT
   date(custrecordcustrecord_planned_delivery) as planned_delivery_to_dc_date,
   date(custrecordcustrecord_actual_delivery_) as actual_delivery_to_dc_date,
   date(custrecordcustrecord_actual_ex_factory) as exit_factory_date,
-  date(custrecordcustrecord_eta_to_destination) as eta_to_destination_date,
-  date(custrecordcustrecord_ata_to_destination) as ata_to_destination_date,
+  date(custrecordcustrecord_eta_to_destination) as eta_to_destination_port_date,
+  date(custrecordcustrecord_ata_to_destination) as ata_to_destination_port_date,
   date(custrecordcustrecord_etd_from_origin) as etd_from_origin_date,
   date(custrecordcustrecord_atd_from_origin) as atd_from_origin_date,
   v.name as freight_forwarder,
@@ -38,6 +38,7 @@ SELECT
   custrecordcontainernumber as container_number,
   billoflading as bill_of_lading,
   case when custrecordinb_appointment_schedule = 'T' then true else false end as appointment_schedule_flag,
+  date(custrecordinb_appointment_date) as appointment_date,
   shipmentcreateddate as created_timestamp
 FROM
   netsuite.inboundshipment inb
