@@ -42,4 +42,4 @@ FROM
   netsuite.inboundshipment inb
   left outer join netsuite.CUSTOMLIST976 type on type.id=inb.custrecordcustrecord_inbound_type
   left outer join dim.vendors v on inb.custrecord161 = v.vendor_id_ns
-  left outer join dim.locations l on inb.custrecord162 = l.location_id_ns
+  left outer join dim.location l on inb.custrecord162 = l.location_id_ns
