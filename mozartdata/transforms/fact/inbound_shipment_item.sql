@@ -2,6 +2,7 @@ SELECT
   inbound_shipment_id_ns,
   i.inbound_shipment_item_id_ns,
   i.item_id_ns,
+  p.product_id_edw,
   p.sku,
   expected_rate,
   quantity_billed,
