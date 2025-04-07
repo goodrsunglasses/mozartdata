@@ -15,7 +15,7 @@ SELECT
   inb.id as inbound_shipment_id_ns,
   shipmentstatus as status,
   shipmentnumber as inbound_shipment_number,
-  type.name as method,
+  type.name as inbound_type,
   date(shipmentcreateddate) as created_date,
   date(expectedshippingdate) as expected_shipping_date,
   date(actualshippingdate) as actual_shipping_date,
@@ -37,6 +37,7 @@ SELECT
   vesselnumber as vessel_number,
   custrecordcontainernumber as container_number,
   billoflading as bill_of_lading,
+  case when custrecordinb_appointment_schedule = 'T' then true else false end as appointment_schedule_flag,
   shipmentcreateddate as created_timestamp
 FROM
   netsuite.inboundshipment inb
