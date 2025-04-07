@@ -22,7 +22,7 @@ SELECT
   quantityexpected as quantity_expected,
   quantityreceived as quantity_received,
   quantityremaining as quantity_remaining,
-  quantityexpected-quantityremaining as quantity_outstanding,
+  quantityexpected-quantityreceived as quantity_outstanding,
   receivinglocation as receiving_location,
   shipmentitemamount as inbound_shipment_amount,
   totalunitcost as total_unit_cost,
