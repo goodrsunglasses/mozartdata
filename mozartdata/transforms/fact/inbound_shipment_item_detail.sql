@@ -13,8 +13,9 @@ with root_table as (
       mozart.pipeline_root_table
 )
 SELECT
-  inb.id inbound_shipment_id_ns,
+  inb.id as inbound_shipment_id_ns,
   inb.shipmentnumber as inbound_shipment_number,
+  inb_item.id as inbound_shipment_item_id_ns,
   inb_item.shipmentitemdescription as item,
   tranline.item as item_id_ns,
   inb_item.expectedrate as expected_rate,
