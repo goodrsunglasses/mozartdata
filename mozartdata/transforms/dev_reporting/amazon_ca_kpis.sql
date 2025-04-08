@@ -51,7 +51,7 @@ with
                               where
                                   channel = 'Amazon Canada'
                               group by
-                                  booked_date::date
+                                  booked_date
                                 , channel
                           )
 
