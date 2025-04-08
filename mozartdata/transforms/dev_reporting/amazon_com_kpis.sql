@@ -41,7 +41,7 @@ with
 
   , fact_orders_data as (
                               select
-                                  booked_date::date            as purchase_date
+                                  booked_date                  as purchase_date
                                 , channel
                                 , count(distinct order_id_edw) as order_count
                                 , sum(amount_product_sold)     as amount_product_sold
