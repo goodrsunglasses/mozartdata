@@ -1,3 +1,5 @@
+CREATE OR REPLACE TABLE staging.netsuite_bin_inventory
+            COPY GRANTS  as
 with
     root_table as (
                       select
@@ -29,9 +31,6 @@ from
         on loc.id = binv.location
     left outer join netsuite.customrecord_rfs_zone zone
         on zone.id = bins.custrecord_rfs_pickzone
-where
-      binv.location = 1
-  and binv.item = 50
 order by
     snapshot_date_fivetran desc
 
