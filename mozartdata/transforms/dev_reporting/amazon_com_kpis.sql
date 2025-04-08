@@ -1,3 +1,28 @@
+/*
+    Table name:
+        dev_reporting.amazon_com_kpis
+    Created:
+        04-03-2025
+    Purpose:
+        Shows the KPIs for Amazon.com sales channel.
+    Schema:
+        event_date: The date that is being reported on
+            Primary Key
+        sessions: Number of sessions being reported by Amazon Seller Central
+        page_views: number of page views being reported by Amazon Seller Central
+        buy_box_count: number of page views where we had the "buy box". This means we
+            had the lowest price for that item available on Amazon.
+        order_count: number of orders being reported by fact.orders. This is lower than
+            Amazon Seller Central because fact.orders involves NS, which doesn't get
+            Amazon order info until the order ships.
+        amount_product_sold: the sales amount of product as reported by fact.orders.
+        customer_count: number of customers who bought a product as reported by
+            fact.orders
+        amazon_spend: amount spent on Amazon Ads as reported by Amazon Ads
+        amount_attributed_product_sold: sales amount of product sold attributed to ads
+            as reported by Amazon Ads.
+*/
+
 with
     amazon_seller_data as (
                               select
