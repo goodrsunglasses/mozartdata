@@ -6,14 +6,15 @@ select
   , sku
   , display_name
   , snapshot_date_fivetran
-  , sum(quantity_available) as netsuite_total_available
   , sum(case
             when
-                zone_name = 'General Zone' and bin_name not like 'Picked%' and bin_id != 1404
+                zone_name in ('General Zone', 'Carton Flow Zone') and bin_name not like 'Picked%' and bin_id != 1404
                 then quantity_available--Baseline condition, the super specific sub portion of "available" inventory that's actually not reserved
             else 0
         end-- This is the crux of all our work here, translating the logic of whats actually available to purchase in the Lagoon to code
     )                       as edw_total_purchaseable
+  , sum(quantity_available) as netsuite_total_available
+
   , sum(case
             when zone_name = 'REI Zone'
                 then quantity_available
