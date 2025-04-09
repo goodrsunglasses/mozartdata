@@ -2,6 +2,8 @@
 Purpose: to show items in inbound shipments.
 One row per inbound shipment id, which I think breaks down to one item per shipment?
 
+Primary Key: inbound_shipment_item_id_ns
+
 Base table: CTE root_table is used to get root table reference for scheduling in mozart.
 If no longer a base table, then remove CTE root_table.
 */
