@@ -1,3 +1,9 @@
+/*
+     Purpose: To link the inbound shipment items with our dim.product table so we can show information 
+                         related to products in that table easily in future reporting.
+     Primary Key: inbound_shipment_item_id_ns
+*/
+
 SELECT
   inbound_shipment_id_ns,
   i.inbound_shipment_item_id_ns,
