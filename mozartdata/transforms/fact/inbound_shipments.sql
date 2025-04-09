@@ -13,7 +13,14 @@ with root_table as (
 )
 SELECT
   inb.id as inbound_shipment_id_ns,
-  shipmentstatus as status,
+  case
+    when shipmentstatus = 'partiallyReceived' then 'Partially Receieved'
+    when shipmentstatus = 'inTransit' then 'In Transit'
+    when shipmentstatus = 'toBeShipped' then 'To Be Shipped'
+    when shipmentstatus = 'closed' then 'Closed'
+    when shipmentstatus = 'received' then 'Received'
+    else shipmentstatus
+    end as status,
   shipmentnumber as inbound_shipment_number,
   type.name as inbound_type,
   date(shipmentcreateddate) as created_date,
