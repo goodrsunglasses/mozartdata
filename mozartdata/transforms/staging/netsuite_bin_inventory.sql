@@ -1,5 +1,5 @@
-CREATE OR REPLACE TABLE staging.netsuite_bin_inventory
-            COPY GRANTS  as
+create or replace table staging.netsuite_bin_inventory
+    copy grants as
 with
     root_table as (
                       select
