@@ -1,5 +1,4 @@
 SELECT
-  tran.id,
   tran.id AS transaction_id_ns,
   tran.tranid as transaction_number_ns,
   CONCAT(tran.tranid, '_', tran.id, '_', tranlineship.item) AS transfer_order_item_detail_id,
