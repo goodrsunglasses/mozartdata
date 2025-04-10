@@ -20,7 +20,7 @@ SELECT
   tranlineship.itemtype AS item_type,
   coalesce(item.itemid, cast(tranlineship.item as string)) AS product_id_edw,
   tranlineship.item AS item_id_ns,
-  item.sku,
+  item.itemid as sku,
   SUM(ABS(tranlineship.quantity)) AS total_quantity,
   SUM(ABS(tranlineship.quantitycommitted)) as quantity_committed,
   SUM(ABS(tranlineship.quantityallocated)) as quantity_allocated_supply,
