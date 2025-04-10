@@ -36,4 +36,4 @@ select
   , "CONVERSION RATE"
   , "SESSIONS THAT COMPLETED CHECKOUT"
 from
-    shopify_exports.canada_kpi_data_20250310_2025_04_06
+    shopify_exports.canada_kpi_data_20250310_20250406
