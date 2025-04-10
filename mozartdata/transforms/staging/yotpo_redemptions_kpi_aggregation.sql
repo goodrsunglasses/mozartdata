@@ -27,3 +27,9 @@ select
     , "REDEEMING CUSTOMERS"
 from
     yotpo_exports.daily_redeeming_customers_031025_033125
+union all
+select
+    day::date as date
+    , "REDEEMING CUSTOMERS"
+from
+    yotpo_exports.daily_redeeming_customers_040125_040925
