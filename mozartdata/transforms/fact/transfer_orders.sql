@@ -10,7 +10,7 @@ SELECT
 , t.memo
 , t.firmed_flag
 , t.use_item_cost_flag
-, t.icoterm
+, t.incoterm
 , t.amazon_shipment_id
 , t.ship_by_date
 , sum(t.total_quantity) as total_quantity
@@ -33,3 +33,4 @@ left join
 left join
   dim.location lrec
   on t.receiving_location = lrec.location_id_ns
+group by all
