@@ -3,10 +3,6 @@ SELECT
   tran.tranid as transaction_number_ns,
   CONCAT(tran.tranid, '_', tran.id, '_', tranlineship.item) AS transfer_order_item_detail_id,
   date(tran.trandate) as transaction_date,
-  CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate) AS transaction_created_timestamp_pst,
-  DATE(
-    CONVERT_TIMEZONE('America/Los_Angeles', tran.createddate)
-  ) AS transaction_created_date_pst,
   tran.recordtype AS record_type,
   transtatus.name as status,
   transtatus.fullname as full_status,
@@ -15,7 +11,7 @@ SELECT
   case when tran.useitemcostastransfercost = 'T' then true else false end as use_item_cost_flag,
   i.name as incoterm,
   tran.custbodyamazon_shipment_id as amazon_shipment_id,
-  date(tran.shipdate) as ship_by_date,
+  date(tran.custbodyeta_date) as ship_by_date,
   tranlineship.itemtype AS item_type,
   coalesce(item.itemid, cast(tranlineship.item as string)) AS product_id_edw,
   tranlineship.item AS item_id_ns,
@@ -58,5 +54,6 @@ FROM
 WHERE
   tran.recordtype = 'transferorder'
   AND tranlineship.itemtype = 'InvtPart'
+  and tran.id = 33040649
 group by all
 

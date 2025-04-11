@@ -2,8 +2,6 @@ SELECT
   t.transaction_id_ns
 , t.transaction_number_ns
 , t.transaction_date
-, t.transaction_created_timestamp_pst
-, t.transaction_created_date_pst
 , t.record_type
 , t.status
 , t.full_status
