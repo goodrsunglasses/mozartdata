@@ -5,7 +5,7 @@ select
     location_name
   , sku
   , display_name
-  , snapshot_date_fivetran
+  , day
   , sum(case
             when
                 zone_name in ('General Zone', 'Carton Flow Zone') and bin_name not like 'Picked%' and bin_id != 1404
