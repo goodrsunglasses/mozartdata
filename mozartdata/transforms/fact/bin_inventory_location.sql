@@ -1,5 +1,5 @@
-create or replace table fact.bin_inventory_location
-    copy grants as
+-- create or replace table fact.bin_inventory_location
+--     copy grants as
 --The idea with this table is bin sourced daily inventory counts, aggregated using business logic because we had trouble tracking Lagoon inventory using macro snapshot tables
 select
     final_location_name
