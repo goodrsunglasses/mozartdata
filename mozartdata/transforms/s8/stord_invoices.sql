@@ -102,7 +102,7 @@ FROM
   core
   LEFT JOIN fact.shopify_orders so ON so.order_id_edw = core.order_id_edw_coalesce     --  will this splay? I had it as inner join before - no
   LEFT JOIN shipping ship ON so.order_id_shopify = ship.order_id                       --  will this splay?? no
-where ship_date between '2024-06-01' and '2024-10-31'                                  -- to limit for analysis per greg 
+--where ship_date between '2024-06-01' and '2024-10-31'                                  -- to limit for analysis per greg 
 order by ship_date desc 
 
   ---- qc
