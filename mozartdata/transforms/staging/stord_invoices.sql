@@ -219,7 +219,7 @@ WITH
       'parcel_details' AS source_file
     FROM
       stord_invoices.parcel_details
-  union all 
+ -- union all 
    -- ------------- cleaned april 
    --  SELECT
    --    origin_facility AS location,
