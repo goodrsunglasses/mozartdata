@@ -4,6 +4,7 @@ Primary Key: transfer_order_item_detail_id
 */
 SELECT
   t.transfer_order_number_ns
+, t.transfer_order_transaction_id_ns
 , t.transaction_id_ns
 , t.transaction_number_ns
 , t.transfer_order_item_detail_id

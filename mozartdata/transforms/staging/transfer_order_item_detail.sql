@@ -66,6 +66,7 @@ base  AS
 , final AS (
   SELECT
     transaction_number_ns AS transfer_order_number_ns
+  , b.transaction_id_ns AS transfer_order_transaction_id_ns
   , b.*
   FROM
     base b
@@ -74,6 +75,7 @@ base  AS
   UNION ALL
   SELECT distinct
     t.transaction_number_ns AS transfer_order_number_ns
+  , t.transaction_id_ns AS transfer_order_transaction_id_ns
   , b.*
   FROM
     base b
