@@ -238,7 +238,7 @@ WITH
       final_destination_country AS destination_country,
       shipping_method,
       stord_service_level,
-      "BILLED_WEIGHT_(OZ)" AS sum_package_weight,
+      billed_weight_oz AS sum_package_weight,
       zone,
       duty AS duties_charge,
       NULL AS ancillary_charges_2,
