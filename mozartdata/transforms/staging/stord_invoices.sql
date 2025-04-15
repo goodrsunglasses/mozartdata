@@ -220,7 +220,7 @@ WITH
     FROM
       stord_invoices.parcel_details
   union all 
-     ------------- cleaned april 
+   ------------- cleaned april 
     SELECT
       origin_facility AS location,
       inv AS invoice,
