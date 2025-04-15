@@ -16,7 +16,6 @@ transfer_orders AS (
   , t.transfer_order_transaction_id_ns
   , concat(t.transfer_order_number_ns,'_',t.sku) as transfer_order_item_id
   , t.status as transfer_order_status
-  , t.ship_by_date
   , t.product_id_edw
   , t.item_id_ns
   , t.sku
