@@ -220,35 +220,35 @@ WITH
     FROM
       stord_invoices.parcel_details
   union all 
-   ------------- cleaned april 
-    SELECT
-      origin_facility AS location,
-      inv AS invoice,
-      Carrier AS detailed_carrier,
-      account_number,
-      billed_date,
-      order_number AS order_number_wms,
-      tracking_number AS shipment_tracking_number,
-      customer_name,
-      ship_date,
-      destination_address AS destination_address_1,
-      final_destination_city AS destination_city,
-      final_destination_state AS destination_state,
-      final_destination_zip AS destination_zip,
-      final_destination_country AS destination_country,
-      shipping_method,
-      stord_service_level,
-      billed_weight_oz AS sum_package_weight,
-      zone,
-      duty AS duties_charge,
-      NULL AS ancillary_charges_2,
-      fuel AS fuel_charges,
-      residential AS residential_charges,
-      shipping_charge_correction AS shipping_charges,
-      total_cost AS total_shipping_less_duties,
-      source_file
-   FROM
-      stord_invoices.apr_upload_1
+   -- ------------- cleaned april 
+   --  SELECT
+   --    origin_facility AS location,
+   --    inv AS invoice,
+   --    Carrier AS detailed_carrier,
+   --    account_number,
+   --    billed_date,
+   --    order_number AS order_number_wms,
+   --    tracking_number AS shipment_tracking_number,
+   --    customer_name,
+   --    ship_date,
+   --    destination_address AS destination_address_1,
+   --    final_destination_city AS destination_city,
+   --    final_destination_state AS destination_state,
+   --    final_destination_zip AS destination_zip,
+   --    final_destination_country AS destination_country,
+   --    shipping_method,
+   --    stord_service_level,
+   --    billed_weight_oz AS sum_package_weight,
+   --    zone,
+   --    duty AS duties_charge,
+   --    NULL AS ancillary_charges_2,
+   --    fuel AS fuel_charges,
+   --    residential AS residential_charges,
+   --    shipping_charge_correction AS shipping_charges,
+   --    total_cost AS total_shipping_less_duties,
+   --    source_file
+   -- FROM
+   --    stord_invoices.apr_upload_1
 
   
   )
