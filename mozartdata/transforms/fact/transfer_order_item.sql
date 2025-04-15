@@ -78,7 +78,28 @@ ifs as
   )
 
 SELECT
-  t.*
+  t.transfer_order_number_ns
+, t.transfer_order_transaction_id_ns
+, t.transfer_order_item_id
+, t.transfer_order_status
+, t.product_id_edw
+, t.item_id_ns
+, t.sku
+, t.transfer_order_total_quantity
+, t.transfer_order_quantity_committed
+, t.transfer_order_quantity_allocated_supply
+, t.transfer_order_quantity_picked
+, t.transfer_order_quantity_packed
+, t.transfer_order_quantity_received
+, t.transfer_order_quantity_backordered
+, t.transfer_order_quantity_allocated_demand
+, t.shipping_location
+, t.receiving_location
+, t.transfer_order_requested_date
+, t.transfer_order_expected_receipt_date
+, t.transfer_order_expected_ship_date
+, t.transfer_order_days_late
+, t.transfer_order_allocation_strategy
 , ifs.quantity_fulfilled
 , ifs.earliest_fulfilled_date
 , ifs.latest_fulfilled_date
