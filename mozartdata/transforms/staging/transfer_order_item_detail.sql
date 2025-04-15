@@ -4,7 +4,7 @@ base  AS
   SELECT
     tran.id                                                                 AS transaction_id_ns
   , tran.tranid                                                             AS transaction_number_ns
-  , CONCAT(tran.tranid, '_', tran.id, '_', tranlineship.item)               AS transfer_order_item_detail_id
+  , CONCAT(tran.tranid, '_', tran.id, '_', tranlineship.item, '_', tranlineship.id)  AS transfer_order_item_detail_id
   , DATE(tran.trandate)                                                     AS transaction_date
   , tran.recordtype                                                         AS record_type
   , transtatus.name                                                         AS status
@@ -72,7 +72,7 @@ base  AS
   WHERE
     b.record_type = 'transferorder'
   UNION ALL
-  SELECT
+  SELECT distinct
     t.transaction_number_ns AS transfer_order_number_ns
   , b.*
   FROM
