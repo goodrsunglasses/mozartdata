@@ -30,6 +30,18 @@ WITH
         t.record_type = 'transferorder'
       GROUP BY ALL
     )
+,  related_records AS (
+    SELECT
+      t.transfer_order_transaction_id_ns
+    , t.transfer_order_number_ns
+    , t.record_type
+    , count(distinct t.transaction_id_ns) record_count
+      FROM
+        fact.transfer_order_item_detail t
+      WHERE
+        t.record_type != 'transferorder'
+      GROUP BY ALL
+    )
 , transfer_items AS
     (
     SELECT
@@ -74,13 +86,17 @@ SELECT
 , i.quantity_fulfilled
 , i.earliest_fulfilled_date
 , i.latest_fulfilled_date
-, i.item_fulfillment_count
+, max(case when r.record_type = 'itemfulfillment' then r.record_count else 0 end) as item_fulfillment_count
 , i.quantity_received
 , i.earliest_received_date
 , i.latest_received_date
-, i.item_receipt_count
+, max(case when r.record_type = 'itemreceipt' then r.record_count else 0 end) as item_receipt_count
   FROM
     transfer_orders t
     LEFT JOIN
       transfer_items i
         ON t.transaction_id_ns = i.transfer_order_transaction_id_ns
+    LEFT JOIN
+      related_records r
+        ON t.transaction_id_ns = r.transfer_order_transaction_id_ns
+GROUP BY ALL
