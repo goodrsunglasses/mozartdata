@@ -2,6 +2,7 @@ with ranks as
   (
 SELECT
   order_id_edw_coalesce,
+  stord_service_level,
   total_shipping_less_duties,
   destination_zip,
   location,
@@ -18,6 +19,7 @@ ORDER BY
   )
 SELECT
   order_id_edw_coalesce,
+  stord_service_level,
   total_shipping_less_duties,
   destination_zip,
   location,
