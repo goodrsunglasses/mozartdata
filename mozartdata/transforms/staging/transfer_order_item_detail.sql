@@ -2,7 +2,6 @@
 Base table: CTE root_table is used to get root table reference for scheduling in mozart.
 If no longer a base table, then remove CTE root_table.
 */
-
 with
   root_table as (
     select
@@ -47,6 +46,7 @@ base  AS
   , DATE(tranlineship.expectedshipdate)                                     AS expected_ship_date
   , tranlineship.dayslate                                                   AS days_late
   , oas.name                                                                AS allocation_strategy
+  , tran.transferlocation                                                   AS transfer_location
   FROM
     netsuite.transaction tran
     LEFT OUTER JOIN netsuite.transactionline tranlineship
