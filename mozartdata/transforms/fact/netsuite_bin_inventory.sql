@@ -1,7 +1,21 @@
 with
     staging as (
                    select
-                       binv.*
+                       binv.bin_id
+                       , binv.binnumber
+                       , binv.zone_id
+                       , binv.zone_name
+                       , binv.location
+                       , binv.location_name
+                       , binv.item
+                       , binv.snapshot_timestamp_fivetran
+                       , binv.snapshot_date_fivetran
+                       , binv.quantityavailable
+                       , binv.quantityonhand
+                       , binv.quantitypicked
+                       , binv.committedqtyperlocation
+                       , binv.committedqtyperseriallotnumber
+                       , binv.committedqtyperseriallotnumberlocation
                      , prod.sku
                      , prod.display_name
                    from
