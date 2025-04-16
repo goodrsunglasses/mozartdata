@@ -1,5 +1,3 @@
--- create or replace table fact.netsuite_bin_inventory
---     copy grants as
 with
     staging as (
                    select
