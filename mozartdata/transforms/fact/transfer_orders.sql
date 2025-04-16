@@ -48,7 +48,7 @@ WITH
       GROUP BY ALL
     )
 SELECT
-  t.transaction_id_ns AS transfer_order_id_ns
+  t.transaction_id_ns AS transfer_order_transaction_id_ns
 , t.transaction_number_ns AS transfer_order_number_ns
 , t.transaction_date
 , t.record_type
