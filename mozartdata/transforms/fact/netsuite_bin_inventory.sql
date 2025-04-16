@@ -165,14 +165,14 @@ select
   , iad.bin_id
   , iad.day
     --     is_fallback,
-  , coalesce(location_name, fallback_location_name)                           as final_location_name
-  , coalesce(bin_id, fallback_bin_id)                                         as final_bin_id
-  , coalesce(binnumber, fallback_binnumber)                                   as final_binnumber
-  , coalesce(zone_name, fallback_zone_name)                                   as final_zone_name
-  , coalesce(quantity_available, fallback_quantity_available)                 as final_carried_quantity_available
-  , coalesce(quantity_on_hand, fallback_quantity_on_hand)                     as final_quantity_on_hand
-  , coalesce(quantity_picked, fallback_quantity_picked)                       as final_quantity_picked
-  , coalesce(committed_qty_per_location, fallback_committed_qty_per_location) as final_committed_qty_per_location
+  , coalesce(iad.location_name, m.fallback_location_name)                           as final_location_name
+  , coalesce(iad.bin_id, m.fallback_bin_id)                                         as final_bin_id
+  , coalesce(iad.binnumber, m.fallback_binnumber)                                   as final_binnumber
+  , coalesce(iad.zone_name, m.fallback_zone_name)                                   as final_zone_name
+  , coalesce(iad.quantity_available, m.fallback_quantity_available)                 as final_carried_quantity_available
+  , coalesce(iad.quantity_on_hand, m.fallback_quantity_on_hand)                     as final_quantity_on_hand
+  , coalesce(iad.quantity_picked, m.fallback_quantity_picked)                       as final_quantity_picked
+  , coalesce(iad.committed_qty_per_location, m.fallback_committed_qty_per_location) as final_committed_qty_per_location
 
 from
     inventory_with_all_dates             iad
