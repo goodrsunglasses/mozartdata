@@ -25,7 +25,7 @@ with
                            on prod.item_id_ns = binv.item
                    where
                          binv.location = 1
-                     and snapshot_date_fivetran >= '2025-04-01'
+                     and binv.snapshot_date_fivetran >= '2025-04-01'
                )
   , distinct_skus as (
                    select distinct
