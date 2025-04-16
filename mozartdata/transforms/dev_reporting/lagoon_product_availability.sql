@@ -1,3 +1,4 @@
+--Tentative idea here is to start with a list of all bin affecting transactions in netsuite, with special care being given to inbounds and outbound shipments, but still need to care about the rest
 WITH
   binventory AS (
     SELECT
@@ -36,10 +37,13 @@ SELECT
   *
 FROM
   transfer_info
+WHERE
+  bin_number = 'Picked-1-855749'
+  AND product_id_edw = 'OG-GY-LG1'
+  order by transaction_date desc
   -- SELECT
   --   *
   -- FROM
   --   binventory
   -- WHERE
-  --   bin_id = 2519
-  --   AND sku = 'OG-HND-NRBR1'
+  --   final_binnumber = 'Picked-1-855749'
