@@ -17,7 +17,6 @@ WITH
     , sum(t.quantity_committed) AS quantity_committed
     , sum(t.quantity_allocated_supply) AS quantity_allocated_supply
     , sum(t.quantity_picked) AS quantity_picked
-    , sum(t.quantity_received) AS quantity_received
     , max(t.shipping_location) AS shipping_location
     , max(t.receiving_location) AS receiving_location
     , min(t.requested_date) AS requested_date
@@ -65,7 +64,6 @@ SELECT
 , t.quantity_committed
 , t.quantity_allocated_supply
 , t.quantity_picked
-, t.quantity_received
 , t.shipping_location
 , t.receiving_location
 , t.requested_date

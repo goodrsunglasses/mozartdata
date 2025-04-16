@@ -43,8 +43,7 @@ base  AS
                       AND
                        ((tran.recordtype = 'transferorder' AND tranlineship.transferorderitemlineid IS NOT NULL AND
                          tranlineship.transactionlinetype = 'SHIPPING')
-                         OR (tran.recordtype != 'transferorder' AND tranlineship.custcol4 = 1))
---                        AND tranlineship.transactionlinetype in ('SHIPPING', 'INTRANSIT')
+                         OR (tran.recordtype != 'transferorder' AND tranlineship.custcol4 is not null))
     LEFT OUTER JOIN netsuite.transactionline tranlinerec
                     ON tranlinerec.transaction = tran.id
                      AND
