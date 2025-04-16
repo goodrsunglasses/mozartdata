@@ -32,8 +32,8 @@ SELECT
 , t.quantity_received
 , t.quantity_backordered
 , t.quantity_allocated_demand
-, lship.name AS shipping_location
-, lrec.name AS receiving_location
+, case when record_type = 'itemreceipt' then ltran.name else lship.name end AS shipping_location
+, case when record_type = 'itemreceipt' then lship.name else ltran.name end AS receiving_location
 , t.requested_date
 , t.expected_receipt_date
 , t.expected_ship_date
@@ -47,3 +47,6 @@ SELECT
   LEFT JOIN
     dim.location lrec
     ON t.receiving_location = lrec.location_id_ns
+  LEFT JOIN
+    dim.location ltran
+    ON t.transfer_location = ltran.location_id_ns
