@@ -38,7 +38,7 @@ SELECT
 , t.expected_receipt_date
 , t.expected_ship_date
 , t.days_late
-, allocation_strategy
+, t.allocation_strategy
   FROM
     staging.transfer_order_item_detail t
   LEFT JOIN
