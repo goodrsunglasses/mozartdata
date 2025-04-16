@@ -47,7 +47,7 @@ base  AS
     LEFT OUTER JOIN netsuite.transactionline tranlinerec
                     ON tranlinerec.transaction = tran.id
                      AND
-                       (tran.recordtype = 'transferorder' AND tranlinerec.transferorderitemlineid IS NOT NULL AND
+                       (tran.recordtype = 'transferorder' AND tranlineship.transferorderitemlineid = tranlinerec.transferorderitemlineid AND
                          tranlinerec.transactionlinetype = 'RECEIVING')
                       AND tranlineship.item = tranlinerec.item
     LEFT OUTER JOIN netsuite.orderallocationstrategy oas
@@ -90,7 +90,3 @@ base  AS
 SELECT *
 FROM
   final
-
-
--- where
---   b.record_type != 'transferorder'
