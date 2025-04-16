@@ -32,7 +32,7 @@ SELECT
   where channel in ('Goodr.com','Specialty') 
 group by all) data 
   
-where display_name is not null and month is not null 
+where display_name is not null and month is not null and family = 'INLINE' and merchandise_class != 'DISPLAYS'
 ORDER by  sku,month)
 
   
