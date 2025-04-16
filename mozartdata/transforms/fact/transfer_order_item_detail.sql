@@ -16,7 +16,7 @@ SELECT
 , t.firmed_flag
 , t.use_item_cost_flag
 , t.incoterm
-, t.amazon_shipment_id
+, t.shipment_id_amazon
 , t.ship_by_date
 , t.created_from_transaction_id_ns
 , t.item_type

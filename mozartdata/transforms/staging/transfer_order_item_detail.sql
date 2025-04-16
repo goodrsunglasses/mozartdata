@@ -24,7 +24,7 @@ base  AS
   , CASE WHEN tran.firmed = 'T' THEN TRUE ELSE FALSE END                    AS firmed_flag
   , CASE WHEN tran.useitemcostastransfercost = 'T' THEN TRUE ELSE FALSE END AS use_item_cost_flag
   , i.name                                                                  AS incoterm
-  , tran.custbodyamazon_shipment_id                                         AS amazon_shipment_id
+  , tran.custbodyamazon_shipment_id                                         AS shipment_id_amazon
   , DATE(tran.custbodyeta_date)                                             AS ship_by_date
   , tranlineship.createdfrom                                                AS created_from_transaction_id_ns
   , tranlineship.itemtype                                                   AS item_type
