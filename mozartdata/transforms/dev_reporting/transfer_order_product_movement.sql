@@ -85,6 +85,6 @@ left join
 on t.transfer_order_number_ns = r.transfer_order_number_ns
 and t .sku  = r.sku
 and r.actual_received_date >= f.actual_shipped_date
-where inbound_outbound != 'Other'
+where t.inbound_outbound != 'Other'
 qualify rank() over(partition by t.transfer_order_number_ns, t.sku, f.actual_shipped_date order by f.actual_shipped_date, r.actual_received_date) =1
 order by transfer_order_requested_date desc
