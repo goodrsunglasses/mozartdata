@@ -6,39 +6,25 @@ WITH
     FROM
       fact.bin_inventory_location
   ),
-  transfer_info AS (
+  current_past_inbound AS (
     SELECT
-      transfer_order_number_ns,
-      transfer_order_transaction_id_ns,
       transaction_date,
-      requested_date,
-      expected_receipt_date,
-      expected_ship_date,
-      days_late shipping_location,
+      shipping_location,
       receiving_location,
-      status,
-      memo,
-      product_id_edw,
       item_id_ns,
-      total_quantity,
-      bin_id_ns,
-      bin_number,
-      quantity_committed,
-      quantity_picked,
-      quantity_packed,
-      quantity_received,
-      quantity_backordered
+      sku,
+      sum(total_quantity) total_tos
     FROM
-      fact.transfer_order_item_detail detail
-      LEFT OUTER JOIN fact.netsuite_inventory_assignment assign ON assign.transaction_line_id_ns = detail.transaction_line_id_ns
-      AND detail.transaction_id_ns = assign.transaction_id_ns
+      fact.transfer_order_item_detail
+    WHERE
+      receiving_location = 'HQ DC'
+      AND record_type = 'itemreceipt'
+    GROUP BY
+      ALL
   )
 SELECT
   *
 FROM
-  binventory
+  current_past_inbound
 WHERE
-
-   sku = 'BFG-BK-BK1-NR'
-order by day asc
-  --TO0001619
+  transaction_date > '2025-04-17'
