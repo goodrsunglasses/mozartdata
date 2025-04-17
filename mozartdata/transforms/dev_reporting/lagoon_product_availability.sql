@@ -6,6 +6,22 @@ WITH
     FROM
       fact.bin_inventory_location
   ),
+  shipments AS (
+    SELECT
+      detail.inbound_shipment_id_ns,
+      detail.inbound_shipment_number,
+      end_destination_location,
+      item_id_ns,
+      item,
+      created_date,
+      quantity_expected,
+      quantity_received,
+      planned_delivery_to_dc_date,
+      actual_delivery_to_dc_date
+    FROM
+      fact.inbound_shipment_item_detail detail
+      LEFT OUTER JOIN fact.inbound_shipments ship ON ship.inbound_shipment_id_ns = detail.inbound_shipment_id_ns
+  ),
   current_past_inbound AS (
     SELECT
       transaction_date,
@@ -25,6 +41,5 @@ WITH
 SELECT
   *
 FROM
-  current_past_inbound
-WHERE
-  transaction_date > '2025-04-17'
+  shipments
+where  planned_delivery_to_dc_date > '2025-04-17'
