@@ -9,8 +9,8 @@ WITH
     , sum(i.total_quantity) as quantity_shipped
     , i.shipping_location
     , i.receiving_location
-    , case when i.shipping_location = 'HQ DC' then 'Outbound'
-        when i.receiving_location = 'HQ DC' then 'Inbound' else 'Other' end as inbound_outbound
+    , case when i.shipping_location like 'HQ DC%' then 'Outbound'
+        when i.receiving_location like 'HQ DC%' then 'Inbound' else 'Other' end as inbound_outbound
       FROM
         fact.transfer_order_item_detail i
       WHERE
@@ -27,8 +27,8 @@ WITH
     , sum(i.total_quantity) as quantity_received
     , i.shipping_location
     , i.receiving_location
-    , case when i.shipping_location = 'HQ DC' then 'Outbound'
-        when i.receiving_location = 'HQ DC' then 'Inbound' else 'Other' end as inbound_outbound
+    , case when i.shipping_location like 'HQ DC%' then 'Outbound'
+        when i.receiving_location like 'HQ DC%' then 'Inbound' else 'Other' end as inbound_outbound
       FROM
         fact.transfer_order_item_detail i
       WHERE
@@ -41,8 +41,8 @@ WITH
         i.transfer_order_number_ns
       , i.shipping_location
       , i.receiving_location
-      , case when i.shipping_location = 'HQ DC' then 'Outbound'
-             when i.receiving_location = 'HQ DC' then 'Inbound' else 'Other' end as inbound_outbound
+    , case when i.shipping_location like 'HQ DC%' then 'Outbound'
+        when i.receiving_location like 'HQ DC%' then 'Inbound' else 'Other' end as inbound_outbound
       , i.sku
       , i.transfer_order_status
       , i.transfer_order_total_quantity
