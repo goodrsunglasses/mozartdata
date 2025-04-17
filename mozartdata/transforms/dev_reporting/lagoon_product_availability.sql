@@ -34,16 +34,17 @@ WITH
       AND detail.transaction_id_ns = assign.transaction_id_ns
   )
 SELECT
-  *
+  binventory.sku,
+  transfer_info.transfer_order_number_ns,
+  binventory.display_name,
+  binventory.day,
+  binventory.final_bin_id,
+  final_binnumber,
+  binventory.final_carried_quantity_available,
+  final_quantity_on_hand,
+  transfer_info.total_quantity
 FROM
-  transfer_info
-WHERE
-  bin_number = 'Picked-1-855749'
-  AND product_id_edw = 'OG-GY-LG1'
-  order by transaction_date desc
-  -- SELECT
-  --   *
-  -- FROM
-  --   binventory
-  -- WHERE
-  --   final_binnumber = 'Picked-1-855749'
+  binventory
+  LEFT OUTER JOIN transfer_info ON transfer_info.product_id_edw = binventory.sku
+  AND transfer_info.transaction_date = binventory.day
+  AND binventory.final_bin_id = transfer_info.bin_id_ns
