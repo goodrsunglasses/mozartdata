@@ -23,6 +23,8 @@ WITH
       fact.inbound_shipment_item_detail detail
       LEFT OUTER JOIN fact.inbound_shipments ship ON ship.inbound_shipment_id_ns = detail.inbound_shipment_id_ns
       LEFT OUTER JOIN dim.product prod ON prod.item_id_ns = detail.item_id_ns
+    WHERE
+      end_destination_location = 'HQ DC'
   ),
   current_past_inbound AS (
     SELECT
@@ -44,5 +46,3 @@ SELECT
   *
 FROM
   shipments
-WHERE
-  planned_delivery_to_dc_date > '2025-04-17'
