@@ -65,7 +65,7 @@ select distinct
 , t.estimated_ship_date
 , f.actual_shipped_date
 , f.quantity_shipped
-, t.estimated_received_date
+, t.estimated_received_date as transfer_order_estimated_received_date
 , case
     when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%ATL%' or t.receiving_location like '%ATL%') then
       dateadd(day, 8, coalesce(f.actual_shipped_date, t.estimated_ship_date))
