@@ -118,9 +118,14 @@ WITH
       AND DATEADD(DAY, 1, ri.DAY) = in_out_join.DATE
   )
 SELECT
-  DAY,
-  SKU,
-  inventory
+  recursive_inventory.DAY,
+  recursive_inventory.SKU,
+  recursive_inventory.inventory,
+  in_out_join.total_outbound,
+  in_out_join.total_inbound
 FROM
   recursive_inventory
-where day in ('2025-04-20','2025-04-21','2025-04-22') and sku = 'CG-MN-CP1-FE'
+  LEFT OUTER JOIN in_out_join ON in_out_join.sku = recursive_inventory.sku
+  AND recursive_inventory.day = in_out_join.date
+WHERE
+  total_outbound IS NOT NULL
