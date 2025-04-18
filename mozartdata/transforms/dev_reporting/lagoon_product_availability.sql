@@ -39,5 +39,3 @@ SELECT
   *
 FROM
   gabby_math
-ORDER BY
-  DAY desc
