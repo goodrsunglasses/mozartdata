@@ -57,6 +57,9 @@ SELECT
   gabby_join.sku,
   gabby_join.display_name,
   future_outbound.total_so
-  
 FROM
-  gabby_join left outer join future_outbound on future_outbound.sku=gabby_join.sku
+  gabby_join
+  LEFT OUTER JOIN future_outbound ON future_outbound.sku = gabby_join.sku
+  AND gabby_join.date = future_outbound.shipping_window_end_date
+WHERE
+  total_so IS NOT NULL
