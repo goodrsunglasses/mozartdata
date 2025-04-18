@@ -1,4 +1,16 @@
 WITH
+  binventory AS (
+    SELECT
+      *
+    FROM
+      fact.bin_inventory_location
+  ),
+  gabby_math AS (
+    SELECT
+      *
+    FROM
+      dim.date
+  ),
   future_outbound AS (
     SELECT
       shipping_window_end_date,
@@ -24,4 +36,6 @@ WITH
 SELECT
   *
 FROM
-  future_outbound
+  gabby_math
+ORDER BY
+  DAY desc
