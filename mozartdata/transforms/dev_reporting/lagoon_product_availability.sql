@@ -33,7 +33,7 @@ WITH
       distinct_skus s
       CROSS JOIN future_days c
   ),
-  starting_inv AS (--starting day to frontfill inventory quantities from.
+  starting_inv AS (--starting day to frontfill inventory quantities from, this table has cartesian join logic in it so we know there should be one row per sku per day, CALLOUT that this could be filtered down to only actives 
     SELECT
       sku,
       display_name,
@@ -42,7 +42,7 @@ WITH
     FROM
       binventory
     WHERE
-      DAY = current_date() -1
+      DAY = current_date() -1--ADJUST HERE if we want to start inventory off earlier 
   ),
   future_outbound AS ( --Current business logic assumption, is that TO's are not entered ahead of time, the second they go in they decriment inventory, Margie quote here
     SELECT
