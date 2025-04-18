@@ -128,4 +128,5 @@ FROM
   LEFT OUTER JOIN in_out_join ON in_out_join.sku = recursive_inventory.sku
   AND recursive_inventory.day = in_out_join.date
 WHERE
-  total_outbound IS NOT NULL
+  recursive_inventory.sku = 'G00023-MG-LLB2-RF'
+  AND recursive_inventory.DAY IN ('2025-05-07', '2025-05-08', '2025-05-09')
