@@ -71,7 +71,25 @@ select distinct
       dateadd(day, 8, coalesce(f.actual_shipped_date, t.estimated_ship_date))
     when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%LAS%' or t.receiving_location like '%LAS%') then
       dateadd(day, 1, coalesce(f.actual_shipped_date, t.estimated_ship_date))
+    when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%Cabana%' or t.receiving_location like '%Cabana%') then
+      dateadd(day, 0, coalesce(f.actual_shipped_date, t.estimated_ship_date))
+    when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%Flexport SB%' or t.receiving_location like '%Flexport SB%') then
+      dateadd(day, 1, coalesce(f.actual_shipped_date, t.estimated_ship_date))
+    when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%Lensabl DEN%' or t.receiving_location like '%Lensabl DEN%') then
+      dateadd(day, 4, coalesce(f.actual_shipped_date, t.estimated_ship_date))
     end calculated_received_date
+, case
+    when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%ATL%' or t.receiving_location like '%ATL%') then
+      dateadd(day, 14, transfer_order_requested_date)
+    when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%LAS%' or t.receiving_location like '%LAS%') then
+      dateadd(day, 8, transfer_order_requested_date)
+    when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%Cabana%' or t.receiving_location like '%Cabana%') then
+      dateadd(day, 1, transfer_order_requested_date)
+    when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%Flexport SB%' or t.receiving_location like '%Flexport SB%') then
+      dateadd(day, 1, transfer_order_requested_date)
+    when (t.shipping_location like 'HQ DC%' or t.receiving_location like 'HQ DC%') and  (t.shipping_location like '%Lensabl DEN%' or t.receiving_location like '%Lensabl DEN%') then
+      dateadd(day, 10, coalesce(f.actual_shipped_date, t.estimated_ship_date))
+    end target_sla_date
 , r.actual_received_date
 , r.quantity_received
 from
