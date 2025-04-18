@@ -33,7 +33,7 @@ WITH
       distinct_skus s
       CROSS JOIN future_days c
   ),
-  starting_inv AS (--starting day to frontfill inventory quantities from, this table has cartesian join logic in it so we know there should be one row per sku per day, CALLOUT that this could be filtered down to only actives 
+  starting_inv AS ( --starting day to frontfill inventory quantities from, this table has cartesian join logic in it so we know there should be one row per sku per day, CALLOUT that this could be filtered down to only actives 
     SELECT
       sku,
       display_name,
@@ -42,7 +42,7 @@ WITH
     FROM
       binventory
     WHERE
-      DAY = current_date() -1--ADJUST HERE if we want to start inventory off earlier 
+      DAY = current_date() -1 --ADJUST HERE if we want to start inventory off earlier 
   ),
   future_outbound AS ( --Current business logic assumption, is that TO's are not entered ahead of time, the second they go in they decriment inventory, Margie quote here
     SELECT
@@ -97,8 +97,30 @@ WITH
       AND gabby_join.date = future_inbound.transfer_order_estimated_received_date
     ORDER BY
       DATE asc
+  ),
+  recursive_inventory (SKU, DAY, INVENTORY) AS (
+    -- Anchor: start from the starting date
+    SELECT
+      SKU,
+      DAY,
+      edw_total_purchaseable
+    FROM
+      starting_inv
+    UNION ALL
+    -- Recursive: calculate next day's inventory
+    SELECT
+      in_out_join.SKU,
+      DATEADD(DAY, 1, ri.DAY) AS DATE,
+      ri.INVENTORY + in_out_join.TOTAL_INBOUND - in_out_join.TOTAL_OUTBOUND AS INVENTORY
+    FROM
+      recursive_inventory ri
+      JOIN in_out_join ON ri.SKU = in_out_join.SKU
+      AND DATEADD(DAY, 1, ri.DAY) = in_out_join.DATE
   )
 SELECT
-  *
+  DAY,
+  SKU,
+  inventory
 FROM
-  starting_inv
+  recursive_inventory
+where day in ('2025-04-20','2025-04-21','2025-04-22') and sku = 'CG-MN-CP1-FE'
