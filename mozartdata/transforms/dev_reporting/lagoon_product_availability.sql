@@ -52,9 +52,9 @@ WITH
     ORDER BY
       shipping_window_end_date asc
   ),
-  future_inbound AS (
+  future_inbound AS ( --Current business logic assumption, is that future inbounds are only booked via shipments
     SELECT
-      transfer_order_estimated_received_date,--Using this because its the only thing 
+      transfer_order_estimated_received_date, --Using this because its the only thing 
       receiving_location,
       sku,
       sum(total_quantity_ordered) total_inbound
@@ -78,5 +78,5 @@ FROM
   gabby_join
   LEFT OUTER JOIN future_outbound ON future_outbound.sku = gabby_join.sku
   AND gabby_join.date = future_outbound.shipping_window_end_date
-  left outer join future_inbound on future_inbound.sku = gabby_join.sku
+  LEFT OUTER JOIN future_inbound ON future_inbound.sku = gabby_join.sku
   AND gabby_join.date = future_inbound.transfer_order_estimated_received_date
