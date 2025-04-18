@@ -33,6 +33,17 @@ WITH
       distinct_skus s
       CROSS JOIN future_days c
   ),
+  starting_inv AS (--starting day to frontfill inventory quantities from.
+    SELECT
+      sku,
+      display_name,
+      DAY,
+      edw_total_purchaseable
+    FROM
+      binventory
+    WHERE
+      DAY = current_date() -1
+  ),
   future_outbound AS ( --Current business logic assumption, is that TO's are not entered ahead of time, the second they go in they decriment inventory, Margie quote here
     SELECT
       shipping_window_end_date,
@@ -76,16 +87,18 @@ WITH
       gabby_join.DATE,
       gabby_join.sku,
       gabby_join.display_name,
-      coalesce(future_outbound.total_outbound,0) total_outbound,
-      coalesce(future_inbound.total_inbound,0) total_inbound
+      coalesce(future_outbound.total_outbound, 0) total_outbound,
+      coalesce(future_inbound.total_inbound, 0) total_inbound
     FROM
       gabby_join
       LEFT OUTER JOIN future_outbound ON future_outbound.sku = gabby_join.sku
       AND gabby_join.date = future_outbound.shipping_window_end_date
       LEFT OUTER JOIN future_inbound ON future_inbound.sku = gabby_join.sku
       AND gabby_join.date = future_inbound.transfer_order_estimated_received_date
-
     ORDER BY
       DATE asc
   )
-select * from in_out_join
+SELECT
+  *
+FROM
+  starting_inv
