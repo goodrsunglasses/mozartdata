@@ -8,6 +8,7 @@ SELECT
   destination_state,
   location,
   channel_coalesce AS channel,
+  ship_date,
   sum_package_weight,
   api_qty,
   RANK() OVER (
@@ -27,6 +28,7 @@ SELECT
   destination_state,
   location,
   channel,
+  ship_date,
   sum_package_weight,
   api_qty
 FROM
