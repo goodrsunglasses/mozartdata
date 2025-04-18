@@ -80,3 +80,4 @@ FROM
   AND gabby_join.date = future_outbound.shipping_window_end_date
   LEFT OUTER JOIN future_inbound ON future_inbound.sku = gabby_join.sku
   AND gabby_join.date = future_inbound.transfer_order_estimated_received_date
+order by date asc
