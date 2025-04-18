@@ -1,48 +1,27 @@
---Tentative idea here is to start with a list of all bin affecting transactions in netsuite, with special care being given to inbounds and outbound shipments, but still need to care about the rest
 WITH
-  binventory AS (
+  future_outbound AS (
     SELECT
-      *
+      shipping_window_end_date,
+      loc.name,
+      item.sku,
+      plain_name,
+      sum(item.quantity_booked) total_so
     FROM
-      fact.bin_inventory_location
-  ),
-  shipments AS (
-    SELECT
-      detail.inbound_shipment_id_ns,
-      detail.inbound_shipment_number,
-      end_destination_location,
-      detail.item_id_ns,
-      prod.sku,
-      prod.display_name,
-      created_date,
-      quantity_expected,
-      quantity_received,
-      planned_delivery_to_dc_date,
-      actual_delivery_to_dc_date
-    FROM
-      fact.inbound_shipment_item_detail detail
-      LEFT OUTER JOIN fact.inbound_shipments ship ON ship.inbound_shipment_id_ns = detail.inbound_shipment_id_ns
-      LEFT OUTER JOIN dim.product prod ON prod.item_id_ns = detail.item_id_ns
+      fact.order_line line
+      LEFT OUTER JOIN fact.order_item item ON item.order_id_edw = line.order_id_edw
+      LEFT OUTER JOIN dim.location loc ON loc.location_id_ns = line.location
     WHERE
-      end_destination_location = 'HQ DC'
-  ),
-  current_past_inbound AS (
-    SELECT
-      transaction_date,
-      shipping_location,
-      receiving_location,
-      item_id_ns,
-      sku,
-      sum(total_quantity) total_tos
-    FROM
-      fact.transfer_order_item_detail
-    WHERE
-      receiving_location = 'HQ DC'
-      AND record_type = 'itemreceipt'
+      record_type = 'salesorder' --only sales orders pre-emptively book outbounds
+      AND shipping_window_end_date IS NOT NULL --only care about ones that have that filled in, thusly can say on a given day it will be decrimented
+      AND shipping_window_end_date > current_date() --only care about future look forward
+      AND location = 1 --hqdc lul
+      AND sku IS NOT NULL --ignore tax and shipping
     GROUP BY
       ALL
+    ORDER BY
+      shipping_window_end_date asc
   )
 SELECT
   *
 FROM
-  shipments
+  future_outbound
