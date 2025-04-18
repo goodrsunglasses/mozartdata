@@ -80,5 +80,3 @@ FROM
   AND gabby_join.date = future_outbound.shipping_window_end_date
   left outer join future_inbound on future_inbound.sku = gabby_join.sku
   AND gabby_join.date = future_inbound.transfer_order_estimated_received_date
-WHERE
-  DATE  = '2025-05-08'
