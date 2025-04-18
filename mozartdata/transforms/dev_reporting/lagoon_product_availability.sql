@@ -19,7 +19,7 @@ WITH
     FROM
       dim.date
     WHERE
-      DATE > current_date()
+      DATE BETWEEN current_date() AND current_date()  + 365
   ),
   gabby_join AS ( --as we all know she invented the cartesian join
     SELECT
