@@ -98,7 +98,7 @@ WITH
     ORDER BY
       DATE asc
   ),
-  recursive_inventory (SKU, DAY, INVENTORY) AS (
+  recursive_inventory (SKU, DAY, INVENTORY) AS (--Logic here could def use tweaking at least, at most its totally wrong based on the day delay for INB/OUTB
     -- Anchor: start from the starting date
     SELECT
       SKU,
