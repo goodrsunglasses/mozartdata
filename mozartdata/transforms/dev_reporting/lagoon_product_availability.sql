@@ -2,7 +2,10 @@
 WITH
   binventory AS (
     SELECT
-      *
+      sku,
+      display_name,
+      DAY,
+      edw_total_purchaseable
     FROM
       fact.bin_inventory_location
   ),
@@ -67,17 +70,22 @@ WITH
       ALL
     ORDER BY
       transfer_order_estimated_received_date desc
+  ),
+  in_out_join AS (
+    SELECT
+      gabby_join.DATE,
+      gabby_join.sku,
+      gabby_join.display_name,
+      coalesce(future_outbound.total_outbound,0) total_outbound,
+      coalesce(future_inbound.total_inbound,0) total_inbound
+    FROM
+      gabby_join
+      LEFT OUTER JOIN future_outbound ON future_outbound.sku = gabby_join.sku
+      AND gabby_join.date = future_outbound.shipping_window_end_date
+      LEFT OUTER JOIN future_inbound ON future_inbound.sku = gabby_join.sku
+      AND gabby_join.date = future_inbound.transfer_order_estimated_received_date
+
+    ORDER BY
+      DATE asc
   )
-SELECT
-  gabby_join.DATE,
-  gabby_join.sku,
-  gabby_join.display_name,
-  future_outbound.total_outbound,
-  future_inbound.total_inbound
-FROM
-  gabby_join
-  LEFT OUTER JOIN future_outbound ON future_outbound.sku = gabby_join.sku
-  AND gabby_join.date = future_outbound.shipping_window_end_date
-  LEFT OUTER JOIN future_inbound ON future_inbound.sku = gabby_join.sku
-  AND gabby_join.date = future_inbound.transfer_order_estimated_received_date
-order by date asc
+select * from in_out_join
