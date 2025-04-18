@@ -53,6 +53,10 @@ WITH
       shipping_window_end_date asc
   )
 SELECT
-  *
+  gabby_join.DATE,
+  gabby_join.sku,
+  gabby_join.display_name,
+  future_outbound.total_so
+  
 FROM
-  gabby_join
+  gabby_join left outer join future_outbound on future_outbound.sku=gabby_join.sku
