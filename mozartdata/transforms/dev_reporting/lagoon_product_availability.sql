@@ -33,7 +33,7 @@ WITH
       distinct_skus s
       CROSS JOIN future_days c
   ),
-  starting_inv AS ( --starting day to frontfill inventory quantities from, this table has cartesian join logic in it so we know there should be one row per sku per day, CALLOUT that this could be filtered down to only actives 
+  starting_inv AS ( --starting day to frontfill inventory quantities from, this table has cartesian join logic in it so we know there should be one row per sku per day, CALLOUT that this could be filtered down to only actives, SEPERATE FROM ABOVE CTE
     SELECT
       sku,
       display_name,
@@ -82,7 +82,7 @@ WITH
     ORDER BY
       transfer_order_estimated_received_date desc
   ),
-  in_out_join AS (
+  in_out_join AS (--Joining of the baseline one row per sku per day, then also days where something is inbound and outbound for later refinenment.
     SELECT
       gabby_join.DATE,
       gabby_join.sku,
