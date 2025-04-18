@@ -72,12 +72,13 @@ SELECT
   gabby_join.DATE,
   gabby_join.sku,
   gabby_join.display_name,
-  future_outbound.total_outbound
+  future_outbound.total_outbound,
+  future_inbound.total_inbound
 FROM
   gabby_join
   LEFT OUTER JOIN future_outbound ON future_outbound.sku = gabby_join.sku
   AND gabby_join.date = future_outbound.shipping_window_end_date
-  left outer join future_inbound future_inbound.sku = gabby_join.sku
+  left outer join future_inbound on future_inbound.sku = gabby_join.sku
   AND gabby_join.date = future_inbound.transfer_order_estimated_received_date
 WHERE
-  DATE >= '2025-04-19'
+  DATE  = '2025-05-08'
