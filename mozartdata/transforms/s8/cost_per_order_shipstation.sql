@@ -139,6 +139,7 @@ WITH core AS (
       ON TO_VARCHAR(ss.shipmentid) = TO_VARCHAR(fl.shipment_id)
     LEFT JOIN fact.shopify_orders so 
       ON so.order_id_edw = ss.ordernumber
+      and lower(so.email) = lower(ss.customeremail)
   WHERE 
     fl.source = 'Shipstation'
     and fl.voided <> 'true'
@@ -176,7 +177,8 @@ deduped AS (
 --select * from deduped
 
 
-select *
+select 
+    *, shipmentcost / total_quantity as per_unit_parcel   --- qc 
   -- date_trunc(year, ship_month),
   -- count(distinct order_id_edw) as unique_order_count,
   -- sum(total_quantity) as unit_quantity,
@@ -184,8 +186,10 @@ select *
   -- round(sum(shipmentcost) / sum(total_quantity),2) as cost_per_unit
 FROM deduped
   where store = 'Goodr.com'
-  and carrier_service not ilike '%international%'
+  and  carrier_service not ilike '%international%'
   and carrier_service not ilike '%worldwid%'
   and carrier_service not in ('usps_priority_mail', 'usps_first_class_mail', 'usps_priority_mail_express', 'ups_2nd_day_air', 'ups_3_day_select', 'ups_next_day_air', 'dhl_gm_parcel_expedited', 'dhl_gm_parcel_ground', 'ups_worldwide_expedited', 'ups_worldwide_express', 'ups_next_day_air_saver', 'ups_worldwide_saver', 'ups_next_day_air_early_am')
-group by all 
-order by 1
+--  and total_quantity > 0
+--  and per_unit_parcel > 30 
+  group by all 
+order by per_unit_parcel
