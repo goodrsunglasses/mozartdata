@@ -5,7 +5,9 @@ SELECT
   stord_service_level,
   total_shipping_less_duties,
   destination_zip,
+  destination_state,
   location,
+  channel_coalesce AS channel,
   sum_package_weight,
   api_qty,
   RANK() OVER (
@@ -22,7 +24,9 @@ SELECT
   stord_service_level,
   total_shipping_less_duties,
   destination_zip,
+  destination_state,
   location,
+  channel,
   sum_package_weight,
   api_qty
 FROM
