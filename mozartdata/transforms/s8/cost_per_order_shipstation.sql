@@ -188,12 +188,12 @@ deduped AS (
 
 
 select 
-    *, shipmentcost / total_quantity as per_unit_parcel   --- qc 
-  -- date_trunc(year, ship_month),
-  -- count(distinct order_id_edw) as unique_order_count,
-  -- sum(total_quantity) as unit_quantity,
-  -- sum(shipmentcost) as total_cost,
-  -- round(sum(shipmentcost) / sum(total_quantity),2) as cost_per_unit
+  -- *, shipmentcost / total_quantity as per_unit_parcel   --- qc 
+  date_trunc(year, ship_month),
+  count(distinct order_id_edw) as unique_order_count,
+  sum(total_quantity) as unit_quantity,
+  sum(shipmentcost) as total_cost,
+  round(sum(shipmentcost) / sum(total_quantity),2) as cost_per_unit
 FROM deduped
   where store = 'Goodr.com'
   and  carrier_service not ilike '%international%'
@@ -202,4 +202,5 @@ FROM deduped
 --  and total_quantity > 0
 --  and per_unit_parcel > 30 
   group by all 
-order by per_unit_parcel
+order by 1
+--order by per_unit_parcel desc
