@@ -36,7 +36,7 @@ WITH
       loc.name,
       item.sku,
       plain_name,
-      sum(item.quantity_booked) total_so
+      sum(item.quantity_booked) total_outbound
     FROM
       fact.order_line line
       LEFT OUTER JOIN fact.order_item item ON item.order_id_edw = line.order_id_edw
@@ -56,10 +56,10 @@ SELECT
   gabby_join.DATE,
   gabby_join.sku,
   gabby_join.display_name,
-  future_outbound.total_so
+  future_outbound.total_outbound
 FROM
   gabby_join
   LEFT OUTER JOIN future_outbound ON future_outbound.sku = gabby_join.sku
   AND gabby_join.date = future_outbound.shipping_window_end_date
 WHERE
-  total_so IS NOT NULL
+date>='2025-04-19'
