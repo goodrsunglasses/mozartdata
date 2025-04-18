@@ -7,9 +7,11 @@ WITH
   ),
   gabby_math AS (
     SELECT
-      *
+      DATE
     FROM
       dim.date
+    WHERE
+      DATE > current_date()
   ),
   future_outbound AS (
     SELECT
