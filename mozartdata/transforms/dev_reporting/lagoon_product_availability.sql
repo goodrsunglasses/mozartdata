@@ -1,3 +1,4 @@
+--This is gonna be an unhinged amount of CTE's but I want the steps to make sense blown up, refactoring can come later
 WITH
   binventory AS (
     SELECT
@@ -5,13 +6,29 @@ WITH
     FROM
       fact.bin_inventory_location
   ),
-  gabby_math AS (
+  distinct_skus AS (
+    SELECT DISTINCT
+      sku,
+      display_name
+    FROM
+      binventory
+  ),
+  future_days AS (
     SELECT
       DATE
     FROM
       dim.date
     WHERE
       DATE > current_date()
+  ),
+  gabby_join AS ( --as we all know she invented the cartesian join
+    SELECT
+      s.sku,
+      s.display_name,
+      c.DATE
+    FROM
+      distinct_skus s
+      CROSS JOIN future_days c
   ),
   future_outbound AS (
     SELECT
@@ -38,4 +55,4 @@ WITH
 SELECT
   *
 FROM
-  gabby_math
+  gabby_join
