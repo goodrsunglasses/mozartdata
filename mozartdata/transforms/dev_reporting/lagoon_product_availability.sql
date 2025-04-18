@@ -30,7 +30,7 @@ WITH
       distinct_skus s
       CROSS JOIN future_days c
   ),
-  future_outbound AS (
+  future_outbound AS ( --Current business logic assumption, is that TO's are not entered ahead of time, the second they go in they decriment inventory, Margie quote here
     SELECT
       shipping_window_end_date,
       loc.name,
@@ -51,6 +51,22 @@ WITH
       ALL
     ORDER BY
       shipping_window_end_date asc
+  ),
+  future_inbound AS (
+    SELECT
+      transfer_order_estimated_received_date,--Using this because its the only thing 
+      receiving_location,
+      sku,
+      sum(total_quantity_ordered) total_inbound
+    FROM
+      dev_reporting.product_movement_hq_dc_only
+    WHERE
+      inbound_outbound = 'Inbound'
+      AND transfer_order_estimated_received_date > current_date()
+    GROUP BY
+      ALL
+    ORDER BY
+      transfer_order_estimated_received_date desc
   )
 SELECT
   gabby_join.DATE,
@@ -61,5 +77,7 @@ FROM
   gabby_join
   LEFT OUTER JOIN future_outbound ON future_outbound.sku = gabby_join.sku
   AND gabby_join.date = future_outbound.shipping_window_end_date
+  left outer join future_inbound future_inbound.sku = gabby_join.sku
+  AND gabby_join.date = future_inbound.transfer_order_estimated_received_date
 WHERE
-date>='2025-04-19'
+  DATE >= '2025-04-19'
