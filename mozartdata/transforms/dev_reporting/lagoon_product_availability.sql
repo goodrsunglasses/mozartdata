@@ -9,20 +9,20 @@ WITH
     FROM
       fact.bin_inventory_location
   ),
-  distinct_skus AS (
+  distinct_skus AS (--Distinct list of SKUS, ADJUST AS NEEDED TO FILTER IT DOWN FOR THE LATER CARTESIAN JOIN
     SELECT DISTINCT
       sku,
       display_name
     FROM
       binventory
   ),
-  future_days AS (
+  future_days AS (--ADJUST AS NEEDED FOR LOOK FORWARD WINDOW
     SELECT
       DATE
     FROM
       dim.date
     WHERE
-      DATE BETWEEN current_date() AND current_date()  + 365
+      DATE BETWEEN current_date() AND current_date()  + 182
   ),
   gabby_join AS ( --as we all know she invented the cartesian join
     SELECT
