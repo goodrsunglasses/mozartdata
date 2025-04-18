@@ -120,7 +120,16 @@ HAVING
 
 ------------ splay should be fixed based on 
   
-WITH core AS (
+
+  WITH eyewear_only AS (
+  SELECT fulfillment_id_edw
+  FROM fact.fulfillment_item fi
+  INNER JOIN dim.product p ON p.sku = fi.sku
+  GROUP BY fulfillment_id_edw
+  HAVING COUNT(*) = COUNT(CASE WHEN p.merchandise_division = 'EYEWEAR' THEN 1 END)
+),
+  
+  core AS (
   SELECT
     fl.shipment_id,  
     fl.total_quantity,  
@@ -140,6 +149,7 @@ WITH core AS (
     LEFT JOIN fact.shopify_orders so 
       ON so.order_id_edw = ss.ordernumber
       and lower(so.email) = lower(ss.customeremail)
+    INNER JOIN eyewear_only eo ON eo.fulfillment_id_edw = fl.fulfillment_id_edw
   WHERE 
     fl.source = 'Shipstation'
     and fl.voided <> 'true'
